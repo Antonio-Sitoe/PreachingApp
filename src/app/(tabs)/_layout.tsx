@@ -1,55 +1,63 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, useColorScheme } from 'react-native';
+import { Link, Tabs } from 'expo-router'
+import { Pressable, Text, useColorScheme } from 'react-native'
+import { Ionicons, FontAwesome5 } from '@expo/vector-icons'
+import ScrollIcon from '@/assets/icons/scroll.svg'
 
-import Colors from '@/constants/Colors';
-
-/**
- * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
- */
-function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
-  color: string;
-}) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
-}
+import Colors from '@/constants/Colors'
+import { Icon } from '@/assets/icons/Icon'
+import React from 'react'
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const colorScheme = useColorScheme()
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-      }}>
+        tabBarLabelStyle: {
+          fontSize: 12,
+          paddingBottom: 6,
+        },
+        tabBarStyle: {
+          height: 70,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
+          title: 'Home',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="home" size={27} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="report"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Relatório',
+          tabBarIcon: ({ color }) => (
+            <Icon name="pie-chart" size={27} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="students"
+        options={{
+          title: 'Estudantes',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-outline" color={color} size={27} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="notes"
+        options={{
+          title: 'Anotações',
+
+          tabBarIcon: ({ color }) => <ScrollIcon color={color} />,
         }}
       />
     </Tabs>
-  );
+  )
 }
