@@ -1,25 +1,46 @@
-import { Link, Tabs } from 'expo-router'
-import { Pressable, Text, useColorScheme } from 'react-native'
-import { Ionicons, FontAwesome5 } from '@expo/vector-icons'
-import ScrollIcon from '@/assets/icons/scroll.svg'
-
+import { Tabs } from 'expo-router'
+import { useColorScheme, View, Text } from 'react-native'
+import { LucideHome, ScrollText, User2, PieChart } from 'lucide-react-native'
 import Colors from '@/constants/Colors'
-import { Icon } from '@/assets/icons/Icon'
-import React from 'react'
+
+const TabBarTitle = ({ title, isActive }) => {
+  return (
+    <View>
+      <Text
+        style={{
+          color: isActive ? '#6979F8' : 'black',
+        }}
+        className="text-[12px] text-inherit"
+      >
+        {title}
+      </Text>
+      <View
+        style={{
+          backgroundColor: isActive ? '#6979F8' : 'transparent',
+        }}
+        className="w-30 mt-2 h-1 rounded-full"
+      />
+    </View>
+  )
+}
 
 export default function TabLayout() {
   const colorScheme = useColorScheme()
 
   return (
     <Tabs
+      initialRouteName="index"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         tabBarLabelStyle: {
           fontSize: 12,
-          paddingBottom: 6,
+          marginTop: -15,
         },
+
         tabBarStyle: {
-          height: 70,
+          height: 90,
+          borderWidth: 1,
+          paddingBottom: 5,
         },
       }}
     >
@@ -27,35 +48,39 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="home" size={27} color={color} />
+          tabBarLabel: ({ focused }) => (
+            <TabBarTitle title="Home" isActive={focused} />
           ),
+          tabBarIcon: ({ color }) => <LucideHome size={27} color={color} />,
         }}
       />
       <Tabs.Screen
         name="report"
         options={{
           title: 'Relatório',
-          tabBarIcon: ({ color }) => (
-            <Icon name="pie-chart" size={27} color={color} />
+          tabBarLabel: ({ focused }) => (
+            <TabBarTitle title="Relatório" isActive={focused} />
           ),
+          tabBarIcon: ({ color }) => <PieChart size={27} color={color} />,
         }}
       />
       <Tabs.Screen
         name="students"
         options={{
-          title: 'Estudantes',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" color={color} size={27} />
+          // title: '',
+          tabBarLabel: ({ focused }) => (
+            <TabBarTitle title="Estudantes" isActive={focused} />
           ),
+          tabBarIcon: ({ color }) => <User2 color={color} size={27} />,
         }}
       />
       <Tabs.Screen
         name="notes"
         options={{
-          title: 'Anotações',
-
-          tabBarIcon: ({ color }) => <ScrollIcon color={color} />,
+          tabBarLabel: ({ focused }) => (
+            <TabBarTitle title="Anotacoes" isActive={focused} />
+          ),
+          tabBarIcon: ({ color }) => <ScrollText color={color} size={27} />,
         }}
       />
     </Tabs>
