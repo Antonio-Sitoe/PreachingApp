@@ -1,23 +1,33 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome'
 import {
+  BookOpenCheck,
+  BadgeDollarSign,
+  MessageSquarePlus,
+  LucidePresentation,
+  View,
+} from 'lucide-react-native'
+import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
 
-import { config } from '../../gluestack-ui.config'
 import { useFonts } from 'expo-font'
 import { Drawer } from 'expo-router/drawer'
 import React, { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { SplashScreen, Link } from 'expo-router'
+import { Route, SplashScreen, useRouter } from 'expo-router'
 import { useColorScheme } from 'nativewind'
+import Animated from 'react-native-reanimated'
 import {
   DrawerContentScrollView,
   DrawerItem,
   DrawerContentComponentProps,
 } from '@react-navigation/drawer'
-import { View } from 'react-native'
+
+import { IconIOS } from '@/assets/icons/Icon'
+import AvatarPerfil from '@/components/AvatarPerfil'
+import { TouchableOpacity } from 'react-native'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -57,24 +67,95 @@ export default function RootLayout() {
 }
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
+  const router = useRouter()
+
+  function handleGotoRoute(route: Route<string>) {
+    router.push(route)
+    // props.navigation.closeDrawer()
+  }
   return (
     <DrawerContentScrollView {...props}>
-      <View className="flex-1 p-[24px] border h-[100%]">
-        <View></View>
+      <AvatarPerfil closeDrawer={props.navigation.closeDrawer} />
+      <Animated.View className="w-full h-full pt-6 pb-6 pr-6 pl-2">
         <DrawerItem
-          label="Website"
-          onPress={() => props.navigation.closeDrawer()}
+          label="Home"
+          activeBackgroundColor="blue"
+          labelStyle={{
+            fontSize: 16,
+            paddingVertical: 5,
+          }}
+          style={{ width: '100%' }}
+          icon={() => (
+            <IconIOS name="ios-home-outline" size={28} color={'#535763'} />
+          )}
+          onPress={() => handleGotoRoute('/')}
         />
-        <Link href={'/alpha'} onPress={() => props.navigation.closeDrawer()}>
-          Alpha
-        </Link>
-        <Link href={'/beta'} onPress={() => props.navigation.closeDrawer()}>
-          Beta
-        </Link>
-        <Link href={'/charlie'} onPress={() => props.navigation.closeDrawer()}>
-          Charlie
-        </Link>
-      </View>
+        <DrawerItem
+          label="Conversas sobre a Biblia"
+          activeBackgroundColor="blue"
+          labelStyle={{
+            fontSize: 16,
+            paddingVertical: 5,
+          }}
+          style={{ width: '100%' }}
+          icon={() => (
+            <LucidePresentation strokeWidth={1.5} size={28} color="#535763" />
+          )}
+          onPress={() => handleGotoRoute('/(stack)/presentation')}
+        />
+        <DrawerItem
+          label="Guia de Usuario"
+          activeBackgroundColor="blue"
+          labelStyle={{
+            fontSize: 16,
+            paddingVertical: 5,
+          }}
+          style={{ width: '100%' }}
+          icon={() => (
+            <BookOpenCheck strokeWidth={1.5} size={28} color="#535763" />
+          )}
+          onPress={() => handleGotoRoute('/(stack)/userGuide')}
+        />
+        <DrawerItem
+          label="Ajuda e feedback"
+          activeBackgroundColor="blue"
+          labelStyle={{
+            fontSize: 16,
+            paddingVertical: 5,
+          }}
+          style={{ width: '100%' }}
+          icon={() => (
+            <MessageSquarePlus strokeWidth={1.5} size={28} color="#535763" />
+          )}
+          onPress={() => handleGotoRoute('/feedback')}
+        />
+        <DrawerItem
+          label="Definicoes"
+          activeBackgroundColor="blue"
+          labelStyle={{
+            fontSize: 16,
+            paddingVertical: 5,
+          }}
+          style={{ width: '100%' }}
+          icon={() => (
+            <IconIOS name="settings-outline" size={28} color="#535763" />
+          )}
+          onPress={() => handleGotoRoute('/(stack)/settings')}
+        />
+        <DrawerItem
+          label="Apoiar"
+          activeBackgroundColor="blue"
+          labelStyle={{
+            fontSize: 16,
+            paddingVertical: 5,
+          }}
+          style={{ width: '100%' }}
+          icon={() => (
+            <BadgeDollarSign size={28} strokeWidth={1.5} color="#535763" />
+          )}
+          onPress={() => handleGotoRoute('/(stack)/helpUs')}
+        />
+      </Animated.View>
     </DrawerContentScrollView>
   )
 }
@@ -89,7 +170,14 @@ function RootLayoutNav() {
         style={colorScheme === 'dark' ? 'light' : 'dark'}
       />
 
-      <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />}>
+      <Drawer
+        screenOptions={{
+          drawerStyle: {
+            width: 320,
+          },
+        }}
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+      >
         <Drawer.Screen
           name="(tabs)"
           options={{ drawerLabel: 'Home', title: '' }}
