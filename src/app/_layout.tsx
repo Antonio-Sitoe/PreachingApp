@@ -4,12 +4,21 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from '@react-navigation/native'
+
+import { config } from '../../gluestack-ui.config'
 import { useFonts } from 'expo-font'
-import { SplashScreen, Stack } from 'expo-router'
-import { useEffect } from 'react'
-// import { useColorScheme } from 'react-native';
-import { useColorScheme } from 'nativewind'
+import { Drawer } from 'expo-router/drawer'
+import React, { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
+import { SplashScreen, Link } from 'expo-router'
+import { useColorScheme } from 'nativewind'
+import {
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerContentComponentProps,
+} from '@react-navigation/drawer'
+import { View } from 'react-native'
+import { AvatarPerfil, GluestackUIProvider } from '@/components'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -48,21 +57,51 @@ export default function RootLayout() {
   return <RootLayoutNav />
 }
 
+function CustomDrawerContent(props: DrawerContentComponentProps) {
+  return (
+    <DrawerContentScrollView {...props}>
+      <View className="flex-1 p-[24px] border h-[100%]">
+        <View>
+          <AvatarPerfil />
+        </View>
+        <DrawerItem
+          label="Website"
+          onPress={() => props.navigation.closeDrawer()}
+        />
+        <Link href={'/alpha'} onPress={() => props.navigation.closeDrawer()}>
+          Alpha
+        </Link>
+        <Link href={'/beta'} onPress={() => props.navigation.closeDrawer()}>
+          Beta
+        </Link>
+        <Link href={'/charlie'} onPress={() => props.navigation.closeDrawer()}>
+          Charlie
+        </Link>
+      </View>
+    </DrawerContentScrollView>
+  )
+}
 function RootLayoutNav() {
   const { colorScheme } = useColorScheme()
-  console.log(colorScheme)
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <StatusBar
-        animated
-        translucent
-        style={colorScheme === 'dark' ? 'light' : 'dark'}
-      />
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-      </Stack>
+      <GluestackUIProvider config={config.theme}>
+        <StatusBar
+          animated
+          translucent
+          style={colorScheme === 'dark' ? 'light' : 'dark'}
+        />
+
+        <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />}>
+          <Drawer.Screen
+            name="(tabs)"
+            options={{ drawerLabel: 'Home', title: '' }}
+          />
+          <Drawer.Screen name="(stack)" />
+          <Drawer.Screen name="modal" />
+        </Drawer>
+      </GluestackUIProvider>
     </ThemeProvider>
   )
 }
