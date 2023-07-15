@@ -18,7 +18,6 @@ import {
   DrawerContentComponentProps,
 } from '@react-navigation/drawer'
 import { View } from 'react-native'
-import { AvatarPerfil, GluestackUIProvider } from '@/components'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -61,9 +60,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   return (
     <DrawerContentScrollView {...props}>
       <View className="flex-1 p-[24px] border h-[100%]">
-        <View>
-          <AvatarPerfil />
-        </View>
+        <View></View>
         <DrawerItem
           label="Website"
           onPress={() => props.navigation.closeDrawer()}
@@ -86,22 +83,20 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <GluestackUIProvider config={config.theme}>
-        <StatusBar
-          animated
-          translucent
-          style={colorScheme === 'dark' ? 'light' : 'dark'}
-        />
+      <StatusBar
+        animated
+        translucent
+        style={colorScheme === 'dark' ? 'light' : 'dark'}
+      />
 
-        <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />}>
-          <Drawer.Screen
-            name="(tabs)"
-            options={{ drawerLabel: 'Home', title: '' }}
-          />
-          <Drawer.Screen name="(stack)" />
-          <Drawer.Screen name="modal" />
-        </Drawer>
-      </GluestackUIProvider>
+      <Drawer drawerContent={(props) => <CustomDrawerContent {...props} />}>
+        <Drawer.Screen
+          name="(tabs)"
+          options={{ drawerLabel: 'Home', title: '' }}
+        />
+        <Drawer.Screen name="(stack)" />
+        <Drawer.Screen name="modal" />
+      </Drawer>
     </ThemeProvider>
   )
 }
