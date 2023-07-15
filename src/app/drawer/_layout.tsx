@@ -2,13 +2,9 @@ import { Stack } from 'expo-router'
 
 export default function StackLayout() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="feedback"
-        options={{
-          title: 'feedback',
-        }}
-      />
+    <Stack screenOptions={{ headerShown: true }}>
+      <Stack.Screen name="presentation" />
+      <Stack.Screen name="feedback" />
     </Stack>
   )
 }

@@ -1,8 +1,7 @@
 import { Tabs } from 'expo-router'
 import { useColorScheme } from 'react-native'
-import { LucideHome, ScrollText, User2, PieChart } from 'lucide-react-native'
-import Colors from '@/constants/Colors'
 import { IconIOS } from '@/assets/icons/Icon'
+import Colors from '@/constants/Colors'
 import Note from '@/assets/icons/Note.svg'
 
 export default function TabLayout() {
@@ -10,7 +9,6 @@ export default function TabLayout() {
 
   return (
     <Tabs
-      initialRouteName="index"
       screenOptions={{
         headerShown: false,
         title: '',

@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import Vector from '@/assets/images/Vector.svg'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useColorScheme } from 'nativewind'
+import { Link } from 'expo-router'
 
 export default function TabOneScreen() {
   const { toggleColorScheme } = useColorScheme()
@@ -11,13 +12,11 @@ export default function TabOneScreen() {
   return (
     <View className="flex-1 items-center justify-center">
       <Text style={styles.title}>Tab One</Text>
-
-      <TouchableOpacity
-        onPress={handleChangeColorScheme}
-        className="h-28 w-[150px] bg-slate-900"
-      >
-        <Text>Hello</Text>
-      </TouchableOpacity>
+      <Link href="/drawer/feedback" asChild>
+        <TouchableOpacity className="h-28 w-[150px] bg-slate-900">
+          <Text>Hello</Text>
+        </TouchableOpacity>
+      </Link>
 
       <Vector />
     </View>

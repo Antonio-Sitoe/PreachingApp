@@ -35,7 +35,6 @@ export {
 } from 'expo-router'
 
 export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 }
 
@@ -75,7 +74,10 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   }
   return (
     <DrawerContentScrollView {...props}>
-      <AvatarPerfil closeDrawer={props.navigation.closeDrawer} />
+      <AvatarPerfil
+        closeDrawer={props.navigation.closeDrawer}
+        route="/(drawer)/profile"
+      />
       <Animated.View className="w-full h-full pt-6 pb-6 pr-6 pl-2">
         <DrawerItem
           label="Home"
@@ -88,7 +90,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           icon={() => (
             <IconIOS name="ios-home-outline" size={28} color={'#535763'} />
           )}
-          onPress={() => handleGotoRoute('/')}
+          onPress={() => handleGotoRoute('/(tabs)')}
         />
         <DrawerItem
           label="Conversas sobre a Biblia"
@@ -101,7 +103,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           icon={() => (
             <LucidePresentation strokeWidth={1.5} size={28} color="#535763" />
           )}
-          onPress={() => handleGotoRoute('/(stack)/presentation')}
+          onPress={() => handleGotoRoute('/(drawer)/presentation')}
         />
         <DrawerItem
           label="Guia de Usuario"
@@ -114,7 +116,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           icon={() => (
             <BookOpenCheck strokeWidth={1.5} size={28} color="#535763" />
           )}
-          onPress={() => handleGotoRoute('/(stack)/userGuide')}
+          onPress={() => handleGotoRoute('/drawer/userGuide/')}
         />
         <DrawerItem
           label="Ajuda e feedback"
@@ -127,7 +129,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           icon={() => (
             <MessageSquarePlus strokeWidth={1.5} size={28} color="#535763" />
           )}
-          onPress={() => handleGotoRoute('/feedback')}
+          onPress={() => handleGotoRoute('/(drawer)/feedback')}
         />
         <DrawerItem
           label="Definicoes"
@@ -140,7 +142,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           icon={() => (
             <IconIOS name="settings-outline" size={28} color="#535763" />
           )}
-          onPress={() => handleGotoRoute('/(stack)/settings')}
+          onPress={() => handleGotoRoute('/(drawer)/settings')}
         />
         <DrawerItem
           label="Apoiar"
@@ -153,7 +155,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           icon={() => (
             <BadgeDollarSign size={28} strokeWidth={1.5} color="#535763" />
           )}
-          onPress={() => handleGotoRoute('/(stack)/helpUs')}
+          onPress={() => handleGotoRoute('/drawer/helpUs')}
         />
       </Animated.View>
     </DrawerContentScrollView>
@@ -171,6 +173,7 @@ function RootLayoutNav() {
       />
 
       <Drawer
+        initialRouteName="(tabs)"
         screenOptions={{
           drawerStyle: {
             width: 320,
@@ -182,7 +185,7 @@ function RootLayoutNav() {
           name="(tabs)"
           options={{ drawerLabel: 'Home', title: '' }}
         />
-        <Drawer.Screen name="(stack)" />
+        <Drawer.Screen name="feedback" />
         <Drawer.Screen name="modal" />
       </Drawer>
     </ThemeProvider>
