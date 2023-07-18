@@ -11,10 +11,14 @@ import { StatusBar } from 'expo-status-bar'
 import { useColorScheme } from 'nativewind'
 import { SplashScreen } from 'expo-router'
 
-import FontAwesome from '@expo/vector-icons/FontAwesome'
+import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_700Bold,
+  Inter_600SemiBold,
+} from '@expo-google-fonts/inter'
+
 import { CustomDrawerContent } from '@/components/DrawerMenu'
-import { View } from 'lucide-react-native'
-import { Text } from 'react-native'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -30,8 +34,13 @@ SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_700Bold,
+    Inter_600SemiBold,
+    IBMPLEX_Regular: require('../assets/fonts/IBMPlexSansCondensed-Regular.ttf'),
+    IBMPLEX_Medium: require('../assets/fonts/IBMPlexSansCondensed-Medium.ttf'),
+    IBMPLEX_Bold: require('../assets/fonts/IBMPlexSansCondensed-Bold.ttf'),
   })
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.

@@ -3,16 +3,16 @@ import {
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer'
+
+import React, { useState } from 'react'
+
+import { Text, View } from 'react-native'
 import { Route, useRouter } from 'expo-router'
-import { View } from 'react-native'
-import { IconIOS } from '@/assets/icons/Icon'
-import {
-  BadgeDollarSign,
-  BookOpenCheck,
-  LucidePresentation,
-  MessageSquarePlus,
-} from 'lucide-react-native'
+import { AnimatedSwitchButton } from './ui/AnimatedSwitchButton'
+
 import AvatarPerfil from './AvatarPerfil'
+import { DRAWER_ROUTES } from '@/helpers/routes'
+import { IconIOS } from '@/assets/icons/Icon'
 
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter()
@@ -21,6 +21,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
     router.push(route)
     props.navigation.closeDrawer()
   }
+
   return (
     <DrawerContentScrollView {...props}>
       <AvatarPerfil
@@ -28,84 +29,38 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
         route="/profile/"
       />
       <View className="w-full h-full pt-6 pb-6 pr-6 pl-2">
-        <DrawerItem
-          label="Home"
-          activeBackgroundColor="blue"
-          labelStyle={{
-            fontSize: 16,
-            paddingVertical: 5,
-          }}
-          style={{ width: '100%' }}
-          icon={() => (
-            <IconIOS name="ios-home-outline" size={28} color={'#535763'} />
-          )}
-          onPress={() => handleGotoRoute('/(tabs)/')}
-        />
-        <DrawerItem
-          label="Conversas sobre a Biblia"
-          activeBackgroundColor="blue"
-          labelStyle={{
-            fontSize: 16,
-            paddingVertical: 5,
-          }}
-          style={{ width: '100%' }}
-          icon={() => (
-            <LucidePresentation strokeWidth={1.5} size={28} color="#535763" />
-          )}
-          onPress={() => handleGotoRoute('/presentation')}
-        />
-        <DrawerItem
-          label="Guia de Usuario"
-          activeBackgroundColor="blue"
-          labelStyle={{
-            fontSize: 16,
-            paddingVertical: 5,
-          }}
-          style={{ width: '100%' }}
-          icon={() => (
-            <BookOpenCheck strokeWidth={1.5} size={28} color="#535763" />
-          )}
-          onPress={() => handleGotoRoute('/userGuide/')}
-        />
-        <DrawerItem
-          label="Ajuda e feedback"
-          activeBackgroundColor="blue"
-          labelStyle={{
-            fontSize: 16,
-            paddingVertical: 5,
-          }}
-          style={{ width: '100%' }}
-          icon={() => (
-            <MessageSquarePlus strokeWidth={1.5} size={28} color="#535763" />
-          )}
-          onPress={() => handleGotoRoute('/feedback')}
-        />
-        <DrawerItem
-          label="Definicoes"
-          activeBackgroundColor="blue"
-          labelStyle={{
-            fontSize: 16,
-            paddingVertical: 5,
-          }}
-          style={{ width: '100%' }}
-          icon={() => (
-            <IconIOS name="settings-outline" size={28} color="#535763" />
-          )}
-          onPress={() => handleGotoRoute('/settings/')}
-        />
-        <DrawerItem
-          label="Apoiar"
-          activeBackgroundColor="blue"
-          labelStyle={{
-            fontSize: 16,
-            paddingVertical: 5,
-          }}
-          style={{ width: '100%' }}
-          icon={() => (
-            <BadgeDollarSign size={28} strokeWidth={1.5} color="#535763" />
-          )}
-          onPress={() => handleGotoRoute('/helpUs')}
-        />
+        {DRAWER_ROUTES.map(({ icon, label, route }, index) => {
+          const { IconRoute, name } = icon
+          return (
+            <DrawerItem
+              key={index + label}
+              label={label}
+              activeBackgroundColor="blue"
+              labelStyle={{
+                fontSize: 16,
+                paddingBottom: 5,
+              }}
+              style={{ width: '100%' }}
+              icon={() => (
+                <IconRoute
+                  name={name}
+                  strokeWidth={1.5}
+                  size={28}
+                  color={'#535763'}
+                />
+              )}
+              onPress={() => handleGotoRoute(route)}
+            />
+          )
+        })}
+
+        <View className="mt-5  px-6 border-t border-t-slate-300">
+          <View className="pt-4 flex flex-row items-center gap-2 w-full mb-2">
+            <IconIOS name="color-palette-outline" size={24} color="#535763" />
+            <Text>Tema</Text>
+          </View>
+          <AnimatedSwitchButton />
+        </View>
       </View>
     </DrawerContentScrollView>
   )
