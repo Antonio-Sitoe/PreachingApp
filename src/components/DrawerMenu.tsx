@@ -66,7 +66,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             />
           )
         })}
-        <View className="flex flex-row items-center justify-between pt-4  border-t-[1px] border-t-slate-300 mt-5 px-6 w-full">
+        <View className="flex flex-row items-center justify-between px-6 border-t-[1px] border-t-slate-300 mt-5 w-full">
           <View className="flex flex-row  items-center gap-2">
             <IconIOS
               name="color-palette-outline"
