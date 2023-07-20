@@ -2,7 +2,7 @@ import { View, Text, Image } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { IconIOS } from '@/assets/icons/Icon'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
-import { Link, Route, useRouter } from 'expo-router'
+import { Route, useRouter } from 'expo-router'
 
 interface AvatarPerfilProps {
   route: Route<string>
@@ -15,8 +15,8 @@ export default function AvatarPerfil({
 }: AvatarPerfilProps) {
   const router = useRouter()
   return (
-    <TouchableOpacity onPress={() => router.push(route)}>
-      <View className="flex p-6  flex-row gap-2 align-top bg-blue-700 justify-between">
+    <TouchableOpacity className="-mt-1" onPress={() => router.push(route)}>
+      <View className="flex p-6 flex-row gap-2 align-top bg-blue-700 justify-between">
         <Image
           className="w-14 h-14 rounded"
           source={{

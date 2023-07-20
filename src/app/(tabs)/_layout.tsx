@@ -4,8 +4,8 @@ import { useColorScheme } from 'nativewind'
 
 import Colors from '@/constants/Colors'
 import Note from '@/assets/icons/Note.svg'
+
 import { StatusBar } from 'expo-status-bar'
-import { Text } from 'react-native'
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme()
@@ -13,7 +13,12 @@ export default function TabLayout() {
 
   return (
     <>
-      <StatusBar animated translucent style={isDark ? 'light' : 'dark'} />
+      <StatusBar
+        animated
+        translucent
+        style="light"
+        backgroundColor={isDark ? Colors.dark.background : Colors.dark.tint}
+      />
       <Tabs
         screenOptions={{
           headerShown: false,
@@ -21,21 +26,18 @@ export default function TabLayout() {
           tabBarActiveTintColor: Colors.light.tint,
           tabBarLabelStyle: {
             fontSize: 12,
-            marginBottom: 15,
+            marginBottom: 10,
           },
           headerBackgroundContainerStyle: {
             backgroundColor: isDark
               ? Colors.dark.darkBgSecundary
               : Colors.light.background,
           },
-          headerRight: () => {
-            return <Text>Hello</Text>
-          },
 
           tabBarStyle: {
             borderTopWidth: 0,
             borderWidth: 0,
-            height: 85,
+            height: 70,
             paddingTop: 6,
             backgroundColor: isDark
               ? Colors.dark.darkBgSecundary

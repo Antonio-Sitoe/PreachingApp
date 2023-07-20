@@ -4,21 +4,25 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer'
 
-import React from 'react'
-
 import { Text, View } from 'react-native'
 import { Route, useRouter } from 'expo-router'
-import { AnimatedSwitchButton } from './ui/AnimatedSwitchButton'
 
-import AvatarPerfil from './AvatarPerfil'
-import { DRAWER_ROUTES } from '@/utils/routes'
 import { IconIOS } from '@/assets/icons/Icon'
+import { DRAWER_ROUTES } from '@/utils/routes'
 import { useColorScheme } from 'nativewind'
+import { Switch, TouchableOpacity } from 'react-native-gesture-handler'
+
+import Colors from '@/constants/Colors'
+import AvatarPerfil from './AvatarPerfil'
 
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter()
-  const { colorScheme } = useColorScheme()
+  const { colorScheme, toggleColorScheme } = useColorScheme()
   const isDarkTheme = colorScheme === 'dark'
+
+  const onChangeToggle = () => {
+    toggleColorScheme()
+  }
 
   function handleGotoRoute(route: Route<string>) {
     router.push(route)
@@ -26,12 +30,17 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
   }
 
   return (
-    <DrawerContentScrollView {...props}>
+    <DrawerContentScrollView
+      {...props}
+      style={{
+        backgroundColor: isDarkTheme ? Colors.dark.background : '#fefefe',
+      }}
+    >
       <AvatarPerfil
         closeDrawer={props.navigation.closeDrawer}
         route="/profile/"
       />
-      <View className="w-full h-full pt-6 pb-6 pr-6 pl-2 dark:bg-black">
+      <View className="w-full h-full pt-6 pr-6 pl-2">
         {DRAWER_ROUTES.map(({ icon, label, route }, index) => {
           const { IconRoute, name } = icon
           return (
@@ -57,13 +66,21 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             />
           )
         })}
-
-        <View className="mt-5  px-6 border-t border-t-slate-300">
-          <View className="pt-4 flex flex-row items-center gap-2 w-full mb-2">
-            <IconIOS name="color-palette-outline" size={24} color="#535763" />
+        <View className="flex flex-row items-center justify-between pt-4  border-t-[1px] border-t-slate-300 mt-5 px-6 w-full">
+          <View className="flex flex-row  items-center gap-2">
+            <IconIOS
+              name="color-palette-outline"
+              size={24}
+              color={isDarkTheme ? '#6979F8' : '#535763'}
+            />
             <Text className="text-black dark:text-white">Tema</Text>
           </View>
-          <AnimatedSwitchButton />
+          <TouchableOpacity className="flex flex-row items-center">
+            <Text className="text-black dark:text-white">
+              {isDarkTheme ? 'Escuro' : 'Claro'}{' '}
+            </Text>
+            <Switch onChange={onChangeToggle} value={isDarkTheme} />
+          </TouchableOpacity>
         </View>
       </View>
     </DrawerContentScrollView>

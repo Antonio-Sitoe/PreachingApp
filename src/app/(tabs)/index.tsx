@@ -1,12 +1,10 @@
-import { StatusBar } from 'expo-status-bar'
-import { Text, View } from 'react-native'
+import { StopWatch } from '@/components/StopWatch'
+import { ScrollView } from 'react-native-gesture-handler'
 
 export default function TabOneScreen() {
   return (
-    <>
-      <View className="flex-1 items-center justify-center bg-light-bg dark:bg-stone-900">
-        <Text className="dark:text-primary">Tab One</Text>
-      </View>
-    </>
+    <ScrollView className="flex-1 pt-8 px-4 bg-[#F6F6F9] dark:bg-stone-900">
+      <StopWatch />
+    </ScrollView>
   )
 }

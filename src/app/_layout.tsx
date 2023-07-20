@@ -2,9 +2,11 @@ import { Drawer } from 'expo-router/drawer'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { useColorScheme, withExpoSnack } from 'nativewind'
+import { withExpoSnack } from 'nativewind'
 import { SplashScreen } from 'expo-router'
+
 import Colors from '@/constants/Colors'
+
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -12,6 +14,9 @@ import {
 } from '@expo-google-fonts/inter'
 
 import { CustomDrawerContent } from '@/components/DrawerMenu'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { Menu, RefreshCcw } from 'lucide-react-native'
+import useTheme from '@/hooks/useTheme'
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -54,18 +59,47 @@ function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { colorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { isDark } = useTheme()
+
   return (
     <>
-      <StatusBar animated translucent style="auto" />
-
+      <StatusBar animated translucent style="auto" backgroundColor="red" />
       <Drawer
         initialRouteName="(tabs)"
         drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={{
+        screenOptions={(props) => ({
+          headerRightContainerStyle: {
+            paddingRight: 20,
+          },
+          headerLeftContainerStyle: {
+            paddingLeft: 20,
+          },
+          headerLeft() {
+            return (
+              <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+                <Menu
+                  strokeWidth={1.5}
+                  color={isDark ? Colors.dark.text : Colors.light.tint}
+                  size={28}
+                />
+              </TouchableOpacity>
+            )
+          },
+          headerRight: () => (
+            <TouchableOpacity>
+              <RefreshCcw
+                color={isDark ? Colors.dark.text : Colors.light.tint}
+                className="rotate-45"
+                size={28}
+                strokeWidth={1.5}
+              />
+            </TouchableOpacity>
+          ),
           headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
           headerStyle: {
+            height: 85,
+            borderBottomRightRadius: 10,
+            borderBottomLeftRadius: 10,
             backgroundColor: isDark
               ? Colors.dark.darkBgSecundary
               : Colors.light.background,
@@ -74,7 +108,7 @@ function RootLayoutNav() {
           drawerStyle: {
             width: 320,
           },
-        }}
+        })}
       />
     </>
   )
