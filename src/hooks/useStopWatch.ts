@@ -35,7 +35,9 @@ export function useStopWatch() {
       second: '2-digit',
       timeZone: 'UTC',
     })
-    return { hours, minuts, seconds }
+
+    const secondsFormated = Number(seconds) < 10 ? `0${seconds}` : seconds
+    return { hours, minuts, seconds: secondsFormated }
   }
 
   function start() {
