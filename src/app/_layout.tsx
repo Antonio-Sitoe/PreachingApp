@@ -18,11 +18,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Menu, RefreshCcw } from 'lucide-react-native'
 import useTheme from '@/hooks/useTheme'
 
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router'
-
 export const unstable_settings = {
   initialRouteName: '(tabs)',
 }
