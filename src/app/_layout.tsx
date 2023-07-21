@@ -2,7 +2,7 @@ import { Drawer } from 'expo-router/drawer'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { withExpoSnack } from 'nativewind'
+import { withExpoSnack, NativeWindStyleSheet } from 'nativewind'
 import { SplashScreen } from 'expo-router'
 
 import Colors from '@/constants/Colors'
@@ -26,6 +26,10 @@ export {
 export const unstable_settings = {
   initialRouteName: '(tabs)',
 }
+
+NativeWindStyleSheet.setOutput({
+  default: 'native',
+})
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -98,8 +102,8 @@ function RootLayoutNav() {
           headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
           headerStyle: {
             height: 85,
-            borderBottomRightRadius: 10,
-            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: isDark ? 0 : 10,
+            borderBottomLeftRadius: isDark ? 0 : 10,
             backgroundColor: isDark
               ? Colors.dark.darkBgSecundary
               : Colors.light.background,
