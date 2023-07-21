@@ -4,7 +4,7 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer'
 
-import { Text, View } from 'react-native'
+import { StyleSheet, Text, View } from 'react-native'
 import { Route, useRouter } from 'expo-router'
 
 import { IconIOS } from '@/assets/icons/Icon'
@@ -37,6 +37,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
       }}
     >
       <AvatarPerfil
+        isDarkTheme={isDarkTheme}
         closeDrawer={props.navigation.closeDrawer}
         route="/profile/"
       />
@@ -66,8 +67,14 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             />
           )
         })}
-        <View className="flex flex-row items-center justify-between px-6 border-t-[1px] border-t-slate-300 mt-5 w-full">
-          <View className="flex flex-row  items-center gap-2">
+        <View
+          style={styles.themeContainer}
+          className="flex flex-row items-center justify-between px-6 border-t-[1px] border-t-slate-300 mt-5 w-full"
+        >
+          <View
+            style={styles.icon}
+            className="flex flex-row  items-center gap-2"
+          >
             <IconIOS
               name="color-palette-outline"
               size={24}
@@ -75,14 +82,37 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             />
             <Text className="text-black dark:text-white">Tema</Text>
           </View>
-          <TouchableOpacity className="flex flex-row items-center">
+          <TouchableOpacity
+            style={styles.icon}
+            className="flex flex-row items-center"
+          >
             <Text className="text-black dark:text-white">
               {isDarkTheme ? 'Escuro' : 'Claro'}{' '}
             </Text>
-            <Switch onChange={onChangeToggle} value={isDarkTheme} />
+            <Switch
+              onChange={onChangeToggle}
+              value={isDarkTheme}
+              trackColor={{ true: '#6979F8' }}
+            />
           </TouchableOpacity>
         </View>
       </View>
     </DrawerContentScrollView>
   )
 }
+
+export const styles = StyleSheet.create({
+  themeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingRight: 24,
+    paddingLeft: 24,
+    borderTopColor: '#cbd5e1',
+  },
+  icon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+})

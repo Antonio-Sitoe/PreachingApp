@@ -5,6 +5,8 @@ import { StatusBar } from 'expo-status-bar'
 import { withExpoSnack, NativeWindStyleSheet } from 'nativewind'
 import { SplashScreen } from 'expo-router'
 
+import '@/lib/dayjs'
+
 import Colors from '@/constants/Colors'
 
 import {

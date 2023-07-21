@@ -21,7 +21,7 @@ export function ButtonStopWatch({
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="flex items-center justify-center p-2"
+      className="flex items-center justify-center p-2 min-w-[70px]"
     >
       <IconIOS
         name={iconName}

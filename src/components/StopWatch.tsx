@@ -1,14 +1,13 @@
-import { IconIOS } from '@/assets/icons/Icon'
 import { View, Text } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-
-import { useState } from 'react'
+import { useStopWatch } from '@/hooks/useStopWatch'
 import { ButtonStopWatch } from './ui/ButtonStopWatch'
+
 import useTheme from '@/hooks/useTheme'
 
 export function StopWatch() {
   const { isDark } = useTheme()
-  const [isPause, setIspause] = useState(false)
+  const { time, start, stop, isTop, isRunning, reset, STOP_WATCH_TIMES } =
+    useStopWatch()
 
   return (
     <View
@@ -36,30 +35,25 @@ export function StopWatch() {
             Total de Horas hoje
           </Text>
           <Text className="font-text text-5xl mt-2 text-primary dark:text-white">
-            04:23
+            {time}.
+            <Text style={{ fontSize: 12 }}>{STOP_WATCH_TIMES.seconds}</Text>
           </Text>
         </View>
         <View
           style={{ flexDirection: 'row' }}
-          className="flex flex-row items-center justify-between gap-2"
+          className="flex flex-row items-center justify-between gap-3"
         >
-          <ButtonStopWatch iconName="stop" text="Terminar" />
-          {isPause ? (
+          <ButtonStopWatch iconName="stop" text="Terminar" onPress={reset} />
+          {isRunning ? (
+            <ButtonStopWatch iconName="pause" onPress={stop} text="Pausar" />
+          ) : isTop ? (
             <ButtonStopWatch
-              iconName="play"
-              onPress={() => {
-                setIspause(!isPause)
-              }}
-              text="Iniciar"
+              iconName="play-circle"
+              onPress={start}
+              text="Continuar"
             />
           ) : (
-            <ButtonStopWatch
-              iconName="pause"
-              onPress={() => {
-                setIspause(!isPause)
-              }}
-              text="Pausar"
-            />
+            <ButtonStopWatch iconName="play" onPress={start} text="Iniciar" />
           )}
         </View>
       </View>
