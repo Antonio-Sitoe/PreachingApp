@@ -20,14 +20,16 @@ export default function TabOneScreen() {
         <Text className="text-center uppercase mt-9 mb-9 font-bold font-titleIBM text-primary dark:text-white">
           Relatório do mês atual{' '}
         </Text>
-        <View className="flex flex-row gap-4">
+        <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
           <Cards content="6:00" title="Horas" />
           <Cards content="2" title="Videos" />
         </View>
-        <View className="flex w-full mt-4">
+        <View
+          style={{ flex: 1, width: 'auto', marginTop: 16, marginBottom: 16 }}
+        >
           <Cards content="5" title="Publicações" />
         </View>
-        <View className="flex flex-row gap-4">
+        <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
           <Cards content="6:00" title="Horas" />
           <Cards content="2" title="Videos" />
         </View>
