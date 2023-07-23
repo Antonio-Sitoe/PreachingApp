@@ -17,6 +17,7 @@ module.exports = {
       colors: {
         primary: '#6979F8',
         lightBg: '#F6F6F9',
+        ligtInputbG: '#F6F6F9',
 
         dark: {
           darkBG: '#121214',

@@ -22,12 +22,15 @@ import { RectButton, PanGestureHandler } from 'react-native-gesture-handler'
 
 import { Ionicons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import CreateReportModal from '@/components/CreateReportModal'
+import { useState } from 'react'
 
 const ButtonAnimated = Animated.createAnimatedComponent(RectButton)
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
   const router = useRouter()
+  const [modalVisible, setModalVisible] = useState(false)
 
   const positionY = useSharedValue(0)
   const positionX = useSharedValue(0)
@@ -56,7 +59,7 @@ export default function TabOneScreen() {
   })
 
   function handleAddReport() {
-    router.push('/modal')
+    setModalVisible(true)
   }
   return (
     <>
@@ -111,6 +114,10 @@ export default function TabOneScreen() {
           </ButtonAnimated>
         </Animated.View>
       </PanGestureHandler>
+      <CreateReportModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+      />
     </>
   )
 }
