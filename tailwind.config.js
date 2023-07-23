@@ -20,7 +20,8 @@ module.exports = {
 
         dark: {
           darkBG: '#121214',
-          darkBgSecundary: '#202024',
+          darkBgSecundary: '#45B063',
+          darkPrimary: '328048',
         },
 
         gray: {

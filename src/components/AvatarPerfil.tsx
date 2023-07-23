@@ -19,7 +19,12 @@ export default function AvatarPerfil({
   const router = useRouter()
   return (
     <TouchableOpacity className="-mt-1" onPress={() => router.push(route)}>
-      <View className="flex p-6 flex-row gap-2 align-top bg-primary justify-between">
+      <View
+        style={{
+          backgroundColor: isDarkTheme ? Colors.dark.tint : Colors.light.tint,
+        }}
+        className="flex p-6 flex-row gap-2 align-top bg-primary justify-between dark:bg-dark-darkPrimary"
+      >
         <Image
           className="w-14 h-14 rounded"
           source={{

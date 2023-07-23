@@ -17,13 +17,13 @@ export default function TabLayout() {
         animated
         translucent
         style="light"
-        backgroundColor={isDark ? Colors.dark.background : Colors.dark.tint}
+        backgroundColor={isDark ? Colors.dark.background : Colors.light.tint}
       />
       <Tabs
         screenOptions={{
           headerShown: false,
           title: '',
-          tabBarActiveTintColor: Colors.light.tint,
+          tabBarActiveTintColor: isDark ? Colors.dark.tint : Colors.light.tint,
           tabBarLabelStyle: {
             fontSize: 12,
             marginBottom: 10,

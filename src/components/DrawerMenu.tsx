@@ -60,7 +60,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
                   name={name}
                   strokeWidth={1.5}
                   size={28}
-                  color={isDarkTheme ? '#6979F8' : '#535763'}
+                  color={isDarkTheme ? Colors.dark.tint : '#535763'}
                 />
               )}
               onPress={() => handleGotoRoute(route)}
@@ -78,7 +78,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             <IconIOS
               name="color-palette-outline"
               size={24}
-              color={isDarkTheme ? '#6979F8' : '#535763'}
+              color={isDarkTheme ? Colors.dark.tint : '#535763'}
             />
             <Text className="text-black dark:text-white">Tema</Text>
           </View>
@@ -92,7 +92,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             <Switch
               onChange={onChangeToggle}
               value={isDarkTheme}
-              trackColor={{ true: '#6979F8' }}
+              trackColor={{ true: Colors.dark.tint, false: Colors.light.tint }}
             />
           </TouchableOpacity>
         </View>

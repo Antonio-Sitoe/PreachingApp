@@ -64,7 +64,7 @@ function RootLayoutNav() {
 
   return (
     <>
-      <StatusBar animated translucent style="auto" backgroundColor="red" />
+      <StatusBar animated translucent style="auto" />
       <Drawer
         initialRouteName="(tabs)"
         drawerContent={(props) => <CustomDrawerContent {...props} />}

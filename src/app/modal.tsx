@@ -1,18 +1,22 @@
-import { StatusBar } from 'expo-status-bar'
-import { Platform, StyleSheet, Text, View } from 'react-native'
+import Colors from '@/constants/Colors'
+import useTheme from '@/hooks/useTheme'
+import { StyleSheet, Text, View } from 'react-native'
+import { TextInput } from 'react-native-gesture-handler'
 
 export default function ModalScreen() {
+  const { isDark } = useTheme()
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Modal</Text>
-      {/* <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      /> */}
-
-      {/* Use a light status bar on iOS to account for the black space above the modal */}
-      <StatusBar style={Platform.OS === 'ios' ? 'light' : 'auto'} />
+    <View
+      className="flex-1 pt-8 px-4"
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+      }}
+    >
+      <Text style={styles.title} className="text-white">
+        Modal
+      </Text>
+      <TextInput />
     </View>
   )
 }
