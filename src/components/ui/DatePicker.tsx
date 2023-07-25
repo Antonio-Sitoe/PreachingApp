@@ -1,11 +1,9 @@
 import { IconIOS } from '@/assets/icons/Icon'
-import { Text } from 'react-native'
+import { Text, TouchableOpacity } from 'react-native'
 import {
   DateTimePickerAndroid,
   DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
-
-import { TouchableOpacity } from 'react-native-gesture-handler'
 
 import dayjs from 'dayjs'
 import Colors from '@/constants/Colors'

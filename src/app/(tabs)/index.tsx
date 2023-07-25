@@ -6,31 +6,34 @@ import {
   ListRestartIcon,
 } from 'lucide-react-native'
 import { StopWatch } from '@/components/StopWatch'
-import { Text, View, ScrollView, StyleSheet } from 'react-native'
+import {
+  Text,
+  View,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from 'react-native'
 
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import Cards from '@/components/Cards'
+import CreateReportModal from '@/components/CreateReportModal'
+
 import Animated, {
   useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated'
-
-import { RectButton, PanGestureHandler } from 'react-native-gesture-handler'
-
+import { PanGestureHandler } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
-import CreateReportModal from '@/components/CreateReportModal'
 import { useState } from 'react'
 
-const ButtonAnimated = Animated.createAnimatedComponent(RectButton)
+const ButtonAnimated = Animated.createAnimatedComponent(TouchableOpacity)
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
-  const router = useRouter()
-  const [modalVisible, setModalVisible] = useState(false)
+  const [modalVisible, setModalVisible] = useState(true)
 
   const positionY = useSharedValue(0)
   const positionX = useSharedValue(0)

@@ -2,9 +2,12 @@ import { Drawer } from 'expo-router/drawer'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
-import { withExpoSnack, NativeWindStyleSheet } from 'nativewind'
-import { SplashScreen } from 'expo-router'
 
+import { SplashScreen } from 'expo-router'
+import {
+  TouchableOpacity,
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler'
 import '@/lib/dayjs'
 
 import Colors from '@/constants/Colors'
@@ -16,7 +19,6 @@ import {
 } from '@expo-google-fonts/inter'
 
 import { CustomDrawerContent } from '@/components/DrawerMenu'
-import { TouchableOpacity } from 'react-native-gesture-handler'
 import { Menu, RefreshCcw } from 'lucide-react-native'
 import useTheme from '@/hooks/useTheme'
 
@@ -24,14 +26,10 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 }
 
-NativeWindStyleSheet.setOutput({
-  default: 'native',
-})
-
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
 
-function RootLayout() {
+export default function RootLayout() {
   const [loaded, error] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -63,7 +61,7 @@ function RootLayoutNav() {
   const { isDark } = useTheme()
 
   return (
-    <>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar animated translucent style="auto" />
       <Drawer
         initialRouteName="(tabs)"
@@ -111,8 +109,6 @@ function RootLayoutNav() {
           },
         })}
       />
-    </>
+    </GestureHandlerRootView>
   )
 }
-
-export default withExpoSnack(RootLayout)

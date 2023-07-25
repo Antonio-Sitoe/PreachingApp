@@ -1,13 +1,12 @@
-import { View, Text, Modal, Keyboard } from 'react-native'
-import { Minus, Plus } from 'lucide-react-native'
+import { View, Text, Modal, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import {
-  TextInput,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-} from 'react-native-gesture-handler'
+import { TextInput } from 'react-native-gesture-handler'
 import Colors from '@/constants/Colors'
 import { DatePicker } from './ui/DatePicker'
+
+import ReportHead from './pieces/ReportHead'
+import ButtonQtd from './ui/ButtonQtd'
+import { Input } from './ui/Input'
 
 interface CreateReportModalProps {
   modalVisible: boolean
@@ -20,18 +19,21 @@ export default function CreateReportModal({
 }: CreateReportModalProps) {
   const [date, setDate] = useState(new Date())
 
+  function handleClose() {
+    setModalVisible(!modalVisible)
+  }
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
       visible={modalVisible}
-      onRequestClose={() => {
-        setModalVisible(!modalVisible)
-      }}
+      onRequestClose={handleClose}
     >
-      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <View className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-full h-full bg-[#00000080] p-8">
-          <View className="bg-white w-full rounded-md px-3 py-4">
+      <View className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-full h-full bg-[#00000080]">
+        <View className="bg-white h-screen w-full">
+          <ReportHead onclick={handleClose} />
+          <View className=" px-3 pt-6">
             <DatePicker date={date} setDate={setDate} />
             <View
               style={{
@@ -45,28 +47,7 @@ export default function CreateReportModal({
                 <Text className="font-textIBM text-base ml-1 mb-1">Horas</Text>
                 <View className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl">
                   <TextInput value="5645" />
-                  <View className="flex-row align-middle justify-between  bg-primary p-1 rounded-xl">
-                    <TouchableOpacity
-                      style={{
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text className="text-white">-</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text className="text-white">+</Text>
-                    </TouchableOpacity>
-                  </View>
+                  <ButtonQtd />
                 </View>
               </View>
               <View className="flex-1">
@@ -75,182 +56,51 @@ export default function CreateReportModal({
                 </Text>
                 <View className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl">
                   <TextInput value="5645" />
-                  <View className="flex-row align-middle justify-between  bg-primary p-1 rounded-xl">
-                    <TouchableOpacity
-                      style={{
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text className="text-white">
-                        <Minus color="white" />
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{
-                        height: 32,
-                        width: 32,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Text className="text-white">
-                        <Plus color="white" />
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
+                  <ButtonQtd />
                 </View>
               </View>
             </View>
 
-            <View className="flex-row gap-3 mb-3">
-              <TextInput
-                placeholder="Publicacoes"
-                className="bg-ligtInputbG flex-1 h-[47px] pl-3 pr-1 py-3 rounded-xl"
-              />
-              <View className="flex-row w-28 align-middle justify-between  bg-primary p-1 rounded-xl">
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Minus color="white" />
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Plus color="white" />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
+            <Input.Root label="Publicacoes">
+              <Input.Content actions={true} />
+              <Input.Actions />
+            </Input.Root>
+            <Input.Root label="Videos">
+              <Input.Content actions={true} />
+              <Input.Actions />
+            </Input.Root>
+            <Input.Root label="Estudos Individuas">
+              <Input.Content actions={true} />
+              <Input.Actions />
+            </Input.Root>
+            <Input.Root label="Revisitas">
+              <Input.Content actions={true} />
+              <Input.Actions />
+            </Input.Root>
 
-            <View className="mb-3 flex-row gap-3">
-              <TextInput
-                placeholder="Videos"
-                className="bg-ligtInputbG flex-1 h-[47px] pl-3 pr-1 py-3 rounded-xl"
-              />
-              <View className="flex-row w-28 align-middle justify-between  bg-primary p-1 rounded-xl">
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Minus color="white" />
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Plus color="white" />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View className="mb-3 flex-row gap-3">
-              <TextInput
-                placeholder="Estudos Individuas"
-                className="bg-ligtInputbG flex-1 h-[47px] pl-3 pr-1 py-3 rounded-xl"
-              />
-              <View className="flex-row w-28 align-middle justify-between  bg-primary p-1 rounded-xl">
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Minus color="white" />
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Plus color="white" />
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View className="mb-3 flex-row gap-3">
-              <TextInput
-                placeholder="Revisitas"
-                className="bg-ligtInputbG flex-1 h-[47px] pl-3 pr-1 py-3 rounded-xl"
-              />
-              <View className="flex-row w-28 align-middle justify-between  bg-primary p-1 rounded-xl">
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Text className="text-white text-xl">
-                    <Minus color="white" />
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    height: 'auto',
-                    width: '50%',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  <Plus color="white" />
-                </TouchableOpacity>
-              </View>
-            </View>
-
+            <Text className="font-textIBM text-base ml-1 mb-1 mr-6">
+              Comentarios
+            </Text>
             <TextInput
-              placeholder="Comentarios"
-              className="bg-ligtInputbG  p-3 mb-3 rounded-xl"
+              placeholder="Publicacoes"
+              numberOfLines={4}
+              editable
+              multiline
+              className="bg-ligtInputbG w-full h-[80px] pl-3 pr-1 rounded-xl"
             />
 
-            <View className="flex-row gap-2 w-full">
+            <View className="mt-2 flex-row justify-between">
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
                 style={{
-                  width: '50%',
+                  width: '48%',
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: '#FF647C',
-                  paddingTop: 8,
-                  paddingBottom: 8,
+                  paddingTop: 9,
+                  paddingBottom: 9,
                   borderRadius: 8,
+                  marginRight: 2.5,
                 }}
               >
                 <Text className="text-white text-base font-textIBM">
@@ -259,13 +109,14 @@ export default function CreateReportModal({
               </TouchableOpacity>
               <TouchableOpacity
                 style={{
-                  width: '50%',
+                  width: '48%',
                   alignItems: 'center',
                   justifyContent: 'center',
                   backgroundColor: Colors.light.tint,
-                  paddingTop: 8,
-                  paddingBottom: 8,
+                  paddingTop: 9,
+                  paddingBottom: 9,
                   borderRadius: 8,
+                  marginLeft: 2.5,
                 }}
               >
                 <Text className="text-white text-base font-textIBM">
@@ -275,7 +126,7 @@ export default function CreateReportModal({
             </View>
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </View>
     </Modal>
   )
 }
