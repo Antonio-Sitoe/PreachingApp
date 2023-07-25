@@ -28,7 +28,10 @@ export function ButtonStopWatch({
         size={40}
         color={isDark ? Colors.dark.text : Colors.light.tint}
       />
-      <Text className="font-textIBM text-[12px] text-primary dark:text-white">
+      <Text
+        style={{ color: isDark ? 'white' : Colors.light.tint }}
+        className="font-textIBM text-[12px] text-primary dark:text-white"
+      >
         {text}
       </Text>
     </TouchableOpacity>

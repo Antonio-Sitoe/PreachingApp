@@ -75,7 +75,10 @@ export default function TabOneScreen() {
       >
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
           <StopWatch />
-          <Text className="text-center uppercase mt-9 mb-9 font-bold font-titleIBM text-primary dark:text-white">
+          <Text
+            style={{ color: isDark ? 'white' : Colors.light.tint }}
+            className="text-center uppercase mt-9 mb-9 font-bold font-titleIBM text-primary dark:text-white"
+          >
             Relatório do mês atual{' '}
           </Text>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>

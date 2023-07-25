@@ -42,10 +42,16 @@ export default function Cards({ title, content, Icon }: ICardsProps) {
         />
       </View>
       <View className="flex items-end justify-end">
-        <Text className="text-base text-primary font-titleIBM uppercase dark:text-white">
+        <Text
+          style={{ color: isDark ? 'white' : Colors.light.tint }}
+          className="text-base text-primary font-titleIBM uppercase dark:text-white"
+        >
           {title}
         </Text>
-        <Text className="text-primary font-text text-[37px] mt-0 leading-[45px] uppercase dark:text-white">
+        <Text
+          style={{ color: isDark ? 'white' : Colors.light.tint }}
+          className="text-primary font-text text-[37px] mt-0 leading-[45px] uppercase dark:text-white"
+        >
           {content}
         </Text>
       </View>
