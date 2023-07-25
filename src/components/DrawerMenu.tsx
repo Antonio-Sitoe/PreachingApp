@@ -73,20 +73,22 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
         >
           <View
             style={styles.icon}
-            className="flex flex-row  items-center gap-2"
+            className="flex flex-row mt-1 items-center gap-2"
           >
             <IconIOS
               name="color-palette-outline"
               size={24}
               color={isDarkTheme ? Colors.dark.tint : '#535763'}
             />
-            <Text className="text-black dark:text-white">Tema</Text>
+            <Text style={{ color: isDarkTheme ? 'white' : '#535763' }}>
+              Tema
+            </Text>
           </View>
           <TouchableOpacity
             style={styles.icon}
             className="flex flex-row items-center"
           >
-            <Text className="text-black dark:text-white">
+            <Text style={{ color: isDarkTheme ? 'white' : '#535763' }}>
               {isDarkTheme ? 'Escuro' : 'Claro'}{' '}
             </Text>
             <Switch

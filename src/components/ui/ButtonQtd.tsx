@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Minus, Plus } from 'lucide-react-native'
+import Colors from '@/constants/Colors'
+import useTheme from '@/hooks/useTheme'
 
 interface ButtonQtdProps {
   Increment(): void
@@ -8,8 +10,14 @@ interface ButtonQtdProps {
 }
 
 export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
+  const { isDark } = useTheme()
   return (
-    <View className="flex-row align-middle justify-between  bg-primary p-1 rounded-xl">
+    <View
+      style={{
+        backgroundColor: isDark ? Colors.dark.Success200 : Colors.light.tint,
+      }}
+      className={`flex-row align-middle justify-between p-1 rounded-xl`}
+    >
       <TouchableOpacity
         onPress={decrement}
         style={{
@@ -20,7 +28,7 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
         }}
       >
         <Text className="text-white">
-          <Minus color="white" />
+          <Minus color={isDark ? 'black' : 'white'} />
         </Text>
       </TouchableOpacity>
       <TouchableOpacity
@@ -33,7 +41,7 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
         }}
       >
         <Text className="text-white">
-          <Plus color="white" />
+          <Plus color={isDark ? 'black' : 'white'} />
         </Text>
       </TouchableOpacity>
     </View>

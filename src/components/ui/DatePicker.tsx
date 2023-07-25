@@ -8,6 +8,7 @@ import {
 import dayjs from 'dayjs'
 import Colors from '@/constants/Colors'
 import { Dispatch, SetStateAction } from 'react'
+import useTheme from '@/hooks/useTheme'
 
 function formateDate(date: Date) {
   return dayjs(date).format('DD [de] MMMM [de] YYYY')
@@ -17,6 +18,7 @@ interface DatePickerProps {
   setDate: Dispatch<SetStateAction<Date>>
 }
 export function DatePicker({ date, setDate }: DatePickerProps) {
+  const { isDark } = useTheme()
   const onChange = (
     event: DateTimePickerEvent,
     selectedDate: Date | undefined,
@@ -48,7 +50,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         marginBottom: 13,
         height: 47,
         width: 'auto',
-        backgroundColor: Colors.light.tint,
+        backgroundColor: isDark ? Colors.dark.background : Colors.light.tint,
         padding: 10,
         flexDirection: 'row',
         alignItems: 'center',

@@ -8,7 +8,9 @@ export default function ReportHead({ onclick }: { onclick(): void }) {
   return (
     <View
       className="h-16 shadow-lg w-full px-4 align-middle bg-white"
-      style={{ paddingTop: safeArea.top }}
+      style={{
+        paddingTop: safeArea.top,
+      }}
     >
       <TouchableOpacity
         onPress={onclick}

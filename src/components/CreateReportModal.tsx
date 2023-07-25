@@ -7,6 +7,7 @@ import { DatePicker } from './ui/DatePicker'
 import ReportHead from './pieces/ReportHead'
 import ButtonQtd from './ui/ButtonQtd'
 import { Input } from './ui/Input'
+import useTheme from '@/hooks/useTheme'
 
 interface CreateReportModalProps {
   modalVisible: boolean
@@ -17,6 +18,7 @@ export default function CreateReportModal({
   modalVisible,
   setModalVisible,
 }: CreateReportModalProps) {
+  const { isDark } = useTheme()
   const [date, setDate] = useState(new Date())
 
   function handleClose() {
@@ -31,7 +33,12 @@ export default function CreateReportModal({
       onRequestClose={handleClose}
     >
       <View className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none w-full h-full bg-[#00000080]">
-        <View className="bg-white h-screen w-full">
+        <View
+          className="h-screen w-full"
+          style={{
+            backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+          }}
+        >
           <ReportHead onclick={handleClose} />
           <View className=" px-3 pt-6">
             <DatePicker date={date} setDate={setDate} />

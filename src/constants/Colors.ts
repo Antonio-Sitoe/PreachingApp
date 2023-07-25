@@ -17,5 +17,6 @@ export default {
     darkBgSecundary: '#202024',
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
+    Success200: '#C6F0C2',
   },
 }
