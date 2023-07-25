@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Dimensions } from 'react-native'
 import { useStopWatch } from '@/hooks/useStopWatch'
 import { ButtonStopWatch } from './ui/ButtonStopWatch'
 
@@ -7,7 +7,7 @@ import Colors from '@/constants/Colors'
 
 export function StopWatch() {
   const { isDark } = useTheme()
-
+  const screenwidth = Dimensions.get('window').width < 350
   const { time, start, stop, isTop, isRunning, reset, STOP_WATCH_TIMES } =
     useStopWatch()
 
@@ -34,7 +34,7 @@ export function StopWatch() {
           CRONOMETRO DE SERVIÇO
         </Text>
       </View>
-      <View className="flex-1 flex-row pt-2 items-end justify-between mt-6">
+      <View className="flex-1 flex-row gap-1 pt-2 items-end justify-between mt-6">
         <View>
           <Text
             style={{ color: isDark ? 'white' : Colors.light.tint }}
@@ -44,16 +44,15 @@ export function StopWatch() {
           </Text>
           <Text
             style={{ color: isDark ? 'white' : Colors.light.tint }}
-            className="font-text text-5xl mt-2 text-primary dark:text-white"
+            className={`font-text ${
+              screenwidth ? 'text-4xl' : 'text-5xl'
+            } mt-2 text-primary dark:text-white`}
           >
             {time}.
             <Text style={{ fontSize: 12 }}>{STOP_WATCH_TIMES.seconds}</Text>
           </Text>
         </View>
-        <View
-          style={{ flexDirection: 'row' }}
-          className="flex flex-row items-center justify-between gap-3"
-        >
+        <View className="flex flex-row items-center justify-between gap-3">
           <ButtonStopWatch iconName="stop" text="Terminar" onPress={reset} />
           {isRunning ? (
             <ButtonStopWatch iconName="pause" onPress={stop} text="Pausar" />

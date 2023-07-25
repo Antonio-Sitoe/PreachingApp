@@ -1,15 +1,21 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { View, TouchableOpacity } from 'react-native'
 import { ChevronLeftCircle } from 'lucide-react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { Text } from '../Themed'
 
-export default function ReportHead({ onclick }: { onclick(): void }) {
-  const safeArea = useSafeAreaInsets()
+import Colors from '@/constants/Colors'
+
+export default function ReportHead({
+  onclick,
+  isDark,
+}: {
+  onclick(): void
+  isDark: boolean
+}) {
   return (
     <View
-      className="h-16 shadow-lg w-full px-4 align-middle bg-white"
+      className="h-16 flex flex-col justify-center shadow-lg w-full px-4 align-middle bg-white"
       style={{
-        paddingTop: safeArea.top,
+        backgroundColor: isDark ? Colors.dark.background : 'white',
       }}
     >
       <TouchableOpacity
@@ -17,7 +23,11 @@ export default function ReportHead({ onclick }: { onclick(): void }) {
         className="flex-row items-center gap-1"
         activeOpacity={0.7}
       >
-        <ChevronLeftCircle strokeWidth={1.5} size={28} color="black" />
+        <ChevronLeftCircle
+          strokeWidth={1.5}
+          size={28}
+          color={isDark ? 'white' : 'black'}
+        />
         <Text>Voltar</Text>
       </TouchableOpacity>
     </View>

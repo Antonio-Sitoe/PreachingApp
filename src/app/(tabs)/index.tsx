@@ -33,7 +33,7 @@ const ButtonAnimated = Animated.createAnimatedComponent(TouchableOpacity)
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
-  const [modalVisible, setModalVisible] = useState(true)
+  const [modalVisible, setModalVisible] = useState(false)
 
   const positionY = useSharedValue(0)
   const positionX = useSharedValue(0)

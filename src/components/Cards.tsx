@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, Dimensions } from 'react-native'
 import useTheme from '@/hooks/useTheme'
 import Colors from '@/constants/Colors'
 
@@ -9,6 +9,7 @@ interface ICardsProps {
 }
 export default function Cards({ title, content, Icon }: ICardsProps) {
   const { isDark } = useTheme()
+  const screenwidth = Dimensions.get('window').width < 350
 
   return (
     <View
@@ -33,7 +34,7 @@ export default function Cards({ title, content, Icon }: ICardsProps) {
           borderRadius: 100,
           backgroundColor: '#EAFBE7',
         }}
-        className="flex-1 items-center justify-center w-14 h-14 rounded-full bg-[#EAFBE7] dark:bg-[#EAFBE7]"
+        className="flex-1 items-center self-start justify-center rounded-full bg-[#EAFBE7] dark:bg-[#EAFBE7]"
       >
         <Icon
           strokeWidth={1.5}

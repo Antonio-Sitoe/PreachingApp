@@ -14,7 +14,7 @@ export function Actions({ Increment, decrement }: ButtonQtdProps) {
       style={{
         backgroundColor: isDark ? Colors.dark.Success200 : Colors.light.tint,
       }}
-      className="flex-row w-28 align-middle justify-between bg-primary p-1 rounded-xl"
+      className="flex-row w-20 align-middle justify-between bg-primary rounded-xl"
     >
       <TouchableOpacity
         onPress={decrement}

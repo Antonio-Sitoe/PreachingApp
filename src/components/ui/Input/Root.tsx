@@ -16,7 +16,7 @@ export function Root({ children, label }: InputProps) {
       >
         {label}
       </Text>
-      <View className="flex-row">{children}</View>
+      <View className="flex-row flex-1 justify-end">{children}</View>
     </View>
   )
 }

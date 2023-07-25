@@ -14,14 +14,19 @@ import { Switch, TouchableOpacity } from 'react-native-gesture-handler'
 
 import Colors from '@/constants/Colors'
 import AvatarPerfil from './AvatarPerfil'
+import { useAsyncStorage } from '@react-native-async-storage/async-storage'
 
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter()
   const { colorScheme, toggleColorScheme } = useColorScheme()
+  const { setItem } = useAsyncStorage('@THEME_KEY')
+
   const isDarkTheme = colorScheme === 'dark'
 
   const onChangeToggle = () => {
     toggleColorScheme()
+    if (colorScheme === 'dark') setItem('light')
+    else setItem('dark')
   }
 
   function handleGotoRoute(route: Route<string>) {

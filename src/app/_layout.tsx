@@ -2,7 +2,7 @@ import { Drawer } from 'expo-router/drawer'
 import { useFonts } from 'expo-font'
 import { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
-
+import { useAsyncStorage } from '@react-native-async-storage/async-storage'
 import { SplashScreen } from 'expo-router'
 import {
   TouchableOpacity,
@@ -21,6 +21,7 @@ import {
 import { CustomDrawerContent } from '@/components/DrawerMenu'
 import { Menu, RefreshCcw } from 'lucide-react-native'
 import useTheme from '@/hooks/useTheme'
+import { useColorScheme } from 'nativewind'
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -38,6 +39,17 @@ export default function RootLayout() {
     IBMPLEX_Medium: require('../assets/fonts/IBMPlexSansCondensed-Medium.ttf'),
     IBMPLEX_Bold: require('../assets/fonts/IBMPlexSansCondensed-Bold.ttf'),
   })
+  const { setColorScheme } = useColorScheme()
+  const { getItem } = useAsyncStorage('@THEME_KEY')
+
+  useEffect(() => {
+    async function defineDefaultTheme() {
+      const theme = await getItem()
+      console.log('theme', theme)
+      setColorScheme(theme === 'light' ? 'light' : 'dark')
+    }
+    defineDefaultTheme()
+  }, [getItem, setColorScheme])
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
