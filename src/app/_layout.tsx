@@ -46,7 +46,7 @@ export default function RootLayout() {
     async function defineDefaultTheme() {
       const theme = await getItem()
       console.log('theme', theme)
-      setColorScheme(theme === 'light' ? 'light' : 'dark')
+      setColorScheme(theme === 'dark' ? 'dark' : 'light')
     }
     defineDefaultTheme()
   }, [getItem, setColorScheme])
