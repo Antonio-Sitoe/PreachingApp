@@ -11,6 +11,7 @@ import {
 import '@/lib/dayjs'
 
 import Colors from '@/constants/Colors'
+import useTheme from '@/hooks/useTheme'
 
 import {
   Inter_400Regular,
@@ -20,8 +21,10 @@ import {
 
 import { CustomDrawerContent } from '@/components/DrawerMenu'
 import { Menu, RefreshCcw } from 'lucide-react-native'
-import useTheme from '@/hooks/useTheme'
 import { useColorScheme } from 'nativewind'
+import FlashMessage from 'react-native-flash-message'
+import { useWindowDimensions } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -71,10 +74,15 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const { isDark } = useTheme()
+  const top = useSafeAreaInsets().top
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <StatusBar animated translucent style="auto" />
+      <FlashMessage
+        position="top"
+        style={{ zIndex: 100000, paddingTop: 15 + top }}
+      />
       <Drawer
         initialRouteName="(tabs)"
         drawerContent={(props) => <CustomDrawerContent {...props} />}

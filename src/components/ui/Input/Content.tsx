@@ -8,7 +8,7 @@ interface InputContentProps extends TextInputProps {
   actions: boolean
 }
 
-export function Content({ actions }: InputContentProps) {
+export function Content({ actions, ...props }: InputContentProps) {
   const WindowWidth = Dimensions.get('window').width
   const { isDark } = useTheme()
 
@@ -26,7 +26,7 @@ export function Content({ actions }: InputContentProps) {
       className={`bg-ligtInputbG font-text h-[47px] ${
         WindowWidth < 350 ? 'w-16' : 'w-24'
       } pl-3 pr-1 py-3 rounded-xl`}
-      keyboardType="numeric"
+      {...props}
     />
   )
 }

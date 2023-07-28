@@ -1,15 +1,25 @@
-import { View, TouchableOpacity, ScrollView, StatusBar } from 'react-native'
-import Modal from 'react-native-modal'
-import { Text } from './Themed'
 import React, { useState } from 'react'
-import { TextInput } from 'react-native-gesture-handler'
-import Colors from '@/constants/Colors'
-import { DatePicker } from './ui/DatePicker'
 
-import ReportHead from './pieces/ReportHead'
-import ButtonQtd from './ui/ButtonQtd'
+import { Text } from './Themed'
 import { Input } from './ui/Input'
+import { DatePicker } from './ui/DatePicker'
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  TextInput,
+  ActivityIndicator,
+} from 'react-native'
+
+import Modal from 'react-native-modal'
+import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
+import ButtonQtd from './ui/ButtonQtd'
+import ReportHead from './pieces/ReportHead'
+
+import { useForm } from '@/hooks/useForm'
+import { ReportType } from '@/@types/enums'
+import FlashMessage, { showMessage } from 'react-native-flash-message'
 
 interface CreateReportModalProps {
   modalVisible: boolean
@@ -21,10 +31,57 @@ export default function CreateReportModal({
   setModalVisible,
 }: CreateReportModalProps) {
   const { isDark } = useTheme()
+  const hours = useForm(0)
+  const minutes = useForm(0, ReportType.minutes)
+  const publications = useForm(0)
+  const students = useForm(0)
+  const returnVisits = useForm(0)
+  const videos = useForm(0)
+  const [coments, setComents] = useState('')
   const [date, setDate] = useState(new Date())
+  const [isLoading, setIsLoading] = useState(false)
 
   function handleClose() {
     setModalVisible(!modalVisible)
+  }
+
+  async function handleCreateReport() {
+    try {
+      setIsLoading(true)
+      const body = {
+        date,
+        coments,
+        hours: hours.value,
+        minutes: minutes.value,
+        students: students.value,
+        publications: publications.value,
+        returnVisits: returnVisits.value,
+        videos: videos.value,
+      }
+      console.log('submitData')
+      console.log(body)
+      // await new Promise((resolve, _) => {
+      //   setTimeout(resolve, 3000)
+      // })
+      setModalVisible(false)
+      showMessage({
+        message: 'Hello World',
+        description: 'This is our second message',
+        type: 'success',
+      })
+
+      // setComents('');
+      // hours.setValue(0);
+      // minutes.setValue(0);
+      // students.setValue(0);
+      // publications.setValue(0);
+      // returnVisits.setValue(0);
+      // videos.setValue(0);
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -65,13 +122,18 @@ export default function CreateReportModal({
                   style={{
                     color: isDark ? 'white' : 'black',
                   }}
-                  value="5645"
+                  value={`${hours.value}`}
+                  keyboardType="numeric"
                   className="flex-1"
                   placeholder="0"
                   placeholderTextColor="#808080"
+                  onChangeText={(text) => hours.onchange(Number(text))}
                 />
 
-                <ButtonQtd />
+                <ButtonQtd
+                  Increment={hours.inCrementValue}
+                  decrement={hours.decrementValue}
+                />
               </View>
             </View>
             <View className="flex-1">
@@ -88,31 +150,65 @@ export default function CreateReportModal({
                   style={{
                     color: isDark ? 'white' : 'black',
                   }}
-                  value="5645"
+                  value={`${minutes.value}`}
                   className="flex-1"
                   placeholder="0"
                   placeholderTextColor="#808080"
+                  keyboardType="numeric"
+                  onChangeText={(text) => minutes.onchange(Number(text))}
                 />
-                <ButtonQtd />
+                <ButtonQtd
+                  Increment={minutes.inCrementValue}
+                  decrement={minutes.decrementValue}
+                />
               </View>
             </View>
           </View>
 
-          <Input.Root label="Publicacoes">
-            <Input.Content actions={true} />
-            <Input.Actions />
+          <Input.Root label="Publicações">
+            <Input.Content
+              actions={true}
+              keyboardType="number-pad"
+              value={`${publications.value}`}
+              onChangeText={(text) => publications.onchange(Number(text))}
+            />
+            <Input.Actions
+              Increment={publications.inCrementValue}
+              decrement={publications.decrementValue}
+            />
           </Input.Root>
           <Input.Root label="Videos">
-            <Input.Content actions={true} />
-            <Input.Actions />
+            <Input.Content
+              value={`${videos.value}`}
+              onChangeText={(text) => videos.onchange(Number(text))}
+              actions={true}
+            />
+            <Input.Actions
+              Increment={videos.inCrementValue}
+              decrement={videos.decrementValue}
+            />
           </Input.Root>
           <Input.Root label="Estudos">
-            <Input.Content actions={true} />
-            <Input.Actions />
+            <Input.Content
+              value={`${students.value}`}
+              onChangeText={(text) => students.onchange(Number(text))}
+              actions={true}
+            />
+            <Input.Actions
+              Increment={students.inCrementValue}
+              decrement={students.decrementValue}
+            />
           </Input.Root>
           <Input.Root label="Revisitas">
-            <Input.Content actions={true} />
-            <Input.Actions />
+            <Input.Content
+              actions={true}
+              value={`${returnVisits.value}`}
+              onChangeText={(text) => returnVisits.onchange(Number(text))}
+            />
+            <Input.Actions
+              Increment={returnVisits.inCrementValue}
+              decrement={returnVisits.decrementValue}
+            />
           </Input.Root>
 
           <Text className="font-textIBM text-base ml-1 mt-3 mb-1 mr-6">
@@ -120,7 +216,10 @@ export default function CreateReportModal({
           </Text>
           <TextInput
             placeholder="Escreva aqui..."
+            value={coments}
+            onChangeText={setComents}
             numberOfLines={3}
+            maxLength={140}
             editable
             multiline
             placeholderTextColor="#808080"
@@ -152,6 +251,8 @@ export default function CreateReportModal({
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
+              disabled={isLoading}
+              onPress={handleCreateReport}
               style={{
                 width: '48%',
                 alignItems: 'center',
@@ -163,7 +264,13 @@ export default function CreateReportModal({
                 marginLeft: 2.5,
               }}
             >
-              <Text className="text-white text-base font-textIBM">Guardar</Text>
+              {isLoading ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text className="text-white text-base font-textIBM">
+                  Guardar
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </ScrollView>
