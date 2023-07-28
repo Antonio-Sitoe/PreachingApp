@@ -1,7 +1,20 @@
 import { useState, useRef } from 'react'
 
+import { create } from 'zustand'
+interface TimerProps {
+  time: number
+  updateTimer(startTimeRef: number): void
+  resetTimer(): void
+}
+const useStore = create<TimerProps>((set) => ({
+  time: 0,
+  resetTimer: () => set(() => ({ time: 0 })),
+  updateTimer: (startTimeRef: number) =>
+    set(() => ({ time: Date.now() - startTimeRef })),
+}))
+
 export function useStopWatch() {
-  const [time, setTime] = useState(0)
+  const { time, updateTimer, resetTimer } = useStore()
   const [isRunning, setIsRunning] = useState(false)
   const [isTop, setIsStop] = useState(false)
 
@@ -44,7 +57,7 @@ export function useStopWatch() {
     if (!isRunning) {
       startTimeRef.current = Date.now() - time
       interval.current = setInterval(() => {
-        setTime(() => Date.now() - startTimeRef.current)
+        updateTimer(startTimeRef.current)
       }, 1000)
       setIsRunning(true)
       setIsStop(false)
@@ -63,7 +76,7 @@ export function useStopWatch() {
 
   function reset() {
     clearInterval(interval.current)
-    setTime(0)
+    resetTimer()
     setIsRunning(false)
     setIsStop(false)
     console.log('Reset')
