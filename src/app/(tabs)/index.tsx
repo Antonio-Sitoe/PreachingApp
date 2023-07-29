@@ -74,6 +74,7 @@ export default function TabOneScreen() {
   function handleCreateUser() {
     console.clear()
     console.log(uuid.v4())
+
     realm.write(() => {
       realm.create('User', {
         _id: String(uuid.v4()),
