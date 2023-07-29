@@ -12,6 +12,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Button,
 } from 'react-native'
 
 import Colors from '@/constants/Colors'
@@ -28,11 +29,16 @@ import Animated, {
 import { PanGestureHandler } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
+import { useQuery, useRealm } from '@realm/react'
+import uuid from 'react-native-uuid'
+import { User } from '@/database/schemas/User'
 
 const ButtonAnimated = Animated.createAnimatedComponent(TouchableOpacity)
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
+  const realm = useRealm()
+  const query = useQuery(User)
   const [modalVisible, setModalVisible] = useState(false)
 
   const positionY = useSharedValue(0)
@@ -64,6 +70,25 @@ export default function TabOneScreen() {
   function handleAddReport() {
     setModalVisible(true)
   }
+
+  function handleCreateUser() {
+    console.clear()
+    console.log(uuid.v4())
+    realm.write(() => {
+      realm.create('User', {
+        _id: String(uuid.v4()),
+        name: 'Antonio',
+        bio: 'eu gosto de',
+        avatar_image: 'sdsdsdsd',
+        createdAt: new Date(),
+        Profile: 'publicador',
+      })
+    })
+  }
+  function see() {
+    console.clear()
+    console.log(JSON.stringify(query))
+  }
   return (
     <>
       <ScrollView
@@ -74,6 +99,8 @@ export default function TabOneScreen() {
         }}
       >
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
+          <Button title="teste" onPress={handleCreateUser} />
+          <Button title="ver" onPress={see} />
           <StopWatch />
           <Text
             style={{ color: isDark ? 'white' : Colors.light.tint }}
