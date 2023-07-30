@@ -12,7 +12,7 @@ interface RealmProviderContextProps {
 }
 export function RealmProviderContext({ children }: RealmProviderContextProps) {
   return (
-    <RealmProvider schema={schema} path="preaching_app">
+    <RealmProvider schema={schema} path="preaching_app" inMemory={true}>
       {children}
     </RealmProvider>
   )

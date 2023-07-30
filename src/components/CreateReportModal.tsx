@@ -16,11 +16,15 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import ButtonQtd from './ui/ButtonQtd'
 import ReportHead from './pieces/ReportHead'
-
+import { IReport } from '@/database/schemas/Report/Report'
 import { useForm } from '@/hooks/useForm'
 import { ReportType } from '@/@types/enums'
-import FlashMessage, { showMessage } from 'react-native-flash-message'
-
+import { showMessage } from 'react-native-flash-message'
+import { useQuery, useRealm } from '@realm/react'
+import uuid from 'react-native-uuid'
+import dayjs from 'dayjs'
+import { isSameDay, isSameMonth, isSameYear } from 'date-fns'
+import { Record } from '@/database/schemas/Report/Record'
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
@@ -30,6 +34,8 @@ export default function CreateReportModal({
   modalVisible,
   setModalVisible,
 }: CreateReportModalProps) {
+  const realm = useRealm()
+  const query = useQuery(Record)
   const { isDark } = useTheme()
   const hours = useForm(0)
   const minutes = useForm(0, ReportType.minutes)
@@ -37,20 +43,89 @@ export default function CreateReportModal({
   const students = useForm(0)
   const returnVisits = useForm(0)
   const videos = useForm(0)
-  const [coments, setComents] = useState('')
+  const [comments, setComents] = useState('')
   const [date, setDate] = useState(new Date())
   const [isLoading, setIsLoading] = useState(false)
 
   function handleClose() {
-    setModalVisible(!modalVisible)
+    console.log(query)
+    // setModalVisible(false);
+    // setModalVisible(!modalVisible);
+  }
+
+  function resetAllStates() {
+    setComents('')
+    hours.setValue(0)
+    minutes.setValue(0)
+    students.setValue(0)
+    publications.setValue(0)
+    returnVisits.setValue(0)
+    videos.setValue(0)
+  }
+
+  function handleAddReport(report) {
+    realm.write(() => {
+      // const date = dayjs().format('MM/DD/YYYY')
+      const year = String(new Date().getFullYear())
+      const month = String(
+        new Date().toLocaleString('en-US', {
+          month: 'long',
+        }),
+      )
+
+      let currentYearReport = realm.objectForPrimaryKey('Report', year)
+      if (!currentYearReport) {
+        console.log('criar Report')
+        currentYearReport = realm.create('Report', {
+          year,
+          months: [],
+        } as IReport)
+      }
+      console.log('REPORT', currentYearReport)
+
+      let currentMonthReport = currentYearReport.months.find((month) => {
+        return month.name === month
+      })
+
+      if (!currentMonthReport) {
+        console.log('criar MES')
+        currentMonthReport = realm.create('Month', {
+          name: month,
+          records: [],
+        })
+      }
+
+      console.log('MES', currentMonthReport)
+
+      const currentDateUpdate = currentMonthReport.records
+        .filter((record) => {
+          return (
+            isSameDay(new Date(), new Date(record.date)) &&
+            isSameMonth(new Date(), new Date(record.date)) &&
+            isSameYear(new Date(), new Date(record.date))
+          )
+        })
+        .map((record) => {
+          console.log(record)
+          return record
+        })
+
+      currentMonthReport.records.push(report)
+      currentYearReport.months.push(currentMonthReport)
+
+      console.log('REPORT LAST', currentYearReport)
+      console.log('MONTHS', currentMonthReport)
+      console.log('DAY', currentDateUpdate)
+    })
   }
 
   async function handleCreateReport() {
     try {
       setIsLoading(true)
       const body = {
+        _id: uuid.v4(),
         date,
-        coments,
+        comments,
         hours: hours.value,
         minutes: minutes.value,
         students: students.value,
@@ -60,23 +135,15 @@ export default function CreateReportModal({
       }
       console.log('submitData')
       console.log(body)
-      // await new Promise((resolve, _) => {
-      //   setTimeout(resolve, 3000)
-      // })
-      setModalVisible(false)
+      console.log()
+      handleAddReport(body)
+      // setModalVisible(false)
       showMessage({
         message: 'Hello World',
         description: 'This is our second message',
         type: 'success',
       })
-
-      // setComents('');
-      // hours.setValue(0);
-      // minutes.setValue(0);
-      // students.setValue(0);
-      // publications.setValue(0);
-      // returnVisits.setValue(0);
-      // videos.setValue(0);
+      resetAllStates()
     } catch (error) {
       console.log(error)
     } finally {
@@ -124,7 +191,7 @@ export default function CreateReportModal({
                   }}
                   value={`${hours.value}`}
                   keyboardType="numeric"
-                  className="flex-1"
+                  className="flex-1 text-sm"
                   placeholder="0"
                   placeholderTextColor="#808080"
                   onChangeText={(text) => hours.onchange(Number(text))}
@@ -151,7 +218,7 @@ export default function CreateReportModal({
                     color: isDark ? 'white' : 'black',
                   }}
                   value={`${minutes.value}`}
-                  className="flex-1"
+                  className="flex-1 text-sm"
                   placeholder="0"
                   placeholderTextColor="#808080"
                   keyboardType="numeric"
@@ -211,12 +278,12 @@ export default function CreateReportModal({
             />
           </Input.Root>
 
-          <Text className="font-textIBM text-base ml-1 mt-3 mb-1 mr-6">
+          <Text className="font-textIBM text-base ml-1 mb-1 mr-6">
             Comentarios
           </Text>
           <TextInput
             placeholder="Escreva aqui..."
-            value={coments}
+            value={comments}
             onChangeText={setComents}
             numberOfLines={3}
             maxLength={140}
@@ -234,7 +301,7 @@ export default function CreateReportModal({
 
           <View className="mt-6 flex-row justify-between">
             <TouchableOpacity
-              onPress={() => setModalVisible(false)}
+              onPress={handleClose}
               style={{
                 width: '48%',
                 alignItems: 'center',

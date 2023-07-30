@@ -9,16 +9,16 @@ export interface IRecord {
   videos: number
   returnVisits: number
   students: number
-  comments: string
+  comments?: string
 }
 
 export class Record extends Realm.Object implements IRecord {
   public static schema: Realm.ObjectSchema = {
     name: 'Record',
+    primaryKey: '_id',
     properties: {
       _id: 'string',
       date: 'date',
-      userId: 'string',
       hours: 'int',
       publications: 'int',
       videos: 'int',
@@ -30,11 +30,10 @@ export class Record extends Realm.Object implements IRecord {
 
   public _id!: string
   public date!: Date
-  public userId!: string
   public hours!: number
   public publications!: number
   public videos!: number
   public returnVisits!: number
   public students!: number
-  public comments!: string
+  public comments: string | undefined
 }

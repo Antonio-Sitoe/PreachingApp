@@ -20,6 +20,7 @@
     "@react-navigation/drawer": "^6.6.3",
     "@react-navigation/native": "^6.0.2",
     "@realm/react": "^0.5.1",
+    "date-fns": "^2.30.0",
     "dayjs": "^1.11.9",
     "expo": "~49.0.3",
     "expo-constants": "~14.4.2",
