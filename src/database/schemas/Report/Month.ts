@@ -1,17 +1,9 @@
-import { Realm } from '@realm/react'
-import { IRecord } from './Record'
+import { tableSchema } from '@nozbe/watermelondb'
 
-export interface IMonthsProps {
-  name: string
-  records: IRecord[]
-}
-
-export class Month extends Realm.Object implements IMonthsProps {
-  public static schema: Realm.ObjectSchema = {
-    name: 'Month',
-    properties: { name: 'string', records: 'Record[]' },
-  }
-
-  public name!: string
-  public records!: IRecord[]
-}
+export const MonthSchema = tableSchema({
+  name: 'months',
+  columns: [
+    { name: 'name', type: 'string' },
+    { name: 'year_id', type: 'string', isIndexed: true },
+  ],
+})

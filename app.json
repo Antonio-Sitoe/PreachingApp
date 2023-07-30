@@ -32,7 +32,23 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "@morrowdigital/watermelondb-expo-plugin",
+        {
+          "databases": [
+            "morrow.db"
+          ]
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.6.10"
+          }
+        }
+      ]
     ],
     "experiments": {
       "tsconfigPaths": true,

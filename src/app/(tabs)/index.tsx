@@ -6,7 +6,7 @@ import {
   ListRestartIcon,
 } from 'lucide-react-native'
 import { StopWatch } from '@/components/StopWatch'
-import { Text, View, ScrollView, Button } from 'react-native'
+import { Text, View, ScrollView } from 'react-native'
 
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
