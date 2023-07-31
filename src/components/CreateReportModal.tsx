@@ -25,6 +25,7 @@ import uuid from 'react-native-uuid'
 import { isSameDay, isSameMonth, isSameYear } from 'date-fns'
 import { database } from '@/database/database'
 import { useCurrentMonthAndYear } from '@/contexts/ReportContext'
+import dayjs from 'dayjs'
 
 interface ReportData {
   date: Date
@@ -153,9 +154,11 @@ export default function CreateReportModal({
         videos: videos.value,
       }
       console.log('submitData')
+      const newDate = dayjs(date).format('MM/DD/YYYY')
+      console.log('data', newDate)
       // console.log(body)
       // console.log()
-      await createRecord(currentYear?.id, currentMonth?.id, body)
+      // await createRecord(currentYear?.id, currentMonth?.id, body)
       // setModalVisible(false)
       showMessage({
         message: 'Hello World',
