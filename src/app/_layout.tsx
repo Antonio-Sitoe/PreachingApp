@@ -24,6 +24,7 @@ import { CustomDrawerContent } from '@/components/DrawerMenu'
 import { Menu, RefreshCcw } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { ReportStorage } from '@/contexts/ReportContext'
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -76,58 +77,60 @@ function RootLayoutNav() {
   const top = useSafeAreaInsets().top
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <StatusBar animated translucent style="auto" />
-      <FlashMessage
-        position="top"
-        style={{ zIndex: 100000, paddingTop: 15 + top }}
-      />
-      <Drawer
-        initialRouteName="(tabs)"
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={(props) => ({
-          headerRightContainerStyle: {
-            paddingRight: 20,
-          },
-          headerLeftContainerStyle: {
-            paddingLeft: 20,
-          },
-          headerLeft() {
-            return (
-              <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-                <Menu
-                  strokeWidth={1.5}
+    <ReportStorage>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <StatusBar animated translucent style="auto" />
+        <FlashMessage
+          position="top"
+          style={{ zIndex: 100000, paddingTop: 15 + top }}
+        />
+        <Drawer
+          initialRouteName="(tabs)"
+          drawerContent={(props) => <CustomDrawerContent {...props} />}
+          screenOptions={(props) => ({
+            headerRightContainerStyle: {
+              paddingRight: 20,
+            },
+            headerLeftContainerStyle: {
+              paddingLeft: 20,
+            },
+            headerLeft() {
+              return (
+                <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+                  <Menu
+                    strokeWidth={1.5}
+                    color={isDark ? Colors.dark.text : Colors.light.tint}
+                    size={28}
+                  />
+                </TouchableOpacity>
+              )
+            },
+            headerRight: () => (
+              <TouchableOpacity>
+                <RefreshCcw
                   color={isDark ? Colors.dark.text : Colors.light.tint}
+                  className="rotate-45"
                   size={28}
+                  strokeWidth={1.5}
                 />
               </TouchableOpacity>
-            )
-          },
-          headerRight: () => (
-            <TouchableOpacity>
-              <RefreshCcw
-                color={isDark ? Colors.dark.text : Colors.light.tint}
-                className="rotate-45"
-                size={28}
-                strokeWidth={1.5}
-              />
-            </TouchableOpacity>
-          ),
-          headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
-          headerStyle: {
-            height: 85,
-            borderBottomRightRadius: isDark ? 0 : 10,
-            borderBottomLeftRadius: isDark ? 0 : 10,
-            backgroundColor: isDark
-              ? Colors.dark.darkBgSecundary
-              : Colors.light.background,
-          },
-          title: '',
-          drawerStyle: {
-            width: 320,
-          },
-        })}
-      />
-    </GestureHandlerRootView>
+            ),
+            headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
+            headerStyle: {
+              height: 85,
+              borderBottomRightRadius: isDark ? 0 : 10,
+              borderBottomLeftRadius: isDark ? 0 : 10,
+              backgroundColor: isDark
+                ? Colors.dark.darkBgSecundary
+                : Colors.light.background,
+            },
+            title: '',
+            drawerStyle: {
+              width: 320,
+            },
+          })}
+        />
+      </GestureHandlerRootView>
+    </ReportStorage>
   )
 }

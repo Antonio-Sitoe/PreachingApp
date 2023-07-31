@@ -10,7 +10,7 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native'
-import {} from '@nozbe/watermelondb'
+import { Q } from '@nozbe/watermelondb'
 
 import Modal from 'react-native-modal'
 import Colors from '@/constants/Colors'
@@ -24,6 +24,18 @@ import { showMessage } from 'react-native-flash-message'
 import uuid from 'react-native-uuid'
 import { isSameDay, isSameMonth, isSameYear } from 'date-fns'
 import { database } from '@/database/database'
+import { useCurrentMonthAndYear } from '@/contexts/ReportContext'
+
+interface ReportData {
+  date: Date
+  comments: string
+  hours: number
+  minutes: number
+  students: number
+  publications: number
+  returnVisits: number
+  videos: number
+}
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
@@ -33,6 +45,7 @@ export default function CreateReportModal({
   modalVisible,
   setModalVisible,
 }: CreateReportModalProps) {
+  const { currentMonth, currentYear } = useCurrentMonthAndYear()
   const { isDark } = useTheme()
   const hours = useForm(0)
   const minutes = useForm(0, ReportType.minutes)
@@ -59,18 +72,70 @@ export default function CreateReportModal({
     videos.setValue(0)
   }
 
-  async function handleAddReport(report) {
-    const years = database.get('years')
-    const year = await years.query().fetch()
-    console.log(year[0]._getRaw())
+  async function createRecord(
+    yearId: string,
+    monthId: string,
+    newRecordData: ReportData,
+  ) {
+    return database.write(async () => {
+      const yearCollection = database.collections.get('years')
+      const monthCollection = database.collections.get('months')
+      const recordCollection = database.collections.get('reports')
 
-    // const newYear = await database.write(async () => {
-    //   const yearColletion = database.collections.get('years');
-    //   const newYear = await yearColletion.create((year) => {
-    //     year.year = '2022';
-    //   });
-    //   return newYear;
-    // });
+      // Verifique se já existe um registro para a data especificada no mês
+      const existingRecord = await recordCollection.query(
+        Q.and(
+          Q.where('month_id', monthId),
+          Q.where('date', String(newRecordData.date)),
+        ),
+      )
+      const col = await recordCollection.query().fetch()
+      console.log(newRecordData.date.toString())
+      console.log('existingRecord', existingRecord)
+      console.log('colecao', col.length)
+
+      // if (existingRecord.length > 0) {
+      //   // Se já existe um registro, faça a atualização nos dados do registro existente
+      //   const existingRecordId = existingRecord[0].id;
+
+      //   await recordCollection.find(existingRecordId).update((record: any) => {
+      //     record.hours += newRecordData.hours;
+      //     record.publications += newRecordData.publications;
+      //     record.videos += newRecordData.videos;
+      //     record.returnVisits += newRecordData.returnVisits;
+      //     record.students += newRecordData.students;
+      //     // Você pode implementar lógica adicional para combinar ou atualizar outros campos, se necessário.
+      //   });
+
+      //   return recordCollection.find(existingRecordId);
+      // }
+
+      // Se não existir um registro para a data, crie um novo registro
+      // const newRecord = await recordCollection.create((record: any) => {
+      //   record.date = String(newRecordData.date)
+      //   record.minutes = newRecordData.minutes
+      //   record.hours = newRecordData.hours
+      //   record.publications = newRecordData.publications
+      //   record.videos = newRecordData.videos
+      //   record.returnVisits = newRecordData.returnVisits
+      //   record.students = newRecordData.students
+      //   record.comments = newRecordData.comments
+      //   record.month.id = monthId
+      // })
+
+      // // Atualize a coleção de meses associada a este registro
+      const currentMonth = await monthCollection.find(monthId)
+      const currentYear = await yearCollection.find(yearId)
+
+      // currentMonth.update((month: any) => {
+      //   month.reports.push(newRecord)
+      // })
+      // currentYear.update((year: any) => {
+      //   year.months.push(monthId)
+      // })
+
+      // return newRecord
+    })
   }
 
   async function handleCreateReport() {
@@ -90,7 +155,7 @@ export default function CreateReportModal({
       console.log('submitData')
       // console.log(body)
       // console.log()
-      await handleAddReport(body)
+      await createRecord(currentYear?.id, currentMonth?.id, body)
       // setModalVisible(false)
       showMessage({
         message: 'Hello World',

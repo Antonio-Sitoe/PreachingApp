@@ -21,7 +21,6 @@
     "@react-native-community/datetimepicker": "7.2.0",
     "@react-navigation/drawer": "^6.6.3",
     "@react-navigation/native": "^6.0.2",
-    "@realm/react": "^0.5.1",
     "date-fns": "^2.30.0",
     "dayjs": "^1.11.9",
     "expo": "~49.0.3",
@@ -50,7 +49,6 @@
     "react-native-svg": "13.9.0",
     "react-native-uuid": "^2.0.1",
     "react-native-web": "~0.19.6",
-    "realm": "^11.10.1",
     "zod": "^3.21.4",
     "zustand": "^4.3.9"
   },
