@@ -1,5 +1,7 @@
 import { database } from '@/database/database'
+import { Month } from '@/database/model/report/Month'
 import { Year } from '@/database/model/report/Years'
+import { createYearsAndMonthForCurrentDate } from '@/database/actions/report/create'
 import { Q } from '@nozbe/watermelondb'
 import React, { useContext, useEffect, useState } from 'react'
 
@@ -27,54 +29,16 @@ export function ReportStorage({ children }: ReportStorageProps) {
     null,
   )
 
-  function createYearsAndMonthForCurrentDate() {
-    const currentDate = new Date()
-    const currentYear = String(currentDate.getFullYear())
-    const currentMonth = currentDate.toLocaleString('en-US', {
-      month: 'long',
-    })
-
-    return database.write(async () => {
-      const yearColletion = database.collections.get('years')
-      const monthColletion = database.collections.get<Year>('months')
-
-      let currentYearReport = (await yearColletion.query(
-        Q.where('year', currentYear),
-      )) as any
-      if (currentYearReport.length === 0) {
-        currentYearReport = (await yearColletion.create((year: any) => {
-          year.year = currentYear
-        })) as any
-      } else {
-        currentYearReport = currentYearReport[0] as any
-      }
-
-      let currentMonthReport = await monthColletion.query(
-        Q.and(
-          Q.where('year_id', currentYearReport?.id),
-          Q.where('name', currentMonth),
-        ),
-      )
-
-      if (currentMonthReport.length === 0) {
-        currentMonthReport = (await monthColletion.create((month: any) => {
-          month.name = currentMonth
-          month.year.id = currentYearReport.id
-        })) as any
-      } else {
-        currentMonthReport = currentMonthReport[0] as any
-      }
-      return {
-        currentYearReport,
-        currentMonthReport,
-      }
-    })
-  }
   useEffect(() => {
     createYearsAndMonthForCurrentDate().then(
       ({ currentYearReport, currentMonthReport }: any) => {
         console.log('ANO GLOBAL', currentYearReport)
-        console.log('MES GLOBAL', currentMonthReport)
+        console.log('MES GLOBAL', currentMonthReport.reports)
+
+        currentMonthReport.reports
+          .fetch()
+          .then((elemen) => console.log(elemen.length))
+
         SetCurrentYear({
           id: currentYearReport.id,
           year: currentYearReport.year,

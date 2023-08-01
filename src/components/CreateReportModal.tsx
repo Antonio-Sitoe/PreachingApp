@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-
 import { Text } from './Themed'
 import { Input } from './ui/Input'
 import { DatePicker } from './ui/DatePicker'
@@ -10,33 +9,21 @@ import {
   TextInput,
   ActivityIndicator,
 } from 'react-native'
-import { Q } from '@nozbe/watermelondb'
 
+import dayjs from 'dayjs'
 import Modal from 'react-native-modal'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import ButtonQtd from './ui/ButtonQtd'
 import ReportHead from './pieces/ReportHead'
-import { IReport } from '@/database/schemas/Report/Report'
+
 import { useForm } from '@/hooks/useForm'
 import { ReportType } from '@/@types/enums'
 import { showMessage } from 'react-native-flash-message'
-import uuid from 'react-native-uuid'
-import { isSameDay, isSameMonth, isSameYear } from 'date-fns'
-import { database } from '@/database/database'
+import { createReportData } from '@/database/actions/report/create'
 import { useCurrentMonthAndYear } from '@/contexts/ReportContext'
-import dayjs from 'dayjs'
+import { ReportData } from '@/@types/interfaces'
 
-interface ReportData {
-  date: Date
-  comments: string
-  hours: number
-  minutes: number
-  students: number
-  publications: number
-  returnVisits: number
-  videos: number
-}
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
@@ -46,7 +33,7 @@ export default function CreateReportModal({
   modalVisible,
   setModalVisible,
 }: CreateReportModalProps) {
-  const { currentMonth, currentYear } = useCurrentMonthAndYear()
+  const { currentMonth } = useCurrentMonthAndYear()
   const { isDark } = useTheme()
   const hours = useForm(0)
   const minutes = useForm(0, ReportType.minutes)
@@ -56,95 +43,15 @@ export default function CreateReportModal({
   const videos = useForm(0)
   const [comments, setComents] = useState('')
   const [date, setDate] = useState(new Date())
+  const [error, setError] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
-
-  function handleClose() {
-    // setModalVisible(false);
-    // setModalVisible(!modalVisible);
-  }
-
-  function resetAllStates() {
-    setComents('')
-    hours.setValue(0)
-    minutes.setValue(0)
-    students.setValue(0)
-    publications.setValue(0)
-    returnVisits.setValue(0)
-    videos.setValue(0)
-  }
-
-  async function createRecord(
-    yearId: string,
-    monthId: string,
-    newRecordData: ReportData,
-  ) {
-    return database.write(async () => {
-      const yearCollection = database.collections.get('years')
-      const monthCollection = database.collections.get('months')
-      const recordCollection = database.collections.get('reports')
-
-      // Verifique se já existe um registro para a data especificada no mês
-      const existingRecord = await recordCollection.query(
-        Q.and(
-          Q.where('month_id', monthId),
-          Q.where('date', String(newRecordData.date)),
-        ),
-      )
-      const col = await recordCollection.query().fetch()
-      console.log(newRecordData.date.toString())
-      console.log('existingRecord', existingRecord)
-      console.log('colecao', col.length)
-
-      // if (existingRecord.length > 0) {
-      //   // Se já existe um registro, faça a atualização nos dados do registro existente
-      //   const existingRecordId = existingRecord[0].id;
-
-      //   await recordCollection.find(existingRecordId).update((record: any) => {
-      //     record.hours += newRecordData.hours;
-      //     record.publications += newRecordData.publications;
-      //     record.videos += newRecordData.videos;
-      //     record.returnVisits += newRecordData.returnVisits;
-      //     record.students += newRecordData.students;
-      //     // Você pode implementar lógica adicional para combinar ou atualizar outros campos, se necessário.
-      //   });
-
-      //   return recordCollection.find(existingRecordId);
-      // }
-
-      // Se não existir um registro para a data, crie um novo registro
-      // const newRecord = await recordCollection.create((record: any) => {
-      //   record.date = String(newRecordData.date)
-      //   record.minutes = newRecordData.minutes
-      //   record.hours = newRecordData.hours
-      //   record.publications = newRecordData.publications
-      //   record.videos = newRecordData.videos
-      //   record.returnVisits = newRecordData.returnVisits
-      //   record.students = newRecordData.students
-      //   record.comments = newRecordData.comments
-      //   record.month.id = monthId
-      // })
-
-      // // Atualize a coleção de meses associada a este registro
-      const currentMonth = await monthCollection.find(monthId)
-      const currentYear = await yearCollection.find(yearId)
-
-      // currentMonth.update((month: any) => {
-      //   month.reports.push(newRecord)
-      // })
-      // currentYear.update((year: any) => {
-      //   year.months.push(monthId)
-      // })
-
-      // return newRecord
-    })
-  }
 
   async function handleCreateReport() {
     try {
+      setError(null)
       setIsLoading(true)
-      const body = {
-        _id: uuid.v4(),
-        date,
+      const data = {
+        date: dayjs(date).format('MM/DD/YYYY'),
         comments,
         hours: hours.value,
         minutes: minutes.value,
@@ -153,24 +60,61 @@ export default function CreateReportModal({
         returnVisits: returnVisits.value,
         videos: videos.value,
       }
-      console.log('submitData')
-      const newDate = dayjs(date).format('MM/DD/YYYY')
-      console.log('data', newDate)
-      // console.log(body)
-      // console.log()
-      // await createRecord(currentYear?.id, currentMonth?.id, body)
-      // setModalVisible(false)
-      showMessage({
-        message: 'Hello World',
-        description: 'This is our second message',
-        type: 'success',
-      })
+
+      const isQualified = simpleVerificationBeforeCreation(data)
+
+      if (isQualified === false) {
+        setModalVisible(false)
+        return false
+      }
+
+      let isReportCreated
+      if (currentMonth?.id) {
+        isReportCreated = await createReportData(currentMonth?.id, data)
+      }
+      if (isReportCreated) {
+        showMessage({
+          message: 'Relatório Adicionado com Sucesso',
+          description: '',
+          type: 'success',
+        })
+        setModalVisible(false)
+      }
       resetAllStates()
     } catch (error) {
+      setError('Falha ao criar o relatorio')
       console.log(error)
     } finally {
       setIsLoading(false)
     }
+  }
+  function handleClose() {
+    setModalVisible(false)
+  }
+
+  function resetAllStates() {
+    setComents('')
+    setDate(new Date())
+    hours.setValue(0)
+    minutes.setValue(0)
+    students.setValue(0)
+    publications.setValue(0)
+    returnVisits.setValue(0)
+    videos.setValue(0)
+  }
+
+  function simpleVerificationBeforeCreation(data: ReportData) {
+    if (
+      data.hours === 0 &&
+      data.minutes === 0 &&
+      data.publications === 0 &&
+      data.videos === 0 &&
+      data.students === 0 &&
+      data.returnVisits === 0 &&
+      data.comments.trim().length === 0
+    ) {
+      return false
+    } else return true
   }
 
   return (
@@ -362,6 +306,7 @@ export default function CreateReportModal({
               )}
             </TouchableOpacity>
           </View>
+          {error && <Text className="mt-1 ml-1 text-red-600">{error}</Text>}
         </ScrollView>
       </View>
     </Modal>
