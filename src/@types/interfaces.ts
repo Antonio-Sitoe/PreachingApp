@@ -1,4 +1,5 @@
 export interface ReportData {
+  id?: string
   date: Date | string
   hours: number
   minutes: number
@@ -7,6 +8,7 @@ export interface ReportData {
   comments: string
   students: number
   returnVisits: number
+  time?: string | number
   month?: {
     id: string
   }

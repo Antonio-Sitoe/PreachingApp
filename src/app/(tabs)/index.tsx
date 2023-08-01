@@ -5,18 +5,20 @@ import {
   User2,
   ListRestartIcon,
 } from 'lucide-react-native'
-import { StopWatch } from '@/components/StopWatch'
-import { Text, View, ScrollView } from 'react-native'
 
+import Cards from '@/components/Cards'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import Cards from '@/components/Cards'
 import CreateReportModal from '@/components/CreateReportModal'
 
 import { useState } from 'react'
+import { StopWatch } from '@/components/StopWatch'
+import { useReportsData } from '@/contexts/ReportContext'
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
+import { Text, View, ScrollView } from 'react-native'
 
 export default function TabOneScreen() {
+  const { reports } = useReportsData()
   const { isDark } = useTheme()
   const [modalVisible, setModalVisible] = useState(false)
 
@@ -42,17 +44,25 @@ export default function TabOneScreen() {
             Relatório do mês atual{' '}
           </Text>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
-            <Cards Icon={Clock3} content="6:00" title="Horas" />
-            <Cards Icon={YoutubeIcon} content="2" title="Videos" />
+            <Cards Icon={Clock3} content={reports?.time} title="Horas" />
+            <Cards Icon={YoutubeIcon} content={reports.videos} title="Videos" />
           </View>
           <View
             style={{ flex: 1, width: 'auto', marginTop: 16, marginBottom: 16 }}
           >
-            <Cards Icon={LibraryIcon} content="2" title="Publicações" />
+            <Cards
+              Icon={LibraryIcon}
+              content={reports.publications}
+              title="Publicações"
+            />
           </View>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
-            <Cards Icon={User2} content="2" title="ESTUDOS" />
-            <Cards Icon={ListRestartIcon} content="2" title="REVISITAS" />
+            <Cards Icon={User2} content={reports.students} title="ESTUDOS" />
+            <Cards
+              Icon={ListRestartIcon}
+              content={reports.returnVisits}
+              title="REVISITAS"
+            />
           </View>
         </View>
       </ScrollView>

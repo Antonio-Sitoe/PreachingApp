@@ -1,15 +1,14 @@
-import { View, Text, Dimensions } from 'react-native'
+import { View, Text } from 'react-native'
 import useTheme from '@/hooks/useTheme'
 import Colors from '@/constants/Colors'
 
 interface ICardsProps {
   title: string
-  content: string
+  content: string | number | undefined
   Icon: any
 }
 export default function Cards({ title, content, Icon }: ICardsProps) {
   const { isDark } = useTheme()
-  const screenwidth = Dimensions.get('window').width < 350
 
   return (
     <View

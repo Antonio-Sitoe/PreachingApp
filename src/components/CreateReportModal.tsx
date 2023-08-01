@@ -21,7 +21,7 @@ import { useForm } from '@/hooks/useForm'
 import { ReportType } from '@/@types/enums'
 import { showMessage } from 'react-native-flash-message'
 import { createReportData } from '@/database/actions/report/create'
-import { useCurrentMonthAndYear } from '@/contexts/ReportContext'
+import { useReportsData } from '@/contexts/ReportContext'
 import { ReportData } from '@/@types/interfaces'
 
 interface CreateReportModalProps {
@@ -33,7 +33,7 @@ export default function CreateReportModal({
   modalVisible,
   setModalVisible,
 }: CreateReportModalProps) {
-  const { currentMonth } = useCurrentMonthAndYear()
+  const { month } = useReportsData()
   const { isDark } = useTheme()
   const hours = useForm(0)
   const minutes = useForm(0, ReportType.minutes)
@@ -50,28 +50,14 @@ export default function CreateReportModal({
     try {
       setError(null)
       setIsLoading(true)
-      const data = {
-        date: dayjs(date).format('MM/DD/YYYY'),
-        comments,
-        hours: hours.value,
-        minutes: minutes.value,
-        students: students.value,
-        publications: publications.value,
-        returnVisits: returnVisits.value,
-        videos: videos.value,
-      }
-
+      const { data } = formateDataBeforeSend()
       const isQualified = simpleVerificationBeforeCreation(data)
 
       if (isQualified === false) {
         setModalVisible(false)
         return false
       }
-
-      let isReportCreated
-      if (currentMonth?.id) {
-        isReportCreated = await createReportData(currentMonth?.id, data)
-      }
+      const isReportCreated = await createReportData(month?.id, data)
       if (isReportCreated) {
         showMessage({
           message: 'Relatório Adicionado com Sucesso',
@@ -101,6 +87,19 @@ export default function CreateReportModal({
     publications.setValue(0)
     returnVisits.setValue(0)
     videos.setValue(0)
+  }
+  function formateDataBeforeSend() {
+    const data = {
+      date: dayjs(date).format('MM/DD/YYYY'),
+      comments,
+      hours: hours.value,
+      minutes: minutes.value,
+      students: students.value,
+      publications: publications.value,
+      returnVisits: returnVisits.value,
+      videos: videos.value,
+    }
+    return { data }
   }
 
   function simpleVerificationBeforeCreation(data: ReportData) {
