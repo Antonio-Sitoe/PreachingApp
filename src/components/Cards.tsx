@@ -50,7 +50,7 @@ export default function Cards({ title, content, Icon }: ICardsProps) {
         </Text>
         <Text
           style={{ color: isDark ? 'white' : Colors.light.tint }}
-          className="text-primary font-text text-[37px] mt-0 leading-[45px] uppercase dark:text-white"
+          className="text-primary font-text text-[30px] mt-0 leading-[45px] uppercase dark:text-white"
         >
           {content}
         </Text>

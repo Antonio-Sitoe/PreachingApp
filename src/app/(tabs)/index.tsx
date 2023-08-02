@@ -10,16 +10,16 @@ import Cards from '@/components/Cards'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import CreateReportModal from '@/components/CreateReportModal'
-
+import { useReportsData } from '@/contexts/ReportContext'
 import { useState } from 'react'
 import { StopWatch } from '@/components/StopWatch'
-import { useReportsData } from '@/contexts/ReportContext'
+
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { Text, View, ScrollView } from 'react-native'
+import { Text, View, ScrollView, Button } from 'react-native'
 
 export default function TabOneScreen() {
-  const { reports } = useReportsData()
   const { isDark } = useTheme()
+  const { reports, calculateReportData } = useReportsData()
   const [modalVisible, setModalVisible] = useState(false)
 
   function handleAddReport() {
@@ -36,6 +36,7 @@ export default function TabOneScreen() {
         }}
       >
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
+          <Button title="clisas" onPress={calculateReportData} />
           <StopWatch />
           <Text
             style={{ color: isDark ? 'white' : Colors.light.tint }}
@@ -44,7 +45,7 @@ export default function TabOneScreen() {
             Relatório do mês atual{' '}
           </Text>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
-            <Cards Icon={Clock3} content={reports?.time} title="Horas" />
+            <Cards Icon={Clock3} content={reports.time} title="Horas" />
             <Cards Icon={YoutubeIcon} content={reports.videos} title="Videos" />
           </View>
           <View

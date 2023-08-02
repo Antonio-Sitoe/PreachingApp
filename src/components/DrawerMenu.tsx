@@ -74,28 +74,28 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
         })}
         <View
           style={styles.themeContainer}
-          className="flex flex-row items-center justify-between px-6 border-t-[1px] border-t-slate-300 mt-5 w-full"
+          className="flex flex-row items-center justify-between border-t-[0.3px] border-t-slate-600 pt-4 px-6 mt-3 w-full"
         >
           <View
             style={styles.icon}
-            className="flex flex-row mt-1 items-center gap-2"
+            className="flex flex-row mt-1 items-center gap-5"
           >
             <IconIOS
-              name="color-palette-outline"
-              size={24}
+              name="moon-outline"
+              size={28}
               color={isDarkTheme ? Colors.dark.tint : '#535763'}
             />
-            <Text style={{ color: isDarkTheme ? 'white' : '#535763' }}>
-              Tema
+            <Text
+              className="text-[14.5px] font-title"
+              style={{ color: isDarkTheme ? 'white' : '#535763' }}
+            >
+              Modo Escuro
             </Text>
           </View>
           <TouchableOpacity
             style={styles.icon}
             className="flex flex-row items-center"
           >
-            <Text style={{ color: isDarkTheme ? 'white' : '#535763' }}>
-              {isDarkTheme ? 'Escuro' : 'Claro'}{' '}
-            </Text>
             <Switch
               onChange={onChangeToggle}
               value={isDarkTheme}
