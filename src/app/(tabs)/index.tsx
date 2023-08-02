@@ -16,10 +16,11 @@ import { StopWatch } from '@/components/StopWatch'
 
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
 import { Text, View, ScrollView, Button } from 'react-native'
+import { RESET_ALL_REPORT_DATA } from '@/database/actions/report/delete'
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
-  const { reports, calculateReportData } = useReportsData()
+  const { reports } = useReportsData()
   const [modalVisible, setModalVisible] = useState(false)
 
   function handleAddReport() {
@@ -36,7 +37,7 @@ export default function TabOneScreen() {
         }}
       >
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
-          <Button title="clisas" onPress={calculateReportData} />
+          <Button title="clisas" onPress={RESET_ALL_REPORT_DATA} />
           <StopWatch />
           <Text
             style={{ color: isDark ? 'white' : Colors.light.tint }}
@@ -45,7 +46,11 @@ export default function TabOneScreen() {
             Relatório do mês atual{' '}
           </Text>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
-            <Cards Icon={Clock3} content={reports.time} title="Horas" />
+            <Cards
+              Icon={Clock3}
+              content={reports.time ? reports.time : '0'}
+              title="Horas"
+            />
             <Cards Icon={YoutubeIcon} content={reports.videos} title="Videos" />
           </View>
           <View

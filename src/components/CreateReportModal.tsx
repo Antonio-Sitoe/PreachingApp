@@ -33,7 +33,6 @@ export default function CreateReportModal({
   modalVisible,
   setModalVisible,
 }: CreateReportModalProps) {
-  const { month } = useReportsData()
   const { isDark } = useTheme()
   const hours = useForm(0)
   const minutes = useForm(0, ReportType.minutes)
@@ -53,20 +52,20 @@ export default function CreateReportModal({
       const { data } = formateDataBeforeSend()
       const isQualified = simpleVerificationBeforeCreation(data)
 
-      if (isQualified === false) {
-        setModalVisible(false)
-        return false
-      }
-      const isReportCreated = await createReportData(month?.id, data)
+      // if (isQualified === false) {
+      //   setModalVisible(false)
+      //   return false
+      // }
+      const isReportCreated = await createReportData(data)
       if (isReportCreated) {
         showMessage({
           message: 'Relatório Adicionado com Sucesso',
           description: '',
           type: 'success',
         })
-        setModalVisible(false)
+        // setModalVisible(false)
       }
-      resetAllStates()
+      // resetAllStates()
     } catch (error) {
       setError('Falha ao criar o relatorio')
       console.log(error)
@@ -90,7 +89,7 @@ export default function CreateReportModal({
   }
   function formateDataBeforeSend() {
     const data = {
-      date: dayjs(date).format('MM/DD/YYYY'),
+      date,
       comments,
       hours: hours.value,
       minutes: minutes.value,

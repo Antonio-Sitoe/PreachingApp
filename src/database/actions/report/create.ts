@@ -5,18 +5,27 @@ import { Month } from '@/database/model/report/Month'
 import { Report } from '@/database/model/report/Report'
 import { Year } from '@/database/model/report/Years'
 import { Q } from '@nozbe/watermelondb'
+import dayjs from 'dayjs'
 
-async function createReportData(monthId: string, newRecordData: ReportData) {
+async function createReportData(newRecordData: ReportData) {
   return database.write(async () => {
     const monthCollection = database.collections.get<Month>('months')
     const recordCollection = database.collections.get<Report>('reports')
 
+    const date = dayjs(newRecordData.date).format('MM/DD/YYYY')
+    const currentYear = dayjs(newRecordData.date).year().toString()
+    const currentMonth = dayjs(newRecordData.date).locale('en').format('MMMM')
+
+    const { month } = await createYearsAndMonthForCurrentDate(
+      currentYear,
+      currentMonth,
+    )
+    // @ts-ignore
+    const monthId = month.id
+
     // Verifique se já existe um registro para a data especificada no mês
     const existingRecord = await recordCollection.query(
-      Q.and(
-        Q.where('month_id', monthId),
-        Q.where('date', `${newRecordData.date}`),
-      ),
+      Q.and(Q.where('month_id', monthId), Q.where('date', date)),
     )
 
     if (existingRecord.length > 0) {
@@ -40,7 +49,7 @@ async function createReportData(monthId: string, newRecordData: ReportData) {
 
     // Se não existir um registro para a data, crie um novo registro
     const newRecord = await recordCollection.create((record: any) => {
-      record.date = `${newRecordData.date}`
+      record.date = date
       record.minutes = newRecordData.minutes
       record.hours = newRecordData.hours
       record.publications = newRecordData.publications
@@ -52,56 +61,51 @@ async function createReportData(monthId: string, newRecordData: ReportData) {
     })
 
     // // Atualize a coleção de meses associada a este registro
-    const currentMonth = await monthCollection.find(monthId)
+    const months = await monthCollection.find(monthId)
     // @ts-ignore
-    await currentMonth.reports?.fetch()
+    await months.reports?.fetch()
 
     return newRecord
   })
 }
 
-async function createYearsAndMonthForCurrentDate() {
-  const currentDate = new Date()
-  const currentYear = String(currentDate.getFullYear())
-  const currentMonth = currentDate.toLocaleString('en-US', {
-    month: 'long',
-  })
+async function createYearsAndMonthForCurrentDate(
+  currentYear: string,
+  currentMonth: string,
+) {
+  const yearColletion = database.collections.get<Year>('years')
+  const monthColletion = database.collections.get<Month>('months')
 
-  return database.write(async () => {
-    const yearColletion = database.collections.get<Year>('years')
-    const monthColletion = database.collections.get<Month>('months')
+  let currentYearReport = (await yearColletion.query(
+    Q.where('year', currentYear),
+  )) as any
+  if (currentYearReport.length === 0) {
+    currentYearReport = (await yearColletion.create((year: any) => {
+      year.year = currentYear
+    })) as any
+  } else {
+    currentYearReport = currentYearReport[0] as any
+  }
 
-    let currentYearReport = (await yearColletion.query(
-      Q.where('year', currentYear),
-    )) as any
-    if (currentYearReport.length === 0) {
-      currentYearReport = (await yearColletion.create((year: any) => {
-        year.year = currentYear
-      })) as any
-    } else {
-      currentYearReport = currentYearReport[0] as any
-    }
+  let currentMonthReport = await monthColletion.query(
+    Q.and(
+      Q.where('year_id', currentYearReport?.id),
+      Q.where('name', currentMonth),
+    ),
+  )
 
-    let currentMonthReport = await monthColletion.query(
-      Q.and(
-        Q.where('year_id', currentYearReport?.id),
-        Q.where('name', currentMonth),
-      ),
-    )
+  if (currentMonthReport.length === 0) {
+    currentMonthReport = (await monthColletion.create((month: any) => {
+      month.name = currentMonth
+      month.year.id = currentYearReport.id
+    })) as any
+  } else {
+    currentMonthReport = currentMonthReport[0] as any
+  }
 
-    if (currentMonthReport.length === 0) {
-      currentMonthReport = (await monthColletion.create((month: any) => {
-        month.name = currentMonth
-        month.year.id = currentYearReport.id
-      })) as any
-    } else {
-      currentMonthReport = currentMonthReport[0] as any
-    }
-
-    return {
-      currentYearReport,
-      currentMonthReport,
-    }
-  })
+  return {
+    year: currentYearReport,
+    month: currentMonthReport,
+  }
 }
 export { createReportData, createYearsAndMonthForCurrentDate }

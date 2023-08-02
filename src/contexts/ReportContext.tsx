@@ -4,6 +4,7 @@ import { Year } from '@/database/model/report/Years'
 import React, { useContext, useEffect, useState } from 'react'
 import { createYearsAndMonthForCurrentDate } from '@/database/actions/report/create'
 import { minutesToHoursAndMinutes } from '@/utils/dates'
+import dayjs from 'dayjs'
 
 const initialReportData: ReportData = {
   comments: '',
@@ -27,7 +28,7 @@ interface ReportContextPros {
   month: IMonth
   year: IYear
   reports: ReportData
-  calculateReportData(reports: ReportData[]): void
+  updateCurrentReports(): Promise<void>
 }
 export const ReportContext = React.createContext({} as ReportContextPros)
 
@@ -40,43 +41,29 @@ export function ReportStorage({ children }: ReportStorageProps) {
   const [month, setMonth] = useState<IMonth>(initialMonth)
   const [reports, setReports] = useState<ReportData>(initialReportData)
 
-  function calculateReportData(reports: ReportData[]) {
-    const data = reports.reduce((acc: any, state: any) => {
-      const oldState = state._raw
-      acc.hours += oldState.hours
-      acc.minutes += oldState.minutes
-      acc.videos += oldState.videos
-      acc.students += oldState.students
-      acc.returnVisits += oldState.returnVisits
-      acc.publications += oldState.publications
-      return acc
-    }, initialReportData)
-    data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
-    setReports({ ...data })
-  }
-
-  async function setupInitialValues() {
+  async function updateCurrentReports() {
+    const currentYear = dayjs().year().toString()
+    const currentMonth = dayjs().locale('en').format('MMMM')
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const {
-      currentYearReport,
-      currentMonthReport,
+      month,
+      year,
     }: {
-      currentYearReport: Year
-      currentMonthReport: Month
-    } = await createYearsAndMonthForCurrentDate()
-
+      year: Year
+      month: Month
+    } = await createYearsAndMonthForCurrentDate(currentYear, currentMonth)
     setYear({
-      id: currentYearReport.id,
-      year: currentYearReport.year,
+      id: year.id,
+      year: year.year,
     })
     setMonth({
-      id: currentMonthReport.id,
-      name: currentMonthReport.name,
+      id: month.id,
+      name: month.name,
     })
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    const reports = await currentMonthReport.reports.fetch()
+    const reports = await month.reports.fetch()
 
     if (reports.length) {
       const data: ReportData = reports.reduce((acc: any, state: any) => {
@@ -92,20 +79,20 @@ export function ReportStorage({ children }: ReportStorageProps) {
       data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
       setReports({ ...data })
     }
-    console.log('ANO GLOBAL', currentYearReport)
-    console.log('MES GLOBAL', currentMonthReport.reports)
+    console.log('ANO GLOBAL', year)
+    console.log('MES GLOBAL', month.reports)
   }
 
   useEffect(() => {
-    setupInitialValues()
+    updateCurrentReports()
   }, [])
-  const value = { month, year, reports, calculateReportData }
+  const value = { month, year, reports, updateCurrentReports }
   return (
     <ReportContext.Provider value={value}>{children}</ReportContext.Provider>
   )
 }
 
 export const useReportsData = () => {
-  const { month, year, reports } = useContext(ReportContext)
-  return { month, year, reports }
+  const data = useContext(ReportContext)
+  return data
 }
