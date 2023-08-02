@@ -1,15 +1,42 @@
 import { View, Text, Dimensions } from 'react-native'
 import { useStopWatch } from '@/hooks/useStopWatch'
 import { ButtonStopWatch } from './ui/ButtonStopWatch'
+import { showMessage } from 'react-native-flash-message'
 
 import useTheme from '@/hooks/useTheme'
 import Colors from '@/constants/Colors'
 
-export function StopWatch() {
+interface DataProps {
+  hours: number
+  minutes: number
+}
+interface StopWatchProps {
+  onPress(data: DataProps | undefined): void
+}
+
+export function StopWatch({ onPress }: StopWatchProps) {
   const { isDark } = useTheme()
   const screenwidth = Dimensions.get('window').width < 350
   const { time, start, stop, isTop, isRunning, reset, STOP_WATCH_TIMES } =
     useStopWatch()
+
+  function handleResetTimerAndAddReports() {
+    const hours = Number(time.slice(0, 2))
+    const minutes = Number(time.slice(3, 5))
+    if (minutes >= 1) {
+      onPress({
+        hours,
+        minutes,
+      })
+    } else if (isRunning) {
+      showMessage({
+        message: 'Tempo menos de 1 minuto não é Salvo',
+        type: 'info',
+      })
+    }
+
+    reset()
+  }
 
   return (
     <View
@@ -53,7 +80,11 @@ export function StopWatch() {
           </Text>
         </View>
         <View className="flex flex-row items-center justify-between gap-3">
-          <ButtonStopWatch iconName="stop" text="Terminar" onPress={reset} />
+          <ButtonStopWatch
+            iconName="stop"
+            text="Terminar"
+            onPress={handleResetTimerAndAddReports}
+          />
           {isRunning ? (
             <ButtonStopWatch iconName="pause" onPress={stop} text="Pausar" />
           ) : isTop ? (

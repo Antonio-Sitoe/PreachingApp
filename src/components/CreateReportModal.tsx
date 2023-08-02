@@ -27,20 +27,32 @@ import { ReportData } from '@/@types/interfaces'
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
+  initialData: ReportData
 }
 
 export default function CreateReportModal({
   modalVisible,
   setModalVisible,
+  initialData,
 }: CreateReportModalProps) {
+  const { updateCurrentReports, month } = useReportsData()
   const { isDark } = useTheme()
-  const hours = useForm(0)
-  const minutes = useForm(0, ReportType.minutes)
-  const publications = useForm(0)
-  const students = useForm(0)
-  const returnVisits = useForm(0)
-  const videos = useForm(0)
-  const [comments, setComents] = useState('')
+  const hours = useForm(initialData.hours ? initialData.hours : 0)
+  const minutes = useForm(
+    initialData.minutes ? initialData.minutes : 0,
+    ReportType.minutes,
+  )
+  const publications = useForm(
+    initialData.publications ? initialData.publications : 0,
+  )
+  const students = useForm(initialData.students ? initialData.students : 0)
+  const returnVisits = useForm(
+    initialData.returnVisits ? initialData.returnVisits : 0,
+  )
+  const videos = useForm(initialData.videos ? initialData.videos : 0)
+  const [comments, setComents] = useState(
+    initialData.comments ? initialData.comments : '',
+  )
   const [date, setDate] = useState(new Date())
   const [error, setError] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -52,20 +64,21 @@ export default function CreateReportModal({
       const { data } = formateDataBeforeSend()
       const isQualified = simpleVerificationBeforeCreation(data)
 
-      // if (isQualified === false) {
-      //   setModalVisible(false)
-      //   return false
-      // }
+      if (isQualified === false) {
+        setModalVisible(false)
+        return false
+      }
       const isReportCreated = await createReportData(data)
+      updateCurrentReports(String(month.id))
       if (isReportCreated) {
         showMessage({
           message: 'Relatório Adicionado com Sucesso',
           description: '',
           type: 'success',
         })
-        // setModalVisible(false)
+        setModalVisible(false)
       }
-      // resetAllStates()
+      resetAllStates()
     } catch (error) {
       setError('Falha ao criar o relatorio')
       console.log(error)

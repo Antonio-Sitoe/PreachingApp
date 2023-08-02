@@ -15,16 +15,32 @@ import { useState } from 'react'
 import { StopWatch } from '@/components/StopWatch'
 
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { Text, View, ScrollView, Button } from 'react-native'
-import { RESET_ALL_REPORT_DATA } from '@/database/actions/report/delete'
+import { Text, View, ScrollView } from 'react-native'
+import { ReportData } from '@/@types/interfaces'
+
+const initialReportData: ReportData = {
+  comments: '',
+  date: new Date(),
+  hours: 0,
+  minutes: 0,
+  publications: 0,
+  returnVisits: 0,
+  students: 0,
+  videos: 0,
+  time: '',
+}
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
   const { reports } = useReportsData()
   const [modalVisible, setModalVisible] = useState(false)
+  const [initialData, setInitialData] = useState(initialReportData)
 
-  function handleAddReport() {
+  function handleAddReport(data?: ReportData | undefined) {
     setModalVisible(true)
+    if (data) {
+      setInitialData(data)
+    }
   }
 
   return (
@@ -37,8 +53,7 @@ export default function TabOneScreen() {
         }}
       >
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
-          <Button title="clisas" onPress={RESET_ALL_REPORT_DATA} />
-          <StopWatch />
+          <StopWatch onPress={handleAddReport} />
           <Text
             style={{ color: isDark ? 'white' : Colors.light.tint }}
             className="text-center uppercase mt-9 mb-9 font-bold font-titleIBM text-primary dark:text-white"
@@ -72,8 +87,10 @@ export default function TabOneScreen() {
           </View>
         </View>
       </ScrollView>
-      <AnimatedButton onPress={handleAddReport} />
+      <AnimatedButton onPress={() => handleAddReport(undefined)} />
       <CreateReportModal
+        key={String(modalVisible)}
+        initialData={initialData}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
       />
