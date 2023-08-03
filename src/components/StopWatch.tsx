@@ -34,7 +34,6 @@ export function StopWatch({ onPress }: StopWatchProps) {
         type: 'info',
       })
     }
-
     reset()
   }
 
