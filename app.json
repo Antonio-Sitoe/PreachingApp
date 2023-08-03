@@ -53,14 +53,6 @@
     "experiments": {
       "tsconfigPaths": true,
       "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "a3b371ea-6c0f-4db3-9d99-9d96e4f548b3"
-      }
     }
   }
 }
