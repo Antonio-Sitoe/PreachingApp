@@ -5,22 +5,22 @@ export function useForm(
   initialValue: number,
   type: ReportType | boolean = false,
 ) {
-  const [value, setValue] = useState(initialValue || 0)
+  const [value, setValue] = useState(initialValue || '')
 
-  function onchange(value: number) {
-    if (type === ReportType.minutes && value >= 59) return
-    setValue(value)
+  function onchange(value: string) {
+    if (type === ReportType.minutes && Number(value) >= 59) return
+    setValue(Number(value))
   }
 
   function inCrementValue() {
-    if (type === ReportType.minutes && value >= 59) return
+    if (type === ReportType.minutes && Number(value) >= 59) return
 
-    setValue((previewValue) => previewValue + 1)
+    setValue((previewValue) => Number(previewValue) + 1)
   }
   function decrementValue() {
     setValue((previewValue) => {
-      if (previewValue > 0) return previewValue - 1
-      return 0
+      if (Number(previewValue) > 1) return Number(previewValue) - 1
+      return ''
     })
   }
 

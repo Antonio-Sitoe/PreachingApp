@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Text } from './Themed'
 import { Input } from './ui/Input'
 import { DatePicker } from './ui/DatePicker'
@@ -28,31 +28,24 @@ interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
   initialData: ReportData
+  reset(): void
 }
 
 export default function CreateReportModal({
   modalVisible,
   setModalVisible,
   initialData,
+  reset,
 }: CreateReportModalProps) {
   const { updateCurrentReports, month } = useReportsData()
   const { isDark } = useTheme()
-  const hours = useForm(initialData.hours ? initialData.hours : 0)
-  const minutes = useForm(
-    initialData.minutes ? initialData.minutes : 0,
-    ReportType.minutes,
-  )
-  const publications = useForm(
-    initialData.publications ? initialData.publications : 0,
-  )
-  const students = useForm(initialData.students ? initialData.students : 0)
-  const returnVisits = useForm(
-    initialData.returnVisits ? initialData.returnVisits : 0,
-  )
-  const videos = useForm(initialData.videos ? initialData.videos : 0)
-  const [comments, setComents] = useState(
-    initialData.comments ? initialData.comments : '',
-  )
+  const hours = useForm(initialData.hours)
+  const minutes = useForm(initialData.minutes, ReportType.minutes)
+  const publications = useForm(initialData.publications)
+  const students = useForm(initialData.students)
+  const returnVisits = useForm(initialData.returnVisits)
+  const videos = useForm(initialData.videos)
+  const [comments, setComents] = useState(initialData.comments || '')
   const [date, setDate] = useState(new Date())
   const [error, setError] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
@@ -61,8 +54,7 @@ export default function CreateReportModal({
     try {
       setError(null)
       setIsLoading(true)
-      const { data } = formateDataBeforeSend()
-      const isQualified = simpleVerificationBeforeCreation(data)
+      const { data, isQualified } = formateDataBeforeSend()
 
       if (isQualified === false) {
         setModalVisible(false)
@@ -77,8 +69,8 @@ export default function CreateReportModal({
           type: 'success',
         })
         setModalVisible(false)
+        resetAllStates()
       }
-      resetAllStates()
     } catch (error) {
       setError('Falha ao criar o relatorio')
       console.log(error)
@@ -93,25 +85,27 @@ export default function CreateReportModal({
   function resetAllStates() {
     setComents('')
     setDate(new Date())
-    hours.setValue(0)
-    minutes.setValue(0)
-    students.setValue(0)
-    publications.setValue(0)
-    returnVisits.setValue(0)
-    videos.setValue(0)
+    hours.setValue('')
+    minutes.setValue('')
+    students.setValue('')
+    publications.setValue('')
+    returnVisits.setValue('')
+    videos.setValue('')
+    reset()
   }
   function formateDataBeforeSend() {
     const data = {
       date,
       comments,
-      hours: hours.value,
-      minutes: minutes.value,
-      students: students.value,
-      publications: publications.value,
-      returnVisits: returnVisits.value,
-      videos: videos.value,
+      hours: Number(hours.value),
+      minutes: Number(minutes.value),
+      students: Number(students.value),
+      publications: Number(publications.value),
+      returnVisits: Number(returnVisits.value),
+      videos: Number(videos.value),
     }
-    return { data }
+    const isQualified = simpleVerificationBeforeCreation(data)
+    return { data, isQualified }
   }
 
   function simpleVerificationBeforeCreation(data: ReportData) {
@@ -127,6 +121,12 @@ export default function CreateReportModal({
       return false
     } else return true
   }
+
+  useEffect(() => {
+    return () => {
+      reset()
+    }
+  }, [reset])
 
   return (
     <Modal propagateSwipe={true} isVisible={modalVisible}>
@@ -169,9 +169,9 @@ export default function CreateReportModal({
                   value={`${hours.value}`}
                   keyboardType="numeric"
                   className="flex-1 text-sm"
-                  placeholder="0"
+                  placeholder="Escreve..."
                   placeholderTextColor="#808080"
-                  onChangeText={(text) => hours.onchange(Number(text))}
+                  onChangeText={(text) => hours.onchange(text)}
                 />
 
                 <ButtonQtd
@@ -196,10 +196,10 @@ export default function CreateReportModal({
                   }}
                   value={`${minutes.value}`}
                   className="flex-1 text-sm"
-                  placeholder="0"
+                  placeholder="Escreve..."
                   placeholderTextColor="#808080"
                   keyboardType="numeric"
-                  onChangeText={(text) => minutes.onchange(Number(text))}
+                  onChangeText={minutes.onchange}
                 />
                 <ButtonQtd
                   Increment={minutes.inCrementValue}
@@ -212,9 +212,10 @@ export default function CreateReportModal({
           <Input.Root label="Publicações">
             <Input.Content
               actions={true}
+              placeholder="Escreve..."
               keyboardType="number-pad"
               value={`${publications.value}`}
-              onChangeText={(text) => publications.onchange(Number(text))}
+              onChangeText={publications.onchange}
             />
             <Input.Actions
               Increment={publications.inCrementValue}
@@ -223,8 +224,9 @@ export default function CreateReportModal({
           </Input.Root>
           <Input.Root label="Videos">
             <Input.Content
+              placeholder="Escreve..."
               value={`${videos.value}`}
-              onChangeText={(text) => videos.onchange(Number(text))}
+              onChangeText={videos.onchange}
               actions={true}
             />
             <Input.Actions
@@ -234,8 +236,9 @@ export default function CreateReportModal({
           </Input.Root>
           <Input.Root label="Estudos">
             <Input.Content
+              placeholder="Escreve..."
               value={`${students.value}`}
-              onChangeText={(text) => students.onchange(Number(text))}
+              onChangeText={students.onchange}
               actions={true}
             />
             <Input.Actions
@@ -246,8 +249,9 @@ export default function CreateReportModal({
           <Input.Root label="Revisitas">
             <Input.Content
               actions={true}
+              placeholder="Escreve..."
               value={`${returnVisits.value}`}
-              onChangeText={(text) => returnVisits.onchange(Number(text))}
+              onChangeText={returnVisits.onchange}
             />
             <Input.Actions
               Increment={returnVisits.inCrementValue}

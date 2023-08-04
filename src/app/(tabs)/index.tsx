@@ -42,6 +42,9 @@ export default function TabOneScreen() {
       setInitialData(data)
     }
   }
+  function resetInitialData() {
+    setInitialData(initialReportData)
+  }
 
   return (
     <>
@@ -49,7 +52,7 @@ export default function TabOneScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
-          paddingBottom: 80,
+          paddingBottom: 50,
         }}
       >
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
@@ -91,6 +94,7 @@ export default function TabOneScreen() {
       <CreateReportModal
         key={String(modalVisible)}
         initialData={initialData}
+        reset={resetInitialData}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
       />
