@@ -213,7 +213,7 @@ export default function CreateReportModal({
             <Input.Content
               actions={true}
               placeholder="Escreve..."
-              keyboardType="number-pad"
+              keyboardType="numeric"
               value={`${publications.value}`}
               onChangeText={publications.onchange}
             />
@@ -225,6 +225,7 @@ export default function CreateReportModal({
           <Input.Root label="Videos">
             <Input.Content
               placeholder="Escreve..."
+              keyboardType="numeric"
               value={`${videos.value}`}
               onChangeText={videos.onchange}
               actions={true}
@@ -237,6 +238,7 @@ export default function CreateReportModal({
           <Input.Root label="Estudos">
             <Input.Content
               placeholder="Escreve..."
+              keyboardType="numeric"
               value={`${students.value}`}
               onChangeText={students.onchange}
               actions={true}
@@ -250,6 +252,7 @@ export default function CreateReportModal({
             <Input.Content
               actions={true}
               placeholder="Escreve..."
+              keyboardType="numeric"
               value={`${returnVisits.value}`}
               onChangeText={returnVisits.onchange}
             />
