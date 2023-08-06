@@ -13,4 +13,5 @@ export class Month extends Model {
   @field('name') name!: string
   @relation('years', 'year_id') year!: Year
   @children('reports') reports!: Report[]
+  @field('createdAt') createdAt!: Date | string
 }

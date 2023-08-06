@@ -4,6 +4,6 @@ import { ReportSchema } from './Report/Report'
 import { appSchema } from '@nozbe/watermelondb'
 
 export const schemas = appSchema({
-  version: 1,
+  version: 1.2,
   tables: [ReportSchema, YearSchema, MonthSchema],
 })

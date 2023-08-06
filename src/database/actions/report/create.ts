@@ -58,6 +58,7 @@ async function createReportData(newRecordData: ReportData) {
       record.students = newRecordData.students
       record.comments = newRecordData.comments
       record.month.id = monthId
+      record.createdAt = `${new Date()}`
     })
 
     // // Atualize a coleção de meses associada a este registro
@@ -98,6 +99,7 @@ async function createYearsAndMonthForCurrentDate(
     currentMonthReport = (await monthColletion.create((month: any) => {
       month.name = currentMonth
       month.year.id = currentYearReport.id
+      month.createdAt = `${new Date()}`
     })) as any
   } else {
     currentMonthReport = currentMonthReport[0] as any

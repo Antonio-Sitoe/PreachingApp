@@ -86,7 +86,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
               color={isDarkTheme ? Colors.dark.tint : '#535763'}
             />
             <Text
-              className="text-[14.5px] font-title"
+              className="text-[14.5px] font-subTitle"
               style={{ color: isDarkTheme ? 'white' : '#535763' }}
             >
               Modo Escuro

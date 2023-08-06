@@ -6,6 +6,8 @@ import Colors from '@/constants/Colors'
 import Note from '@/assets/icons/Note.svg'
 
 import { StatusBar } from 'expo-status-bar'
+import { Text } from 'react-native'
+import { Header } from '@/components/Header'
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme()
@@ -21,8 +23,11 @@ export default function TabLayout() {
       />
       <Tabs
         screenOptions={{
-          headerShown: false,
           title: '',
+          header(props) {
+            return <Header />
+          },
+          // headerShown: false,
           tabBarActiveTintColor: isDark ? Colors.dark.tint : Colors.light.tint,
           tabBarLabelStyle: {
             fontSize: 12,
@@ -33,7 +38,6 @@ export default function TabLayout() {
               ? Colors.dark.darkBgSecundary
               : Colors.light.background,
           },
-
           tabBarStyle: {
             borderTopWidth: 0,
             borderWidth: 0,

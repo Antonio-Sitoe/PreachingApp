@@ -4,6 +4,7 @@ import { schemas } from './schemas'
 import { model } from './model'
 
 const adapter = new SQLiteAdapter({
+  dbName: 'preachingDB',
   schema: schemas,
 })
 

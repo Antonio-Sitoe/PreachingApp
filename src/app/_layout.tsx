@@ -4,10 +4,7 @@ import React, { useEffect } from 'react'
 import { StatusBar } from 'expo-status-bar'
 import { useAsyncStorage } from '@react-native-async-storage/async-storage'
 import { SplashScreen } from 'expo-router'
-import {
-  TouchableOpacity,
-  GestureHandlerRootView,
-} from 'react-native-gesture-handler'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import '@/lib/dayjs'
 
 import Colors from '@/constants/Colors'
@@ -21,7 +18,6 @@ import {
 } from '@expo-google-fonts/inter'
 
 import { CustomDrawerContent } from '@/components/DrawerMenu'
-import { Menu, RefreshCcw } from 'lucide-react-native'
 import { useColorScheme } from 'nativewind'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ReportStorage } from '@/contexts/ReportContext'
@@ -88,33 +84,7 @@ function RootLayoutNav() {
           initialRouteName="(tabs)"
           drawerContent={(props) => <CustomDrawerContent {...props} />}
           screenOptions={(props) => ({
-            headerRightContainerStyle: {
-              paddingRight: 20,
-            },
-            headerLeftContainerStyle: {
-              paddingLeft: 20,
-            },
-            headerLeft() {
-              return (
-                <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
-                  <Menu
-                    strokeWidth={1.5}
-                    color={isDark ? Colors.dark.text : Colors.light.tint}
-                    size={28}
-                  />
-                </TouchableOpacity>
-              )
-            },
-            headerRight: () => (
-              <TouchableOpacity>
-                <RefreshCcw
-                  color={isDark ? Colors.dark.text : Colors.light.tint}
-                  className="rotate-45"
-                  size={28}
-                  strokeWidth={1.5}
-                />
-              </TouchableOpacity>
-            ),
+            headerShown: false,
             headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
             headerStyle: {
               height: 85,

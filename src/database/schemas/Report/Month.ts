@@ -5,5 +5,6 @@ export const MonthSchema = tableSchema({
   columns: [
     { name: 'name', type: 'string' },
     { name: 'year_id', type: 'string', isIndexed: true },
+    { name: 'createdAt', type: 'string' },
   ],
 })

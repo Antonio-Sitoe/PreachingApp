@@ -12,5 +12,6 @@ export const ReportSchema = tableSchema({
     { name: 'students', type: 'number' },
     { name: 'comments', type: 'string' },
     { name: 'month_id', type: 'string', isIndexed: true },
+    { name: 'createdAt', type: 'string' },
   ],
 })

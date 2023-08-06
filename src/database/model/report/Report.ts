@@ -13,6 +13,7 @@ export class Report extends Model {
   @field('returnVisits') returnVisits!: number
   @field('students') students!: number
   @field('comments') comments!: string
+  @field('createdAt') createdAt!: Date | string
 
   @relation('months', 'month_id') month!: Month
 }
