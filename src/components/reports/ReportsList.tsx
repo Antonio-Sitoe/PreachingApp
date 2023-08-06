@@ -54,7 +54,7 @@ export default function ReportsList() {
       style={{
         backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
       }}
-      className="flex-1 bg-slate-300"
+      className="flex-1"
     >
       {isloadingReportData ? (
         <ActivityIndicator className="mt-5 text-dark-tint" />
