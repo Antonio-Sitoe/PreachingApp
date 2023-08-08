@@ -2,13 +2,13 @@ import Colors from '@/constants/Colors'
 import ReportMonths from '@/components/reports/ReportMonths'
 import ReportYears from '@/components/reports/ReportYears'
 import ReportsList from '@/components/reports/ReportsList'
+import CreateReportModal from '@/components/CreateReportModal'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
+import { ReportData } from '@/@types/interfaces'
 import { View, useWindowDimensions } from 'react-native'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
-import CreateReportModal from '@/components/CreateReportModal'
-import { ReportData } from '@/@types/interfaces'
 
 const renderTabBar = (props) => {
   return (

@@ -3,7 +3,6 @@ import { tableSchema } from '@nozbe/watermelondb'
 export const ReportSchema = tableSchema({
   name: 'reports',
   columns: [
-    { name: 'date', type: 'string' },
     { name: 'hours', type: 'number' },
     { name: 'minutes', type: 'number' },
     { name: 'publications', type: 'number' },
@@ -11,7 +10,9 @@ export const ReportSchema = tableSchema({
     { name: 'returnVisits', type: 'number' },
     { name: 'students', type: 'number' },
     { name: 'comments', type: 'string' },
-    { name: 'month_id', type: 'string', isIndexed: true },
+
+    { name: 'date', type: 'string' },
     { name: 'createdAt', type: 'string' },
+    { name: 'date_event', type: 'string' },
   ],
 })

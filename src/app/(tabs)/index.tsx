@@ -15,8 +15,9 @@ import { useState } from 'react'
 import { StopWatch } from '@/components/StopWatch'
 
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { Text, View, ScrollView } from 'react-native'
+import { Text, View, ScrollView, Button } from 'react-native'
 import { ReportData } from '@/@types/interfaces'
+import { getAllReportData } from '@/database/actions/report/read'
 
 const initialReportData: ReportData = {
   comments: '',
@@ -55,6 +56,7 @@ export default function TabOneScreen() {
           paddingBottom: 50,
         }}
       >
+        <Button title="Android" onPress={getAllReportData} />
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
           <StopWatch onPress={handleAddReport} />
           <Text

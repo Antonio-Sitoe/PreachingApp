@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
 } from 'react-native'
 
-import dayjs from 'dayjs'
 import Modal from 'react-native-modal'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
@@ -21,7 +20,6 @@ import { useForm } from '@/hooks/useForm'
 import { ReportType } from '@/@types/enums'
 import { showMessage } from 'react-native-flash-message'
 import { createReportData } from '@/database/actions/report/create'
-import { useReportsData } from '@/contexts/ReportContext'
 import { ReportData } from '@/@types/interfaces'
 
 interface CreateReportModalProps {
@@ -37,7 +35,6 @@ export default function CreateReportModal({
   initialData,
   reset,
 }: CreateReportModalProps) {
-  const { updateCurrentReports, month } = useReportsData()
   const { isDark } = useTheme()
   const hours = useForm(initialData.hours)
   const minutes = useForm(initialData.minutes, ReportType.minutes)
@@ -61,7 +58,6 @@ export default function CreateReportModal({
         return false
       }
       const isReportCreated = await createReportData(data)
-      updateCurrentReports(String(month.id))
       if (isReportCreated) {
         showMessage({
           message: 'Relatório Adicionado com Sucesso',
