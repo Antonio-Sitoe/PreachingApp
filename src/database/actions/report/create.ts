@@ -42,7 +42,8 @@ async function createReportData(newRecordData: ReportData) {
       record.returnVisits = newRecordData.returnVisits
       record.students = newRecordData.students
       record.comments = newRecordData.comments
-      record.createdAt = `${new Date()}`
+
+      record.createdAt = `${newRecordData.createdAt}`
 
       record.day = newRecordData.day
       record.month = newRecordData.month

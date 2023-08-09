@@ -1,11 +1,9 @@
 import { ReportData } from '@/@types/interfaces'
 import { database } from '@/database/database'
 import { Report } from '@/database/model/Report'
-
-import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
-import { minutesToHoursAndMinutes, monthNameToPortuguese } from '@/utils/dates'
+import { minutesToHoursAndMinutes } from '@/utils/dates'
+import { sorteByMonths, sorteByYears } from '@/utils/helper'
 import { Q } from '@nozbe/watermelondb'
-import dayjs from 'dayjs'
 
 async function getAllReportData() {
   const recordCollection = database.collections.get<Report>('reports')
@@ -59,55 +57,33 @@ const GET_ALL_REPORT_DATA = async () => {
     .query(Q.sortBy('year', Q.desc), Q.sortBy('month', Q.desc))
     .fetch()
 
-  const reportFormated = reportsFiltered.reduce(
+  const transform_report_to_years = reportsFiltered.reduce(
     (acumulate, reports) => {
-      console.log(reports.year)
+      acumulate[reports.year] = acumulate[reports.year] || []
+      acumulate[reports.year].push(reports)
       return acumulate
     },
-    {
-      year: '',
-      name: '',
-      total: {},
-      reports: [],
-    },
+    {},
   )
-  console.log(reportsFiltered)
 
-  // const newReports = reportsFiltered.map((report, _, arr) => {
-  //   const { data } = calculeTotalNumbers(report)
-  //   const totals = `${data.time} Horas, ${data.publications} Publicações, ${data.videos} Videos mostrados, ${data.returnVisits} revisitas, ${data.students} estudantes`
+  const transform_report_to_month = Object.entries(transform_report_to_years)
+  const data_sorted = sorteByYears(transform_report_to_month)
 
-  //   return {
-  //     year: String(report.year),
-  //     name: monthNameToPortuguese(report.month),
-  //     totalText: totals,
-  //     reports: arr.map((report) => {
-  //       const [month, day, year] = String(report.date).split('/')
+  const final_report_data = data_sorted.map((reportArray) => {
+    const arrayOfReports = reportArray[1] as Report[]
+    const reports = arrayOfReports.reduce((acumulate, reports) => {
+      acumulate[reports.month] = acumulate[reports.month] || []
+      acumulate[reports.month].push(reports)
+      return acumulate
+    }, {})
 
-  //       const date = dayjs(
-  //         new Date(Number(year), Number(month) - 1, Number(day)),
-  //       )
-  //         .locale('pt-br')
-  //         .format('dddd, D [de] MMMM [de] YYYY')
-  //       const text = `${
-  //         report.hours > 10 ? report.hours : '0' + report.hours
-  //       }:${
-  //         report.minutes > 10 ? report.minutes : '0' + report.minutes
-  //       } Horas, ${report.publications} Publicações, ${
-  //         report.videos
-  //       } Videos mostrados, ${report.returnVisits} revisitas, ${
-  //         report.students
-  //       } estudantes`
-  //       return {
-  //         id: report.id,
-  //         date,
-  //         text,
-  //       }
-  //     }),
-  //   }
-  // })
-  // return newReports
-  return []
+    return {
+      year: reportArray[0],
+      reports: sorteByMonths(Object.entries(reports)),
+    }
+  })
+
+  return final_report_data
 }
 
 export {

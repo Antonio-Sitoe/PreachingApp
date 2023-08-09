@@ -26,13 +26,13 @@ export type CardProps = ReportDataProps[]
 
 export default function ReportsList() {
   const [data, setData] = useState<CardProps>([])
-  const [isloadingReportData, setIsLoadingReportData] = useState(false)
+  const [isloadingReportData, setIsLoadingReportData] = useState(true)
 
   const { isDark } = useTheme()
   const { index } = useTabBarIndex()
 
   const isFirstElement = index === 0
-  const changePathname = usePathname()
+  const changePathname = usePathname() === '/report'
 
   useEffect(() => {
     const getallreportDataAsync = async () => {
@@ -46,7 +46,13 @@ export default function ReportsList() {
         setIsLoadingReportData(false)
       }
     }
-    getallreportDataAsync()
+    if (isFirstElement && changePathname) {
+      getallreportDataAsync()
+    }
+
+    return () => {
+      setIsLoadingReportData(true)
+    }
   }, [isFirstElement, changePathname])
 
   return (
@@ -63,7 +69,9 @@ export default function ReportsList() {
           className="mt-3 py-4 px-4"
           data={data}
           contentContainerStyle={{ paddingBottom: 80 }}
-          renderItem={({ item }) => <Card data={item} />}
+          renderItem={({ item }) => (
+            <Card data={item.reports} year={item.year} />
+          )}
           keyExtractor={(item) => item.id}
           style={{ paddingBottom: 80 }}
         />

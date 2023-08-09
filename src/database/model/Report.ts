@@ -12,7 +12,7 @@ export class Report extends Model {
   @field('comments') comments!: string
 
   @field('day') day!: number
-  @field('month') month!: number
+  @field('month') month!: string
   @field('year') year!: number
 
   @field('date') date!: Date

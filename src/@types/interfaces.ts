@@ -1,6 +1,7 @@
 export interface ReportData {
   id?: string
   date: Date | string
+  createdAt: Date | string
   hours: number
   minutes: number
   publications: number
@@ -10,6 +11,6 @@ export interface ReportData {
   returnVisits: number
   time?: string | number
   day: number
-  month: number
+  month: string
   year: number
 }

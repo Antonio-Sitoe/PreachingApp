@@ -12,6 +12,7 @@ export const initialReportData: ReportData = {
   videos: 0,
   time: '',
   day: dayjs().get('date'),
-  month: dayjs().get('month') + 1,
+  month: '',
   year: dayjs().get('y'),
+  createdAt: '',
 }

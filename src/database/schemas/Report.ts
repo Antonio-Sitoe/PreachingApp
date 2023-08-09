@@ -15,7 +15,7 @@ export const ReportSchema = tableSchema({
     { name: 'createdAt', type: 'string' },
 
     { name: 'day', type: 'number' },
-    { name: 'month', type: 'number' },
+    { name: 'month', type: 'string' },
     { name: 'year', type: 'number' },
   ],
 })

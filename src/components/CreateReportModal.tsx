@@ -23,6 +23,7 @@ import { createReportData } from '@/database/actions/report/create'
 import { ReportData } from '@/@types/interfaces'
 import dayjs from 'dayjs'
 import { useReportsData } from '@/contexts/ReportContext'
+import { monthNameToPortuguese } from '@/utils/dates'
 
 interface CreateReportModalProps {
   modalVisible: boolean
@@ -99,7 +100,7 @@ export default function CreateReportModal({
   function formateDataBeforeSend() {
     const dateformated = dayjs(date).format('DD/MM/YYYY')
     const day = dayjs(date).get('date')
-    const month = dayjs(date).get('month') + 1
+    const month = monthNameToPortuguese(dayjs(date).get('month') + 1)
     const year = dayjs(date).get('y')
 
     const data = {
@@ -114,6 +115,7 @@ export default function CreateReportModal({
       publications: Number(publications.value),
       returnVisits: Number(returnVisits.value),
       videos: Number(videos.value),
+      createdAt: date,
     } as ReportData
     const isQualified = simpleVerificationBeforeCreation(data)
     console.log('data to send', data)
