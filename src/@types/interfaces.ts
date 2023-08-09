@@ -9,7 +9,7 @@ export interface ReportData {
   students: number
   returnVisits: number
   time?: string | number
-  month?: {
-    id: string
-  }
+  day: number
+  month: number
+  year: number
 }

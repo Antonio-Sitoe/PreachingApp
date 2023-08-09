@@ -5,10 +5,11 @@ import ReportsList from '@/components/reports/ReportsList'
 import CreateReportModal from '@/components/CreateReportModal'
 
 import { useState } from 'react'
-import { ReportData } from '@/@types/interfaces'
+
 import { View, useWindowDimensions } from 'react-native'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
+import { initialReportData } from '@/utils/initialReportData'
 
 const renderTabBar = (props) => {
   return (
@@ -43,17 +44,7 @@ const routes = [
   { key: 'months', title: 'MÊS' },
   { key: 'years', title: 'ANOS' },
 ]
-const initialReportData: ReportData = {
-  comments: '',
-  date: new Date(),
-  hours: 0,
-  minutes: 0,
-  publications: 0,
-  returnVisits: 0,
-  students: 0,
-  videos: 0,
-  time: '',
-}
+
 export default function Report() {
   const layout = useWindowDimensions()
   const { index, setIndex } = useTabBarIndex()

@@ -1,22 +1,12 @@
 import { ReportData } from '@/@types/interfaces'
-import React, { useContext, useState } from 'react'
-import { getReportsByMonthIdTranformeToGlobalState } from '@/database/actions/report/read'
-
-const initialReportData: ReportData = {
-  comments: '',
-  date: new Date(),
-  hours: 0,
-  minutes: 0,
-  publications: 0,
-  returnVisits: 0,
-  students: 0,
-  videos: 0,
-  time: '',
-}
+import React, { useContext, useEffect, useState } from 'react'
+import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
+import dayjs from 'dayjs'
+import { initialReportData } from '@/utils/initialReportData'
 
 interface ReportContextPros {
   reports: ReportData
-  updateCurrentReports(monthId: string): Promise<void>
+  updateCurrentReports(monthId: number, year: number): Promise<void>
   setReportTabBarIndex(index: number): void
   reportTabBarIndex: number
   isOpenCreateReportModal: boolean
@@ -33,10 +23,16 @@ export function ReportStorage({ children }: ReportStorageProps) {
   const [reportTabBarIndex, setReportTabBarIndex] = useState(0)
   const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false)
 
-  async function updateCurrentReports(monthId: string) {
-    const { data } = await getReportsByMonthIdTranformeToGlobalState(monthId)
+  async function updateCurrentReports(month: number, year: number) {
+    const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
     setReports({ ...data })
   }
+
+  useEffect(() => {
+    const month = dayjs().get('month') + 1
+    const year = dayjs().get('y')
+    updateCurrentReports(month, year)
+  }, [])
 
   const value = {
     reports,

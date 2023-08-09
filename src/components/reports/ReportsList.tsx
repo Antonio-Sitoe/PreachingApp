@@ -3,7 +3,7 @@ import useTheme from '@/hooks/useTheme'
 import React, { useEffect, useState } from 'react'
 
 import { FlatList, ActivityIndicator } from 'react-native'
-import { READ_ALL_REPORT_DATA } from '@/database/actions/report/read'
+import { GET_ALL_REPORT_DATA } from '@/database/actions/report/read'
 import { useTabBarIndex } from '@/contexts/ReportContext'
 import { usePathname } from 'expo-router'
 import { Card } from './Card'
@@ -38,7 +38,7 @@ export default function ReportsList() {
     const getallreportDataAsync = async () => {
       setIsLoadingReportData(true)
       try {
-        const data = await READ_ALL_REPORT_DATA()
+        const data = await GET_ALL_REPORT_DATA()
         setData(data)
       } catch (error) {
         console.log(error)

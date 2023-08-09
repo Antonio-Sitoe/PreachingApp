@@ -11,7 +11,10 @@ export class Report extends Model {
   @field('students') students!: number
   @field('comments') comments!: string
 
+  @field('day') day!: number
+  @field('month') month!: number
+  @field('year') year!: number
+
   @field('date') date!: Date
   @field('createdAt') createdAt!: Date | string
-  @field('date_event') date_event!: Date | string
 }

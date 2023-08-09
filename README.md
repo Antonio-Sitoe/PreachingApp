@@ -1,1 +1,4 @@
-[] abrir o drower
+[x] create
+[x] global funs
+[] read
+[] update

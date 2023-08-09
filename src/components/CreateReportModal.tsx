@@ -21,12 +21,18 @@ import { ReportType } from '@/@types/enums'
 import { showMessage } from 'react-native-flash-message'
 import { createReportData } from '@/database/actions/report/create'
 import { ReportData } from '@/@types/interfaces'
+import dayjs from 'dayjs'
+import { useReportsData } from '@/contexts/ReportContext'
 
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
   initialData: ReportData
   reset(): void
+}
+const currentDates = {
+  month: dayjs().get('month') + 1,
+  year: dayjs().get('y'),
 }
 
 export default function CreateReportModal({
@@ -36,6 +42,7 @@ export default function CreateReportModal({
   reset,
 }: CreateReportModalProps) {
   const { isDark } = useTheme()
+  const { updateCurrentReports } = useReportsData()
   const hours = useForm(initialData.hours)
   const minutes = useForm(initialData.minutes, ReportType.minutes)
   const publications = useForm(initialData.publications)
@@ -52,12 +59,12 @@ export default function CreateReportModal({
       setError(null)
       setIsLoading(true)
       const { data, isQualified } = formateDataBeforeSend()
-
       if (isQualified === false) {
         setModalVisible(false)
         return false
       }
       const isReportCreated = await createReportData(data)
+      await updateCurrentReports(currentDates.month, currentDates.year)
       if (isReportCreated) {
         showMessage({
           message: 'Relatório Adicionado com Sucesso',
@@ -90,8 +97,16 @@ export default function CreateReportModal({
     reset()
   }
   function formateDataBeforeSend() {
+    const dateformated = dayjs(date).format('DD/MM/YYYY')
+    const day = dayjs(date).get('date')
+    const month = dayjs(date).get('month') + 1
+    const year = dayjs(date).get('y')
+
     const data = {
-      date,
+      date: dateformated,
+      day,
+      month,
+      year,
       comments,
       hours: Number(hours.value),
       minutes: Number(minutes.value),
@@ -99,8 +114,9 @@ export default function CreateReportModal({
       publications: Number(publications.value),
       returnVisits: Number(returnVisits.value),
       videos: Number(videos.value),
-    }
+    } as ReportData
     const isQualified = simpleVerificationBeforeCreation(data)
+    console.log('data to send', data)
     return { data, isQualified }
   }
 

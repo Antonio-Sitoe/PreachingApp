@@ -18,11 +18,11 @@ async function getAllReportData() {
   })
 }
 
-function getReportsByMonthIdTranformeToGlobalState(monthId: string) {
+function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: number, year: number) {
   return database.write(async () => {
     const recordCollection = database.collections.get<Report>('reports')
     const reportsFiltered = await recordCollection
-      .query(Q.where('month_id', monthId))
+      .query(Q.and(Q.where('month', month), Q.where('year', year)))
       .fetch()
 
     const data: ReportData = reportsFiltered.reduce(
@@ -52,55 +52,66 @@ function getReportsByMonthIdTranformeToGlobalState(monthId: string) {
   })
 }
 
-const READ_ALL_REPORT_DATA = async () => {
-  const monthCollection = database.collections.get<Month>('months')
-  const monthsArray = await monthCollection
-    .query(Q.sortBy('createdAt', Q.desc))
+const GET_ALL_REPORT_DATA = async () => {
+  const recordCollection = database.collections.get<Report>('reports')
+
+  const reportsFiltered = await recordCollection
+    .query(Q.sortBy('year', Q.desc), Q.sortBy('month', Q.desc))
     .fetch()
 
-  const newReportData = await Promise.all(
-    monthsArray.map((months) => {
-      return getByMonth(months)
-    }),
+  const reportFormated = reportsFiltered.reduce(
+    (acumulate, reports) => {
+      console.log(reports.year)
+      return acumulate
+    },
+    {
+      year: '',
+      name: '',
+      total: {},
+      reports: [],
+    },
   )
-  async function getByMonth(months: Month) {
-    const reports = await months.reports
-    const year = await months.year
+  console.log(reportsFiltered)
 
-    const newReports = reports.map((report) => {
-      const [month, day, year] = String(report.date).split('/')
-      const date = dayjs(new Date(Number(year), Number(month) - 1, Number(day)))
-        .locale('pt-br')
-        .format('dddd, D [de] MMMM [de] YYYY')
-      const text = `${report.hours > 10 ? report.hours : '0' + report.hours}:${
-        report.minutes > 10 ? report.minutes : '0' + report.minutes
-      } Horas, ${report.publications} Publicações, ${
-        report.videos
-      } Videos mostrados, ${report.returnVisits} revisitas, ${
-        report.students
-      } estudantes`
-      return {
-        id: report.id,
-        date,
-        text,
-      }
-    })
-    const { data } = calculeTotalNumbers(reports)
-    const totals = `${data.time} Horas, ${data.publications} Publicações, ${data.videos} Videos mostrados, ${data.returnVisits} revisitas, ${data.students} estudantes`
-    return {
-      id: months.id,
-      year: String(year.year),
-      name: monthNameToPortuguese(months.name),
-      totalText: totals,
-      reports: newReports,
-    }
-  }
+  // const newReports = reportsFiltered.map((report, _, arr) => {
+  //   const { data } = calculeTotalNumbers(report)
+  //   const totals = `${data.time} Horas, ${data.publications} Publicações, ${data.videos} Videos mostrados, ${data.returnVisits} revisitas, ${data.students} estudantes`
 
-  return newReportData
+  //   return {
+  //     year: String(report.year),
+  //     name: monthNameToPortuguese(report.month),
+  //     totalText: totals,
+  //     reports: arr.map((report) => {
+  //       const [month, day, year] = String(report.date).split('/')
+
+  //       const date = dayjs(
+  //         new Date(Number(year), Number(month) - 1, Number(day)),
+  //       )
+  //         .locale('pt-br')
+  //         .format('dddd, D [de] MMMM [de] YYYY')
+  //       const text = `${
+  //         report.hours > 10 ? report.hours : '0' + report.hours
+  //       }:${
+  //         report.minutes > 10 ? report.minutes : '0' + report.minutes
+  //       } Horas, ${report.publications} Publicações, ${
+  //         report.videos
+  //       } Videos mostrados, ${report.returnVisits} revisitas, ${
+  //         report.students
+  //       } estudantes`
+  //       return {
+  //         id: report.id,
+  //         date,
+  //         text,
+  //       }
+  //     }),
+  //   }
+  // })
+  // return newReports
+  return []
 }
 
 export {
-  READ_ALL_REPORT_DATA,
-  getReportsByMonthIdTranformeToGlobalState,
+  GET_ALL_REPORT_DATA,
+  GET_ALL_REPORTS_TO_GLOBAL_STATES,
   getAllReportData,
 }
