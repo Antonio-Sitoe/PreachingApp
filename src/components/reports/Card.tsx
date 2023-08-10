@@ -1,6 +1,7 @@
 import dayjs from 'dayjs'
+
 import { Text, View } from '../Themed'
-import { ReportDataProps } from './ReportsList'
+import { ReportData } from '@/@types/interfaces'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
 
@@ -8,12 +9,12 @@ export const Card = ({
   data,
   year,
 }: {
-  data: ReportDataProps[]
-  year: number
+  data: Array<[string, ReportData[]]>
+  year: string
 }) =>
   data.map((report, index) => {
-    const monthName = report[0]
-    const listOfReports = report[1]
+    const monthName = report[0] as string
+    const listOfReports = report[1] as ReportData[]
     const { data } = calculeTotalNumbers(report[1])
     return (
       <View

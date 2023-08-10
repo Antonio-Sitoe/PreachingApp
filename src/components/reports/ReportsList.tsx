@@ -2,12 +2,13 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import React, { useEffect, useState } from 'react'
 
-import { FlatList, ActivityIndicator } from 'react-native'
-import { GET_ALL_REPORT_DATA } from '@/database/actions/report/read'
-import { useTabBarIndex } from '@/contexts/ReportContext'
 import { usePathname } from 'expo-router'
 import { Card } from './Card'
 import { View } from '../Themed'
+import { ReportData } from '@/@types/interfaces'
+import { useTabBarIndex } from '@/contexts/ReportContext'
+import { GET_ALL_REPORT_DATA } from '@/database/actions/report/read'
+import { FlatList, ActivityIndicator } from 'react-native'
 
 export interface Reports {
   date: string
@@ -16,11 +17,8 @@ export interface Reports {
 }
 
 export interface ReportDataProps {
-  id: string
-  name: string
   year: string
-  totalText: string
-  reports: Reports[]
+  reports: Array<[string, ReportData[]]>
 }
 export type CardProps = ReportDataProps[]
 
