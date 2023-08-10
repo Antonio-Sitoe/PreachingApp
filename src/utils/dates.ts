@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 export function minutesToHoursAndMinutes(hour: number, minutes: number) {
   const hours = Math.floor(minutes / 60) + hour
   let remainingMinutes: number | string = minutes % 60
@@ -25,4 +27,9 @@ export function monthNameToPortuguese(monthName: number) {
   }
 
   return monthsMapping[monthName] || monthName
+}
+
+export const currentDates = {
+  month: monthNameToPortuguese(dayjs().get('month') + 1),
+  year: dayjs().get('y'),
 }

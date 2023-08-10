@@ -1,8 +1,8 @@
-import { ReportData } from '@/@types/interfaces'
 import React, { useContext, useEffect, useState } from 'react'
-import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
-import dayjs from 'dayjs'
+import { ReportData } from '@/@types/interfaces'
+import { currentDates } from '@/utils/dates'
 import { initialReportData } from '@/utils/initialReportData'
+import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
 
 interface ReportContextPros {
   reports: ReportData
@@ -29,9 +29,7 @@ export function ReportStorage({ children }: ReportStorageProps) {
   }
 
   useEffect(() => {
-    const month = dayjs().get('month') + 1
-    const year = dayjs().get('y')
-    updateCurrentReports(month, year)
+    updateCurrentReports(currentDates.month, currentDates.year)
   }, [])
 
   const value = {

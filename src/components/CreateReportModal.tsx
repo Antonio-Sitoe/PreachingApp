@@ -23,17 +23,13 @@ import { createReportData } from '@/database/actions/report/create'
 import { ReportData } from '@/@types/interfaces'
 import dayjs from 'dayjs'
 import { useReportsData } from '@/contexts/ReportContext'
-import { monthNameToPortuguese } from '@/utils/dates'
+import { currentDates, monthNameToPortuguese } from '@/utils/dates'
 
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
   initialData: ReportData
   reset(): void
-}
-const currentDates = {
-  month: dayjs().get('month') + 1,
-  year: dayjs().get('y'),
 }
 
 export default function CreateReportModal({

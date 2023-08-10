@@ -72,7 +72,7 @@ export default function ReportsList() {
           renderItem={({ item }) => (
             <Card data={item.reports} year={item.year} />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item, i) => item.year + i}
           style={{ paddingBottom: 80 }}
         />
       )}
