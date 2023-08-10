@@ -1,9 +1,9 @@
-import { ReportData } from '@/@types/interfaces'
-import { database } from '@/database/database'
+import { Q } from '@nozbe/watermelondb'
 import { Report } from '@/database/model/Report'
+import { database } from '@/database/database'
+import { ReportData } from '@/@types/interfaces'
 import { minutesToHoursAndMinutes } from '@/utils/dates'
 import { sorteByMonths, sorteByYears } from '@/utils/helper'
-import { Q } from '@nozbe/watermelondb'
 
 async function getAllReportData() {
   const recordCollection = database.collections.get<Report>('reports')

@@ -5,11 +5,10 @@ import ReportsList from '@/components/reports/ReportsList'
 import CreateReportModal from '@/components/CreateReportModal'
 
 import { useState } from 'react'
-
+import { initialReportData } from '@/utils/initialReportData'
 import { View, useWindowDimensions } from 'react-native'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
-import { initialReportData } from '@/utils/initialReportData'
 
 const renderTabBar = (props) => {
   return (
