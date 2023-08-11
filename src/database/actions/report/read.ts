@@ -49,16 +49,33 @@ function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: number, year: number) {
     return { data }
   })
 }
+const GET_THE_TOTAL_NUMBER_OF_RECORDS = async () => {
+  const count = await database.collections.get('reports').query().fetchCount()
 
-const GET_ALL_REPORT_DATA = async () => {
+  return { count }
+}
+
+const GET_ALL_REPORT_DATA = async (take?: number) => {
   const recordCollection = database.collections.get<Report>('reports')
 
-  const reportsFiltered = await recordCollection
-    .query(Q.sortBy('year', Q.desc), Q.sortBy('month', Q.desc))
-    .fetch()
+  let reportsFiltered: any = null
+  if (take) {
+    reportsFiltered = await recordCollection
+      .query(
+        Q.sortBy('year', Q.desc),
+        Q.sortBy('month', Q.desc),
+        Q.take(take),
+        Q.skip(0),
+      )
+      .fetch()
+  } else {
+    reportsFiltered = await recordCollection
+      .query(Q.sortBy('year', Q.desc), Q.sortBy('month', Q.desc))
+      .fetch()
+  }
 
   const transform_report_to_years = reportsFiltered.reduce(
-    (acumulate, reports) => {
+    (acumulate, reports: Report) => {
       acumulate[reports.year] = acumulate[reports.year] || []
       acumulate[reports.year].push(reports)
       return acumulate
@@ -89,5 +106,6 @@ const GET_ALL_REPORT_DATA = async () => {
 export {
   GET_ALL_REPORT_DATA,
   GET_ALL_REPORTS_TO_GLOBAL_STATES,
+  GET_THE_TOTAL_NUMBER_OF_RECORDS,
   getAllReportData,
 }

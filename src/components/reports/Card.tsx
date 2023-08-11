@@ -5,8 +5,9 @@ import { ReportData } from '@/@types/interfaces'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
 import Colors from '@/constants/Colors'
+import React from 'react'
 
-export const Card = ({
+const Card = ({
   data,
   year,
   isDark,
@@ -72,7 +73,7 @@ export const Card = ({
                     color: isDark ? '#252525' : 'white',
                   }}
                   darkColor="black"
-                  className="p-1 px-2 mb-1 rounded-lg capitalize"
+                  className="p-1 px-2 mb-1 rounded-lg"
                 >
                   {date}
                 </Text>
@@ -92,3 +93,5 @@ export const Card = ({
       </View>
     )
   })
+
+export default React.memo(Card)
