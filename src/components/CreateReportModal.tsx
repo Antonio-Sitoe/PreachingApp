@@ -10,6 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native'
 
+import dayjs from 'dayjs'
 import Modal from 'react-native-modal'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
@@ -21,7 +22,6 @@ import { ReportType } from '@/@types/enums'
 import { showMessage } from 'react-native-flash-message'
 import { createReportData } from '@/database/actions/report/create'
 import { ReportData } from '@/@types/interfaces'
-import dayjs from 'dayjs'
 import { useReportsData } from '@/contexts/ReportContext'
 import { currentDates, monthNameToPortuguese } from '@/utils/dates'
 
@@ -81,7 +81,6 @@ export default function CreateReportModal({
   function handleClose() {
     setModalVisible(false)
   }
-
   function resetAllStates() {
     setComents('')
     setDate(new Date())
@@ -117,7 +116,6 @@ export default function CreateReportModal({
     console.log('data to send', data)
     return { data, isQualified }
   }
-
   function simpleVerificationBeforeCreation(data: ReportData) {
     if (
       data.hours === 0 &&

@@ -1,4 +1,5 @@
 import Colors from '@/constants/Colors'
+import useTheme from '@/hooks/useTheme'
 import ReportMonths from '@/components/reports/ReportMonths'
 import ReportYears from '@/components/reports/ReportYears'
 import ReportsList from '@/components/reports/ReportsList'
@@ -10,9 +11,9 @@ import { View, useWindowDimensions } from 'react-native'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
 
-const renderTabBar = (props) => {
+const renderTabBar = (props, isDark) => {
   return (
-    <View className="px-3 pb-2">
+    <View className="px-3 pb-3">
       <TabBar
         {...props}
         inactiveColor={Colors.dark.Success200}
@@ -25,9 +26,9 @@ const renderTabBar = (props) => {
           width: '30%',
         }}
         style={{
-          backgroundColor: Colors.light.tint,
           borderRadius: 6,
           paddingBottom: 3,
+          backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
         }}
       />
     </View>
@@ -46,6 +47,7 @@ const routes = [
 
 export default function Report() {
   const layout = useWindowDimensions()
+  const { isDark } = useTheme()
   const { index, setIndex } = useTabBarIndex()
   const { isOpenCreateReportModal, setisOpenCreateReportModal } =
     useReportsData()
@@ -58,12 +60,14 @@ export default function Report() {
   return (
     <>
       <TabView
-        className="bg-white text-base"
-        renderTabBar={renderTabBar}
+        renderTabBar={(props) => renderTabBar(props, isDark)}
         navigationState={{ index, routes }}
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
+        style={{
+          backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+        }}
       />
       <CreateReportModal
         key={String(isOpenCreateReportModal)}

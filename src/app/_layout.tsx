@@ -83,7 +83,7 @@ function RootLayoutNav() {
         <Drawer
           initialRouteName="(tabs)"
           drawerContent={(props) => <CustomDrawerContent {...props} />}
-          screenOptions={(props) => ({
+          screenOptions={() => ({
             headerShown: false,
             headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
             headerStyle: {

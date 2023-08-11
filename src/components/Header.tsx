@@ -33,8 +33,16 @@ export function Header() {
   }
 
   return (
-    <View className="w-screen" style={{ paddingTop: top }}>
-      <View className="w-screen px-4 bg-white h-14 flex-row items-center justify-between ">
+    <View
+      className="w-screen"
+      style={{
+        paddingTop: top,
+        backgroundColor: isDark
+          ? Colors.dark.darkBgSecundary
+          : Colors.light.background,
+      }}
+    >
+      <View className="w-screen px-4 h-14 flex-row items-center justify-between ">
         <TouchableOpacity
           className="py-1"
           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}

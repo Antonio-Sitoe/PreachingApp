@@ -9,6 +9,12 @@ export function minutesToHoursAndMinutes(hour: number, minutes: number) {
   }
   return `${hours}:${remainingMinutes}`
 }
+export function calculateHoursAndMinutes(hour: number, minutes: number) {
+  const hours = Math.floor(minutes / 60) + hour
+  const remainingMinutes: number | string = minutes % 60
+
+  return { hours, remainingMinutes }
+}
 
 export function monthNameToPortuguese(monthName: number) {
   const monthsMapping = {

@@ -14,22 +14,10 @@ import { useReportsData } from '@/contexts/ReportContext'
 import { useState } from 'react'
 import { StopWatch } from '@/components/StopWatch'
 
-import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { Text, View, ScrollView, Button } from 'react-native'
 import { ReportData } from '@/@types/interfaces'
-import { getAllReportData } from '@/database/actions/report/read'
-
-const initialReportData: ReportData = {
-  comments: '',
-  date: new Date(),
-  hours: 0,
-  minutes: 0,
-  publications: 0,
-  returnVisits: 0,
-  students: 0,
-  videos: 0,
-  time: '',
-}
+import { AnimatedButton } from '@/components/ui/ButtonAnimated'
+import { initialReportData } from '@/utils/initialReportData'
+import { Text, View, ScrollView } from 'react-native'
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
@@ -56,7 +44,7 @@ export default function TabOneScreen() {
           paddingBottom: 50,
         }}
       >
-        <Button title="Android" onPress={getAllReportData} />
+        {/* <Button title="Android" onPress={getAllReportData} /> */}
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
           <StopWatch onPress={handleAddReport} />
           <Text

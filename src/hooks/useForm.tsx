@@ -8,14 +8,19 @@ export function useForm(
   const [value, setValue] = useState(initialValue || '')
 
   function onchange(value: string) {
-    if (type === ReportType.minutes && Number(value) >= 59) return
-    setValue(Number(value))
+    if (type === ReportType.minutes && Number(value) >= 60) {
+      return false
+    } else {
+      setValue(Number(value))
+    }
   }
 
   function inCrementValue() {
-    if (type === ReportType.minutes && Number(value) >= 59) return
-
-    setValue((previewValue) => Number(previewValue) + 1)
+    if (type === ReportType.minutes && Number(value) >= 59) {
+      return false
+    } else {
+      setValue((previewValue) => Number(previewValue) + 1)
+    }
   }
   function decrementValue() {
     setValue((previewValue) => {
