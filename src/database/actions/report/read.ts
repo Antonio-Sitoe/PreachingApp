@@ -57,6 +57,7 @@ const GET_THE_TOTAL_NUMBER_OF_RECORDS = async () => {
 
 const GET_ALL_REPORT_DATA = async (take?: number) => {
   const recordCollection = database.collections.get<Report>('reports')
+  const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
 
   let reportsFiltered: any = null
   if (take) {
@@ -100,7 +101,7 @@ const GET_ALL_REPORT_DATA = async (take?: number) => {
     }
   })
 
-  return final_report_data
+  return { data: final_report_data, count }
 }
 
 export {

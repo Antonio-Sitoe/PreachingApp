@@ -1,20 +1,16 @@
+import Card from './Card'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
+import NoContent from '../NoContent'
 
 import React, { useEffect, useState } from 'react'
 import { FlashList } from '@shopify/flash-list'
-import Card from './Card'
 import { Text, View } from '../Themed'
 import { ReportData } from '@/@types/interfaces'
 import { usePathname } from 'expo-router'
+import { ActivityIndicator } from 'react-native'
+import { GET_ALL_REPORT_DATA } from '@/database/actions/report/read'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
-import {
-  GET_ALL_REPORT_DATA,
-  GET_THE_TOTAL_NUMBER_OF_RECORDS,
-} from '@/database/actions/report/read'
-import { ActivityIndicator, FlatList } from 'react-native'
-import NoContent from '../NoContent'
-import { take } from '@nozbe/watermelondb/QueryDescription'
 
 export interface Reports {
   date: string
@@ -52,33 +48,26 @@ export default function ReportsList() {
     const getallreportDataAsync = async (take: number) => {
       setIsLoadingReportData(true)
       try {
-        const data = await GET_ALL_REPORT_DATA(take)
+        const { data, count } = await GET_ALL_REPORT_DATA(take)
         setData(data)
+        setTotalOfRecords(count)
+        console.log('total of reports', count)
       } catch (error) {
         console.log(error)
       } finally {
         setIsLoadingReportData(false)
       }
     }
-    if ((isFirstElement && changePathname) || isModalClose) {
+    if (isFirstElement && changePathname) {
+      getallreportDataAsync(take)
+    } else if (isModalClose) {
       getallreportDataAsync(take)
     }
+    console.log('number to take', take)
     return () => {
       setIsLoadingReportData(true)
     }
   }, [isFirstElement, changePathname, isModalClose, take])
-
-  useEffect(() => {
-    async function getTotalNumberOfRecords() {
-      const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
-      console.log('total de records', count)
-      setTotalOfRecords(count)
-    }
-    getTotalNumberOfRecords()
-    return () => {
-      setTake(10) // reseting the
-    }
-  }, [])
 
   if (data.length === 0) {
     return <NoContent text="Sem dados" />
@@ -113,12 +102,16 @@ export default function ReportsList() {
             {isloadingReportData ? (
               <ActivityIndicator />
             ) : (
-              <Text
-                darkColor="#c1e9e2"
-                className="font-text text-base text-center mt-3"
-              >
-                Sem dados por mostrar
-              </Text>
+              <>
+                {take > totalOfRecords && (
+                  <Text
+                    className="mt-2 font-textIBM text-center"
+                    lightColor={Colors.light.tint}
+                  >
+                    Sem mais dados por mostrar 😎
+                  </Text>
+                )}
+              </>
             )}
           </View>
         )}
