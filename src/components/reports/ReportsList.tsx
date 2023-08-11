@@ -1,9 +1,10 @@
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
+import Logo from '@/assets/images/illo.svg'
 import React, { useEffect, useState } from 'react'
 
 import { Card } from './Card'
-import { View } from '../Themed'
+import { Text, View } from '../Themed'
 import { ReportData } from '@/@types/interfaces'
 import { usePathname } from 'expo-router'
 import { useTabBarIndex } from '@/contexts/ReportContext'
@@ -53,6 +54,22 @@ export default function ReportsList() {
     }
   }, [isFirstElement, changePathname])
 
+  if (data.length === 0) {
+    return (
+      <View
+        style={{
+          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+        }}
+        className="flex-1 items-center justify-center"
+      >
+        <Logo />
+        <Text className="mt-2" lightColor={Colors.light.tint}>
+          Sem dados
+        </Text>
+      </View>
+    )
+  }
+
   return (
     <View
       style={{
@@ -67,9 +84,10 @@ export default function ReportsList() {
           className="mt-3 py-4 px-4"
           data={data}
           contentContainerStyle={{ paddingBottom: 80 }}
-          renderItem={({ item }) => (
-            <Card data={item.reports} year={item.year} />
-          )}
+          renderItem={({ item }) => {
+            console.log('item ', item)
+            return <Card isDark={isDark} data={item.reports} year={item.year} />
+          }}
           keyExtractor={(item, i) => item.year + i}
           style={{ paddingBottom: 80 }}
         />
