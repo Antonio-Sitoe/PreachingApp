@@ -44,7 +44,6 @@ export default function TabOneScreen() {
           paddingBottom: 50,
         }}
       >
-        {/* <Button title="Android" onPress={getAllReportData} /> */}
         <View className="flex-1 pt-8 px-4" style={{ flex: 1 }}>
           <StopWatch onPress={handleAddReport} />
           <Text

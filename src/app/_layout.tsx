@@ -6,10 +6,10 @@ import { useAsyncStorage } from '@react-native-async-storage/async-storage'
 import { SplashScreen } from 'expo-router'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import '@/lib/dayjs'
+import { Provider as MaterialProvider } from '@react-native-material/core'
 
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import FlashMessage from 'react-native-flash-message'
 
 import {
   Inter_400Regular,
@@ -19,7 +19,6 @@ import {
 
 import { CustomDrawerContent } from '@/components/DrawerMenu'
 import { useColorScheme } from 'nativewind'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { ReportStorage } from '@/contexts/ReportContext'
 
 export const unstable_settings = {
@@ -70,37 +69,35 @@ export default function RootLayout() {
 
 function RootLayoutNav() {
   const { isDark } = useTheme()
-  const top = useSafeAreaInsets().top
 
   return (
-    <ReportStorage>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar animated translucent style="auto" />
-        <FlashMessage
-          position="top"
-          style={{ zIndex: 100000, paddingTop: 15 + top }}
-        />
-        <Drawer
-          initialRouteName="(tabs)"
-          drawerContent={(props) => <CustomDrawerContent {...props} />}
-          screenOptions={() => ({
-            headerShown: false,
-            headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
-            headerStyle: {
-              height: 85,
-              borderBottomRightRadius: isDark ? 0 : 10,
-              borderBottomLeftRadius: isDark ? 0 : 10,
-              backgroundColor: isDark
-                ? Colors.dark.darkBgSecundary
-                : Colors.light.background,
-            },
-            title: '',
-            drawerStyle: {
-              width: 320,
-            },
-          })}
-        />
-      </GestureHandlerRootView>
-    </ReportStorage>
+    <MaterialProvider>
+      <ReportStorage>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar animated translucent style="auto" />
+
+          <Drawer
+            initialRouteName="(tabs)"
+            drawerContent={(props) => <CustomDrawerContent {...props} />}
+            screenOptions={() => ({
+              headerShown: false,
+              headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
+              headerStyle: {
+                height: 85,
+                borderBottomRightRadius: isDark ? 0 : 10,
+                borderBottomLeftRadius: isDark ? 0 : 10,
+                backgroundColor: isDark
+                  ? Colors.dark.darkBgSecundary
+                  : Colors.light.background,
+              },
+              title: '',
+              drawerStyle: {
+                width: 320,
+              },
+            })}
+          />
+        </GestureHandlerRootView>
+      </ReportStorage>
+    </MaterialProvider>
   )
 }

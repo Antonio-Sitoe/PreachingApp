@@ -47,6 +47,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
       activeOpacity={0.7}
       onPress={showDatepicker}
       style={{
+        marginTop: 13,
         marginBottom: 13,
         height: 47,
         width: 'auto',

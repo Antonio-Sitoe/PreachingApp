@@ -21,8 +21,8 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
       <TouchableOpacity
         onPress={decrement}
         style={{
-          height: 32,
-          width: 32,
+          height: 25,
+          width: 25,
           alignItems: 'center',
           justifyContent: 'center',
         }}
@@ -34,8 +34,8 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
       <TouchableOpacity
         onPress={Increment}
         style={{
-          height: 32,
-          width: 32,
+          height: 25,
+          width: 25,
           alignItems: 'center',
           justifyContent: 'center',
         }}
