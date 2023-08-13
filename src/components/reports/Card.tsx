@@ -11,10 +11,12 @@ const Card = ({
   data,
   year,
   isDark,
+  handleEditReport,
 }: {
   data: Array<[string, ReportData[]]>
   year: string
   isDark: boolean
+  handleEditReport(id: string): void
 }) =>
   data.map((report, index) => {
     const monthName = report[0] as string
@@ -64,7 +66,15 @@ const Card = ({
               .locale('pt-br')
               .format('dddd, D [de] MMMM [de] YYYY')
             return (
-              <TouchableOpacity className="mt-3" key={item.id + ' ' + index}>
+              <TouchableOpacity
+                onPress={() => {
+                  if (item.id) {
+                    handleEditReport(item.id)
+                  }
+                }}
+                className="mt-3"
+                key={item.id + ' ' + index}
+              >
                 <Text
                   style={{
                     backgroundColor: isDark

@@ -2,7 +2,7 @@ import {
   Clock3,
   YoutubeIcon,
   LibraryIcon,
-  User2,
+  Users2,
   ListRestartIcon,
 } from 'lucide-react-native'
 
@@ -70,7 +70,7 @@ export default function TabOneScreen() {
             />
           </View>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
-            <Cards Icon={User2} content={reports.students} title="ESTUDOS" />
+            <Cards Icon={Users2} content={reports.students} title="ESTUDOS" />
             <Cards
               Icon={ListRestartIcon}
               content={reports.returnVisits}

@@ -15,6 +15,6 @@ export class Report extends Model {
   @field('month') month!: string
   @field('year') year!: number
 
-  @field('date') date!: Date
+  @field('date') date!: Date | string
   @field('createdAt') createdAt!: Date | string
 }

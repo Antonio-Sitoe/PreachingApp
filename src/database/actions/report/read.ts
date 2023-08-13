@@ -103,10 +103,19 @@ const GET_ALL_REPORT_DATA = async (take?: number) => {
 
   return { data: final_report_data, count }
 }
+const GET_REPORT_BY_ID = async (id: string) => {
+  const recordCollection = database.collections.get<Report>('reports')
+
+  const reportsFiltered = await recordCollection
+    .query(Q.where('id', id))
+    .fetch()
+  return reportsFiltered[0]
+}
 
 export {
   GET_ALL_REPORT_DATA,
   GET_ALL_REPORTS_TO_GLOBAL_STATES,
   GET_THE_TOTAL_NUMBER_OF_RECORDS,
+  GET_REPORT_BY_ID,
   getAllReportData,
 }
