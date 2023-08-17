@@ -20,6 +20,7 @@ import {
 import { CustomDrawerContent } from '@/components/DrawerMenu'
 import { useColorScheme } from 'nativewind'
 import { ReportStorage } from '@/contexts/ReportContext'
+import { UserStorage } from '@/contexts/UserContext'
 
 export const unstable_settings = {
   initialRouteName: '(tabs)',
@@ -72,32 +73,34 @@ function RootLayoutNav() {
 
   return (
     <MaterialProvider>
-      <ReportStorage>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <StatusBar animated translucent style="auto" />
+      <UserStorage>
+        <ReportStorage>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <StatusBar animated translucent style="auto" />
 
-          <Drawer
-            initialRouteName="(tabs)"
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
-            screenOptions={() => ({
-              headerShown: false,
-              headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
-              headerStyle: {
-                height: 85,
-                borderBottomRightRadius: isDark ? 0 : 10,
-                borderBottomLeftRadius: isDark ? 0 : 10,
-                backgroundColor: isDark
-                  ? Colors.dark.darkBgSecundary
-                  : Colors.light.background,
-              },
-              title: '',
-              drawerStyle: {
-                width: 320,
-              },
-            })}
-          />
-        </GestureHandlerRootView>
-      </ReportStorage>
+            <Drawer
+              initialRouteName="(tabs)"
+              drawerContent={(props) => <CustomDrawerContent {...props} />}
+              screenOptions={() => ({
+                headerShown: false,
+                headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
+                headerStyle: {
+                  height: 85,
+                  borderBottomRightRadius: isDark ? 0 : 10,
+                  borderBottomLeftRadius: isDark ? 0 : 10,
+                  backgroundColor: isDark
+                    ? Colors.dark.darkBgSecundary
+                    : Colors.light.background,
+                },
+                title: '',
+                drawerStyle: {
+                  width: 320,
+                },
+              })}
+            />
+          </GestureHandlerRootView>
+        </ReportStorage>
+      </UserStorage>
     </MaterialProvider>
   )
 }

@@ -14,3 +14,11 @@ export interface ReportData {
   month: string
   year: number
 }
+
+export interface IUser {
+  id: string
+  name: string
+  email: string
+  avatar_image: string
+  profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string
+}

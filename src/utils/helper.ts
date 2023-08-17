@@ -56,3 +56,12 @@ export function sorteByMonths(data) {
   })
   return objetoOrdenado
 }
+
+export function defineProfiletext(
+  profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string,
+) {
+  if (profile === 'publisher') return 'Publicador'
+  if (profile === 'baptized_publisher') return 'Batizado'
+  if (profile === 'pioneer') return 'Pioneiro'
+  return 'Perfil'
+}

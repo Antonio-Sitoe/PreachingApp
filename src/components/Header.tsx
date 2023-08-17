@@ -56,38 +56,17 @@ export function Header() {
         <View className="flex-row gap-2 items-end">
           {isReportPath ? (
             <>
-              {index === 0 && (
-                <TouchableOpacity
-                  className="px-2 py-1"
-                  onPress={handleChangeMode}
-                >
-                  {isCalendar ? (
-                    <List
-                      color={isDark ? Colors.dark.text : Colors.light.tint}
-                      size={28}
-                      strokeWidth={1.5}
-                    />
-                  ) : (
-                    <CalendarDays
-                      color={isDark ? Colors.dark.text : Colors.light.tint}
-                      size={28}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                </TouchableOpacity>
-              )}
-              {index === 1 && (
-                <TouchableOpacity className="px-2 py-1">
-                  <Share2
+              {index === 2 ? (
+                <TouchableOpacity className="py-1">
+                  <BarChart2
                     color={isDark ? Colors.dark.text : Colors.light.tint}
                     size={28}
                     strokeWidth={1.5}
                   />
                 </TouchableOpacity>
-              )}
-              {index === 2 && (
-                <TouchableOpacity className="py-1">
-                  <BarChart2
+              ) : (
+                <TouchableOpacity className="px-2 py-1">
+                  <Share2
                     color={isDark ? Colors.dark.text : Colors.light.tint}
                     size={28}
                     strokeWidth={1.5}

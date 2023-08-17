@@ -22,7 +22,7 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           title: '',
-          header(props) {
+          header() {
             return <Header />
           },
           // headerShown: false,

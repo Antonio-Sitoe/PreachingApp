@@ -4,6 +4,9 @@ import { IconIOS } from '@/assets/icons/Icon'
 import { DrawerContentComponentProps } from '@react-navigation/drawer'
 import { Route, useRouter } from 'expo-router'
 import Colors from '@/constants/Colors'
+import { Avatar } from '@react-native-material/core'
+import { useUser } from '@/contexts/UserContext'
+import { defineProfiletext } from '@/utils/helper'
 
 interface AvatarPerfilProps {
   route: Route<string>
@@ -17,6 +20,7 @@ export default function AvatarPerfil({
   isDarkTheme,
 }: AvatarPerfilProps) {
   const router = useRouter()
+  const { user } = useUser()
   return (
     <TouchableOpacity className="-mt-1" onPress={() => router.push(route)}>
       <View
@@ -25,18 +29,33 @@ export default function AvatarPerfil({
         }}
         className="flex p-6 flex-row gap-2 align-top bg-primary justify-between dark:bg-dark-darkPrimary"
       >
-        <Image
-          className="w-14 h-14 rounded"
-          source={{
-            uri: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dXNlcnxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60',
-          }}
-          alt="profile image"
-        />
+        {user.avatar_image ? (
+          <Avatar
+            color={isDarkTheme ? Colors.dark.tint : Colors.light.tint}
+            image={
+              <Image
+                className="w-14 h-14 rounded"
+                source={{
+                  uri: user.avatar_image,
+                }}
+                alt="profile image"
+              />
+            }
+          />
+        ) : (
+          <Avatar
+            label={user.name ? user.name : 'Preaching App'}
+            color={isDarkTheme ? Colors.dark.tint : '#4252c5'}
+            tintColor="white"
+          />
+        )}
         <View>
           <Text className="text-base font-bold break-all w-40 text-white">
-            Antonio Manuel Sitoe
+            {user.name ? user.name : 'Seu nome Aqui 😁'}
           </Text>
-          <Text className="font-sm text-gray-50">Publicador</Text>
+          <Text className="font-sm text-gray-50">
+            {defineProfiletext(user.profile)}
+          </Text>
         </View>
         <TouchableOpacity
           style={{
