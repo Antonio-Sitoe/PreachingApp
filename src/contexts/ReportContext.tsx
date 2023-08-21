@@ -6,7 +6,7 @@ import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read
 
 interface ReportContextPros {
   reports: ReportData
-  updateCurrentReports(monthId: number, year: number): Promise<void>
+  updateCurrentReports(monthId: string, year: number): Promise<void>
   setReportTabBarIndex(index: number): void
   reportTabBarIndex: number
   isOpenCreateReportModal: boolean
@@ -23,7 +23,7 @@ export function ReportStorage({ children }: ReportStorageProps) {
   const [reportTabBarIndex, setReportTabBarIndex] = useState(0)
   const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false)
 
-  async function updateCurrentReports(month: number, year: number) {
+  async function updateCurrentReports(month: string, year: number) {
     const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
     setReports({ ...data })
   }

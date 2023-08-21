@@ -16,7 +16,7 @@ async function getAllReportData() {
   })
 }
 
-function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: number, year: number) {
+function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: string, year: number) {
   return database.write(async () => {
     const recordCollection = database.collections.get<Report>('reports')
     const reportsFiltered = await recordCollection

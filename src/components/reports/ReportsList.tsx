@@ -16,7 +16,6 @@ import {
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
 import CreateReportModal from '../CreateReportModal'
 import { initialReportData } from '@/utils/initialReportData'
-import dayjs from 'dayjs'
 
 export interface Reports {
   date: string

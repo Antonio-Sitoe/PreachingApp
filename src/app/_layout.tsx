@@ -44,7 +44,7 @@ export default function RootLayout() {
   useEffect(() => {
     async function defineDefaultTheme() {
       const theme = await getItem()
-      console.log('theme', theme)
+      console.log('theme', theme === 'dark' ? 'dark' : 'light')
       setColorScheme(theme === 'dark' ? 'dark' : 'light')
     }
     defineDefaultTheme()

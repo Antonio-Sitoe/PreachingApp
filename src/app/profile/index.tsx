@@ -5,6 +5,7 @@ import {
   Flex,
   TextInput,
 } from '@react-native-material/core'
+import Snackbar from 'react-native-snackbar'
 
 import { IUser } from '@/@types/interfaces'
 import { Picker } from '@react-native-picker/picker'
@@ -18,18 +19,32 @@ import { Controller, useForm } from 'react-hook-form'
 import { Camera, ChevronLeft } from 'lucide-react-native'
 import { KeyboardAvoidingView } from 'react-native'
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
-
+import { zodResolver } from '@hookform/resolvers/zod'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import * as ImagePicker from 'expo-image-picker'
+import Z from 'zod'
+
+const schema = Z.object({
+  name: Z.string(),
+  email: Z.string().email('Digite um email valido'),
+  avatar_image: Z.string().url(),
+  profile: Z.string(),
+})
 
 export default function Profile() {
   const { isDark } = useTheme()
   const { back } = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const { setProfileUser, user } = useUser()
-  const [image, setImage] = useState('')
-  const { control, handleSubmit, getValues } = useForm({
+  const [image, setImage] = useState(user.avatar_image || '')
+  const {
+    control,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(schema),
     defaultValues: {
       name: user.name,
       email: user.email,
@@ -48,13 +63,16 @@ export default function Profile() {
       setImage(result.assets[0].uri)
     }
   }
-
   const onSubmit = async (data) => {
     try {
       setIsLoading(true)
       const newDate = { ...data, avatar_image: image } as IUser
       const user = await CREATE_USER(newDate)
       setProfileUser(user)
+      Snackbar.show({
+        text: 'Perfil Atualizado com sucesso',
+        duration: Snackbar.LENGTH_LONG,
+      })
     } catch (error) {
       console.log(error)
     } finally {
@@ -101,7 +119,6 @@ export default function Profile() {
                     size={150}
                   />
                 )}
-
                 <Camera
                   color="white"
                   fill={isDark ? Colors.dark.tint : Colors.light.tint}
@@ -110,6 +127,7 @@ export default function Profile() {
                 />
               </TouchableOpacity>
             </Flex>
+
             <Box mt={20}>
               <Controller
                 control={control}
@@ -156,6 +174,7 @@ export default function Profile() {
                     onChangeText={onChange}
                     value={value}
                     color={isDark ? Colors.dark.tint : Colors.light.tint}
+                    helperText={errors.email?.message}
                     inputStyle={{
                       backgroundColor: isDark
                         ? Colors.dark.background

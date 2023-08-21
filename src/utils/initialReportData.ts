@@ -10,7 +10,7 @@ export const initialReportData: ReportData = {
   returnVisits: 0,
   students: 0,
   videos: 0,
-  time: '',
+  time: '0:00',
   day: dayjs().get('date'),
   month: '',
   year: dayjs().get('y'),

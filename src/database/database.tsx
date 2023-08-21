@@ -8,6 +8,7 @@ import { model } from './model'
 const adapter = new SQLiteAdapter({
   dbName: 'preachingDB',
   schema: schemas,
+  migrations,
 })
 
 export const database = new Database({

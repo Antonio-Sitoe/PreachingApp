@@ -147,6 +147,7 @@ export default function CreateReportModal({
       <View
         style={{
           backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+          borderRadius: 10,
         }}
       >
         <DialogContent>
