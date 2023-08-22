@@ -49,6 +49,39 @@ function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: string, year: number) {
     return { data }
   })
 }
+function GET_REPORTS_BY_YEARS(year: number) {
+  return database.write(async () => {
+    const recordCollection = database.collections.get<Report>('reports')
+    const reportsFiltered = await recordCollection
+      .query(Q.where('year', year))
+      .fetch()
+
+    const data: ReportData = reportsFiltered.reduce(
+      (acc: any, state: any) => {
+        const oldState = state._raw
+        acc.hours += oldState.hours
+        acc.minutes += oldState.minutes
+        acc.videos += oldState.videos
+        acc.students += oldState.students
+        acc.returnVisits += oldState.returnVisits
+        acc.publications += oldState.publications
+        return acc
+      },
+      {
+        hours: 0,
+        minutes: 0,
+        publications: 0,
+        returnVisits: 0,
+        students: 0,
+        videos: 0,
+        time: '',
+      },
+    )
+    data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
+
+    return { data }
+  })
+}
 const GET_THE_TOTAL_NUMBER_OF_RECORDS = async () => {
   const count = await database.collections.get('reports').query().fetchCount()
 
@@ -116,6 +149,7 @@ export {
   GET_ALL_REPORT_DATA,
   GET_ALL_REPORTS_TO_GLOBAL_STATES,
   GET_THE_TOTAL_NUMBER_OF_RECORDS,
+  GET_REPORTS_BY_YEARS,
   GET_REPORT_BY_ID,
   getAllReportData,
 }

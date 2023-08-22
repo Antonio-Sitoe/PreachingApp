@@ -13,31 +13,62 @@ import { useUser } from '@/contexts/UserContext'
 import { defineProfiletext } from '@/utils/helper'
 import { currentDates, monthNameToPortuguese } from '@/utils/dates'
 import { initialReportData } from '@/utils/initialReportData'
+import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext'
+import { usePathname } from 'expo-router'
+
 interface ValueProps {
-  dateString: string
-  day: number
+  dateString?: string
+  day?: number
   month: number
-  timestamp: number
+  timestamp?: number
   year: number
+}
+
+const ListItem = ({ title, value, ...props }) => {
+  return (
+    <View
+      lightColor="#F6F6F9"
+      className="flex-row justify-between px-4 py-3"
+      {...props}
+    >
+      <Text className="text-base font-text">{title}</Text>
+      <Text className="text-base font-text">{value}</Text>
+    </View>
+  )
 }
 
 export default function ReportMonths() {
   const { colorScheme, isDark } = useTheme()
   const { user } = useUser()
-  const [title, setTitle] = useState()
+  const { index } = useTabBarIndex()
+  const { isOpenCreateReportModal } = useReportsData()
+
   const [data, setData] = useState(initialReportData as ReportData)
+  const [title, setTitle] = useState({
+    month: monthNameToPortuguese(currentDates.month),
+    year: currentDates.year,
+  })
+  const isFirstElement = index === 1
+  const changePathname = usePathname() === '/report'
+  const isModalClose = isOpenCreateReportModal === false
 
   async function onMonthChange(value: ValueProps) {
     const month = monthNameToPortuguese(value.month)
     const year = value.year
+    setTitle({ month, year })
     const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
     setData(data)
   }
+  useEffect(() => {
+    onMonthChange({ month: currentDates.month, year: currentDates.year })
+  }, [isFirstElement, changePathname, isModalClose])
+
   return (
     <View
-      className="flex-1 relative"
+      className="flex-1"
       style={{
         backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+        position: 'relative',
       }}
     >
       <CustomCalendar
@@ -48,58 +79,42 @@ export default function ReportMonths() {
           return <ChevronsRight color={Colors[colorScheme].tint} size={30} />
         }}
         headerStyle={{
-          height: 'auto',
-          width: 'auto',
+          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
         }}
-        hideDayNames
+        customHeaderTitle={
+          <Text className="capitalize text-base font-subTitle">
+            {title.month}, {title.year}
+          </Text>
+        }
         dayComponent={() => null}
-        tvParallaxShiftDistanceY={60}
         onMonthChange={onMonthChange}
-        theme={{
-          textDayHeaderFontFamily: 'IBMPLEX_Regular',
-          textDayHeaderFontSize: 10,
-          textMonthFontFamily: 'IBMPLEX_Regular',
-          textMonthFontSize: 18,
-        }}
       />
-      <Flex mt={-75} bg={isDark ? Colors.dark.background : '#F6F6F9'}>
+      <Flex
+        bg={isDark ? Colors.dark.background : '#F6F6F9'}
+        style={{ position: 'absolute', top: 60, width: '100%' }}
+      >
         <View className="grid grid-cols-1 divide-y divide-slate-300">
-          <View className="flex-row justify-between px-4 py-3">
-            <Text className="text-base font-text">Total de Horas</Text>
-            <Text className="text-base font-text">{data?.time}</Text>
-          </View>
-          <View className="flex-row justify-between px-4 py-3">
-            <Text className="text-base font-text">Publicacoes</Text>
-            <Text className="text-base font-text">{data?.publications}</Text>
-          </View>
-          <View className="flex-row justify-between px-4 py-3">
-            <Text className="text-base font-text">Videos Mostrados</Text>
-            <Text className="text-base font-text">{data?.videos}</Text>
-          </View>
-          <View className="flex-row justify-between px-4 py-3">
-            <Text className="text-base font-text">Revisitas</Text>
-            <Text className="text-base font-text">{data?.returnVisits}</Text>
-          </View>
-          <View className="flex-row justify-between px-4 py-3">
-            <Text className="text-base font-text">Estudos</Text>
-            <Text className="text-base font-text">{data?.students}</Text>
-          </View>
-          <View className="flex-row justify-between px-4 py-3">
-            <Text className="text-base font-text">Perfil</Text>
-            <Text className="text-base font-text">
-              {defineProfiletext(user.profile)}
-            </Text>
-          </View>
+          <ListItem title="Total de Horas" value={data?.time} />
+          <ListItem title="Publicacoes" value={data?.publications} />
+          <ListItem title="Videos Mostrados" value={data?.videos} />
+          <ListItem title="Revisitas" value={data?.returnVisits} />
+          <ListItem title="Estudos" value={data?.students} />
+          <ListItem title="Perfil" value={defineProfiletext(user.profile)} />
         </View>
+        <Button
+          variant="outlined"
+          title="Editar Relatorio Mensal"
+          color={Colors[colorScheme].tint}
+          titleStyle={{
+            textTransform: 'capitalize',
+            fontFamily: 'Inter_400Regular',
+          }}
+          style={{
+            paddingVertical: 5,
+            marginHorizontal: 5,
+          }}
+        />
       </Flex>
-      <Button
-        variant="outlined"
-        title="Editar Relatorio Mensal"
-        color={Colors[colorScheme].tint}
-        style={{
-          paddingVertical: 5,
-        }}
-      />
     </View>
   )
 }

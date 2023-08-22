@@ -1,6 +1,6 @@
 import dayjs from 'dayjs'
 
-import { Text, View } from '../Themed'
+import { Text, View } from '../../Themed'
 import { ReportData } from '@/@types/interfaces'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
@@ -88,8 +88,8 @@ const Card = ({
                   {date}
                 </Text>
                 <Text className="ml-2">
-                  {`${item.hours > 10 ? item.hours : '0' + item.hours}:${
-                    item.minutes > 10 ? item.minutes : '0' + item.minutes
+                  {`${item.hours >= 10 ? item.hours : '0' + item.hours}:${
+                    item.minutes >= 10 ? item.minutes : '0' + item.minutes
                   } horas, ${item.publications} publicações, ${
                     item.videos
                   } videos mostrados, ${item.returnVisits} revisitas, ${

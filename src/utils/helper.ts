@@ -63,5 +63,5 @@ export function defineProfiletext(
   if (profile === 'publisher') return 'Publicador'
   if (profile === 'baptized_publisher') return 'Batizado'
   if (profile === 'pioneer') return 'Pioneiro'
-  return 'Perfil'
+  return ''
 }

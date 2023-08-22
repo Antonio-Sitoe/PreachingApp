@@ -1,4 +1,4 @@
-import Card from './Card'
+import Card from './components/Card'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import NoContent from '../NoContent'
