@@ -1,20 +1,12 @@
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
+import * as Sharing from 'expo-sharing'
 
-import { View } from 'react-native'
+import { View, Share } from 'react-native'
 import { usePathname } from 'expo-router'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  BarChart2,
-  CalendarDays,
-  List,
-  Menu,
-  Plus,
-  RefreshCcw,
-  Share2,
-} from 'lucide-react-native'
-import React, { useState } from 'react'
+import { BarChart2, Menu, Plus, RefreshCcw, Share2 } from 'lucide-react-native'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
 import { DrawerActions } from '@react-navigation/native'
 import { useNavigation } from 'expo-router/src/useNavigation'
@@ -24,12 +16,19 @@ export function Header() {
   const navigation = useNavigation()
   const { isDark } = useTheme()
   const { index } = useTabBarIndex()
-  const { setisOpenCreateReportModal } = useReportsData()
-  const [isCalendar, setIsCalendary] = useState(false)
+  const { setisOpenCreateReportModal, reportToShare } = useReportsData()
   const isReportPath = usePathname().includes('/report')
 
-  function handleChangeMode() {
-    setIsCalendary(!isCalendar)
+  async function handleShareReport() {
+    try {
+      await Share.share({
+        message: reportToShare,
+        url: '',
+        title: 'Relatório do Mes Actual',
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -56,17 +55,21 @@ export function Header() {
         <View className="flex-row gap-2 items-end">
           {isReportPath ? (
             <>
-              {index === 2 ? (
-                <TouchableOpacity className="py-1">
-                  <BarChart2
+              {index === 1 && (
+                <TouchableOpacity
+                  className="px-2 py-1"
+                  onPress={handleShareReport}
+                >
+                  <Share2
                     color={isDark ? Colors.dark.text : Colors.light.tint}
                     size={28}
                     strokeWidth={1.5}
                   />
                 </TouchableOpacity>
-              ) : (
-                <TouchableOpacity className="px-2 py-1">
-                  <Share2
+              )}
+              {index === 2 && (
+                <TouchableOpacity className="py-1">
+                  <BarChart2
                     color={isDark ? Colors.dark.text : Colors.light.tint}
                     size={28}
                     strokeWidth={1.5}

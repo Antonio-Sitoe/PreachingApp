@@ -65,3 +65,7 @@ export function defineProfiletext(
   if (profile === 'pioneer') return 'Pioneiro'
   return ''
 }
+
+export function capitalizeString(inputString) {
+  return inputString.charAt(0).toUpperCase() + inputString.slice(1)
+}

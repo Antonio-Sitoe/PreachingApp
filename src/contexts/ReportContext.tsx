@@ -1,8 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ReportData } from '@/@types/interfaces'
 import { currentDates } from '@/utils/dates'
 import { initialReportData } from '@/utils/initialReportData'
 import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
+import { capitalizeString } from '@/utils/helper'
+
+interface IShare {
+  user: string
+  day: { month: string; year: number }
+  data: ReportData
+}
 
 interface ReportContextPros {
   reports: ReportData
@@ -11,6 +18,8 @@ interface ReportContextPros {
   reportTabBarIndex: number
   isOpenCreateReportModal: boolean
   setisOpenCreateReportModal(index: boolean): void
+  reportToShare: string
+  setTextToShare(data: IShare): void
 }
 export const ReportContext = React.createContext({} as ReportContextPros)
 
@@ -20,6 +29,7 @@ interface ReportStorageProps {
 
 export function ReportStorage({ children }: ReportStorageProps) {
   const [reports, setReports] = useState<ReportData>(initialReportData)
+  const [reportToShare, setreportToShare] = useState('')
   const [reportTabBarIndex, setReportTabBarIndex] = useState(0)
   const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false)
 
@@ -27,6 +37,17 @@ export function ReportStorage({ children }: ReportStorageProps) {
     const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
     setReports({ ...data })
   }
+  const setTextToShare = useCallback(function ({ user, day, data }) {
+    const name = 'Relatório de ' + user
+    const monthText = capitalizeString(day.month) + ' de ' + day.year
+    const time = 'Total de Horas: ' + data?.hours
+    const pub = 'Publicacoes: ' + data?.publications
+    const videos = 'Videos Mostrados: ' + data?.videos
+    const returns = 'Revisitas: ' + data?.returnVisits
+    const Estudos = 'Estudos: ' + data?.students
+    const text = `${name}\n${monthText}\n${time}\n${pub}\n${videos}\n${returns}\n${Estudos}`
+    setreportToShare(text)
+  }, [])
 
   useEffect(() => {
     updateCurrentReports(currentDates.month, currentDates.year)
@@ -39,6 +60,8 @@ export function ReportStorage({ children }: ReportStorageProps) {
     reportTabBarIndex,
     isOpenCreateReportModal,
     setisOpenCreateReportModal,
+    reportToShare,
+    setTextToShare,
   }
   return (
     <ReportContext.Provider value={value}>{children}</ReportContext.Provider>

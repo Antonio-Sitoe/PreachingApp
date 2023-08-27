@@ -10,7 +10,7 @@ import {
   GET_ALL_REPORTS_TO_GLOBAL_STATES,
   GET_REPORT_BY_ID,
 } from '@/database/actions/report/read'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ReportData } from '@/@types/interfaces'
 import { useUser } from '@/contexts/UserContext'
 import { defineProfiletext } from '@/utils/helper'
@@ -41,14 +41,18 @@ const ListItem = ({ title, value, ...props }) => {
     </View>
   )
 }
+const i = 0
 
 export default function ReportMonths() {
   const { colorScheme, isDark } = useTheme()
   const { user } = useUser()
   const { index } = useTabBarIndex()
   const [visible, setVisible] = useState(false)
-  const { isOpenCreateReportModal, setisOpenCreateReportModal } =
-    useReportsData()
+  const {
+    isOpenCreateReportModal,
+    setisOpenCreateReportModal,
+    setTextToShare,
+  } = useReportsData()
 
   const [data, setData] = useState(initialReportData as ReportData)
   const [reports, setReports] = useState<ReportData[]>([])
@@ -87,7 +91,7 @@ export default function ReportMonths() {
     setisOpenCreateReportModal(true)
   }
 
-  async function onMonthChange(value: ValueProps) {
+  const onMonthChange = async function (value: ValueProps) {
     const month = monthNameToPortuguese(value.month)
     const year = value.year
     setTitle({ month, year })
@@ -98,9 +102,21 @@ export default function ReportMonths() {
     setData(data)
     setReports(reports)
   }
+
   useEffect(() => {
     onMonthChange({ month: currentDates.month, year: currentDates.year })
   }, [isFirstElement, changePathname, isModalClose])
+
+  useEffect(() => {
+    setTextToShare({
+      user: user.name,
+      data,
+      day: {
+        month: title.month,
+        year: title.year,
+      },
+    })
+  }, [data, setTextToShare, user.name, title])
 
   return (
     <View
