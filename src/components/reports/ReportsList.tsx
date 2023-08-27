@@ -34,12 +34,10 @@ export default function ReportsList() {
   const [data, setData] = useState<CardProps>([])
   const [isloadingReportData, setIsLoadingReportData] = useState(true)
   const [totalOfRecords, setTotalOfRecords] = useState(0)
-
   const { isDark } = useTheme()
   const { index } = useTabBarIndex()
   const { isOpenCreateReportModal, setisOpenCreateReportModal } =
     useReportsData()
-
   const [initialData, setInitialData] = useState(initialReportData)
 
   function resetInitialData() {
@@ -49,6 +47,7 @@ export default function ReportsList() {
   const isFirstElement = index === 0
   const changePathname = usePathname() === '/report'
   const isModalClose = isOpenCreateReportModal === false
+  const isEnableToRender = isFirstElement && changePathname && isModalClose
 
   async function handleEditReport(id: string) {
     const report = await GET_REPORT_BY_ID(id)
@@ -84,6 +83,7 @@ export default function ReportsList() {
         const { data, count } = await GET_ALL_REPORT_DATA(take)
         setData(data)
         setTotalOfRecords(count)
+        console.log('number to take', take)
         console.log('total of reports', count)
       } catch (error) {
         console.log(error)
@@ -91,16 +91,13 @@ export default function ReportsList() {
         setIsLoadingReportData(false)
       }
     }
-    if (isFirstElement && changePathname) {
-      getallreportDataAsync(take)
-    } else if (isModalClose) {
+    if (isEnableToRender) {
       getallreportDataAsync(take)
     }
-    console.log('number to take', take)
     return () => {
       setIsLoadingReportData(true)
     }
-  }, [isFirstElement, changePathname, isModalClose, take])
+  }, [isEnableToRender, take])
 
   if (data.length === 0) {
     return <NoContent text="Sem dados" />

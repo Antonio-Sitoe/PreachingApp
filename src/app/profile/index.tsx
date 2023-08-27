@@ -59,8 +59,9 @@ export default function Profile() {
       aspect: [4, 3],
       quality: 1,
     })
-    if (result.assets) {
-      setImage(result.assets[0].uri)
+    if (!result.canceled) {
+      const { uri } = result.assets[0]
+      setImage(uri)
     }
   }
   const onSubmit = async (data) => {

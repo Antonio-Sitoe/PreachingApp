@@ -7,88 +7,78 @@ import { sorteByMonths, sorteByYears } from '@/utils/helper'
 
 async function getAllReportData() {
   const recordCollection = database.collections.get<Report>('reports')
-
   const reports = await recordCollection.query().fetch()
   console.log('relatorios', reports.length)
-
   reports.forEach((k) => {
     console.log('raw', k._raw)
   })
 }
+async function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: string, year: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const reportsFiltered = await recordCollection
+    .query(Q.and(Q.where('month', month), Q.where('year', year)))
+    .fetch()
 
-function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: string, year: number) {
-  return database.write(async () => {
-    const recordCollection = database.collections.get<Report>('reports')
-    const reportsFiltered = await recordCollection
-      .query(Q.and(Q.where('month', month), Q.where('year', year)))
-      .fetch()
-
-    const data: ReportData = reportsFiltered.reduce(
-      (acc: any, state: any) => {
-        const oldState = state._raw
-        acc.hours += oldState.hours
-        acc.minutes += oldState.minutes
-        acc.videos += oldState.videos
-        acc.students += oldState.students
-        acc.returnVisits += oldState.returnVisits
-        acc.publications += oldState.publications
-        return acc
-      },
-      {
-        hours: 0,
-        minutes: 0,
-        publications: 0,
-        returnVisits: 0,
-        students: 0,
-        videos: 0,
-        time: '',
-      },
-    )
-    data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
-
-    return { data }
-  })
+  const data: ReportData = reportsFiltered.reduce(
+    (acc: any, state: any) => {
+      const oldState = state._raw
+      acc.hours += oldState.hours
+      acc.minutes += oldState.minutes
+      acc.videos += oldState.videos
+      acc.students += oldState.students
+      acc.returnVisits += oldState.returnVisits
+      acc.publications += oldState.publications
+      return acc
+    },
+    {
+      hours: 0,
+      minutes: 0,
+      publications: 0,
+      returnVisits: 0,
+      students: 0,
+      videos: 0,
+      time: '',
+    },
+  )
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
+  return { data, reports: reportsFiltered }
 }
-function GET_REPORTS_BY_YEARS(year: number) {
-  return database.write(async () => {
-    const recordCollection = database.collections.get<Report>('reports')
-    const reportsFiltered = await recordCollection
-      .query(Q.where('year', year))
-      .fetch()
+async function GET_REPORTS_BY_YEARS(year: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const reportsFiltered = await recordCollection
+    .query(Q.where('year', year))
+    .fetch()
 
-    const data: ReportData = reportsFiltered.reduce(
-      (acc: any, state: any) => {
-        const oldState = state._raw
-        acc.hours += oldState.hours
-        acc.minutes += oldState.minutes
-        acc.videos += oldState.videos
-        acc.students += oldState.students
-        acc.returnVisits += oldState.returnVisits
-        acc.publications += oldState.publications
-        return acc
-      },
-      {
-        hours: 0,
-        minutes: 0,
-        publications: 0,
-        returnVisits: 0,
-        students: 0,
-        videos: 0,
-        time: '',
-      },
-    )
-    data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
+  const data: ReportData = reportsFiltered.reduce(
+    (acc: any, state: any) => {
+      const oldState = state._raw
+      acc.hours += oldState.hours
+      acc.minutes += oldState.minutes
+      acc.videos += oldState.videos
+      acc.students += oldState.students
+      acc.returnVisits += oldState.returnVisits
+      acc.publications += oldState.publications
+      return acc
+    },
+    {
+      hours: 0,
+      minutes: 0,
+      publications: 0,
+      returnVisits: 0,
+      students: 0,
+      videos: 0,
+      time: '',
+    },
+  )
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
 
-    return { data }
-  })
+  return { data }
 }
-const GET_THE_TOTAL_NUMBER_OF_RECORDS = async () => {
+async function GET_THE_TOTAL_NUMBER_OF_RECORDS() {
   const count = await database.collections.get('reports').query().fetchCount()
-
   return { count }
 }
-
-const GET_ALL_REPORT_DATA = async (take?: number) => {
+async function GET_ALL_REPORT_DATA(take?: number) {
   const recordCollection = database.collections.get<Report>('reports')
   const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
 
@@ -136,9 +126,8 @@ const GET_ALL_REPORT_DATA = async (take?: number) => {
 
   return { data: final_report_data, count }
 }
-const GET_REPORT_BY_ID = async (id: string) => {
+async function GET_REPORT_BY_ID(id: string) {
   const recordCollection = database.collections.get<Report>('reports')
-
   const reportsFiltered = await recordCollection
     .query(Q.where('id', id))
     .fetch()

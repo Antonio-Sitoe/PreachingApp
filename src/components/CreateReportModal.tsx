@@ -83,7 +83,7 @@ export default function CreateReportModal({
         resetAllStates()
       }
     } catch (error) {
-      setError('Falha ao criar o relatorio')
+      setError('Falha ao criar o relatório')
       console.log(error)
     } finally {
       setIsLoading(false)
