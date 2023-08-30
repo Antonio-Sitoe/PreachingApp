@@ -18,18 +18,21 @@ import { ReportData } from '@/@types/interfaces'
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
 import { initialReportData } from '@/utils/initialReportData'
 import { Text, View, ScrollView } from 'react-native'
+import { useRouter } from 'expo-router'
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
+  const router = useRouter()
   const { reports } = useReportsData()
   const [modalVisible, setModalVisible] = useState(false)
   const [initialData, setInitialData] = useState(initialReportData)
 
   function handleAddReport(data?: ReportData | undefined) {
-    setModalVisible(true)
-    if (data) {
-      setInitialData(data)
-    }
+    router.push('/modal')
+    // setModalVisible(true)
+    // if (data) {
+    //   setInitialData(data)
+    // }
   }
   function resetInitialData() {
     setInitialData(initialReportData)

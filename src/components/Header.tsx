@@ -1,6 +1,5 @@
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import * as Sharing from 'expo-sharing'
 
 import { View, Share } from 'react-native'
 import { usePathname } from 'expo-router'
