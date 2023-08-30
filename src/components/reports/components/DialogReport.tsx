@@ -6,22 +6,25 @@ import {
   Dialog,
   DialogHeader,
   DialogContent,
+  ActivityIndicator,
 } from '@react-native-material/core'
 import dayjs from 'dayjs'
+import { useRouter } from 'expo-router'
 import { useState } from 'react'
-import { ActivityIndicator, ScrollView } from 'react-native'
+import { ScrollView } from 'react-native'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 
-export const DialogReport = ({ visible, setVisible, reports, onClick }) => {
+export const DialogReport = ({ visible, setVisible, reports }) => {
   const { isDark } = useTheme()
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
   return (
     <Dialog visible={visible} onDismiss={() => setVisible(false)}>
       <DialogHeader
         title={
           <View className="w-full flex-1 flex-row justify-between">
             <Text className="font-subTitle text-lg">Editar relatório</Text>
-            {isLoading && <ActivityIndicator />}
+            {loading && <ActivityIndicator />}
           </View>
         }
       />
@@ -45,11 +48,21 @@ export const DialogReport = ({ visible, setVisible, reports, onClick }) => {
                 <TouchableOpacity
                   className="mt-3"
                   onPress={async () => {
-                    setIsLoading(true)
-                    if (item.id) {
-                      await onClick(item.id)
-                    }
-                    setIsLoading(false)
+                    setLoading(true)
+                    setVisible(false)
+                    await new Promise(() => {
+                      setTimeout(() => {
+                        router.push({
+                          pathname: '/modal',
+                          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                          // @ts-ignore-
+                          params: {
+                            id: item.id,
+                          },
+                        })
+                        setLoading(false)
+                      }, 120)
+                    })
                   }}
                 >
                   <Text

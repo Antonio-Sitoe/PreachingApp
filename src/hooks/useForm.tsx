@@ -1,17 +1,21 @@
 import { ReportType } from '@/@types/enums'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 export function useForm(
-  initialValue: number,
+  initialValue?: number,
   type: ReportType | boolean = false,
 ) {
-  const [value, setValue] = useState(initialValue || '')
+  const [value, setvalue] = useState(initialValue || '')
+
+  const setValue = useCallback((value) => {
+    setvalue(value)
+  }, [])
 
   function onchange(value: string) {
     if (type === ReportType.minutes && Number(value) >= 60) {
       return false
     } else {
-      setValue(Number(value))
+      setvalue(Number(value))
     }
   }
 
@@ -19,11 +23,11 @@ export function useForm(
     if (type === ReportType.minutes && Number(value) >= 59) {
       return false
     } else {
-      setValue((previewValue) => Number(previewValue) + 1)
+      setvalue((previewValue) => Number(previewValue) + 1)
     }
   }
   function decrementValue() {
-    setValue((previewValue) => {
+    setvalue((previewValue) => {
       if (Number(previewValue) > 1) return Number(previewValue) - 1
       return ''
     })

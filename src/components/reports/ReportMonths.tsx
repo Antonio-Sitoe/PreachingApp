@@ -6,11 +6,8 @@ import { View, Text } from '../Themed'
 
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import {
-  GET_ALL_REPORTS_TO_GLOBAL_STATES,
-  GET_REPORT_BY_ID,
-} from '@/database/actions/report/read'
-import { useCallback, useEffect, useState } from 'react'
+import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
+import React, { useEffect, useState } from 'react'
 import { ReportData } from '@/@types/interfaces'
 import { useUser } from '@/contexts/UserContext'
 import { defineProfiletext } from '@/utils/helper'
@@ -19,7 +16,6 @@ import { initialReportData } from '@/utils/initialReportData'
 import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext'
 import { usePathname } from 'expo-router'
 import { DialogReport } from './components/DialogReport'
-import CreateReportModal from '../CreateReportModal'
 
 interface ValueProps {
   dateString?: string
@@ -41,18 +37,13 @@ const ListItem = ({ title, value, ...props }) => {
     </View>
   )
 }
-const i = 0
 
 export default function ReportMonths() {
   const { colorScheme, isDark } = useTheme()
   const { user } = useUser()
   const { index } = useTabBarIndex()
   const [visible, setVisible] = useState(false)
-  const {
-    isOpenCreateReportModal,
-    setisOpenCreateReportModal,
-    setTextToShare,
-  } = useReportsData()
+  const { isOpenCreateReportModal, setTextToShare } = useReportsData()
 
   const [data, setData] = useState(initialReportData as ReportData)
   const [reports, setReports] = useState<ReportData[]>([])
@@ -63,33 +54,6 @@ export default function ReportMonths() {
   const isFirstElement = index === 1
   const changePathname = usePathname() === '/report'
   const isModalClose = isOpenCreateReportModal === false
-  const [initialData, setInitialData] = useState(initialReportData)
-
-  function resetInitialData() {
-    setInitialData(initialReportData)
-  }
-
-  async function handleEditReport(id: string) {
-    setVisible(false)
-    const report = await GET_REPORT_BY_ID(id)
-    setInitialData({
-      id,
-      comments: report.comments,
-      date: report.date,
-      hours: report.hours,
-      minutes: report.minutes,
-      publications: report.publications,
-      returnVisits: report.returnVisits,
-      students: report.students,
-      videos: report.videos,
-      day: report.day,
-      month: report.month,
-      year: report.year,
-      createdAt: report.createdAt,
-    })
-
-    setisOpenCreateReportModal(true)
-  }
 
   const onMonthChange = async function (value: ValueProps) {
     const month = monthNameToPortuguese(value.month)
@@ -172,18 +136,9 @@ export default function ReportMonths() {
         />
       </Flex>
       <DialogReport
-        onClick={handleEditReport}
         setVisible={setVisible}
         visible={visible}
         reports={reports}
-      />
-      <CreateReportModal
-        isEditing={true}
-        key={String(isOpenCreateReportModal)}
-        initialData={initialData}
-        reset={resetInitialData}
-        modalVisible={isOpenCreateReportModal}
-        setModalVisible={setisOpenCreateReportModal}
       />
     </View>
   )

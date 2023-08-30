@@ -9,13 +9,8 @@ import { Text, View } from '../Themed'
 import { ReportData } from '@/@types/interfaces'
 import { usePathname } from 'expo-router'
 import { ActivityIndicator } from 'react-native'
-import {
-  GET_ALL_REPORT_DATA,
-  GET_REPORT_BY_ID,
-} from '@/database/actions/report/read'
-import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
-import CreateReportModal from '../CreateReportModal'
-import { initialReportData } from '@/utils/initialReportData'
+import { GET_ALL_REPORT_DATA } from '@/database/actions/report/read'
+import { useTabBarIndex } from '@/contexts/ReportContext'
 
 export interface Reports {
   date: string
@@ -36,39 +31,10 @@ export default function ReportsList() {
   const [totalOfRecords, setTotalOfRecords] = useState(0)
   const { isDark } = useTheme()
   const { index } = useTabBarIndex()
-  const { isOpenCreateReportModal, setisOpenCreateReportModal } =
-    useReportsData()
-  const [initialData, setInitialData] = useState(initialReportData)
-
-  function resetInitialData() {
-    setInitialData(initialReportData)
-  }
 
   const isFirstElement = index === 0
   const changePathname = usePathname() === '/report'
-  const isModalClose = isOpenCreateReportModal === false
-  const isEnableToRender = isFirstElement && changePathname && isModalClose
-
-  async function handleEditReport(id: string) {
-    const report = await GET_REPORT_BY_ID(id)
-    setInitialData({
-      id,
-      comments: report.comments,
-      date: report.date,
-      hours: report.hours,
-      minutes: report.minutes,
-      publications: report.publications,
-      returnVisits: report.returnVisits,
-      students: report.students,
-      videos: report.videos,
-      day: report.day,
-      month: report.month,
-      year: report.year,
-      createdAt: report.createdAt,
-    })
-
-    setisOpenCreateReportModal(true)
-  }
+  const isEnableToRender = isFirstElement && changePathname
 
   function handleGotoNextPage() {
     if (isloadingReportData === false && take < totalOfRecords) {
@@ -146,21 +112,8 @@ export default function ReportsList() {
           </View>
         )}
         renderItem={({ item }) => (
-          <Card
-            handleEditReport={handleEditReport}
-            isDark={isDark}
-            data={item.reports}
-            year={item.year}
-          />
+          <Card isDark={isDark} data={item.reports} year={item.year} />
         )}
-      />
-      <CreateReportModal
-        isEditing={true}
-        key={String(isOpenCreateReportModal)}
-        initialData={initialData}
-        reset={resetInitialData}
-        modalVisible={isOpenCreateReportModal}
-        setModalVisible={setisOpenCreateReportModal}
       />
     </View>
   )

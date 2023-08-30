@@ -9,33 +9,33 @@ import {
 import Cards from '@/components/Cards'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import CreateReportModal from '@/components/CreateReportModal'
 import { useReportsData } from '@/contexts/ReportContext'
-import { useState } from 'react'
 import { StopWatch } from '@/components/StopWatch'
-
-import { ReportData } from '@/@types/interfaces'
 import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { initialReportData } from '@/utils/initialReportData'
 import { Text, View, ScrollView } from 'react-native'
 import { useRouter } from 'expo-router'
+
+interface IHoursAndMin {
+  hours: number
+  minutes: number
+}
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
   const router = useRouter()
   const { reports } = useReportsData()
-  const [modalVisible, setModalVisible] = useState(false)
-  const [initialData, setInitialData] = useState(initialReportData)
 
-  function handleAddReport(data?: ReportData | undefined) {
-    router.push('/modal')
-    // setModalVisible(true)
-    // if (data) {
-    //   setInitialData(data)
-    // }
-  }
-  function resetInitialData() {
-    setInitialData(initialReportData)
+  function handleAddReport(data: IHoursAndMin | undefined) {
+    if (data) {
+      router.push({
+        pathname: '/modal',
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        params: { h: data.hours, m: data.minutes },
+      })
+    } else {
+      router.push('/modal')
+    }
   }
 
   return (
@@ -83,13 +83,6 @@ export default function TabOneScreen() {
         </View>
       </ScrollView>
       <AnimatedButton onPress={() => handleAddReport(undefined)} />
-      <CreateReportModal
-        key={String(modalVisible)}
-        initialData={initialData}
-        reset={resetInitialData}
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-      />
     </>
   )
 }

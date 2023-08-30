@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import dayjs from 'dayjs'
 
+import { Link } from 'expo-router'
 import { Text, View } from '../../Themed'
 import { ReportData } from '@/@types/interfaces'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
+
 import Colors from '@/constants/Colors'
 import React from 'react'
 
@@ -11,12 +14,10 @@ const Card = ({
   data,
   year,
   isDark,
-  handleEditReport,
 }: {
   data: Array<[string, ReportData[]]>
   year: string
   isDark: boolean
-  handleEditReport(id: string): void
 }) =>
   data.map((report, index) => {
     const monthName = report[0] as string
@@ -66,37 +67,39 @@ const Card = ({
               .locale('pt-br')
               .format('dddd, D [de] MMMM [de] YYYY')
             return (
-              <TouchableOpacity
-                onPress={() => {
-                  if (item.id) {
-                    handleEditReport(item.id)
-                  }
-                }}
-                className="mt-3"
+              <Link
                 key={item.id + ' ' + index}
+                // @ts-ignore
+                href={{
+                  pathname: '/modal',
+                  params: { id: item.id },
+                }}
+                asChild
               >
-                <Text
-                  style={{
-                    backgroundColor: isDark
-                      ? Colors.dark.Success200
-                      : Colors.light.tint,
-                    color: isDark ? '#252525' : 'white',
-                  }}
-                  darkColor="black"
-                  className="p-1 px-2 mb-1 rounded-lg"
-                >
-                  {date}
-                </Text>
-                <Text className="ml-2">
-                  {`${item.hours >= 10 ? item.hours : '0' + item.hours}:${
-                    item.minutes >= 10 ? item.minutes : '0' + item.minutes
-                  } horas, ${item.publications} publicações, ${
-                    item.videos
-                  } videos mostrados, ${item.returnVisits} revisitas, ${
-                    item.students
-                  } estudantes`}
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity className="mt-3">
+                  <Text
+                    style={{
+                      backgroundColor: isDark
+                        ? Colors.dark.Success200
+                        : Colors.light.tint,
+                      color: isDark ? '#252525' : 'white',
+                    }}
+                    darkColor="black"
+                    className="p-1 px-2 mb-1 rounded-lg"
+                  >
+                    {date}
+                  </Text>
+                  <Text className="ml-2">
+                    {`${item.hours >= 10 ? item.hours : '0' + item.hours}:${
+                      item.minutes >= 10 ? item.minutes : '0' + item.minutes
+                    } horas, ${item.publications} publicações, ${
+                      item.videos
+                    } videos mostrados, ${item.returnVisits} revisitas, ${
+                      item.students
+                    } estudantes`}
+                  </Text>
+                </TouchableOpacity>
+              </Link>
             )
           })}
         </View>

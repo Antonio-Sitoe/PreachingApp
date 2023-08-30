@@ -4,6 +4,7 @@ import { ButtonStopWatch } from './ui/ButtonStopWatch'
 
 import useTheme from '@/hooks/useTheme'
 import Colors from '@/constants/Colors'
+import Snackbar from 'react-native-snackbar'
 
 interface DataProps {
   hours: number
@@ -22,16 +23,18 @@ export function StopWatch({ onPress }: StopWatchProps) {
   function handleResetTimerAndAddReports() {
     const hours = Number(time.slice(0, 2))
     const minutes = Number(time.slice(3, 5))
+
     if (minutes >= 1) {
       onPress({
         hours,
         minutes,
       })
     } else if (isRunning) {
-      // showMessage({
-      //   message: 'Tempo menos de 1 minuto não é Salvo',
-      //   type: 'info',
-      // })
+      Snackbar.show({
+        text: 'Tempo menos de 1 minuto não é Salvo',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: 'red',
+      })
     }
     reset()
   }
