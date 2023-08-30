@@ -55,7 +55,7 @@ export function Header() {
         </TouchableOpacity>
         <View className="flex-row gap-2 items-end">
           <>
-            {index === 1 && isReportPath && (
+            {(index === 0 || index === 1) && isReportPath && (
               <TouchableOpacity
                 className="px-2 py-1"
                 onPress={handleShareReport}

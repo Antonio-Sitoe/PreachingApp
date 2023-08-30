@@ -46,7 +46,16 @@ export default function CreateReportModal() {
   const InCHours = () => setHours(Number(hours) + 1)
   const decHours = () => setHours(Number(hours) > 1 ? Number(hours) - 1 : '')
 
-  const InCMinutes = () => setminutes(Number(minutes) + 1)
+  const handleChangeMinuts = (value: string) => {
+    if (Number(value) >= 60) {
+      return Number(value)
+    } else {
+      setminutes(Number(value))
+    }
+  }
+
+  const InCMinutes = () =>
+    setminutes(Number(minutes) >= 59 ? minutes : Number(minutes) + 1)
   const decMinutes = () =>
     setminutes(Number(minutes) > 1 ? Number(minutes) - 1 : '')
 
@@ -187,7 +196,7 @@ export default function CreateReportModal() {
               />
               <FormInput
                 value={minutes}
-                change={handleChange(setminutes)}
+                change={handleChangeMinuts}
                 decrementValue={decMinutes}
                 inCrementValue={InCMinutes}
                 title="Minutos"
