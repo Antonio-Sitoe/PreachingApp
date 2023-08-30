@@ -1,11 +1,8 @@
 import { Model } from '@nozbe/watermelondb'
-import { field, relation } from '@nozbe/watermelondb/decorators'
-import { Month } from './Month'
+import { field } from '@nozbe/watermelondb/decorators'
 
 export class Report extends Model {
   static table = 'reports'
-
-  @field('date') date!: Date
   @field('hours') hours!: number
   @field('minutes') minutes!: number
   @field('publications') publications!: number
@@ -13,7 +10,11 @@ export class Report extends Model {
   @field('returnVisits') returnVisits!: number
   @field('students') students!: number
   @field('comments') comments!: string
-  @field('createdAt') createdAt!: Date | string
 
-  @relation('months', 'month_id') month!: Month
+  @field('day') day!: number
+  @field('month') month!: string
+  @field('year') year!: number
+
+  @field('date') date!: Date | string
+  @field('createdAt') createdAt!: Date | string
 }

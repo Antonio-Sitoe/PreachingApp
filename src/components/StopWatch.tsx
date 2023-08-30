@@ -1,7 +1,6 @@
 import { View, Text, Dimensions } from 'react-native'
 import { useStopWatch } from '@/hooks/useStopWatch'
 import { ButtonStopWatch } from './ui/ButtonStopWatch'
-import { showMessage } from 'react-native-flash-message'
 
 import useTheme from '@/hooks/useTheme'
 import Colors from '@/constants/Colors'
@@ -29,10 +28,10 @@ export function StopWatch({ onPress }: StopWatchProps) {
         minutes,
       })
     } else if (isRunning) {
-      showMessage({
-        message: 'Tempo menos de 1 minuto não é Salvo',
-        type: 'info',
-      })
+      // showMessage({
+      //   message: 'Tempo menos de 1 minuto não é Salvo',
+      //   type: 'info',
+      // })
     }
     reset()
   }

@@ -1,40 +1,25 @@
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { ReportData } from '@/@types/interfaces'
-import { Month } from '@/database/model/report/Month'
-import { Year } from '@/database/model/report/Years'
-import React, { useContext, useEffect, useState } from 'react'
-import { createYearsAndMonthForCurrentDate } from '@/database/actions/report/create'
-import { minutesToHoursAndMinutes } from '@/utils/dates'
-import dayjs from 'dayjs'
-import { database } from '@/database/database'
-import { getReportsByMonthIdTranformeToGlobalState } from '@/database/actions/report/read'
+import { currentDates } from '@/utils/dates'
+import { initialReportData } from '@/utils/initialReportData'
+import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
+import { capitalizeString } from '@/utils/helper'
 
-const initialReportData: ReportData = {
-  comments: '',
-  date: new Date(),
-  hours: 0,
-  minutes: 0,
-  publications: 0,
-  returnVisits: 0,
-  students: 0,
-  videos: 0,
-  time: '',
+interface IShare {
+  user: string
+  day: { month: string; year: number }
+  data: ReportData
 }
 
-const initialYear = { id: '', year: '' }
-const initialMonth = { id: '', name: '' }
-
-type IYear = { id: string; year: string }
-type IMonth = { id: string; name: string }
-
 interface ReportContextPros {
-  month: IMonth
-  year: IYear
   reports: ReportData
-  updateCurrentReports(monthId: string): Promise<void>
+  updateCurrentReports(monthId: string, year: number): Promise<void>
   setReportTabBarIndex(index: number): void
   reportTabBarIndex: number
   isOpenCreateReportModal: boolean
   setisOpenCreateReportModal(index: boolean): void
+  reportToShare: string
+  setTextToShare(data: IShare): void
 }
 export const ReportContext = React.createContext({} as ReportContextPros)
 
@@ -43,84 +28,40 @@ interface ReportStorageProps {
 }
 
 export function ReportStorage({ children }: ReportStorageProps) {
-  const [year, setYear] = useState<IYear>(initialYear)
-  const [month, setMonth] = useState<IMonth>(initialMonth)
   const [reports, setReports] = useState<ReportData>(initialReportData)
+  const [reportToShare, setreportToShare] = useState('')
   const [reportTabBarIndex, setReportTabBarIndex] = useState(0)
   const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false)
 
-  async function updateCurrentReports(monthId: string) {
-    const { data } = await getReportsByMonthIdTranformeToGlobalState(monthId)
+  async function updateCurrentReports(month: string, year: number) {
+    const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
     setReports({ ...data })
   }
-
-  function setupInitialData() {
-    return database.write(async () => {
-      const currentYear = dayjs().year().toString()
-      const currentMonth = dayjs().locale('en').format('MMMM')
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const {
-        month,
-        year,
-      }: {
-        year: Year
-        month: Month
-      } = await createYearsAndMonthForCurrentDate(currentYear, currentMonth)
-      setYear({
-        id: year.id,
-        year: year.year,
-      })
-      setMonth({
-        id: month.id,
-        name: month.name,
-      })
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const reports = await month.reports.fetch()
-
-      if (reports.length) {
-        const data: ReportData = reports.reduce(
-          (acc: any, state: any) => {
-            const oldState = state._raw
-            acc.hours += oldState.hours
-            acc.minutes += oldState.minutes
-            acc.videos += oldState.videos
-            acc.students += oldState.students
-            acc.returnVisits += oldState.returnVisits
-            acc.publications += oldState.publications
-            return acc
-          },
-          {
-            hours: 0,
-            minutes: 0,
-            publications: 0,
-            returnVisits: 0,
-            students: 0,
-            videos: 0,
-            time: '',
-          },
-        )
-        data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
-        setReports({ ...data })
-      }
-      console.log('ANO GLOBAL', 'ano_atual:', year.year, 'id:', year.id)
-      console.log('MES GLOBAL', 'mes_atual:', month.name, 'id:', month.id)
-    })
-  }
+  const setTextToShare = useCallback(function ({ user, day, data }) {
+    const name = 'Relatório de ' + user
+    const monthText = capitalizeString(day.month) + ' de ' + day.year
+    const time = 'Total de Horas: ' + data?.hours
+    const pub = 'Publicacoes: ' + data?.publications
+    const videos = 'Videos Mostrados: ' + data?.videos
+    const returns = 'Revisitas: ' + data?.returnVisits
+    const Estudos = 'Estudos: ' + data?.students
+    const text = `${name}\n${monthText}\n${time}\n${pub}\n${videos}\n${returns}\n${Estudos}`
+    setreportToShare(text)
+  }, [])
 
   useEffect(() => {
-    setupInitialData()
+    updateCurrentReports(currentDates.month, currentDates.year)
   }, [])
+
   const value = {
-    month,
-    year,
     reports,
     updateCurrentReports,
     setReportTabBarIndex,
     reportTabBarIndex,
     isOpenCreateReportModal,
     setisOpenCreateReportModal,
+    reportToShare,
+    setTextToShare,
   }
   return (
     <ReportContext.Provider value={value}>{children}</ReportContext.Provider>

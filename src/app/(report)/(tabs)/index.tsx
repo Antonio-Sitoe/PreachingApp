@@ -2,7 +2,7 @@ import {
   Clock3,
   YoutubeIcon,
   LibraryIcon,
-  User2,
+  Users2,
   ListRestartIcon,
 } from 'lucide-react-native'
 
@@ -14,33 +14,25 @@ import { useReportsData } from '@/contexts/ReportContext'
 import { useState } from 'react'
 import { StopWatch } from '@/components/StopWatch'
 
-import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { Text, View, ScrollView } from 'react-native'
 import { ReportData } from '@/@types/interfaces'
-
-const initialReportData: ReportData = {
-  comments: '',
-  date: new Date(),
-  hours: 0,
-  minutes: 0,
-  publications: 0,
-  returnVisits: 0,
-  students: 0,
-  videos: 0,
-  time: '',
-}
+import { AnimatedButton } from '@/components/ui/ButtonAnimated'
+import { initialReportData } from '@/utils/initialReportData'
+import { Text, View, ScrollView } from 'react-native'
+import { useRouter } from 'expo-router'
 
 export default function TabOneScreen() {
   const { isDark } = useTheme()
+  const router = useRouter()
   const { reports } = useReportsData()
   const [modalVisible, setModalVisible] = useState(false)
   const [initialData, setInitialData] = useState(initialReportData)
 
   function handleAddReport(data?: ReportData | undefined) {
-    setModalVisible(true)
-    if (data) {
-      setInitialData(data)
-    }
+    router.push('/modal')
+    // setModalVisible(true)
+    // if (data) {
+    //   setInitialData(data)
+    // }
   }
   function resetInitialData() {
     setInitialData(initialReportData)
@@ -81,7 +73,7 @@ export default function TabOneScreen() {
             />
           </View>
           <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
-            <Cards Icon={User2} content={reports.students} title="ESTUDOS" />
+            <Cards Icon={Users2} content={reports.students} title="ESTUDOS" />
             <Cards
               Icon={ListRestartIcon}
               content={reports.returnVisits}

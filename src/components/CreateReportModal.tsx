@@ -1,34 +1,38 @@
 import React, { useEffect, useState } from 'react'
 import { Text } from './Themed'
-import { Input } from './ui/Input'
-import { DatePicker } from './ui/DatePicker'
+
 import {
-  View,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
-  ActivityIndicator,
-} from 'react-native'
+  TextInput as TextComent,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+} from '@react-native-material/core'
+import { DatePicker } from './ui/DatePicker'
+import { View, TextInput } from 'react-native'
 
 import dayjs from 'dayjs'
-import Modal from 'react-native-modal'
+
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import ButtonQtd from './ui/ButtonQtd'
-import ReportHead from './pieces/ReportHead'
+import Snackbar from 'react-native-snackbar'
 
 import { useForm } from '@/hooks/useForm'
 import { ReportType } from '@/@types/enums'
-import { showMessage } from 'react-native-flash-message'
+
 import { createReportData } from '@/database/actions/report/create'
-import { useReportsData } from '@/contexts/ReportContext'
 import { ReportData } from '@/@types/interfaces'
+import { useReportsData } from '@/contexts/ReportContext'
+import { currentDates, monthNameToPortuguese } from '@/utils/dates'
+import { UPDATE_REPORT_BY_ID } from '@/database/actions/report/update'
 
 interface CreateReportModalProps {
   modalVisible: boolean
   setModalVisible: (modalVisible: boolean) => void
   initialData: ReportData
   reset(): void
+  isEditing?: boolean
 }
 
 export default function CreateReportModal({
@@ -37,8 +41,9 @@ export default function CreateReportModal({
   initialData,
   reset,
 }: CreateReportModalProps) {
-  const { updateCurrentReports, month } = useReportsData()
   const { isDark } = useTheme()
+
+  const { updateCurrentReports } = useReportsData()
   const hours = useForm(initialData.hours)
   const minutes = useForm(initialData.minutes, ReportType.minutes)
   const publications = useForm(initialData.publications)
@@ -46,7 +51,9 @@ export default function CreateReportModal({
   const returnVisits = useForm(initialData.returnVisits)
   const videos = useForm(initialData.videos)
   const [comments, setComents] = useState(initialData.comments || '')
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useState(() => {
+    return initialData.createdAt ? new Date(initialData.createdAt) : new Date()
+  })
   const [error, setError] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -55,24 +62,28 @@ export default function CreateReportModal({
       setError(null)
       setIsLoading(true)
       const { data, isQualified } = formateDataBeforeSend()
-
       if (isQualified === false) {
         setModalVisible(false)
         return false
       }
-      const isReportCreated = await createReportData(data)
-      updateCurrentReports(String(month.id))
+      let isReportCreated
+      if (initialData.id) {
+        isReportCreated = await UPDATE_REPORT_BY_ID(initialData.id, data)
+      } else {
+        isReportCreated = await createReportData(data)
+      }
+      console.log(isReportCreated)
+      await updateCurrentReports(currentDates.month, currentDates.year)
       if (isReportCreated) {
-        showMessage({
-          message: 'Relatório Adicionado com Sucesso',
-          description: '',
-          type: 'success',
+        Snackbar.show({
+          text: 'Relatório Adicionado com Sucesso',
+          duration: Snackbar.LENGTH_LONG,
         })
         setModalVisible(false)
         resetAllStates()
       }
     } catch (error) {
-      setError('Falha ao criar o relatorio')
+      setError('Falha ao criar o relatório')
       console.log(error)
     } finally {
       setIsLoading(false)
@@ -80,8 +91,8 @@ export default function CreateReportModal({
   }
   function handleClose() {
     setModalVisible(false)
+    reset()
   }
-
   function resetAllStates() {
     setComents('')
     setDate(new Date())
@@ -94,8 +105,16 @@ export default function CreateReportModal({
     reset()
   }
   function formateDataBeforeSend() {
+    const dateformated = dayjs(date).format('DD/MM/YYYY')
+    const day = dayjs(date).get('date')
+    const month = monthNameToPortuguese(dayjs(date).get('month') + 1)
+    const year = dayjs(date).get('y')
+
     const data = {
-      date,
+      date: dateformated,
+      day,
+      month,
+      year,
       comments,
       hours: Number(hours.value),
       minutes: Number(minutes.value),
@@ -103,11 +122,12 @@ export default function CreateReportModal({
       publications: Number(publications.value),
       returnVisits: Number(returnVisits.value),
       videos: Number(videos.value),
-    }
+      createdAt: date,
+    } as ReportData
     const isQualified = simpleVerificationBeforeCreation(data)
+    console.log('data to send', data)
     return { data, isQualified }
   }
-
   function simpleVerificationBeforeCreation(data: ReportData) {
     if (
       data.hours === 0 &&
@@ -122,27 +142,15 @@ export default function CreateReportModal({
     } else return true
   }
 
-  useEffect(() => {
-    return () => {
-      reset()
-    }
-  }, [reset])
-
   return (
-    <Modal propagateSwipe={true} isVisible={modalVisible}>
+    <Dialog visible={modalVisible} onDismiss={handleClose}>
       <View
         style={{
           backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+          borderRadius: 10,
         }}
-        className="w-full h-full bg-[#00000080]"
       >
-        <ReportHead isDark={isDark} onclick={handleClose} />
-        <ScrollView
-          className="px-3 pt-6"
-          contentContainerStyle={{
-            paddingBottom: 60,
-          }}
-        >
+        <DialogContent>
           <DatePicker date={date} setDate={setDate} />
           <View
             style={{
@@ -168,9 +176,6 @@ export default function CreateReportModal({
                   }}
                   value={`${hours.value}`}
                   keyboardType="numeric"
-                  className="flex-1 text-sm"
-                  placeholder="Escreve..."
-                  placeholderTextColor="#808080"
                   onChangeText={(text) => hours.onchange(text)}
                 />
 
@@ -196,8 +201,6 @@ export default function CreateReportModal({
                   }}
                   value={`${minutes.value}`}
                   className="flex-1 text-sm"
-                  placeholder="Escreve..."
-                  placeholderTextColor="#808080"
                   keyboardType="numeric"
                   onChangeText={minutes.onchange}
                 />
@@ -209,63 +212,132 @@ export default function CreateReportModal({
             </View>
           </View>
 
-          <Input.Root label="Publicações">
-            <Input.Content
-              actions={true}
-              placeholder="Escreve..."
-              keyboardType="numeric"
-              value={`${publications.value}`}
-              onChangeText={publications.onchange}
-            />
-            <Input.Actions
-              Increment={publications.inCrementValue}
-              decrement={publications.decrementValue}
-            />
-          </Input.Root>
-          <Input.Root label="Videos">
-            <Input.Content
-              placeholder="Escreve..."
-              keyboardType="numeric"
-              value={`${videos.value}`}
-              onChangeText={videos.onchange}
-              actions={true}
-            />
-            <Input.Actions
-              Increment={videos.inCrementValue}
-              decrement={videos.decrementValue}
-            />
-          </Input.Root>
-          <Input.Root label="Estudos">
-            <Input.Content
-              placeholder="Escreve..."
-              keyboardType="numeric"
-              value={`${students.value}`}
-              onChangeText={students.onchange}
-              actions={true}
-            />
-            <Input.Actions
-              Increment={students.inCrementValue}
-              decrement={students.decrementValue}
-            />
-          </Input.Root>
-          <Input.Root label="Revisitas">
-            <Input.Content
-              actions={true}
-              placeholder="Escreve..."
-              keyboardType="numeric"
-              value={`${returnVisits.value}`}
-              onChangeText={returnVisits.onchange}
-            />
-            <Input.Actions
-              Increment={returnVisits.inCrementValue}
-              decrement={returnVisits.decrementValue}
-            />
-          </Input.Root>
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 10,
+              width: 'auto',
+              marginBottom: 13,
+            }}
+          >
+            <View className="flex-1">
+              <Text className="font-textIBM text-base ml-1 mb-1">
+                Publicações
+              </Text>
+              <View
+                style={{
+                  backgroundColor: isDark
+                    ? Colors.dark.background
+                    : Colors.light.ligtInputbG,
+                }}
+                className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl"
+              >
+                <TextInput
+                  style={{
+                    color: isDark ? 'white' : 'black',
+                  }}
+                  value={`${publications.value}`}
+                  onChangeText={publications.onchange}
+                  keyboardType="numeric"
+                  className="flex-1 text-sm"
+                />
+                <ButtonQtd
+                  Increment={publications.inCrementValue}
+                  decrement={publications.decrementValue}
+                />
+              </View>
+            </View>
+            <View className="flex-1">
+              <Text className="font-textIBM text-base ml-1 mb-1">Videos</Text>
+              <View
+                style={{
+                  backgroundColor: isDark
+                    ? Colors.dark.background
+                    : Colors.light.ligtInputbG,
+                }}
+                className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl"
+              >
+                <TextInput
+                  style={{
+                    color: isDark ? 'white' : 'black',
+                  }}
+                  className="flex-1 text-sm"
+                  keyboardType="numeric"
+                  value={`${videos.value}`}
+                  onChangeText={videos.onchange}
+                />
+                <ButtonQtd
+                  Increment={videos.inCrementValue}
+                  decrement={videos.decrementValue}
+                />
+              </View>
+            </View>
+          </View>
 
-          <Text className="font-textIBM text-base ml-1 mb-1 mr-6">
-            Comentarios
-          </Text>
-          <TextInput
+          <View
+            style={{
+              flexDirection: 'row',
+              gap: 10,
+              width: 'auto',
+              marginBottom: 13,
+            }}
+          >
+            <View className="flex-1">
+              <Text className="font-textIBM text-base ml-1 mb-1">Estudos</Text>
+              <View
+                style={{
+                  backgroundColor: isDark
+                    ? Colors.dark.background
+                    : Colors.light.ligtInputbG,
+                }}
+                className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl"
+              >
+                <TextInput
+                  style={{
+                    color: isDark ? 'white' : 'black',
+                  }}
+                  keyboardType="numeric"
+                  className="flex-1 text-sm"
+                  value={`${students.value}`}
+                  onChangeText={students.onchange}
+                />
+
+                <ButtonQtd
+                  Increment={students.inCrementValue}
+                  decrement={students.decrementValue}
+                />
+              </View>
+            </View>
+            <View className="flex-1">
+              <Text className="font-textIBM text-base ml-1 mb-1">
+                Revisitas
+              </Text>
+              <View
+                style={{
+                  backgroundColor: isDark
+                    ? Colors.dark.background
+                    : Colors.light.ligtInputbG,
+                }}
+                className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl"
+              >
+                <TextInput
+                  style={{
+                    color: isDark ? 'white' : 'black',
+                  }}
+                  value={`${returnVisits.value}`}
+                  onChangeText={returnVisits.onchange}
+                  className="flex-1 text-sm"
+                  keyboardType="numeric"
+                />
+                <ButtonQtd
+                  Increment={returnVisits.inCrementValue}
+                  decrement={returnVisits.decrementValue}
+                />
+              </View>
+            </View>
+          </View>
+
+          <TextComent
             placeholder="Escreva aqui..."
             value={comments}
             onChangeText={setComents}
@@ -273,60 +345,50 @@ export default function CreateReportModal({
             maxLength={140}
             editable
             multiline
-            placeholderTextColor="#808080"
-            style={{
-              color: isDark ? 'white' : 'black',
-              backgroundColor: isDark
-                ? Colors.dark.background
-                : Colors.light.ligtInputbG,
+            variant="standard"
+            label="Comentario"
+            color={isDark ? Colors.light.ligtInputbG : Colors.dark.background}
+            inputStyle={{
+              color: isDark
+                ? Colors.light.ligtInputbG
+                : Colors.dark.darkBgSecundary,
             }}
-            className="bg-ligtInputbG placeholder:text-gray-500 font-textIBM text-sm w-full h-[80px] pl-3 pr-1 rounded-xl"
+            className="bg-ligtInputbG font-textIBM text-sm w-full h-[80px] pl-3 pr-1 rounded-xl"
           />
-
-          <View className="mt-6 flex-row justify-between">
-            <TouchableOpacity
-              onPress={handleClose}
-              style={{
-                width: '48%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: '#FF647C',
-                paddingTop: 9,
-                paddingBottom: 9,
-                borderRadius: 8,
-                marginRight: 2.5,
-              }}
-            >
-              <Text className="text-white text-base font-textIBM">
-                Cancelar
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              disabled={isLoading}
-              onPress={handleCreateReport}
-              style={{
-                width: '48%',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
-                paddingTop: 9,
-                paddingBottom: 9,
-                borderRadius: 8,
-                marginLeft: 2.5,
-              }}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="white" />
-              ) : (
-                <Text className="text-white text-base font-textIBM">
-                  Guardar
-                </Text>
-              )}
-            </TouchableOpacity>
-          </View>
-          {error && <Text className="mt-1 ml-1 text-red-600">{error}</Text>}
-        </ScrollView>
+        </DialogContent>
       </View>
-    </Modal>
+      <View
+        style={{
+          backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+        }}
+      >
+        <DialogActions className="mt-6 flex-row justify-between">
+          <Button
+            onPress={handleClose}
+            title="Cancel"
+            variant="contained"
+            color="#FF647C"
+            titleStyle={{
+              color: 'white',
+              fontFamily: 'Inter_400Regular',
+              textTransform: 'capitalize',
+            }}
+          />
+          <Button
+            onPress={handleCreateReport}
+            title="Guardar"
+            variant="contained"
+            loading={isLoading}
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+            titleStyle={{
+              color: 'white',
+              fontFamily: 'Inter_400Regular',
+              textTransform: 'capitalize',
+            }}
+          />
+        </DialogActions>
+      </View>
+      {error && <Text className="mt-1 ml-1 text-red-600">{error}</Text>}
+    </Dialog>
   )
 }

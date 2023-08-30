@@ -1,20 +1,11 @@
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 
-import { View } from 'react-native'
+import { View, Share } from 'react-native'
 import { usePathname } from 'expo-router'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import {
-  BarChart2,
-  CalendarDays,
-  List,
-  Menu,
-  Plus,
-  RefreshCcw,
-  Share2,
-} from 'lucide-react-native'
-import React, { useState } from 'react'
+import { BarChart2, Menu, Plus, RefreshCcw, Share2 } from 'lucide-react-native'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
 import { DrawerActions } from '@react-navigation/native'
 import { useNavigation } from 'expo-router/src/useNavigation'
@@ -24,17 +15,32 @@ export function Header() {
   const navigation = useNavigation()
   const { isDark } = useTheme()
   const { index } = useTabBarIndex()
-  const { setisOpenCreateReportModal } = useReportsData()
-  const [isCalendar, setIsCalendary] = useState(false)
+  const { setisOpenCreateReportModal, reportToShare } = useReportsData()
   const isReportPath = usePathname().includes('/report')
 
-  function handleChangeMode() {
-    setIsCalendary(!isCalendar)
+  async function handleShareReport() {
+    try {
+      await Share.share({
+        message: reportToShare,
+        url: '',
+        title: 'Relatório do Mes Actual',
+      })
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
-    <View className="w-screen" style={{ paddingTop: top }}>
-      <View className="w-screen px-4 bg-white h-14 flex-row items-center justify-between ">
+    <View
+      className="w-screen"
+      style={{
+        paddingTop: top,
+        backgroundColor: isDark
+          ? Colors.dark.darkBgSecundary
+          : Colors.light.background,
+      }}
+    >
+      <View className="w-screen px-4 h-14 flex-row items-center justify-between ">
         <TouchableOpacity
           className="py-1"
           onPress={() => navigation.dispatch(DrawerActions.openDrawer())}
@@ -48,28 +54,11 @@ export function Header() {
         <View className="flex-row gap-2 items-end">
           {isReportPath ? (
             <>
-              {index === 0 && (
+              {index === 1 && (
                 <TouchableOpacity
                   className="px-2 py-1"
-                  onPress={handleChangeMode}
+                  onPress={handleShareReport}
                 >
-                  {isCalendar ? (
-                    <List
-                      color={isDark ? Colors.dark.text : Colors.light.tint}
-                      size={28}
-                      strokeWidth={1.5}
-                    />
-                  ) : (
-                    <CalendarDays
-                      color={isDark ? Colors.dark.text : Colors.light.tint}
-                      size={28}
-                      strokeWidth={1.5}
-                    />
-                  )}
-                </TouchableOpacity>
-              )}
-              {index === 1 && (
-                <TouchableOpacity className="px-2 py-1">
                   <Share2
                     color={isDark ? Colors.dark.text : Colors.light.tint}
                     size={28}

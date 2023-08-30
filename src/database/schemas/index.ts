@@ -1,9 +1,8 @@
-import { YearSchema } from './Report/Year'
-import { MonthSchema } from './Report/Month'
-import { ReportSchema } from './Report/Report'
+import { ReportSchema } from './Report'
 import { appSchema } from '@nozbe/watermelondb'
+import { UserSchema } from './User'
 
 export const schemas = appSchema({
-  version: 1.2,
-  tables: [ReportSchema, YearSchema, MonthSchema],
+  version: 1,
+  tables: [ReportSchema, UserSchema],
 })

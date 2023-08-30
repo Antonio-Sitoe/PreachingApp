@@ -1,13 +1,11 @@
 import { Tabs } from 'expo-router'
 import { IconIOS } from '@/assets/icons/Icon'
 import { useColorScheme } from 'nativewind'
+import { StatusBar } from 'expo-status-bar'
+import { Header } from '@/components/Header'
 
 import Colors from '@/constants/Colors'
 import Note from '@/assets/icons/Note.svg'
-
-import { StatusBar } from 'expo-status-bar'
-import { Text } from 'react-native'
-import { Header } from '@/components/Header'
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme()
@@ -24,7 +22,7 @@ export default function TabLayout() {
       <Tabs
         screenOptions={{
           title: '',
-          header(props) {
+          header() {
             return <Header />
           },
           // headerShown: false,

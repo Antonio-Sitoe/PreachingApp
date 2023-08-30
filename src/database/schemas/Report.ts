@@ -11,7 +11,11 @@ export const ReportSchema = tableSchema({
     { name: 'returnVisits', type: 'number' },
     { name: 'students', type: 'number' },
     { name: 'comments', type: 'string' },
-    { name: 'month_id', type: 'string', isIndexed: true },
+
     { name: 'createdAt', type: 'string' },
+
+    { name: 'day', type: 'number' },
+    { name: 'month', type: 'string' },
+    { name: 'year', type: 'number' },
   ],
 })

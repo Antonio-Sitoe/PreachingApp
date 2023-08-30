@@ -1,6 +1,7 @@
 export interface ReportData {
   id?: string
   date: Date | string
+  createdAt: Date | string
   hours: number
   minutes: number
   publications: number
@@ -9,7 +10,15 @@ export interface ReportData {
   students: number
   returnVisits: number
   time?: string | number
-  month?: {
-    id: string
-  }
+  day: number
+  month: string
+  year: number
+}
+
+export interface IUser {
+  id: string
+  name: string
+  email: string
+  avatar_image: string
+  profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string
 }

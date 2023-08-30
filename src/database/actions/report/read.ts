@@ -1,113 +1,144 @@
-import { ReportData } from '@/@types/interfaces'
-import report from '@/app/(tabs)/report'
-import { database } from '@/database/database'
-import { Month } from '@/database/model/report/Month'
-import { Report } from '@/database/model/report/Report'
-import { Year } from '@/database/model/report/Years'
-import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
-import { minutesToHoursAndMinutes, monthNameToPortuguese } from '@/utils/dates'
 import { Q } from '@nozbe/watermelondb'
-import dayjs from 'dayjs'
+import { Report } from '@/database/model/Report'
+import { database } from '@/database/database'
+import { ReportData } from '@/@types/interfaces'
+import { minutesToHoursAndMinutes } from '@/utils/dates'
+import { sorteByMonths, sorteByYears } from '@/utils/helper'
 
 async function getAllReportData() {
-  const yearColletion = database.collections.get<Year>('years')
-  const monthCollection = database.collections.get<Month>('months')
   const recordCollection = database.collections.get<Report>('reports')
-
-  const y = await yearColletion.query().fetch()
-  console.log('anos', y.length)
-  const m = await monthCollection.query().fetch()
-  console.log('MESES', m)
-  m.forEach((k) => {
-    console.log(k.id, ' raw', k._raw.id)
-  })
-  const r = await recordCollection.query().fetch()
-  console.log('relatorios', r.length)
-}
-
-function getReportsByMonthIdTranformeToGlobalState(monthId: string) {
-  return database.write(async () => {
-    const recordCollection = database.collections.get<Report>('reports')
-    const reportsFiltered = await recordCollection
-      .query(Q.where('month_id', monthId))
-      .fetch()
-
-    const data: ReportData = reportsFiltered.reduce(
-      (acc: any, state: any) => {
-        const oldState = state._raw
-        acc.hours += oldState.hours
-        acc.minutes += oldState.minutes
-        acc.videos += oldState.videos
-        acc.students += oldState.students
-        acc.returnVisits += oldState.returnVisits
-        acc.publications += oldState.publications
-        return acc
-      },
-      {
-        hours: 0,
-        minutes: 0,
-        publications: 0,
-        returnVisits: 0,
-        students: 0,
-        videos: 0,
-        time: '',
-      },
-    )
-    data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
-
-    return { data }
+  const reports = await recordCollection.query().fetch()
+  console.log('relatorios', reports.length)
+  reports.forEach((k) => {
+    console.log('raw', k._raw)
   })
 }
-
-const READ_ALL_REPORT_DATA = async () => {
-  const monthCollection = database.collections.get<Month>('months')
-  const monthsArray = await monthCollection
-    .query(Q.sortBy('createdAt', Q.desc))
+async function GET_ALL_REPORTS_TO_GLOBAL_STATES(month: string, year: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const reportsFiltered = await recordCollection
+    .query(Q.and(Q.where('month', month), Q.where('year', year)))
     .fetch()
 
-  const newReportData = await Promise.all(
-    monthsArray.map((months) => {
-      return getByMonth(months)
-    }),
+  const data: ReportData = reportsFiltered.reduce(
+    (acc: any, state: any) => {
+      const oldState = state._raw
+      acc.hours += oldState.hours
+      acc.minutes += oldState.minutes
+      acc.videos += oldState.videos
+      acc.students += oldState.students
+      acc.returnVisits += oldState.returnVisits
+      acc.publications += oldState.publications
+      return acc
+    },
+    {
+      hours: 0,
+      minutes: 0,
+      publications: 0,
+      returnVisits: 0,
+      students: 0,
+      videos: 0,
+      time: '',
+    },
   )
-  async function getByMonth(months: Month) {
-    const reports = await months.reports
-    const year = await months.year
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
+  return { data, reports: reportsFiltered }
+}
+async function GET_REPORTS_BY_YEARS(year: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const reportsFiltered = await recordCollection
+    .query(Q.where('year', year))
+    .fetch()
 
-    const newReports = reports.map((report) => {
-      const [month, day, year] = String(report.date).split('/')
-      const date = dayjs(new Date(Number(year), Number(month) - 1, Number(day)))
-        .locale('pt-br')
-        .format('dddd, D [de] MMMM [de] YYYY')
-      const text = `${report.hours > 10 ? report.hours : '0' + report.hours}:${
-        report.minutes > 10 ? report.minutes : '0' + report.minutes
-      } Horas, ${report.publications} Publicações, ${
-        report.videos
-      } Videos mostrados, ${report.returnVisits} revisitas, ${
-        report.students
-      } estudantes`
-      return {
-        id: report.id,
-        date,
-        text,
-      }
-    })
-    const { data } = calculeTotalNumbers(reports)
-    const totals = `${data.time} Horas, ${data.publications} Publicações, ${data.videos} Videos mostrados, ${data.returnVisits} revisitas, ${data.students} estudantes`
-    return {
-      id: months.id,
-      year: String(year.year),
-      name: monthNameToPortuguese(months.name),
-      totalText: totals,
-      reports: newReports,
-    }
+  const data: ReportData = reportsFiltered.reduce(
+    (acc: any, state: any) => {
+      const oldState = state._raw
+      acc.hours += oldState.hours
+      acc.minutes += oldState.minutes
+      acc.videos += oldState.videos
+      acc.students += oldState.students
+      acc.returnVisits += oldState.returnVisits
+      acc.publications += oldState.publications
+      return acc
+    },
+    {
+      hours: 0,
+      minutes: 0,
+      publications: 0,
+      returnVisits: 0,
+      students: 0,
+      videos: 0,
+      time: '',
+    },
+  )
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
+
+  return { data }
+}
+async function GET_THE_TOTAL_NUMBER_OF_RECORDS() {
+  const count = await database.collections.get('reports').query().fetchCount()
+  return { count }
+}
+async function GET_ALL_REPORT_DATA(take?: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
+
+  let reportsFiltered: any = null
+  if (take) {
+    reportsFiltered = await recordCollection
+      .query(
+        Q.sortBy('year', Q.desc),
+        Q.sortBy('month', Q.desc),
+        Q.take(take),
+        Q.skip(0),
+      )
+      .fetch()
+  } else {
+    reportsFiltered = await recordCollection
+      .query(Q.sortBy('year', Q.desc), Q.sortBy('month', Q.desc))
+      .fetch()
   }
 
-  return newReportData
+  const transform_report_to_years = reportsFiltered.reduce(
+    (acumulate, reports: Report) => {
+      acumulate[reports.year] = acumulate[reports.year] || []
+      acumulate[reports.year].push(reports)
+      return acumulate
+    },
+    {},
+  )
+
+  const transform_report_to_month = Object.entries(transform_report_to_years)
+  const data_sorted = sorteByYears(transform_report_to_month)
+
+  const final_report_data = data_sorted.map((reportArray) => {
+    const arrayOfReports = reportArray[1] as Report[]
+    const reports = arrayOfReports.reduce((acumulate, reports) => {
+      acumulate[reports.month] = acumulate[reports.month] || []
+      acumulate[reports.month].push(reports)
+      return acumulate
+    }, {})
+
+    return {
+      year: reportArray[0],
+      reports: sorteByMonths(Object.entries(reports)),
+    }
+  })
+
+  return { data: final_report_data, count }
+}
+async function GET_REPORT_BY_ID(id: string) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const reportsFiltered = await recordCollection
+    .query(Q.where('id', id))
+    .fetch()
+  return reportsFiltered[0]
 }
 
 export {
-  READ_ALL_REPORT_DATA,
-  getReportsByMonthIdTranformeToGlobalState,
+  GET_ALL_REPORT_DATA,
+  GET_ALL_REPORTS_TO_GLOBAL_STATES,
+  GET_THE_TOTAL_NUMBER_OF_RECORDS,
+  GET_REPORTS_BY_YEARS,
+  GET_REPORT_BY_ID,
   getAllReportData,
 }

@@ -1,5 +1,4 @@
-import { Month } from './report/Month'
-import { Report } from './report/Report'
-import { Year } from './report/Years'
+import { User } from './user'
+import { Report } from './Report'
 
-export const model = [Month, Year, Report]
+export const model = [Report, User]
