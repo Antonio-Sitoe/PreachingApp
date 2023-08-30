@@ -170,7 +170,10 @@ export default function CreateReportModal() {
           {isRendered ? (
             <DatePicker date={date} setDate={setDate} />
           ) : (
-            <View className="w-full h-10 mb-4 mt-5 bg-[#f5f5f5] rounded" />
+            <View
+              className="w-full h-10 mb-4 mt-5 rounded"
+              style={{ backgroundColor: isDark ? '#464645' : '#f5f5f5' }}
+            />
           )}
 
           <ViewWithLoad isRendered={isRendered}>

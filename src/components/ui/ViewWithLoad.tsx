@@ -6,7 +6,11 @@ export const ViewWithLoad = ({ children, isRendered }) => {
       {isRendered ? (
         <>{children}</>
       ) : (
-        <View className="w-full h-14 mb-3 bg-[#f5f5f5] rounded" />
+        <View
+          lightColor="#f5f5f5"
+          darkColor="#464645"
+          className="w-full h-14 mb-3  rounded"
+        />
       )}
     </>
   )
