@@ -43,6 +43,7 @@ export const FormInput = ({
           value={`${value}`}
           keyboardType="numeric"
           onChangeText={change}
+          className="flex-1"
         />
 
         <ButtonQtd Increment={inCrementValue} decrement={decrementValue} />

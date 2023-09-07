@@ -33,7 +33,8 @@ export function StopWatch({ onPress }: StopWatchProps) {
       Snackbar.show({
         text: 'Tempo menos de 1 minuto não é Salvo',
         duration: Snackbar.LENGTH_LONG,
-        backgroundColor: 'red',
+        backgroundColor: 'orange',
+        textColor: 'black',
       })
     }
     reset()

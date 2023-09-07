@@ -80,7 +80,6 @@ async function GET_THE_TOTAL_NUMBER_OF_RECORDS() {
 }
 async function GET_ALL_REPORT_DATA(take?: number) {
   const recordCollection = database.collections.get<Report>('reports')
-  const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
 
   let reportsFiltered: any = null
   if (take) {
@@ -123,7 +122,7 @@ async function GET_ALL_REPORT_DATA(take?: number) {
       reports: sorteByMonths(Object.entries(reports)),
     }
   })
-
+  const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
   return { data: final_report_data, count }
 }
 async function GET_REPORT_BY_ID(id: string) {

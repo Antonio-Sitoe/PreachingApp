@@ -6,23 +6,25 @@ import {
   Button,
 } from '@react-native-material/core'
 
-import { DatePicker } from '@/components/ui/DatePicker'
-import { View } from 'react-native'
-
 import dayjs from 'dayjs'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import Snackbar from 'react-native-snackbar'
 
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { ReportData } from '@/@types/interfaces'
-import { ViewWithLoad } from '@/components/ui/ViewWithLoad'
-import { createReportData } from '@/database/actions/report/create'
-import { UPDATE_REPORT_BY_ID } from '@/database/actions/report/update'
-import { FormInput } from '@/components/ui/FormInput'
-import { useReportsData } from '@/contexts/ReportContext'
 import { currentDates, monthNameToPortuguese } from '@/utils/dates'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { UPDATE_REPORT_BY_ID } from '@/database/actions/report/update'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import { GET_REPORT_BY_ID } from '@/database/actions/report/read'
+import { createReportData } from '@/database/actions/report/create'
+import { useReportsData } from '@/contexts/ReportContext'
+import { ViewWithLoad } from '@/components/ui/ViewWithLoad'
+import { ReportData } from '@/@types/interfaces'
+import { FormInput } from '@/components/ui/FormInput'
+import { DatePicker } from '@/components/ui/DatePicker'
+import { Trash2 } from 'lucide-react-native'
+import { View } from 'react-native'
+import { DELETE_REPORT_BY_ID } from '@/database/actions/report/delete'
 
 export default function CreateReportModal() {
   const { id, h, m } = useLocalSearchParams<any>()
@@ -68,10 +70,12 @@ export default function CreateReportModal() {
     setstudents(Number(students) > 1 ? Number(students) - 1 : '')
 
   const incReturnVisits = () => setreturnVisits(Number(returnVisits) + 1)
-  const decReturnVisits = () => setreturnVisits(Number(returnVisits) + 1)
+  const decReturnVisits = () =>
+    setreturnVisits(Number(returnVisits) > 1 ? Number(returnVisits) - 1 : '')
 
   const incPublications = () => setpublications(Number(publications) + 1)
-  const decPublications = () => setpublications(Number(publications) + 1)
+  const decPublications = () =>
+    setpublications(Number(publications) > 1 ? Number(publications) - 1 : '')
 
   async function handleCreateReport() {
     try {
@@ -91,7 +95,7 @@ export default function CreateReportModal() {
       Snackbar.show({
         text: 'Relatório Adicionado com Sucesso',
         duration: Snackbar.LENGTH_LONG,
-        backgroundColor: '#54a72e',
+        backgroundColor: Colors.dark.tint,
       })
       handleClose()
     } catch (error) {
@@ -142,6 +146,17 @@ export default function CreateReportModal() {
     } else return true
   }
 
+  async function handleDeleteReport(id: string) {
+    try {
+      const { sucess } = await DELETE_REPORT_BY_ID(id)
+      updateCurrentReports(currentDates.month, currentDates.year)
+      console.log('Apagou ', sucess)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      handleClose()
+    }
+  }
   useEffect(() => {
     const unmountData = (report: ReportData) => {
       setpublications(report.publications)
@@ -271,8 +286,19 @@ export default function CreateReportModal() {
           style={{
             backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
           }}
+          className="flex-row justify-between items-center"
         >
-          <DialogActions className="mt-6 flex-row justify-between">
+          {id ? (
+            <TouchableOpacity
+              className="bg-ligtInputbG w-9 h-9 justify-center items-center rounded"
+              onPress={() => handleDeleteReport(id)}
+            >
+              <Trash2 color="red" />
+            </TouchableOpacity>
+          ) : (
+            <View />
+          )}
+          <DialogActions className="mt-6 flex-1 flex-row justify-between">
             <Button
               onPress={handleClose}
               title="Cancel"

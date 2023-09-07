@@ -22,8 +22,13 @@ export const DialogReport = ({ visible, setVisible, reports }) => {
     <Dialog visible={visible} onDismiss={() => setVisible(false)}>
       <DialogHeader
         title={
-          <View className="w-full flex-1 flex-row justify-between">
-            <Text className="font-subTitle text-lg">Editar relatório</Text>
+          <View
+            className="w-full flex-1 flex-row justify-between"
+            darkColor="white"
+          >
+            <Text className="font-subTitle text-lg" darkColor="black">
+              Editar relatório
+            </Text>
             {loading && <ActivityIndicator />}
           </View>
         }

@@ -135,11 +135,13 @@ export default function ReportMonths() {
           }}
         />
       </Flex>
-      <DialogReport
-        setVisible={setVisible}
-        visible={visible}
-        reports={reports}
-      />
+      {visible && (
+        <DialogReport
+          setVisible={setVisible}
+          visible={visible}
+          reports={reports}
+        />
+      )}
     </View>
   )
 }
