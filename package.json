@@ -38,6 +38,7 @@
     "expo-status-bar": "~1.6.0",
     "expo-system-ui": "~2.4.0",
     "expo-web-browser": "~12.3.2",
+    "group-by": "^0.0.1",
     "js-base64": "^3.7.5",
     "lucide-react-native": "^0.260.0",
     "nativewind": "^2.0.11",

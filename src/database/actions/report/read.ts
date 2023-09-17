@@ -4,6 +4,7 @@ import { database } from '@/database/database'
 import { ReportData } from '@/@types/interfaces'
 import { minutesToHoursAndMinutes } from '@/utils/dates'
 import { sorteByMonths, sorteByYears } from '@/utils/helper'
+import groupBy from 'group-by'
 
 async function getAllReportData() {
   const recordCollection = database.collections.get<Report>('reports')
@@ -78,52 +79,29 @@ async function GET_THE_TOTAL_NUMBER_OF_RECORDS() {
   const count = await database.collections.get('reports').query().fetchCount()
   return { count }
 }
-async function GET_ALL_REPORT_DATA(take?: number) {
+async function GET_ALL_REPORT_DATA(take: number) {
   const recordCollection = database.collections.get<Report>('reports')
 
-  let reportsFiltered: any = null
-  if (take) {
-    reportsFiltered = await recordCollection
-      .query(
-        Q.sortBy('year', Q.desc),
-        Q.sortBy('month', Q.desc),
-        Q.take(take),
-        Q.skip(0),
-      )
-      .fetch()
-  } else {
-    reportsFiltered = await recordCollection
-      .query(Q.sortBy('year', Q.desc), Q.sortBy('month', Q.desc))
-      .fetch()
-  }
+  const reportsFiltered = await recordCollection
+    .query(Q.sortBy('createdAt'), Q.take(take), Q.skip(0))
+    .fetch()
 
-  const transform_report_to_years = reportsFiltered.reduce(
-    (acumulate, reports: Report) => {
-      acumulate[reports.year] = acumulate[reports.year] || []
-      acumulate[reports.year].push(reports)
-      return acumulate
-    },
-    {},
+  const transform_report_to_years = Object.entries(
+    groupBy(reportsFiltered, 'year'),
   )
-
-  const transform_report_to_month = Object.entries(transform_report_to_years)
-  const data_sorted = sorteByYears(transform_report_to_month)
+  const data_sorted = sorteByYears(transform_report_to_years)
+  console.log(data_sorted)
 
   const final_report_data = data_sorted.map((reportArray) => {
     const arrayOfReports = reportArray[1] as Report[]
-    const reports = arrayOfReports.reduce((acumulate, reports) => {
-      acumulate[reports.month] = acumulate[reports.month] || []
-      acumulate[reports.month].push(reports)
-      return acumulate
-    }, {})
-
+    const reports = groupBy(arrayOfReports, 'month')
     return {
       year: reportArray[0],
       reports: sorteByMonths(Object.entries(reports)),
     }
   })
-  const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
-  return { data: final_report_data, count }
+
+  return { data: final_report_data }
 }
 async function GET_REPORT_BY_ID(id: string) {
   const recordCollection = database.collections.get<Report>('reports')
