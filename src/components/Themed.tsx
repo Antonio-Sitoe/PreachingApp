@@ -4,6 +4,7 @@
  */
 
 import { Text as DefaultText, View as DefaultView } from 'react-native'
+import { TouchableOpacity as DefaultTouchableOpacity } from 'react-native-gesture-handler'
 import { useColorScheme } from 'nativewind'
 import Colors from '@/constants/Colors'
 
@@ -14,6 +15,7 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText['props']
 export type ViewProps = ThemeProps & DefaultView['props']
+export type TouchebleProps = ThemeProps & DefaultView['props']
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -44,4 +46,18 @@ export function View(props: ViewProps) {
   )
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />
+}
+export function TouchableOpacity(props: TouchebleProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props
+  const backgroundColor = useThemeColor(
+    { light: lightColor, dark: darkColor },
+    'background',
+  )
+
+  return (
+    <DefaultTouchableOpacity
+      style={[{ backgroundColor }, style]}
+      {...otherProps}
+    />
+  )
 }

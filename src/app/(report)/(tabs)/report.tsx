@@ -25,7 +25,9 @@ const renderTabBar = (props, isDark) => {
         style={{
           borderRadius: 6,
           paddingBottom: 3,
-          backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+          backgroundColor: isDark ? Colors.dark.background : Colors.light.tint,
+          borderColor: isDark ? Colors.dark.tint : '',
+          borderWidth: isDark ? 2 : 0,
         }}
       />
     </View>

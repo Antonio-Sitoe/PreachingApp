@@ -79,19 +79,15 @@ async function GET_THE_TOTAL_NUMBER_OF_RECORDS() {
   const count = await database.collections.get('reports').query().fetchCount()
   return { count }
 }
-async function GET_ALL_REPORT_DATA(take: number) {
+async function GET_ALL_REPORT_DATA() {
   const recordCollection = database.collections.get<Report>('reports')
 
-  const reportsFiltered = await recordCollection
-    .query(Q.sortBy('createdAt'), Q.take(take), Q.skip(0))
-    .fetch()
+  const reportsFiltered = await recordCollection.query().fetch()
 
   const transform_report_to_years = Object.entries(
     groupBy(reportsFiltered, 'year'),
   )
   const data_sorted = sorteByYears(transform_report_to_years)
-  console.log(data_sorted)
-
   const final_report_data = data_sorted.map((reportArray) => {
     const arrayOfReports = reportArray[1] as Report[]
     const reports = groupBy(arrayOfReports, 'month')
@@ -101,6 +97,14 @@ async function GET_ALL_REPORT_DATA(take: number) {
     }
   })
 
+  return { data: final_report_data }
+}
+async function GET_PARTIAL_REPORTDATA(skip: number, take: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+
+  const final_report_data = await recordCollection
+    .query(Q.sortBy('year', Q.desc), Q.skip(skip), Q.take(take))
+    .fetch()
   return { data: final_report_data }
 }
 async function GET_REPORT_BY_ID(id: string) {
@@ -117,5 +121,6 @@ export {
   GET_THE_TOTAL_NUMBER_OF_RECORDS,
   GET_REPORTS_BY_YEARS,
   GET_REPORT_BY_ID,
+  GET_PARTIAL_REPORTDATA,
   getAllReportData,
 }

@@ -22,8 +22,8 @@ module.exports = {
         dark: {
           darkBG: '#121214',
           darkBgSecundary: '#202024',
-          tint: '#45B063',
-          darkPrimary: '328048',
+          tint: '#328048',
+          darkPrimary: '#328048',
           Success200: '#C6F0C2',
         },
 

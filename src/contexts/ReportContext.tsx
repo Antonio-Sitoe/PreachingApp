@@ -20,6 +20,8 @@ interface ReportContextPros {
   setisOpenCreateReportModal(index: boolean): void
   reportToShare: string
   setTextToShare(data: IShare): void
+  isLayoutList: boolean
+  handleChangeLayaltList(): void
 }
 export const ReportContext = React.createContext({} as ReportContextPros)
 
@@ -32,6 +34,7 @@ export function ReportStorage({ children }: ReportStorageProps) {
   const [reportToShare, setreportToShare] = useState('')
   const [reportTabBarIndex, setReportTabBarIndex] = useState(0)
   const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false)
+  const [isLayoutList, setIsLayoutList] = useState(false)
 
   async function updateCurrentReports(month: string, year: number) {
     const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
@@ -48,6 +51,9 @@ export function ReportStorage({ children }: ReportStorageProps) {
     const text = `${name}\n${monthText}\n${time}\n${pub}\n${videos}\n${returns}\n${Estudos}`
     setreportToShare(text)
   }, [])
+  function handleChangeLayaltList() {
+    setIsLayoutList(!isLayoutList)
+  }
 
   useEffect(() => {
     updateCurrentReports(currentDates.month, currentDates.year)
@@ -62,6 +68,8 @@ export function ReportStorage({ children }: ReportStorageProps) {
     setisOpenCreateReportModal,
     reportToShare,
     setTextToShare,
+    isLayoutList,
+    handleChangeLayaltList,
   }
   return (
     <ReportContext.Provider value={value}>{children}</ReportContext.Provider>

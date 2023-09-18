@@ -5,7 +5,15 @@ import { View, Share } from 'react-native'
 import { usePathname, useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { BarChart2, Menu, Plus, RefreshCcw, Share2 } from 'lucide-react-native'
+import {
+  BarChart2,
+  Menu,
+  Plus,
+  RefreshCcw,
+  Share2,
+  LayoutList,
+  ListMinus,
+} from 'lucide-react-native'
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
 import { DrawerActions } from '@react-navigation/native'
 import { useNavigation } from 'expo-router/src/useNavigation'
@@ -16,7 +24,8 @@ export function Header() {
   const { push } = useRouter()
   const { isDark } = useTheme()
   const { index } = useTabBarIndex()
-  const { reportToShare } = useReportsData()
+  const { reportToShare, isLayoutList, handleChangeLayaltList } =
+    useReportsData()
   const isReportPath = usePathname().includes('/report')
   const isModalRoute = usePathname().includes('/modal')
 
@@ -55,6 +64,27 @@ export function Header() {
         </TouchableOpacity>
         <View className="flex-row gap-2 items-end">
           <>
+            {index === 0 && isReportPath && (
+              <TouchableOpacity
+                className="px-2 py-1"
+                onPress={handleChangeLayaltList}
+              >
+                {isLayoutList ? (
+                  <LayoutList
+                    color={isDark ? Colors.dark.text : Colors.light.tint}
+                    size={28}
+                    strokeWidth={1.5}
+                  />
+                ) : (
+                  <ListMinus
+                    color={isDark ? Colors.dark.text : Colors.light.tint}
+                    size={28}
+                    strokeWidth={1.5}
+                  />
+                )}
+              </TouchableOpacity>
+            )}
+
             {(index === 0 || index === 1) && isReportPath && (
               <TouchableOpacity
                 className="px-2 py-1"

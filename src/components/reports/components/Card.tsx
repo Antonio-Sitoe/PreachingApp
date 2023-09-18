@@ -80,9 +80,9 @@ const Card = ({
                   <Text
                     style={{
                       backgroundColor: isDark
-                        ? Colors.dark.Success200
+                        ? Colors.dark.tint
                         : Colors.light.tint,
-                      color: isDark ? '#252525' : 'white',
+                      color: 'white',
                     }}
                     darkColor="black"
                     className="p-1 px-2 mb-1 rounded-lg"
