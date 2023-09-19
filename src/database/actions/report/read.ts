@@ -3,7 +3,7 @@ import { Report } from '@/database/model/Report'
 import { database } from '@/database/database'
 import { ReportData } from '@/@types/interfaces'
 import { minutesToHoursAndMinutes } from '@/utils/dates'
-import { sorteByMonths, sorteByYears } from '@/utils/helper'
+import { sortByYearMonthDay, sorteByMonths, sorteByYears } from '@/utils/helper'
 import groupBy from 'group-by'
 
 async function getAllReportData() {
@@ -99,12 +99,13 @@ async function GET_ALL_REPORT_DATA() {
 
   return { data: final_report_data }
 }
-async function GET_PARTIAL_REPORTDATA(skip: number, take: number) {
+async function GET_PARTIAL_REPORTDATA() {
   const recordCollection = database.collections.get<Report>('reports')
 
-  const final_report_data = await recordCollection
-    .query(Q.sortBy('year', Q.desc), Q.skip(skip), Q.take(take))
+  const reports = await recordCollection
+    .query(Q.sortBy('createdAt', Q.desc))
     .fetch()
+  const final_report_data = sortByYearMonthDay(reports)
   return { data: final_report_data }
 }
 async function GET_REPORT_BY_ID(id: string) {

@@ -19,11 +19,7 @@ export default function ReportListWithButton() {
   const [isloadingReportData, setIsLoadingReportData] = useState(true)
 
   const { isDark } = useTheme()
-  const { index } = useTabBarIndex()
-
-  const isFirstElement = index === 0
   const changePathname = usePathname() === '/report'
-  const isEnableToRender = isFirstElement && changePathname
 
   useEffect(() => {
     const getallreportDataAsync = async () => {
@@ -37,13 +33,13 @@ export default function ReportListWithButton() {
         setIsLoadingReportData(false)
       }
     }
-    if (isEnableToRender) {
+    if (changePathname) {
       getallreportDataAsync()
     }
     return () => {
       setIsLoadingReportData(true)
     }
-  }, [isEnableToRender])
+  }, [changePathname])
 
   if (data.length === 0) {
     return <NoContent text="Sem dados" />

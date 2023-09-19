@@ -69,3 +69,34 @@ export function defineProfiletext(
 export function capitalizeString(inputString) {
   return inputString.charAt(0).toUpperCase() + inputString.slice(1)
 }
+
+export function sortByYearMonthDay(data: any) {
+  return data.sort((a, b) => {
+    // Ordena por ano em ordem decrescente
+    if (a.year !== b.year) {
+      return b.year - a.year
+    }
+
+    // Ordena por mês em ordem decrescente (considerando o nome do mês)
+    const monthOrder = {
+      janeiro: 1,
+      fevereiro: 2,
+      março: 3,
+      abril: 4,
+      maio: 5,
+      junho: 6,
+      julho: 7,
+      agosto: 8,
+      setembro: 9,
+      outubro: 10,
+      novembro: 11,
+      dezembro: 12,
+    }
+    if (monthOrder[a.month] !== monthOrder[b.month]) {
+      return monthOrder[b.month] - monthOrder[a.month]
+    }
+
+    // Ordena por dia em ordem decrescente
+    return b.day - a.day
+  })
+}
