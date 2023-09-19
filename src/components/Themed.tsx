@@ -3,10 +3,15 @@
  * https://docs.expo.io/guides/color-schemes/
  */
 
-import { Text as DefaultText, View as DefaultView } from 'react-native'
+import {
+  Text as DefaultText,
+  View as DefaultView,
+  TouchableOpacityProps,
+} from 'react-native'
 import { TouchableOpacity as DefaultTouchableOpacity } from 'react-native-gesture-handler'
 import { useColorScheme } from 'nativewind'
 import Colors from '@/constants/Colors'
+import React, { forwardRef, useRef } from 'react'
 
 type ThemeProps = {
   lightColor?: string
@@ -15,7 +20,9 @@ type ThemeProps = {
 
 export type TextProps = ThemeProps & DefaultText['props']
 export type ViewProps = ThemeProps & DefaultView['props']
-export type TouchebleProps = ThemeProps & DefaultView['props']
+export type TouchebleProps = ThemeProps &
+  DefaultTouchableOpacity['props'] &
+  TouchableOpacityProps
 
 export function useThemeColor(
   props: { light?: string; dark?: string },
@@ -47,7 +54,8 @@ export function View(props: ViewProps) {
 
   return <DefaultView style={[{ backgroundColor }, style]} {...otherProps} />
 }
-export function TouchableOpacity(props: TouchebleProps) {
+
+function TouchableOpacity(props: TouchebleProps, ref) {
   const { style, lightColor, darkColor, ...otherProps } = props
   const backgroundColor = useThemeColor(
     { light: lightColor, dark: darkColor },
@@ -56,8 +64,10 @@ export function TouchableOpacity(props: TouchebleProps) {
 
   return (
     <DefaultTouchableOpacity
+      ref={ref}
       style={[{ backgroundColor }, style]}
       {...otherProps}
     />
   )
 }
+export default forwardRef(TouchableOpacity)

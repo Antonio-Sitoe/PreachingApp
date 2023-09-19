@@ -12,21 +12,9 @@ import { useEffect, useState } from 'react'
 import { GET_PARTIAL_REPORTDATA } from '@/database/actions/report/read'
 import CardWithButton from './CardWithButton'
 
-export interface Reports {
-  date: string
-  id: string
-  text: string
-}
+export type CardProps = ReportData[]
 
-export interface ReportDataProps {
-  year: string
-  reports: Array<[string, ReportData[]]>
-}
-export type CardProps = ReportDataProps[]
-
-const pageSize = 10 // Number of items per page
 export default function ReportListWithButton() {
-  const [page, setPage] = useState(0)
   const [data, setData] = useState<CardProps>([])
   const [isloadingReportData, setIsLoadingReportData] = useState(true)
 
@@ -37,17 +25,11 @@ export default function ReportListWithButton() {
   const changePathname = usePathname() === '/report'
   const isEnableToRender = isFirstElement && changePathname
 
-  const handleNextPage = () => {
-    setPage(page + 1)
-  }
-
   useEffect(() => {
-    const getallreportDataAsync = async (page) => {
+    const getallreportDataAsync = async () => {
       setIsLoadingReportData(true)
       try {
-        const skip = (page - 1) * pageSize
-        const take = pageSize
-        const { data } = await GET_PARTIAL_REPORTDATA(skip, take)
+        const { data } = await GET_PARTIAL_REPORTDATA()
         setData(data)
       } catch (error) {
         console.log(error)
@@ -56,12 +38,12 @@ export default function ReportListWithButton() {
       }
     }
     if (isEnableToRender) {
-      getallreportDataAsync(page)
+      getallreportDataAsync()
     }
     return () => {
       setIsLoadingReportData(true)
     }
-  }, [isEnableToRender, page])
+  }, [isEnableToRender])
 
   if (data.length === 0) {
     return <NoContent text="Sem dados" />
@@ -77,15 +59,13 @@ export default function ReportListWithButton() {
       <FlashList
         data={data}
         estimatedItemSize={300}
-        onEndReached={handleNextPage}
-        onEndReachedThreshold={0.3}
         contentContainerStyle={{
           paddingBottom: 40,
           paddingRight: 16,
           paddingHorizontal: 16,
           paddingTop: 16,
         }}
-        keyExtractor={(item, i) => item.year + i}
+        keyExtractor={(item, i) => i + String(item.id)}
         ListFooterComponent={() => (
           <View
             style={{

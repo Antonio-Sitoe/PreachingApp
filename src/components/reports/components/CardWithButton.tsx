@@ -4,9 +4,10 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 
 import { Pen } from 'lucide-react-native'
-import { TouchableOpacity, View, Text } from '@/components/Themed'
+import TouchableOpacity, { View, Text } from '@/components/Themed'
 import { Link } from 'expo-router'
 import { memo } from 'react'
+import { capitalizeString } from '@/utils/helper'
 
 function CardWithButton({ data }) {
   const { isDark } = useTheme()
@@ -29,7 +30,7 @@ function CardWithButton({ data }) {
             darkColor="black"
             className="p-1 px-2 mb-1 rounded-lg font-bold"
           >
-            {date}
+            {capitalizeString(date)}
           </Text>
           <Text lightColor="#504F4F" className="text-sm pl-2 font-subTitle">
             {`${data.hours >= 10 ? data.hours : '0' + data.hours}:${
@@ -50,7 +51,12 @@ function CardWithButton({ data }) {
             }}
             asChild
           >
-            <TouchableOpacity className="w-full h-full bg-dark-tint rounded-lg flex items-center justify-center dark:bg-black">
+            <TouchableOpacity
+              style={{
+                backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+              }}
+              className="w-full h-full rounded-lg flex items-center justify-center dark:bg-black"
+            >
               <Pen color="white" size={20} strokeWidth={1.5} />
             </TouchableOpacity>
           </Link>
