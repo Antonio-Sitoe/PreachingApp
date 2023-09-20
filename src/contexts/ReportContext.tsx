@@ -4,6 +4,7 @@ import { currentDates } from '@/utils/dates'
 import { initialReportData } from '@/utils/initialReportData'
 import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
 import { capitalizeString } from '@/utils/helper'
+import { useAsyncStorage } from '@react-native-async-storage/async-storage'
 
 interface IShare {
   user: string
@@ -31,6 +32,7 @@ interface ReportStorageProps {
 
 export function ReportStorage({ children }: ReportStorageProps) {
   const [reports, setReports] = useState<ReportData>(initialReportData)
+  const { setItem, getItem } = useAsyncStorage('@LayoutList')
   const [reportToShare, setreportToShare] = useState('')
   const [reportTabBarIndex, setReportTabBarIndex] = useState(0)
   const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false)
@@ -53,11 +55,20 @@ export function ReportStorage({ children }: ReportStorageProps) {
   }, [])
   function handleChangeLayaltList() {
     setIsLayoutList(!isLayoutList)
+    setItem(String(!isLayoutList))
   }
 
   useEffect(() => {
     updateCurrentReports(currentDates.month, currentDates.year)
   }, [])
+
+  useEffect(() => {
+    async function getLayoutList() {
+      const islay = await getItem()
+      setIsLayoutList(islay !== 'false')
+    }
+    getLayoutList()
+  }, [getItem])
 
   const value = {
     reports,
