@@ -3,7 +3,7 @@ import { Report } from '@/database/model/Report'
 import { database } from '@/database/database'
 import { ReportData } from '@/@types/interfaces'
 import { minutesToHoursAndMinutes } from '@/utils/dates'
-import { sortByYearMonthDay, sorteByMonths, sorteByYears } from '@/utils/helper'
+import { sorteByMonths, sorteByYears } from '@/utils/helper'
 import groupBy from 'group-by'
 
 async function getAllReportData() {
@@ -114,10 +114,9 @@ async function GET_PARTIAL_REPORTDATA(page: number, limit: number) {
   console.log('TOTAL PAGE', totalPage)
   console.log('ITEMS NA DATABASE', count)
   console.log('ITEMS A LEVAR', reports.length)
-
-  // const final_report_data = sortByYearMonthDay(reports)
   return { data: reports, totalPage }
 }
+
 async function GET_REPORT_BY_ID(id: string) {
   const recordCollection = database.collections.get<Report>('reports')
   const reportsFiltered = await recordCollection

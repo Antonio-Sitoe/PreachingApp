@@ -15,8 +15,8 @@ function CardWithButton({ data }) {
     .locale('pt-br')
     .format('dddd, D [de] MMMM [de] YYYY')
   return (
-    <View className="w-full mb-4">
-      <View className="flex flex-row gap-2">
+    <View className="w-full mb-4" lightColor="transparent">
+      <View className="flex flex-row gap-2" lightColor="transparent">
         <View
           lightColor="#c1e9e2"
           darkColor={Colors.dark.darkBgSecundary}
@@ -25,7 +25,7 @@ function CardWithButton({ data }) {
           <Text
             style={{
               backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
-              color: !isDark ? '#252525' : 'white',
+              color: 'white',
             }}
             darkColor="black"
             className="p-1 px-2 mb-1 rounded-lg font-bold"
