@@ -2,7 +2,7 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 
 import { View, Share } from 'react-native'
-import { usePathname, useRouter } from 'expo-router'
+import { Link, usePathname, useRouter } from 'expo-router'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import {
@@ -99,13 +99,15 @@ export function Header() {
             )}
 
             {index === 2 && isReportPath && (
-              <TouchableOpacity className="py-1">
-                <BarChart2
-                  color={isDark ? Colors.dark.text : Colors.light.tint}
-                  size={28}
-                  strokeWidth={1.5}
-                />
-              </TouchableOpacity>
+              <Link href="/(report)/(tabs)/report/chart" asChild>
+                <TouchableOpacity className="py-1">
+                  <BarChart2
+                    color={isDark ? Colors.dark.text : Colors.light.tint}
+                    size={28}
+                    strokeWidth={1.5}
+                  />
+                </TouchableOpacity>
+              </Link>
             )}
             {(isReportPath || isModalRoute) && (
               <TouchableOpacity className="py-1" onPress={() => push('/modal')}>

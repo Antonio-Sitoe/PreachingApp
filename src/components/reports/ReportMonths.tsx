@@ -25,7 +25,7 @@ interface ValueProps {
   year: number
 }
 
-const ListItem = ({ title, value, ...props }) => {
+export const ListItem = ({ title, value, ...props }) => {
   return (
     <View
       lightColor="#F6F6F9"

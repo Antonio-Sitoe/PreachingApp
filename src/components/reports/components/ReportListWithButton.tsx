@@ -1,32 +1,42 @@
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import NoContent from '../../NoContent'
+import CardWithButton from './CardWithButton'
 
 import { FlashList } from '@shopify/flash-list'
+import { Button } from '@react-native-material/core'
 import { Text, View } from '../../Themed'
 import { ReportData } from '@/@types/interfaces'
 import { usePathname } from 'expo-router'
-import { useTabBarIndex } from '@/contexts/ReportContext'
 import { ActivityIndicator } from 'react-native'
 import { useEffect, useState } from 'react'
 import { GET_PARTIAL_REPORTDATA } from '@/database/actions/report/read'
-import CardWithButton from './CardWithButton'
 
 export type CardProps = ReportData[]
 
 export default function ReportListWithButton() {
   const [data, setData] = useState<CardProps>([])
+  const [page, setPage] = useState(0)
+  const [totalPages, setTotalPage] = useState(0)
   const [isloadingReportData, setIsLoadingReportData] = useState(true)
 
   const { isDark } = useTheme()
   const changePathname = usePathname() === '/report'
 
+  function handleMoreData() {
+    if (page <= totalPages) {
+      setPage(page + 1)
+    }
+  }
+
   useEffect(() => {
-    const getallreportDataAsync = async () => {
+    const getallreportDataAsync = async (page: number) => {
       setIsLoadingReportData(true)
       try {
-        const { data } = await GET_PARTIAL_REPORTDATA()
+        const limit = 4
+        const { data, totalPage } = await GET_PARTIAL_REPORTDATA(page, limit)
         setData(data)
+        setTotalPage(totalPage)
       } catch (error) {
         console.log(error)
       } finally {
@@ -34,12 +44,12 @@ export default function ReportListWithButton() {
       }
     }
     if (changePathname) {
-      getallreportDataAsync()
+      getallreportDataAsync(page)
     }
     return () => {
       setIsLoadingReportData(true)
     }
-  }, [changePathname])
+  }, [changePathname, page])
 
   if (data.length === 0) {
     return <NoContent text="Sem dados" />
@@ -72,6 +82,7 @@ export default function ReportListWithButton() {
               <ActivityIndicator />
             ) : (
               <>
+                <Button title="Ver mais" onPress={handleMoreData} />
                 <Text
                   className="mt-2 font-textIBM text-center"
                   lightColor={Colors.light.tint}

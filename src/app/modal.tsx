@@ -95,7 +95,7 @@ export default function CreateReportModal() {
       Snackbar.show({
         text: 'Relatório Adicionado com Sucesso',
         duration: Snackbar.LENGTH_LONG,
-        backgroundColor: Colors.dark.tint,
+        backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
       })
       handleClose()
     } catch (error) {

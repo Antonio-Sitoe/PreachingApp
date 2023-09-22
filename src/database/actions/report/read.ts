@@ -99,14 +99,24 @@ async function GET_ALL_REPORT_DATA() {
 
   return { data: final_report_data }
 }
-async function GET_PARTIAL_REPORTDATA() {
+async function GET_PARTIAL_REPORTDATA(page: number, limit: number) {
   const recordCollection = database.collections.get<Report>('reports')
-
+  const { count } = await GET_THE_TOTAL_NUMBER_OF_RECORDS()
+  const totalPage = Math.ceil(count / limit)
+  const skip = page * limit
+  const take = limit
   const reports = await recordCollection
-    .query(Q.sortBy('createdAt', Q.desc))
+    .query(Q.sortBy('createdAt', Q.desc), Q.skip(skip), Q.take(take))
     .fetch()
-  const final_report_data = sortByYearMonthDay(reports)
-  return { data: final_report_data }
+  console.log('=========================')
+  console.log('SKIP', skip)
+  console.log('TAKE', take)
+  console.log('TOTAL PAGE', totalPage)
+  console.log('ITEMS NA DATABASE', count)
+  console.log('ITEMS A LEVAR', reports.length)
+
+  // const final_report_data = sortByYearMonthDay(reports)
+  return { data: reports, totalPage }
 }
 async function GET_REPORT_BY_ID(id: string) {
   const recordCollection = database.collections.get<Report>('reports')
