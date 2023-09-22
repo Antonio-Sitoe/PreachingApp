@@ -1,7 +1,7 @@
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
 import { ChevronLeft } from 'lucide-react-native'
 import { Dimensions, View } from 'react-native'
 import { useRouter } from 'expo-router'
@@ -42,8 +42,8 @@ export default function Chart() {
     boxShadow: 5,
   }
   return (
-    <>
-      <View className="mt-8 px-4">
+    <ScrollView>
+      <View className="mt-4 px-4">
         <View className="flex-row justify-between items-center w-full">
           <View className="flex-row items-center">
             <TouchableOpacity
@@ -57,7 +57,7 @@ export default function Chart() {
             </TouchableOpacity>
             <Text className="text-base">Voltar</Text>
           </View>
-          <View className="w-28 p-0 rounded border-gray-200">
+          <View className="w-40 p-0 border-gray-200 border-b-[1px]">
             <Picker
               selectedValue={select}
               onValueChange={setSelect}
@@ -97,6 +97,6 @@ export default function Chart() {
           </View>
         </View>
       </View>
-    </>
+    </ScrollView>
   )
 }
