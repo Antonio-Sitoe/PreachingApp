@@ -7,49 +7,57 @@ import { FlashList } from '@shopify/flash-list'
 import { Button } from '@react-native-material/core'
 import { Text, View } from '../../Themed'
 import { ReportData } from '@/@types/interfaces'
-import { usePathname } from 'expo-router'
 import { ActivityIndicator } from 'react-native'
 import { useEffect, useState } from 'react'
 import { GET_PARTIAL_REPORTDATA } from '@/database/actions/report/read'
+import { usePathname } from 'expo-router'
 
 export type CardProps = ReportData[]
 
 export default function ReportListWithButton() {
   const [data, setData] = useState<CardProps>([])
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(1)
   const [totalPages, setTotalPage] = useState(0)
   const [isloadingReportData, setIsLoadingReportData] = useState(true)
+  const isPath = usePathname() === '/report'
+  console.log('TOTAL DE ITEMS', data.length)
 
   const { isDark } = useTheme()
-  const changePathname = usePathname() === '/report'
 
-  function handleMoreData() {
-    if (page <= totalPages) {
-      setPage(page + 1)
+  async function handleMoreData() {
+    if (page < totalPages) {
+      const newPage = page + 1
+      setPage(newPage)
+      await getallreportDataAsync(newPage, false)
+    }
+  }
+
+  const getallreportDataAsync = async (page: number, isInitial = false) => {
+    setIsLoadingReportData(true)
+    try {
+      const limit = 10
+      const { data, totalPage } = await GET_PARTIAL_REPORTDATA(page, limit)
+      if (page < totalPage) {
+        if (isInitial) {
+          setData(data)
+        } else {
+          setData((prev) => [...prev, ...data])
+        }
+      }
+      setTotalPage(totalPage)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoadingReportData(false)
     }
   }
 
   useEffect(() => {
-    const getallreportDataAsync = async (page: number) => {
-      setIsLoadingReportData(true)
-      try {
-        const limit = 4
-        const { data, totalPage } = await GET_PARTIAL_REPORTDATA(page, limit)
-        setData(data)
-        setTotalPage(totalPage)
-      } catch (error) {
-        console.log(error)
-      } finally {
-        setIsLoadingReportData(false)
-      }
+    if (isPath === true) {
+      getallreportDataAsync(0, true)
+      setPage(0)
     }
-    if (changePathname) {
-      getallreportDataAsync(page)
-    }
-    return () => {
-      setIsLoadingReportData(true)
-    }
-  }, [changePathname, page])
+  }, [isPath])
 
   if (data.length === 0) {
     return <NoContent text="Sem dados" />
@@ -82,13 +90,30 @@ export default function ReportListWithButton() {
               <ActivityIndicator />
             ) : (
               <>
-                <Button title="Ver mais" onPress={handleMoreData} />
-                <Text
-                  className="mt-2 font-textIBM text-center"
-                  lightColor={Colors.light.tint}
-                >
-                  Sem mais dados por mostrar 😎
-                </Text>
+                {page < totalPages ? (
+                  <View className="flex items-center justify-center mt-4">
+                    <Button
+                      title="Ver mais"
+                      onPress={handleMoreData}
+                      variant="contained"
+                      color={Colors.dark.tint}
+                      className="font-text capitalize text-white"
+                      style={{ width: 150 }}
+                      titleStyle={{
+                        color: Colors.dark.Success200,
+                        fontFamily: 'Inter_400Regular',
+                        textTransform: 'capitalize',
+                      }}
+                    />
+                  </View>
+                ) : (
+                  <Text
+                    className="mt-2 font-textIBM text-center"
+                    lightColor={Colors.light.tint}
+                  >
+                    Sem mais dados por mostrar 😎
+                  </Text>
+                )}
               </>
             )}
           </View>

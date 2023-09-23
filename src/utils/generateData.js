@@ -1,4 +1,6 @@
 import { createReportData } from '@/database/actions/report/create'
+import dayjs from 'dayjs'
+import { monthNameToPortuguese } from './dates'
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -6,7 +8,7 @@ function getRandomNumber(min, max) {
 
 function getRandomDate() {
   if (!getRandomDate.currentDate) {
-    getRandomDate.currentDate = new Date('2023-08-25')
+    getRandomDate.currentDate = new Date('2023-01-10')
   } else {
     getRandomDate.currentDate.setDate(getRandomDate.currentDate.getDate() + 1)
   }
@@ -14,21 +16,22 @@ function getRandomDate() {
 }
 
 getRandomDate.reset = () => {
-  // getRandomDate.currentDate = new Date('2025-09-01') // atualiza aqui
+  // getRandomDate.currentDate = new Date('2023-12-01') // atualiza aqui
   getRandomDate.currentDate = new Date() // atualiza aqui
 }
 
 getRandomDate.reset()
 const dataArray = []
 
-for (let i = 0; i < 70; i++) {
+for (let i = 0; i < 20; i++) {
   const randomDate = getRandomDate()
   const day = randomDate.getDate()
-  const month = randomDate.getMonth() + 1
   const year = randomDate.getFullYear()
 
   const formattedDay = day < 10 ? `0${day}` : day
-  const formattedMonth = month < 10 ? `0${month}` : month
+  const formattedMonth = monthNameToPortuguese(
+    dayjs(randomDate).get('month') + 1,
+  )
 
   const dataObject = {
     comments: '',

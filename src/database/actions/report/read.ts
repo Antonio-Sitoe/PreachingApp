@@ -111,6 +111,7 @@ async function GET_PARTIAL_REPORTDATA(page: number, limit: number) {
   console.log('=========================')
   console.log('SKIP', skip)
   console.log('TAKE', take)
+  console.log('Pagina atual ', page)
   console.log('TOTAL PAGE', totalPage)
   console.log('ITEMS NA DATABASE', count)
   console.log('ITEMS A LEVAR', reports.length)
