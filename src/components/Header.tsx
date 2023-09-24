@@ -28,6 +28,7 @@ export function Header() {
     useReportsData()
   const isReportPath = usePathname().includes('/report')
   const isModalRoute = usePathname().includes('/modal')
+  const isChart = usePathname().includes('/chart')
 
   async function handleShareReport() {
     try {
@@ -98,7 +99,7 @@ export function Header() {
               </TouchableOpacity>
             )}
 
-            {index === 2 && isReportPath && (
+            {index === 2 && isReportPath && !isChart && (
               <Link href="/(report)/(tabs)/report/chart" asChild>
                 <TouchableOpacity className="py-1">
                   <BarChart2
@@ -109,7 +110,7 @@ export function Header() {
                 </TouchableOpacity>
               </Link>
             )}
-            {(isReportPath || isModalRoute) && (
+            {(isReportPath || isModalRoute) && !isChart && (
               <TouchableOpacity className="py-1" onPress={() => push('/modal')}>
                 <Plus
                   color={isDark ? Colors.dark.text : Colors.light.tint}

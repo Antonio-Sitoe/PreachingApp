@@ -39,3 +39,15 @@ export const currentDates = {
   month: monthNameToPortuguese(dayjs().get('month') + 1),
   year: dayjs().get('y'),
 }
+
+export function generateLast6MonthsNames() {
+  const monthsLates: string[] = []
+  let currentMonth = dayjs().get('month') + 1
+
+  for (let i = 0; i < 6; i++) {
+    monthsLates.push(monthNameToPortuguese(currentMonth))
+    currentMonth = currentMonth - 1
+  }
+
+  return monthsLates.reverse()
+}

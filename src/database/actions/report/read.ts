@@ -2,8 +2,16 @@ import { Q } from '@nozbe/watermelondb'
 import { Report } from '@/database/model/Report'
 import { database } from '@/database/database'
 import { ReportData } from '@/@types/interfaces'
-import { minutesToHoursAndMinutes } from '@/utils/dates'
-import { sorteByMonths, sorteByYears } from '@/utils/helper'
+import {
+  generateLast6MonthsNames,
+  minutesToHoursAndMinutes,
+} from '@/utils/dates'
+import {
+  group_list_into_chunks,
+  sortByMonthAscending,
+  sorteByMonths,
+  sorteByYears,
+} from '@/utils/helper'
 import groupBy from 'group-by'
 
 async function getAllReportData() {
@@ -75,6 +83,40 @@ async function GET_REPORTS_BY_YEARS(year: number) {
 
   return { data }
 }
+async function GET_REPORT_FOR_STATICS(year: number) {
+  const recordCollection = database.collections.get<Report>('reports')
+  const [first, second, Third, Fourth, Fifth, sixth] =
+    generateLast6MonthsNames()
+
+  const reportsFiltered = await recordCollection
+    .query(
+      Q.and(
+        Q.where('year', year),
+        Q.or(
+          Q.where('month', first),
+          Q.where('month', second),
+          Q.where('month', Third),
+          Q.where('month', Fourth),
+          Q.where('month', Fifth),
+          Q.where('month', sixth),
+        ),
+      ),
+    )
+    .fetch()
+  if (reportsFiltered.length === 0) return { data: [] }
+
+  const reportsGrouped = Object.entries(groupBy(reportsFiltered, 'month'))
+  const reportOrganized = sortByMonthAscending(
+    reportsGrouped.map((report) => {
+      const reports = group_list_into_chunks(report[1] as ReportData[])
+      return {
+        month: report[0],
+        reports,
+      }
+    }),
+  )
+  return { data: reportOrganized }
+}
 async function GET_THE_TOTAL_NUMBER_OF_RECORDS() {
   const count = await database.collections.get('reports').query().fetchCount()
   return { count }
@@ -133,5 +175,6 @@ export {
   GET_REPORTS_BY_YEARS,
   GET_REPORT_BY_ID,
   GET_PARTIAL_REPORTDATA,
+  GET_REPORT_FOR_STATICS,
   getAllReportData,
 }

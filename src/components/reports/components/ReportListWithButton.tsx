@@ -91,16 +91,19 @@ export default function ReportListWithButton() {
             ) : (
               <>
                 {page < totalPages ? (
-                  <View className="flex items-center justify-center mt-4">
+                  <View
+                    className="flex items-center justify-center mt-4"
+                    lightColor="transparent"
+                  >
                     <Button
                       title="Ver mais"
                       onPress={handleMoreData}
                       variant="contained"
-                      color={Colors.dark.tint}
+                      color={isDark ? Colors.dark.tint : Colors.light.tint}
                       className="font-text capitalize text-white"
                       style={{ width: 150 }}
                       titleStyle={{
-                        color: Colors.dark.Success200,
+                        color: isDark ? Colors.dark.Success200 : 'white',
                         fontFamily: 'Inter_400Regular',
                         textTransform: 'capitalize',
                       }}

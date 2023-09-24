@@ -1,3 +1,6 @@
+import { ReportData } from '@/@types/interfaces'
+import { minutesToHoursAndMinutes } from './dates'
+
 export function sorteByYears(arr: any) {
   const objetoOrdenado = [...arr].sort((a, b) => {
     // converte as strings em números para comparar
@@ -57,6 +60,21 @@ export function sorteByMonths(data) {
   return objetoOrdenado
 }
 
+export function sortByMonthAscending(monthsArray) {
+  return monthsArray.sort((a, b) => {
+    const monthA = meses.indexOf(a.month.toLowerCase())
+    const monthB = meses.indexOf(b.month.toLowerCase())
+
+    if (monthA < monthB) {
+      return -1
+    } else if (monthA > monthB) {
+      return 1
+    } else {
+      return 0
+    }
+  })
+}
+
 export function defineProfiletext(
   profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string,
 ) {
@@ -67,7 +85,9 @@ export function defineProfiletext(
 }
 
 export function capitalizeString(inputString) {
-  return inputString.charAt(0).toUpperCase() + inputString.slice(1)
+  if (inputString)
+    return inputString.charAt(0).toUpperCase() + inputString.slice(1)
+  else return ''
 }
 
 export function sortByYearMonthDay(data: any) {
@@ -99,4 +119,79 @@ export function sortByYearMonthDay(data: any) {
     // Ordena por dia em ordem decrescente
     return b.day - a.day
   })
+}
+export function group_list_into_chunks(reportsFiltered: ReportData[]) {
+  const data: ReportData = reportsFiltered.reduce(
+    (acc: any, state: any) => {
+      const oldState = state._raw
+      acc.hours += oldState.hours
+      acc.minutes += oldState.minutes
+      acc.videos += oldState.videos
+      acc.students += oldState.students
+      acc.returnVisits += oldState.returnVisits
+      acc.publications += oldState.publications
+      return acc
+    },
+    {
+      hours: 0,
+      minutes: 0,
+      publications: 0,
+      returnVisits: 0,
+      students: 0,
+      videos: 0,
+      time: '',
+    },
+  )
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
+  return data
+}
+export const best = {
+  hours: {
+    value: 0,
+    month: '',
+  },
+  publications: {
+    value: 0,
+    month: '',
+  },
+  returnVisits: {
+    value: 0,
+    month: '',
+  },
+  students: {
+    value: 0,
+    month: '',
+  },
+  videos: {
+    value: 0,
+    month: '',
+  },
+}
+export function bestMonthsStatics(data: any) {
+  for (const iterator of data) {
+    const [h] = String(iterator.reports.time).split(':')
+    console.log(h)
+
+    if (Number(h) > best.hours.value) {
+      best.hours.value = Number(h)
+      best.hours.month = iterator.month
+    }
+    if (iterator.reports.publications > best.publications.value) {
+      best.publications.value = iterator.reports.publications
+      best.publications.month = iterator.month
+    }
+    if (iterator.reports.returnVisits > best.returnVisits.value) {
+      best.returnVisits.value = iterator.reports.returnVisits
+      best.returnVisits.month = iterator.month
+    }
+    if (iterator.reports.students > best.students.value) {
+      best.students.value = iterator.reports.students
+      best.students.month = iterator.month
+    }
+    if (iterator.reports.videos > best.videos.value) {
+      best.videos.value = iterator.reports.videos
+      best.videos.month = iterator.month
+    }
+  }
+  return best
 }
