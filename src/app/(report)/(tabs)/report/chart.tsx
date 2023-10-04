@@ -2,7 +2,6 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 
 import React, { useEffect, useState } from 'react'
-import RNPickerSelect from 'react-native-picker-select'
 import { Text } from '@/components/Themed'
 import { Picker } from '@react-native-picker/picker'
 import { ListItem } from '@/components/reports/ReportMonths'
@@ -134,8 +133,6 @@ export default function Chart() {
     getReportForStats()
   }, [])
 
-  const countries = ['Egypt', 'Canada', 'Australia', 'Ireland']
-
   return (
     <View
       style={{
@@ -178,14 +175,6 @@ export default function Chart() {
               </Picker>
             </View>
           </View>
-          <RNPickerSelect
-            onValueChange={(value) => console.log(value)}
-            items={[
-              { label: 'Football', value: 'football' },
-              { label: 'Baseball', value: 'baseball' },
-              { label: 'Hockey', value: 'hockey' },
-            ]}
-          />
         </View>
         <View className="w-full pt-5 items-center justify-center">
           {isLoading ? (
