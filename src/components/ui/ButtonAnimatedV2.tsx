@@ -64,6 +64,7 @@ export function AnimatedButtonWithText({ onPress, text }: Props) {
   return (
     <PanGestureHandler onGestureEvent={onGestureEvent}>
       <Animated.View
+        className="shadow-lg"
         style={[
           myCarButtonStyle,
           {

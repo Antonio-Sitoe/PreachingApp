@@ -4,11 +4,13 @@ import { StudentCard } from '@/components/students/StudentCard'
 import { AnimatedButtonWithText } from '@/components/ui/ButtonAnimatedV2'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
+import { useRouter } from 'expo-router'
 import { useState } from 'react'
 
 import { ScrollView } from 'react-native-gesture-handler'
 
 export default function Students() {
+  const router = useRouter()
   const { isDark } = useTheme()
   const [people, setPeople] = useState([1, 2, 3, 4, 5])
 
@@ -40,7 +42,18 @@ export default function Students() {
         ) : (
           <>
             {people.map((data, index) => {
-              return <StudentCard data={data} key={index} />
+              return (
+                <StudentCard
+                  onViewProfile={() => {
+                    router.push('/(report)/(tabs)/students/createVisit')
+                  }}
+                  onAddVisit={() => {
+                    router.push('/(report)/(tabs)/students/profile')
+                  }}
+                  data={data}
+                  key={index}
+                />
+              )
             })}
           </>
         )}
