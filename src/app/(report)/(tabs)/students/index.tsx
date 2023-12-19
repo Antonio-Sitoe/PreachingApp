@@ -45,10 +45,10 @@ export default function Students() {
               return (
                 <StudentCard
                   onViewProfile={() => {
-                    router.push('/(report)/(tabs)/students/createVisit')
+                    router.push('/(report)/(tabs)/students/profile')
                   }}
                   onAddVisit={() => {
-                    router.push('/(report)/(tabs)/students/profile')
+                    router.push('/(report)/(tabs)/students/createVisit')
                   }}
                   data={data}
                   key={index}

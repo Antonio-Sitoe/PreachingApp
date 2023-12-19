@@ -8,7 +8,7 @@ import { View, useWindowDimensions } from 'react-native'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
 import { useTabBarIndex } from '@/contexts/ReportContext'
 
-const renderTabBar = (props, isDark) => {
+const renderTabBar = (props: any, isDark: boolean) => {
   return (
     <View className="px-3 pb-3">
       <TabBar
