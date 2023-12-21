@@ -46,7 +46,6 @@ const routes = [
 ]
 
 export default function Profile() {
-  const router = useRouter()
   const { isDark } = useTheme()
   const layout = useWindowDimensions()
   const { index, setIndex } = useTabBarIndex()

@@ -25,7 +25,6 @@ export default function TabLayout() {
           header() {
             return <Header />
           },
-          // headerShown: false,
           tabBarActiveTintColor: isDark ? Colors.dark.tint : Colors.light.tint,
           tabBarLabelStyle: {
             fontSize: 12,
