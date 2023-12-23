@@ -14,29 +14,20 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
   const { isDark } = useTheme()
 
   return (
-    <View className="flex-row w-full mb-5" lightColor="transparent">
+    <View className="flex-row w-full mb-5 shadow" lightColor="transparent">
       <View
         className="flex-1 rounded-lg"
         lightColor="white"
         darkColor={Colors.dark.darkBgSecundary}
         style={{
-          shadowOffset: { width: -2, height: 4 },
-          shadowColor: '#171717',
-          shadowOpacity: 0.2,
-          shadowRadius: 3,
+          elevation: 5,
         }}
       >
         <TouchableOpacity
           onPress={onViewProfile}
-          className="flex-row p-4 items-start justify-between rounded-lg"
+          className="flex-row p-4 items-center justify-between rounded-lg"
           lightColor="white"
           darkColor={Colors.dark.darkBgSecundary}
-          style={{
-            shadowColor: '#171717',
-            shadowOffset: { width: -2, height: 4 },
-            shadowOpacity: 0.2,
-            shadowRadius: 3,
-          }}
         >
           <View
             darkColor="#FBEEBC"
@@ -59,6 +50,7 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
           onPress={onAddVisit}
           style={{
             backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+            elevation: 10,
           }}
           className="w-full h-24 rounded-lg flex items-center justify-center dark:bg-black"
         >

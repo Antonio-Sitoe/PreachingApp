@@ -14,7 +14,9 @@ export default function Students() {
   const { isDark } = useTheme()
   const [people, setPeople] = useState([1, 2, 3, 4, 5])
 
-  function handleAddPeople() {}
+  function handleAddPeople() {
+    router.push('/(report)/(tabs)/students/createStudents')
+  }
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">

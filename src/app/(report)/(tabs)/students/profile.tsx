@@ -47,11 +47,14 @@ const routes = [
 
 export default function Profile() {
   const { isDark } = useTheme()
+  const { push } = useRouter()
   const layout = useWindowDimensions()
   const { index, setIndex } = useTabBarIndex()
   const [visits, setVisits] = useState([1, 2, 3, 4, 5])
 
-  function handleAddVisit() {}
+  function handleAddVisit() {
+    push('/(report)/(tabs)/students/createVisit')
+  }
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">

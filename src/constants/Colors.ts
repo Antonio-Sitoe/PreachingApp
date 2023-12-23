@@ -9,6 +9,7 @@ export default {
     tabIconDefault: '#ccc',
     tabIconSelected: tintColorLight,
     ligtInputbG: '#F6F6F9',
+    inputBg: `#D9D8FF`,
   },
   dark: {
     text: '#fff',
