@@ -6,6 +6,7 @@ import { ScrollView } from 'react-native-gesture-handler'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import { ButtonPrimary } from '@/components/ui/ButtonPrimary'
+import { BackButton } from '@/components/ui/BackButton'
 
 const defaultValues = {
   firstName: '',
@@ -29,9 +30,10 @@ export default function CreateVisit() {
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">
         <View
-          className="flex-row items-center w-full justify-center"
+          className="flex-row items-center w-full justify-center gap-2"
           lightColor="#F6F6F9"
         >
+          <BackButton />
           <View className="flex-1" lightColor="transparent">
             <Text className="font-bold font-textIBM text-base break-words over">
               Visita ao Morador (Antonio Manuel Sitoe)

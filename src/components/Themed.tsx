@@ -47,8 +47,9 @@ export function Text(props: TextProps) {
 
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props
+  const ligth = lightColor || 'transparent'
   const backgroundColor = useThemeColor(
-    { light: lightColor, dark: darkColor },
+    { light: ligth, dark: darkColor },
     'background',
   )
 

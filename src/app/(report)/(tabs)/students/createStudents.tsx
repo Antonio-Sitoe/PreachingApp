@@ -8,11 +8,24 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import { ButtonPrimary } from '@/components/ui/ButtonPrimary'
 import { useState } from 'react'
+import { CheckBox } from '@/components/ui/CheckBox'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+import { BackButton } from '@/components/ui/BackButton'
+// import { BackButton } from '@/components/ui/BackButton';
 
-const defaultValues = {
-  firstName: '',
-  lastName: '',
-}
+const SchemaStudennts = z.object({
+  name: z.string().min(1),
+  age: z.string().min(1),
+  about: z.string().min(1),
+  telephone: z.string().min(1),
+  email: z.string().email(),
+  gender: z.string().min(1),
+  address: z.string().min(1),
+  best_time: z.array(z.string()),
+  best_day: z.array(z.string()),
+  language: z.string().min(1),
+})
 
 export default function CreateStudent() {
   const { isDark } = useTheme()
@@ -23,66 +36,32 @@ export default function CreateStudent() {
     handleSubmit,
     formState: { errors },
   } = useForm({
-    defaultValues,
+    defaultValues: {
+      name: '',
+      age: '',
+      about: '',
+      telephone: '',
+      email: '',
+      gender: '',
+      address: '',
+      best_time: [],
+      best_day: [],
+      language: '',
+      createdAt: '',
+    },
   })
 
   const onSubmit = (data) => console.log(data)
 
-  function handleNext() {
-    setStep({ step: 1 })
+  async function handleNext() {
+    try {
+      // setStep({ step: 1 })
+      handleSubmit(onSubmit)
+    } catch (error) {
+      console.log('Error', error)
+    }
   }
 
-  return (
-    <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
-      <View className="my-3 mt-6 flex items-center" lightColor="transparent">
-        <View
-          className="flex-row items-center w-full justify-center"
-          lightColor="#F6F6F9"
-        >
-          <View className="flex-1" lightColor="transparent">
-            <Text className="font-bold font-textIBM text-base break-words over">
-              Morador (Informacoes Contato)
-            </Text>
-            <View
-              darkColor={Colors.dark.tint}
-              lightColor={Colors.light.tint}
-              className="w-11 h-1 rounded-lg mt-2"
-            />
-          </View>
-        </View>
-      </View>
-      <View className="flex-1" lightColor="transparent">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
-            paddingBottom: 60,
-            paddingTop: 10,
-          }}
-        >
-          {step.step === 0 ? (
-            <StudentsCreateStep1
-              control={control}
-              errors={errors}
-              handleNext={handleNext}
-            />
-          ) : (
-            <StudentsCreateStep2 control={control} errors={errors} />
-          )}
-        </ScrollView>
-      </View>
-    </View>
-  )
-}
-
-const StudentsCreateStep2 = () => {
-  return (
-    <View>
-      <Text>StudentsCreateStep2</Text>
-    </View>
-  )
-}
-const StudentsCreateStep1 = ({ control, errors, handleNext }) => {
   const [gender, setGender] = useState({
     woman: false,
     man: false,
@@ -134,6 +113,64 @@ const StudentsCreateStep1 = ({ control, errors, handleNext }) => {
     })
     setAge(newAges)
   }
+
+  return (
+    <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
+      <View className="my-3 mt-6 flex items-center" lightColor="transparent">
+        <View
+          className="flex-row items-center w-full justify-center gap-2"
+          lightColor="#F6F6F9"
+        >
+          <BackButton />
+          <View className="flex-1" lightColor="transparent">
+            <Text className="font-bold font-textIBM text-base break-words over">
+              Morador (Informacoes Contato)
+            </Text>
+            <View
+              darkColor={Colors.dark.tint}
+              lightColor={Colors.light.tint}
+              className="w-11 h-1 rounded-lg mt-2"
+            />
+          </View>
+        </View>
+      </View>
+      <View className="flex-1" lightColor="transparent">
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+            paddingBottom: 60,
+            paddingTop: 10,
+          }}
+        >
+          {step.step === 0 ? (
+            <StudentsCreateStep1
+              control={control}
+              errors={errors}
+              handleNext={handleSubmit(onSubmit)}
+              ages={ages}
+              gender={gender}
+              handleChangeAge={handleChangeAge}
+              handleChangeGender={handleChangeGender}
+            />
+          ) : (
+            <StudentsCreateStep2 control={control} errors={errors} />
+          )}
+        </ScrollView>
+      </View>
+    </View>
+  )
+}
+
+const StudentsCreateStep1 = ({
+  ages,
+  gender,
+  control,
+  errors,
+  handleNext,
+  handleChangeAge,
+  handleChangeGender,
+}) => {
   return (
     <>
       <TextInputForm
@@ -142,16 +179,17 @@ const StudentsCreateStep1 = ({ control, errors, handleNext }) => {
         errors={errors}
         label="Nome"
         name="name"
-        placeholder=""
+        placeholder="Nome do Morador"
         rules={{}}
       />
       <TextInputForm
         control={control}
         errors={errors}
         label="Telefone (Opcional)"
-        name="cell"
-        placeholder=""
+        name="telephone"
+        placeholder="+258"
         rules={{}}
+        keyboardType="number-pad"
         height
       />
       <TextInputForm
@@ -159,7 +197,8 @@ const StudentsCreateStep1 = ({ control, errors, handleNext }) => {
         errors={errors}
         label="Email (Opcional)"
         name="email"
-        placeholder=""
+        placeholder="fulano@gmail.com"
+        keyboardType="email-address"
         rules={{}}
         height
       />
@@ -222,6 +261,53 @@ const StudentsCreateStep1 = ({ control, errors, handleNext }) => {
         control={control}
         errors={errors}
         label="Informacoes Adicionais"
+        name="about"
+        rules={{}}
+        multiline={true}
+        numberOfLines={6}
+        textAlignVertical="top"
+      />
+      <View className="w-40">
+        <ButtonPrimary onPress={handleNext} text="Proximo" width="150px" />
+      </View>
+    </>
+  )
+}
+
+const StudentsCreateStep2 = ({ control, errors }) => {
+  return (
+    <View className="flex-1" lightColor="transparent">
+      <Text>Melhorar hora para vistar</Text>
+      <View className="flex-1 flex-row justify-between mt-4 pb-2 border-b">
+        <View className="flex-1" lightColor="transparent">
+          <CheckBox title="Manha" />
+          <CheckBox title="Final da tarde" />
+        </View>
+        <View className="flex-1" lightColor="transparent">
+          <CheckBox title="Tarde" />
+          <CheckBox title="Fim de semana" />
+        </View>
+      </View>
+      <View
+        className="flex-1 flex-row justify-between mt-4"
+        lightColor="transparent"
+      >
+        <View className="flex-1" lightColor="transparent">
+          <CheckBox title="Segunda feira" />
+          <CheckBox title="Terça-feira" />
+          <CheckBox title="Quarta-feira" />
+          <CheckBox title="Quinta-feira" />
+        </View>
+        <View className="flex-1">
+          <CheckBox title="Sexta-feira" />
+          <CheckBox title="Sábado" />
+          <CheckBox title="Domingo" />
+        </View>
+      </View>
+      <TextInputForm
+        control={control}
+        errors={errors}
+        label="Localização"
         name="bio"
         placeholder=""
         rules={{}}
@@ -229,7 +315,11 @@ const StudentsCreateStep1 = ({ control, errors, handleNext }) => {
         numberOfLines={6}
         textAlignVertical="top"
       />
-      <ButtonPrimary onPress={handleNext} text="Proximo" width="150px" />
-    </>
+      <View className="flex-row">
+        <ButtonPrimary onPress={() => {}} text="Voltar" width="250px" />
+        <ButtonPrimary onPress={() => {}} text="Salvar" width="250px" />
+        <ButtonPrimary onPress={() => {}} text="Cancelar" width="100%" />
+      </View>
+    </View>
   )
 }
