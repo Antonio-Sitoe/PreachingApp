@@ -12,19 +12,18 @@ import { CheckBox } from '@/components/ui/CheckBox'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { BackButton } from '@/components/ui/BackButton'
-// import { BackButton } from '@/components/ui/BackButton';
+import { Button } from '@react-native-material/core'
 
 const SchemaStudennts = z.object({
-  name: z.string().min(1),
-  age: z.string().min(1),
+  name: z.string().min(1, 'Digite um nome'),
+  age: z.string().optional(),
+  telephone: z.string().optional(),
   about: z.string().min(1),
-  telephone: z.string().min(1),
-  email: z.string().email(),
+  email: z.string().email().optional(),
   gender: z.string().min(1),
   address: z.string().min(1),
-  best_time: z.array(z.string()),
-  best_day: z.array(z.string()),
-  language: z.string().min(1),
+  best_time: z.array(z.string()).optional(),
+  best_day: z.array(z.string()).optional(),
 })
 
 export default function CreateStudent() {
@@ -34,32 +33,25 @@ export default function CreateStudent() {
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm({
-    defaultValues: {
-      name: '',
-      age: '',
-      about: '',
-      telephone: '',
-      email: '',
-      gender: '',
-      address: '',
-      best_time: [],
-      best_day: [],
-      language: '',
-      createdAt: '',
-    },
+    resolver: zodResolver(SchemaStudennts),
   })
 
   const onSubmit = (data) => console.log(data)
 
   async function handleNext() {
     try {
+      trigger()
       // setStep({ step: 1 })
-      handleSubmit(onSubmit)
     } catch (error) {
       console.log('Error', error)
     }
+  }
+
+  function goBack() {
+    setStep({ step: 0 })
   }
 
   const [gender, setGender] = useState({
@@ -147,14 +139,18 @@ export default function CreateStudent() {
             <StudentsCreateStep1
               control={control}
               errors={errors}
-              handleNext={handleSubmit(onSubmit)}
+              handleNext={handleNext}
               ages={ages}
               gender={gender}
               handleChangeAge={handleChangeAge}
               handleChangeGender={handleChangeGender}
             />
           ) : (
-            <StudentsCreateStep2 control={control} errors={errors} />
+            <StudentsCreateStep2
+              goBack={goBack}
+              control={control}
+              errors={errors}
+            />
           )}
         </ScrollView>
       </View>
@@ -218,7 +214,7 @@ const StudentsCreateStep1 = ({
                     ? Colors.light.tint
                     : Colors.light.inputBg,
                 }}
-                className="w-14 h-[47px] items-center justify-center bg-violet-200 rounded-lg border border-gray-100 border-opacity-25"
+                className="w-14 h-[47px] items-center justify-center bg-violet-200 rounded-lg"
               >
                 <Text
                   style={{
@@ -232,6 +228,11 @@ const StudentsCreateStep1 = ({
             )
           })}
         </View>
+        {errors?.gender?.message && (
+          <Text className="text-[12px] ml-2 text-red-600">
+            {errors?.gender?.message}
+          </Text>
+        )}
       </View>
       <View className="mt-4 flex-1" lightColor="transparent">
         <Text className="text-sm font-normal font-text">Genero</Text>
@@ -256,8 +257,14 @@ const StudentsCreateStep1 = ({
             <Woman width={48} height={48} />
           </TouchableOpacity>
         </View>
+        {errors?.gender?.message && (
+          <Text className="text-[12px] ml-2 text-red-600">
+            {errors?.gender?.message}
+          </Text>
+        )}
       </View>
       <TextInputForm
+        placeholder=""
         control={control}
         errors={errors}
         label="Informacoes Adicionais"
@@ -268,13 +275,13 @@ const StudentsCreateStep1 = ({
         textAlignVertical="top"
       />
       <View className="w-40">
-        <ButtonPrimary onPress={handleNext} text="Proximo" width="150px" />
+        <Button onPress={handleNext} title="Proximo" />
       </View>
     </>
   )
 }
 
-const StudentsCreateStep2 = ({ control, errors }) => {
+const StudentsCreateStep2 = ({ control, errors, goBack }) => {
   return (
     <View className="flex-1" lightColor="transparent">
       <Text>Melhorar hora para vistar</Text>
@@ -316,7 +323,7 @@ const StudentsCreateStep2 = ({ control, errors }) => {
         textAlignVertical="top"
       />
       <View className="flex-row">
-        <ButtonPrimary onPress={() => {}} text="Voltar" width="250px" />
+        <ButtonPrimary onPress={goBack} text="Voltar" width="250px" />
         <ButtonPrimary onPress={() => {}} text="Salvar" width="250px" />
         <ButtonPrimary onPress={() => {}} text="Cancelar" width="100%" />
       </View>

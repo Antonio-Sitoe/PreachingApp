@@ -53,7 +53,11 @@ export function TextInputForm({
         )}
         name={name}
       />
-      {errors[name] && <Text>{errors[name]}</Text>}
+      {errors[name]?.message && (
+        <Text className="text-[12px] ml-2 text-red-600">
+          {errors[name]?.message}
+        </Text>
+      )}
     </View>
   )
 }
