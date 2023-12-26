@@ -29,9 +29,29 @@ const SchemaStudennts = z.object({
   email: z.string().email('Digite um email valido').optional(),
   address: z.string().optional(),
 
-  best_time: z.array(z.string()).optional(),
-  best_day: z.array(z.string()).optional(),
+  best_time: z
+    .array(z.string(), {
+      required_error: 'Escolha a melhor hora para visitar.',
+    })
+    .min(1, 'Escolha a melhor hora para visitar.'),
+  best_day: z
+    .array(z.string(), {
+      required_error: 'Escolha um dia para visitar.',
+    })
+    .min(1, 'Escolha um dia para visitar.'),
 })
+
+interface StudentsBody {
+  about?: string
+  address?: string
+  age: string
+  best_day: string[]
+  best_time: string[]
+  email: string
+  gender: 'man' | 'woman'
+  name: string
+  telephone: string
+}
 
 type SchemaStudenntsType = z.infer<typeof SchemaStudennts>
 export default function CreateStudent() {
@@ -49,7 +69,6 @@ export default function CreateStudent() {
     formState: { errors },
   } = useForm<SchemaStudenntsType>({
     resolver: zodResolver(SchemaStudennts),
-    delayError: 200,
   })
   const [weekDays, setWeekDays] = useState<string[]>([])
   const [timesOfDay, settimeOfDay] = useState<string[]>([])
@@ -90,8 +109,11 @@ export default function CreateStudent() {
 
   async function handleNext() {
     try {
-      const isValid = await trigger()
-      console.log('Trigger', isValid)
+      const name = trigger('name')
+      const age = trigger('age')
+      const gender = trigger('gender')
+      const validations = await Promise.all([name, age, gender])
+      const isValid = validations.every((item) => item)
       if (isValid) {
         setStep(true)
       }
@@ -103,12 +125,10 @@ export default function CreateStudent() {
   function goBack() {
     setStep(false)
   }
-
   function cancel() {
     reset()
     back()
   }
-
   function handleChangeGender(genderParams: 'man' | 'woman') {
     const gender = genderParams === 'man' ? 'man' : 'woman'
     clearErrors('gender')
@@ -135,6 +155,7 @@ export default function CreateStudent() {
   }
 
   function handleToogleWeekday(weekDayIndex: string) {
+    clearErrors('best_day')
     if (weekDays.includes(weekDayIndex)) {
       setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex))
       setValue(
@@ -149,16 +170,43 @@ export default function CreateStudent() {
     }
   }
   function handleToogleTimeOfDay(time: string) {
+    clearErrors('best_time')
     if (timesOfDay.includes(time)) {
       settimeOfDay(timesOfDay.filter((timeDay) => timeDay !== time))
+      setValue(
+        'best_time',
+        timesOfDay.filter((timeDay) => timeDay !== time),
+      )
     } else {
       settimeOfDay((preview) => {
         return [...preview, time]
       })
+      setValue('best_time', [...timesOfDay, time])
     }
   }
+  function transformeData(data: StudentsBody) {
+    const body = {
+      about: data.about || '',
+      address: data.address || '',
+      age: data.age || '',
+      best_day: data.best_day || [],
+      best_time: data.best_time || [],
+      email: data.email || '',
+      gender: data.gender || 'man',
+      name: data.name || '',
+      telephone: data.telephone || '',
+    }
+    return { body }
+  }
 
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = (data: StudentsBody | any) => {
+    try {
+      const { body } = transformeData(data)
+      console.log(body)
+    } catch (error) {
+      console.log('Error', error)
+    }
+  }
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -172,7 +220,7 @@ export default function CreateStudent() {
             <Text className="font-bold font-textIBM text-base break-words over">
               Morador{' '}
               {`${
-                step ? '(Informações de Contato)' : '(Informações de Serviço)'
+                !step ? '(Informações de Contato)' : '(Informações de Serviço)'
               }`}
             </Text>
             <View

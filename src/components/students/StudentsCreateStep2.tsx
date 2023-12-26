@@ -28,7 +28,7 @@ const StudentsCreateStep2 = ({
       <Text className="text-sm font-normal font-text">
         Melhorar hora para vistar
       </Text>
-      <View className="flex-1 flex-row justify-between pb-2 border-b-slate-500">
+      <View className="flex-1 pb-2">
         <View
           className="flex-1 flex-row flex-wrap justify-between mt-2"
           lightColor="transparent"
@@ -44,22 +44,34 @@ const StudentsCreateStep2 = ({
             )
           })}
         </View>
+        {errors?.best_time?.message && (
+          <Text className="text-[12px] ml-2 text-red-600">
+            {errors?.best_time?.message}
+          </Text>
+        )}
       </View>
       <Divider />
-      <View
-        className="flex-1 flex-row flex-wrap justify-between mt-4"
-        lightColor="transparent"
-      >
-        {availableWeekDays.map((weekDay) => {
-          return (
-            <CheckBox
-              key={weekDay}
-              title={weekDay}
-              checked={weekDays.includes(weekDay)}
-              onPress={() => handleToogleWeekday(weekDay)}
-            />
-          )
-        })}
+      <View className="flex-1 pb-2">
+        <View
+          className="flex-1 flex-row flex-wrap justify-between mt-4"
+          lightColor="transparent"
+        >
+          {availableWeekDays.map((weekDay) => {
+            return (
+              <CheckBox
+                key={weekDay}
+                title={weekDay}
+                checked={weekDays.includes(weekDay)}
+                onPress={() => handleToogleWeekday(weekDay)}
+              />
+            )
+          })}
+        </View>
+        {errors?.best_day?.message && (
+          <Text className="text-[12px] ml-2 text-red-600">
+            {errors?.best_day?.message}
+          </Text>
+        )}
       </View>
       <View className="mb-4 flex-1">
         <TextInputForm
