@@ -17,7 +17,7 @@ import { Text } from '../Themed'
 
 const styles = StyleSheet.create({
   button: {
-    height: 45,
+    height: 50,
     boxShadow: 5,
     borderRadius: 10,
     paddingHorizontal: 15,

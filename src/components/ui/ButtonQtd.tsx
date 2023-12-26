@@ -21,7 +21,7 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
     >
       <TouchableOpacity
         onPress={decrement}
-        className="h-9 w-9 items-center justify-center"
+        className="h-7 w-7 items-center justify-center"
       >
         <Text className="text-white">
           <Minus color={isDark ? 'black' : 'white'} />
@@ -29,7 +29,7 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
       </TouchableOpacity>
       <TouchableOpacity
         onPress={Increment}
-        className="h-9 w-9 items-center justify-center"
+        className="h-7 w-7 items-center justify-center"
       >
         <Text className="text-white">
           <Plus color={isDark ? 'black' : 'white'} />
