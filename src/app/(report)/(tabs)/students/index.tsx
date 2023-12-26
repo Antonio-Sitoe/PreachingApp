@@ -34,7 +34,7 @@ export default function Students() {
         contentContainerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
           paddingBottom: 60,
-          paddingTop: 20,
+          paddingTop: 10,
         }}
       >
         {people.length === 0 ? (

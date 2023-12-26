@@ -17,9 +17,9 @@ import { Text } from '../Themed'
 
 const styles = StyleSheet.create({
   button: {
-    height: 60,
+    height: 45,
     boxShadow: 5,
-    borderRadius: 30,
+    borderRadius: 10,
     paddingHorizontal: 15,
     gap: 5,
     flexDirection: 'row',
@@ -84,7 +84,7 @@ export function AnimatedButtonWithText({ onPress, text }: Props) {
           ]}
         >
           <Text className="font-textIBM text-base text-white">{text}</Text>
-          <Ionicons color="white" name="add" size={28} />
+          <Ionicons color="white" name="add" size={20} />
         </ButtonAnimated>
       </Animated.View>
     </PanGestureHandler>

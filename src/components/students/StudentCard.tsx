@@ -31,12 +31,12 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
         >
           <View
             darkColor="#FBEEBC"
-            className="w-14 h-14 mr-2 rounded-lg flex items-center justify-center"
+            className="w-10 h-10 mr-2 rounded-lg flex items-center justify-center"
           >
-            <Person width={48} height={48} />
+            <Person width={35} height={35} />
           </View>
           <View lightColor="transparent" darkColor="transparent">
-            <Text className="bg-none text-lg font-textIBM">
+            <Text className="bg-none text-base font-textIBM">
               Antonio Manuel Sitoe
             </Text>
             <Text className="break-words font-textIBM flex-wrap w-52 text-[#717171]">
@@ -52,9 +52,9 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
             backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
             elevation: 10,
           }}
-          className="w-full h-24 rounded-lg flex items-center justify-center dark:bg-black"
+          className="w-full h-20 rounded-lg flex items-center justify-center dark:bg-black"
         >
-          <Ionicons color="white" name="add" size={32} />
+          <Ionicons color="white" name="add" size={28} />
         </TouchableOpacity>
       </View>
     </View>
