@@ -22,3 +22,16 @@ export interface IUser {
   avatar_image: string
   profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string
 }
+
+export interface IStudentsBody {
+  id?: string
+  about?: string
+  address?: string
+  age: string
+  best_day: string[]
+  best_time: string[]
+  email: string
+  gender: 'man' | 'woman'
+  name: string
+  telephone: string | number
+}
