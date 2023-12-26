@@ -1,59 +1,58 @@
-import TouchableOpacity, { Text, View } from '@/components/Themed'
-import { TextInputForm } from '@/components/ui/TextInputForm'
+import { Text, View } from '@/components/Themed'
 import { useForm } from 'react-hook-form'
 import { ScrollView } from 'react-native-gesture-handler'
-import Person from '@/assets/images/Person.svg'
-import Woman from '@/assets/images/Woman.svg'
+
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import { ButtonPrimary } from '@/components/ui/ButtonPrimary'
-import { useState } from 'react'
-import { CheckBox } from '@/components/ui/CheckBox'
-import { zodResolver } from '@hookform/resolvers/zod'
+
 import { z } from 'zod'
 import { BackButton } from '@/components/ui/BackButton'
-import { Button } from '@react-native-material/core'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React, { useState } from 'react'
+import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1'
+import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2'
+import { DialogActions, Button } from '@react-native-material/core'
+import { useRouter } from 'expo-router'
 
 const SchemaStudennts = z.object({
-  name: z.string().min(1, 'Digite um nome'),
-  age: z.string().optional(),
+  name: z
+    .string({
+      required_error: 'Digite um nome',
+    })
+    .min(1, 'Digite um nome'),
+  age: z.string({ required_error: 'Digite uma idade' }),
+  gender: z.string({
+    required_error: 'Escolha o genero',
+  }),
   telephone: z.string().optional(),
-  about: z.string().min(1),
-  email: z.string().email().optional(),
-  gender: z.string().min(1),
-  address: z.string().min(1),
+  about: z.string().optional(),
+  email: z.string().email('Digite um email valido').optional(),
+  address: z.string().optional(),
+
   best_time: z.array(z.string()).optional(),
   best_day: z.array(z.string()).optional(),
 })
 
+type SchemaStudenntsType = z.infer<typeof SchemaStudennts>
 export default function CreateStudent() {
   const { isDark } = useTheme()
-  const [step, setStep] = useState({ step: 0 })
+  const { back } = useRouter()
+  const [step, setStep] = useState(false)
 
   const {
     control,
     handleSubmit,
     trigger,
+    setValue,
+    reset,
+    clearErrors,
     formState: { errors },
-  } = useForm({
+  } = useForm<SchemaStudenntsType>({
     resolver: zodResolver(SchemaStudennts),
+    delayError: 200,
   })
-
-  const onSubmit = (data) => console.log(data)
-
-  async function handleNext() {
-    try {
-      trigger()
-      // setStep({ step: 1 })
-    } catch (error) {
-      console.log('Error', error)
-    }
-  }
-
-  function goBack() {
-    setStep({ step: 0 })
-  }
-
+  const [weekDays, setWeekDays] = useState<string[]>([])
+  const [timesOfDay, settimeOfDay] = useState<string[]>([])
   const [gender, setGender] = useState({
     woman: false,
     man: false,
@@ -89,7 +88,31 @@ export default function CreateStudent() {
     },
   ])
 
+  async function handleNext() {
+    try {
+      const isValid = await trigger()
+      console.log('Trigger', isValid)
+      if (isValid) {
+        setStep(true)
+      }
+    } catch (error) {
+      console.log('Error', error)
+    }
+  }
+
+  function goBack() {
+    setStep(false)
+  }
+
+  function cancel() {
+    reset()
+    back()
+  }
+
   function handleChangeGender(genderParams: 'man' | 'woman') {
+    const gender = genderParams === 'man' ? 'man' : 'woman'
+    clearErrors('gender')
+    setValue('gender', gender)
     setGender({
       man: genderParams === 'man',
       woman: genderParams === 'woman',
@@ -97,6 +120,7 @@ export default function CreateStudent() {
   }
 
   function handleChangeAge(index: number) {
+    clearErrors('age')
     const newAges = ages.map((age, i) => {
       return {
         ...age,
@@ -104,7 +128,37 @@ export default function CreateStudent() {
       }
     })
     setAge(newAges)
+    const age = newAges.find((age) => age.state === true)
+    if (age) {
+      setValue('age', age?.age)
+    }
   }
+
+  function handleToogleWeekday(weekDayIndex: string) {
+    if (weekDays.includes(weekDayIndex)) {
+      setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex))
+      setValue(
+        'best_day',
+        weekDays.filter((weekday) => weekday !== weekDayIndex),
+      )
+    } else {
+      setWeekDays((preview) => {
+        return [...preview, weekDayIndex]
+      })
+      setValue('best_day', [...weekDays, weekDayIndex])
+    }
+  }
+  function handleToogleTimeOfDay(time: string) {
+    if (timesOfDay.includes(time)) {
+      settimeOfDay(timesOfDay.filter((timeDay) => timeDay !== time))
+    } else {
+      settimeOfDay((preview) => {
+        return [...preview, time]
+      })
+    }
+  }
+
+  const onSubmit = (data) => console.log(data)
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -116,7 +170,10 @@ export default function CreateStudent() {
           <BackButton />
           <View className="flex-1" lightColor="transparent">
             <Text className="font-bold font-textIBM text-base break-words over">
-              Morador (Informacoes Contato)
+              Morador{' '}
+              {`${
+                step ? '(Informações de Contato)' : '(Informações de Serviço)'
+              }`}
             </Text>
             <View
               darkColor={Colors.dark.tint}
@@ -126,207 +183,89 @@ export default function CreateStudent() {
           </View>
         </View>
       </View>
-      <View className="flex-1" lightColor="transparent">
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{
-            backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
-            paddingBottom: 60,
-            paddingTop: 10,
-          }}
-        >
-          {step.step === 0 ? (
-            <StudentsCreateStep1
-              control={control}
-              errors={errors}
-              handleNext={handleNext}
-              ages={ages}
-              gender={gender}
-              handleChangeAge={handleChangeAge}
-              handleChangeGender={handleChangeGender}
-            />
-          ) : (
-            <StudentsCreateStep2
-              goBack={goBack}
-              control={control}
-              errors={errors}
-            />
-          )}
-        </ScrollView>
-      </View>
-    </View>
-  )
-}
 
-const StudentsCreateStep1 = ({
-  ages,
-  gender,
-  control,
-  errors,
-  handleNext,
-  handleChangeAge,
-  handleChangeGender,
-}) => {
-  return (
-    <>
-      <TextInputForm
-        height
-        control={control}
-        errors={errors}
-        label="Nome"
-        name="name"
-        placeholder="Nome do Morador"
-        rules={{}}
-      />
-      <TextInputForm
-        control={control}
-        errors={errors}
-        label="Telefone (Opcional)"
-        name="telephone"
-        placeholder="+258"
-        rules={{}}
-        keyboardType="number-pad"
-        height
-      />
-      <TextInputForm
-        control={control}
-        errors={errors}
-        label="Email (Opcional)"
-        name="email"
-        placeholder="fulano@gmail.com"
-        keyboardType="email-address"
-        rules={{}}
-        height
-      />
-      <View className="mt-4 flex-1" lightColor="transparent">
-        <Text className="text-sm font-normal font-text">Idade</Text>
-        <View
-          className="flex-1 flex-row flex-wrap gap-2 mt-2"
-          lightColor="transparent"
-        >
-          {ages.map((age, index) => {
-            return (
-              <TouchableOpacity
-                onPress={() => handleChangeAge(index)}
-                key={index}
-                style={{
-                  backgroundColor: age.state
-                    ? Colors.light.tint
-                    : Colors.light.inputBg,
-                }}
-                className="w-14 h-[47px] items-center justify-center bg-violet-200 rounded-lg"
-              >
-                <Text
-                  style={{
-                    color: age.state ? 'white' : 'black',
-                  }}
-                  className="text-sm font-normal font-text"
-                >
-                  {age.age}
-                </Text>
-              </TouchableOpacity>
-            )
-          })}
-        </View>
-        {errors?.gender?.message && (
-          <Text className="text-[12px] ml-2 text-red-600">
-            {errors?.gender?.message}
-          </Text>
-        )}
-      </View>
-      <View className="mt-4 flex-1" lightColor="transparent">
-        <Text className="text-sm font-normal font-text">Genero</Text>
-        <View
-          className="flex-1 flex-row flex-wrap gap-2 mt-2"
-          lightColor="transparent"
-        >
-          <TouchableOpacity
-            darkColor={Colors.dark.tint}
-            lightColor={gender.man ? Colors.light.tint : ''}
-            onPress={() => handleChangeGender('man')}
-            className="w-16 h-16 mr-2 rounded-3xl flex items-center justify-center"
-          >
-            <Person width={48} height={48} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            darkColor="#FBEEBC"
-            lightColor={gender.woman ? Colors.light.tint : ''}
-            onPress={() => handleChangeGender('woman')}
-            className="w-16 h-16 mr-2 rounded-3xl flex items-center justify-center"
-          >
-            <Woman width={48} height={48} />
-          </TouchableOpacity>
-        </View>
-        {errors?.gender?.message && (
-          <Text className="text-[12px] ml-2 text-red-600">
-            {errors?.gender?.message}
-          </Text>
-        )}
-      </View>
-      <TextInputForm
-        placeholder=""
-        control={control}
-        errors={errors}
-        label="Informacoes Adicionais"
-        name="about"
-        rules={{}}
-        multiline={true}
-        numberOfLines={6}
-        textAlignVertical="top"
-      />
-      <View className="w-40">
-        <Button onPress={handleNext} title="Proximo" />
-      </View>
-    </>
-  )
-}
-
-const StudentsCreateStep2 = ({ control, errors, goBack }) => {
-  return (
-    <View className="flex-1" lightColor="transparent">
-      <Text>Melhorar hora para vistar</Text>
-      <View className="flex-1 flex-row justify-between mt-4 pb-2 border-b">
-        <View className="flex-1" lightColor="transparent">
-          <CheckBox title="Manha" />
-          <CheckBox title="Final da tarde" />
-        </View>
-        <View className="flex-1" lightColor="transparent">
-          <CheckBox title="Tarde" />
-          <CheckBox title="Fim de semana" />
-        </View>
-      </View>
-      <View
-        className="flex-1 flex-row justify-between mt-4"
-        lightColor="transparent"
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+          paddingBottom: 60,
+          paddingTop: 10,
+        }}
       >
-        <View className="flex-1" lightColor="transparent">
-          <CheckBox title="Segunda feira" />
-          <CheckBox title="Terça-feira" />
-          <CheckBox title="Quarta-feira" />
-          <CheckBox title="Quinta-feira" />
-        </View>
-        <View className="flex-1">
-          <CheckBox title="Sexta-feira" />
-          <CheckBox title="Sábado" />
-          <CheckBox title="Domingo" />
-        </View>
-      </View>
-      <TextInputForm
-        control={control}
-        errors={errors}
-        label="Localização"
-        name="bio"
-        placeholder=""
-        rules={{}}
-        multiline={true}
-        numberOfLines={6}
-        textAlignVertical="top"
-      />
-      <View className="flex-row">
-        <ButtonPrimary onPress={goBack} text="Voltar" width="250px" />
-        <ButtonPrimary onPress={() => {}} text="Salvar" width="250px" />
-        <ButtonPrimary onPress={() => {}} text="Cancelar" width="100%" />
-      </View>
+        {!step ? (
+          <StudentsCreateStep1
+            control={control}
+            errors={errors}
+            ages={ages}
+            gender={gender}
+            handleChangeAge={handleChangeAge}
+            handleChangeGender={handleChangeGender}
+          />
+        ) : (
+          <StudentsCreateStep2
+            timesOfDay={timesOfDay}
+            weekDays={weekDays}
+            handleToogleTimeOfDay={handleToogleTimeOfDay}
+            handleToogleWeekday={handleToogleWeekday}
+            control={control}
+            errors={errors}
+          />
+        )}
+
+        {!step ? (
+          <DialogActions>
+            <Button
+              title="Próximo"
+              onPress={handleNext}
+              color={isDark ? Colors.dark.tint : Colors.light.tint}
+              titleStyle={{
+                color: 'white',
+                fontFamily: 'Inter_400Regular',
+                textTransform: 'capitalize',
+              }}
+            />
+          </DialogActions>
+        ) : (
+          <DialogActions>
+            <Button
+              onPress={goBack}
+              title="Voltar"
+              variant="text"
+              color="#FF647C"
+              titleStyle={{
+                color: '#252525',
+                fontFamily: 'Inter_400Regular',
+                textTransform: 'capitalize',
+              }}
+            />
+            <Button
+              title="Cancel"
+              variant="contained"
+              color="#FF647C"
+              onPress={cancel}
+              titleStyle={{
+                color: 'white',
+                fontFamily: 'Inter_400Regular',
+                textTransform: 'capitalize',
+              }}
+            />
+
+            <Button
+              onPress={handleSubmit(onSubmit)}
+              title="Guardar"
+              variant="contained"
+              loading={false}
+              color={isDark ? Colors.dark.tint : Colors.light.tint}
+              titleStyle={{
+                color: 'white',
+                fontFamily: 'Inter_400Regular',
+                textTransform: 'capitalize',
+                marginHorizontal: 15,
+              }}
+            />
+          </DialogActions>
+        )}
+      </ScrollView>
     </View>
   )
 }
