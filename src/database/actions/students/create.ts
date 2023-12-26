@@ -1,32 +1,26 @@
-import { IUser } from '@/@types/interfaces'
+import { IStudentsBody } from '@/@types/interfaces'
 import { database } from '@/database/database'
 import { Students } from '@/database/model/students'
-import { User } from '@/database/model/user'
 
-const CREATE_STUDENTS = (data: IUser) => {
+const CREATE_STUDENTS = (data: IStudentsBody) => {
   return database.write(async () => {
-    const userGet = database.collections.get<Students>('students')
-    const userExist = await userGet.query().fetch()
+    const StudentsCollection = database.collections.get<Students>('students')
 
-    if (userExist.length > 0) {
-      const userUpdated = await userExist[0].update((user: any) => {
-        user.name = data.name
-        user.email = data.email
-        user.avatar_image = data.avatar_image
-        user.profile = data.profile
-        user.createdAt = `${new Date()}`
-      })
-      return userUpdated
-    } else {
-      const newUser = await userGet.create((user: any) => {
-        user.name = data.name
-        user.email = data.email
-        user.avatar_image = data.avatar_image
-        user.profile = data.profile
-        user.createdAt = `${new Date()}`
-      })
-      return newUser
-    }
+    const newStudents = await StudentsCollection.create(
+      (stundent: Students) => {
+        stundent.about = `${data.about}`
+        stundent.address = `${data.address}`
+        stundent.age = `${data.age}`
+        stundent.best_day = data.best_day
+        stundent.best_time = data.best_time
+        stundent.email = data.email
+        stundent.gender = data.gender
+        stundent.name = data.name
+        stundent.telephone = `${data.telephone}`
+      },
+    )
+
+    return newStudents
   })
 }
 
