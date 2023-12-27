@@ -1,30 +1,71 @@
-import TouchableOpacity, { Text, View } from '@/components/Themed'
-import { TextInputForm } from '@/components/ui/TextInputForm'
-import { useForm } from 'react-hook-form'
+import { Select } from '@/components/ui/Select'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { useState } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
+import { Text, View } from '@/components/Themed'
+import { BackButton } from '@/components/ui/BackButton'
+import { DatePicker } from '@/components/ui/DatePicker'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { VisiteProps } from '@/@types/interfaces'
+import { TextInputForm } from '@/components/ui/TextInputForm'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { Button, DialogActions } from '@react-native-material/core'
+import { CREATE_VISIT_BY_STUDENT_ID } from '@/database/actions/visits/create'
 
+import * as z from 'zod'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import { ButtonPrimary } from '@/components/ui/ButtonPrimary'
-import { BackButton } from '@/components/ui/BackButton'
+import Snackbar from 'react-native-snackbar'
 
-const defaultValues = {
-  firstName: '',
-  lastName: '',
-}
+const schema = z.object({
+  date_and_hours: z.date({
+    required_error: 'Digite uma data',
+  }),
+  students_id: z.string(),
+  result: z.string(),
+  biblical_texts: z.string(),
+  publications: z.string(),
+  videos: z.string(),
+  notes: z.string(),
+})
 
 export default function CreateVisit() {
+  const router = useRouter()
   const { isDark } = useTheme()
+  const { id, name } = useLocalSearchParams()
+  const [date, setDate] = useState(new Date())
 
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues,
+    resolver: zodResolver(schema),
+    defaultValues: {
+      date_and_hours: date,
+      students_id: id,
+      result: 'attended',
+      biblical_texts: '',
+      publications: '',
+      videos: '',
+      notes: '',
+    },
   })
 
-  const onSubmit = (data) => console.log(data)
+  const onSubmit = async (data: any) => {
+    try {
+      console.log('[DATA TO SEND]', data)
+      const newVisit = await CREATE_VISIT_BY_STUDENT_ID(data)
+      console.log('[NOVA VISITA]', newVisit)
+      if (isSubmitting) router.back()
+      Snackbar.show({
+        text: 'Visita adicionada a ' + name,
+        duration: Snackbar.LENGTH_LONG,
+      })
+    } catch (error) {
+      console.log('[ERROR] : ', error)
+    }
+  }
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -36,7 +77,7 @@ export default function CreateVisit() {
           <BackButton />
           <View className="flex-1" lightColor="transparent">
             <Text className="font-bold font-textIBM text-base break-words over">
-              Visita ao Morador (Antonio Manuel Sitoe)
+              Visita ao Morador ({name})
             </Text>
             <View
               darkColor={Colors.dark.tint}
@@ -52,43 +93,45 @@ export default function CreateVisit() {
           contentContainerStyle={{
             backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
             paddingBottom: 60,
-            paddingTop: 10,
+            paddingTop: 5,
           }}
         >
-          <View lightColor="transparent" className="flex flex-1 flex-row gap-4">
-            <View lightColor="transparent" className="flex flex-1 mt-4">
-              <Text>Data</Text>
-              <TouchableOpacity
-                lightColor={Colors.light.inputBg}
-                darkColor={Colors.dark.darkBgSecundary}
-                className="h-12 rounded-lg mt-2 px-3 text-white"
-                style={{
-                  borderColor: isDark ? '#a3afb73f' : 'transparent',
-                  borderWidth: isDark ? 1 : 0,
-                }}
-              />
-            </View>
-            <View lightColor="transparent" className="flex flex-1 mt-4">
-              <Text>Horas</Text>
-              <TouchableOpacity
-                lightColor={Colors.light.inputBg}
-                darkColor={Colors.dark.darkBgSecundary}
-                className="h-12 rounded-lg mt-2 px-3 text-white"
-                style={{
-                  borderColor: isDark ? '#a3afb73f' : 'transparent',
-                  borderWidth: isDark ? 1 : 0,
-                }}
-              />
-            </View>
-          </View>
-
+          <DatePicker date={date} setDate={setDate} />
+          <Select
+            label="Resultado"
+            control={control}
+            errors={errors}
+            name="result"
+            options={[
+              {
+                label: 'Esteve na visita',
+                value: 'attended',
+              },
+              {
+                label: 'Não estava em casa',
+                value: 'not_at_home',
+              },
+              {
+                label: 'Já não está interessada',
+                value: 'no_longer_interested',
+              },
+              {
+                label: 'Não tinha tempo',
+                value: 'no_time',
+              },
+              {
+                label: 'Ligou por telefone',
+                value: 'called',
+              },
+            ]}
+          />
           <TextInputForm
             height
             control={control}
             errors={errors}
             label="Textos biblicos"
-            name="texts"
-            placeholder=""
+            name="biblical_texts"
+            placeholder="Textos biblicos"
             rules={{}}
           />
           <TextInputForm
@@ -96,7 +139,7 @@ export default function CreateVisit() {
             errors={errors}
             label="Publicações"
             name="publications"
-            placeholder=""
+            placeholder="Publicações"
             rules={{}}
             height
           />
@@ -105,22 +148,38 @@ export default function CreateVisit() {
             errors={errors}
             label="Videos"
             name="video"
-            placeholder=""
+            placeholder="Videos"
             rules={{}}
             height
           />
+
           <TextInputForm
             control={control}
             errors={errors}
             label="O que dizer da proxima vez?"
-            name="sayNext"
-            placeholder=""
+            name="notes"
+            placeholder="O que dizer da proxima vez?"
             rules={{}}
             multiline={true}
             numberOfLines={6}
             textAlignVertical="top"
           />
-          <ButtonPrimary onPress={handleSubmit(onSubmit)} text="Guardar" />
+          <View className="my-2" />
+          <DialogActions>
+            <Button
+              title="Guardar"
+              onPress={handleSubmit(onSubmit)}
+              loading={isSubmitting}
+              disabled={isSubmitting}
+              loadingIndicatorPosition="overlay"
+              color={isDark ? Colors.dark.tint : Colors.light.tint}
+              titleStyle={{
+                color: 'white',
+                fontFamily: 'Inter_400Regular',
+                textTransform: 'capitalize',
+              }}
+            />
+          </DialogActions>
         </ScrollView>
       </View>
     </View>

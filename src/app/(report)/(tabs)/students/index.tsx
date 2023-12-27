@@ -93,7 +93,7 @@ export default function StudentsHome() {
                   onAddVisit={() => {
                     router.push({
                       pathname: '/(report)/(tabs)/students/createVisit',
-                      params: { id: data.id },
+                      params: { id: data.id, name: data?.name },
                     })
                   }}
                   data={data}

@@ -70,6 +70,7 @@ export default function Profile() {
       pathname: `/(report)/(tabs)/students/createVisit`,
       params: {
         id,
+        name: profile.name,
       },
     })
   }
@@ -144,12 +145,12 @@ export default function Profile() {
               }}
             />
           </View>
+          <AnimatedButtonWithText
+            text="Adicionar Visita"
+            onPress={handleAddVisit}
+          />
         </>
       )}
-      <AnimatedButtonWithText
-        text="Adicionar Visita"
-        onPress={handleAddVisit}
-      />
     </View>
   )
 }

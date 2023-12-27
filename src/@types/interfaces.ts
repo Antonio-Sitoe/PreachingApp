@@ -35,3 +35,13 @@ export interface IStudentsBody {
   name: string
   telephone: string | number
 }
+
+export interface VisiteProps {
+  biblical_texts: string
+  date_and_hours: Date
+  notes: string
+  publications: string
+  result: string
+  students_id: string
+  videos: string
+}

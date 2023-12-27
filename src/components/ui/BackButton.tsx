@@ -1,12 +1,17 @@
 import { TouchableOpacity } from 'react-native-gesture-handler'
-import { Feather } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import colors from 'tailwindcss/colors'
+import { ChevronLeft } from 'lucide-react-native'
+import useTheme from '@/hooks/useTheme'
+import Colors from '@/constants/Colors'
 export function BackButton() {
+  const { isDark } = useTheme()
   const { back } = useRouter()
   return (
     <TouchableOpacity onPress={back} activeOpacity={0.7}>
-      <Feather name="arrow-left" size={32} color={colors.zinc['400']} />
+      <ChevronLeft
+        size={45}
+        color={isDark ? Colors.dark.tint : Colors.light.tint}
+      />
     </TouchableOpacity>
   )
 }
