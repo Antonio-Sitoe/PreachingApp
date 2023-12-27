@@ -8,11 +8,14 @@ import useTheme from '@/hooks/useTheme'
 import { z } from 'zod'
 import { BackButton } from '@/components/ui/BackButton'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1'
 import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2'
 import { DialogActions, Button } from '@react-native-material/core'
-import { useRouter } from 'expo-router'
+import { useLocalSearchParams, useRouter } from 'expo-router'
+import { IStudentsBody } from '@/@types/interfaces'
+import { CREATE_STUDENTS } from '@/database/actions/students/create'
+import { Alert } from 'react-native'
 
 const SchemaStudennts = z.object({
   name: z
@@ -41,23 +44,43 @@ const SchemaStudennts = z.object({
     .min(1, 'Escolha um dia para visitar.'),
 })
 
-interface StudentsBody {
-  about?: string
-  address?: string
-  age: string
-  best_day: string[]
-  best_time: string[]
-  email: string
-  gender: 'man' | 'woman'
-  name: string
-  telephone: string
-}
+const defaultAges = [
+  {
+    age: '5+',
+    state: false,
+  },
+  {
+    age: '10+',
+    state: false,
+  },
+  {
+    age: '15+',
+    state: false,
+  },
+  {
+    age: '20+',
+    state: false,
+  },
+  {
+    age: '30+',
+    state: false,
+  },
+  {
+    age: '50+',
+    state: false,
+  },
+  {
+    age: '-100',
+    state: false,
+  },
+]
 
 type SchemaStudenntsType = z.infer<typeof SchemaStudennts>
 export default function CreateStudent() {
   const { isDark } = useTheme()
-  const { back } = useRouter()
+  const { back, push } = useRouter()
   const [step, setStep] = useState(false)
+  const data: IStudentsBody = useLocalSearchParams()
 
   const {
     control,
@@ -66,46 +89,24 @@ export default function CreateStudent() {
     setValue,
     reset,
     clearErrors,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<SchemaStudenntsType>({
     resolver: zodResolver(SchemaStudennts),
   })
-  const [weekDays, setWeekDays] = useState<string[]>([])
-  const [timesOfDay, settimeOfDay] = useState<string[]>([])
+  const [weekDays, setWeekDays] = useState<string[]>(data?.best_day || [])
+  const [timesOfDay, settimeOfDay] = useState<string[]>(data?.best_time || [])
   const [gender, setGender] = useState({
-    woman: false,
-    man: false,
+    woman: data?.gender === 'woman',
+    man: data?.gender === 'man',
   })
-  const [ages, setAge] = useState([
-    {
-      age: '5+',
-      state: false,
-    },
-    {
-      age: '10+',
-      state: false,
-    },
-    {
-      age: '15+',
-      state: false,
-    },
-    {
-      age: '20+',
-      state: false,
-    },
-    {
-      age: '30+',
-      state: false,
-    },
-    {
-      age: '50+',
-      state: false,
-    },
-    {
-      age: '-100',
-      state: false,
-    },
-  ])
+  const [ages, setAge] = useState(
+    defaultAges.map((item) => {
+      if (item.age === data?.age) {
+        item.state = true
+      }
+      return item
+    }),
+  )
 
   async function handleNext() {
     try {
@@ -156,6 +157,7 @@ export default function CreateStudent() {
 
   function handleToogleWeekday(weekDayIndex: string) {
     clearErrors('best_day')
+    console.log('weekDays', weekDays)
     if (weekDays.includes(weekDayIndex)) {
       setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex))
       setValue(
@@ -184,29 +186,45 @@ export default function CreateStudent() {
       setValue('best_time', [...timesOfDay, time])
     }
   }
-  function transformeData(data: StudentsBody) {
-    const body = {
+  function transformeData(data: IStudentsBody) {
+    const body: IStudentsBody = {
       about: data.about || '',
       address: data.address || '',
-      age: data.age || '',
+      age: data.age,
       best_day: data.best_day || [],
       best_time: data.best_time || [],
       email: data.email || '',
       gender: data.gender || 'man',
       name: data.name || '',
-      telephone: data.telephone || '',
+      telephone: data.telephone,
     }
     return { body }
   }
 
-  const onSubmit = (data: StudentsBody | any) => {
+  const onSubmit = async (data: IStudentsBody | any) => {
     try {
       const { body } = transformeData(data)
-      console.log(body)
+      const newStudent = await CREATE_STUDENTS(body)
+      console.log('newStudent', newStudent)
+      if (newStudent) {
+        push('/(report)/(tabs)/students')
+      }
     } catch (error) {
       console.log('Error', error)
     }
   }
+  useEffect(() => {
+    if (data) {
+      setValue('name', data.name)
+      if (data.telephone) setValue('telephone', `${data.telephone}`)
+      if (data?.email) setValue('email', data?.email)
+      setValue('age', data?.age)
+      setValue('gender', data.gender)
+      setValue('best_day', data.best_day)
+      setValue('best_time', data.best_time)
+      setValue('address', data.address)
+    }
+  }, [data, setValue])
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -302,7 +320,8 @@ export default function CreateStudent() {
               onPress={handleSubmit(onSubmit)}
               title="Guardar"
               variant="contained"
-              loading={false}
+              loading={isSubmitting}
+              disabled={isSubmitting}
               color={isDark ? Colors.dark.tint : Colors.light.tint}
               titleStyle={{
                 color: 'white',

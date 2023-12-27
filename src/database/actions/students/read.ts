@@ -1,5 +1,11 @@
+import { IStudentsBody } from '@/@types/interfaces'
 import { database } from '@/database/database'
 import { Students } from '@/database/model/students'
+import { Q } from '@nozbe/watermelondb'
+
+export interface IStudentsBodyHelper extends IStudentsBody {
+  visits: string[]
+}
 
 async function GET_STUDENT_DATA() {
   const studentsData = database.collections.get<Students>('students')
@@ -17,4 +23,31 @@ async function GET_STUDENT_DATA() {
   return studentsMap
 }
 
-export { GET_STUDENT_DATA }
+async function GET_STUDENTS_BY_ID(_id: string) {
+  const colletion = database.collections.get<Students>('students')
+  const student_by_id = await colletion.query(Q.where('id', _id)).fetch()
+
+  if (student_by_id.length === 0) {
+    return {
+      data: {},
+    }
+  }
+
+  const profileData = student_by_id.reduce((acc, item: any) => {
+    acc.about = `${item.about}`
+    acc.address = `${item.address}`
+    acc.age = `${item.age}`
+    acc.best_day = item.best_day
+    acc.best_time = item.best_time
+    acc.email = item.email
+    acc.gender = item.gender
+    acc.name = item.name
+    acc.telephone = item.telephone || ''
+    acc.visits = []
+    return acc
+  }, {} as IStudentsBodyHelper)
+
+  return { data: profileData }
+}
+
+export { GET_STUDENT_DATA, GET_STUDENTS_BY_ID }

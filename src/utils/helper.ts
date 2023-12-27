@@ -195,3 +195,11 @@ export function bestMonthsStatics(data: any) {
   }
   return best
 }
+
+export function cortarString(descricao, limite = 25) {
+  if (descricao.length <= limite) {
+    return descricao // Retorna a string original se não ultrapassar o limite
+  } else {
+    return descricao.slice(0, limite) + '...' // Corta a string e adiciona "..."
+  }
+}

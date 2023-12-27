@@ -10,7 +10,7 @@ const CREATE_STUDENTS = (data: IStudentsBody) => {
       (stundent: Students) => {
         stundent.about = `${data.about}`
         stundent.address = `${data.address}`
-        stundent.age = `${data.age}`
+        stundent.age = data.age
         stundent.best_day = data.best_day
         stundent.best_time = data.best_time
         stundent.email = data.email

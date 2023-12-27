@@ -4,9 +4,9 @@ export const StudentSchema = tableSchema({
   name: 'students',
   columns: [
     { name: 'name', type: 'string' },
-    { name: 'age', type: 'number' },
+    { name: 'age', type: 'string' },
     { name: 'about', type: 'string' },
-    { name: 'telephone', type: 'number', isOptional: true },
+    { name: 'telephone', type: 'string', isOptional: true },
     { name: 'email', type: 'string', isOptional: true },
     { name: 'gender', type: 'string' },
     { name: 'address', type: 'string' },
