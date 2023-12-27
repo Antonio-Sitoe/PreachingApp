@@ -202,6 +202,7 @@ export default function CreateStudent() {
   const onSubmit = async (databody: IStudentsBody | any) => {
     try {
       const { body } = transformeData(databody)
+      console.log('[data to send]', body)
       let studentData: any
       if (data?.id) {
         studentData = await UPDATE_STUDENTS_BY_ID(data.id, body)

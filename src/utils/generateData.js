@@ -1,6 +1,7 @@
 import { createReportData } from '@/database/actions/report/create'
 import dayjs from 'dayjs'
 import { monthNameToPortuguese } from './dates'
+import { CREATE_STUDENTS } from '@/database/actions/students/create'
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -55,4 +56,88 @@ async function generateReports() {
   }
 }
 
-export { generateReports }
+// Função para gerar dados similares
+function generateRandomData() {
+  // Arrays de opções para diferentes propriedades
+  const genders = ['man', 'woman']
+  const names = [
+    'Emma Smith',
+    'Charlie Jones',
+    'Jack Moore',
+    'David Wilson',
+    'Charlie Miller',
+    'Grace Jones',
+    'David Miller',
+    'Charlie Williams',
+    'Emma Smith',
+    'Frank Smith',
+    'Emma Johnson',
+    'Jack Moore',
+    'Grace Miller',
+    'Bob Williams',
+    'Bob Williams',
+    'Charlie Moore',
+    'Frank Brown',
+    'Henry Wilson',
+    'Bob Brown',
+    'Emma Johnson',
+    'Frank Jones',
+    'David Taylor',
+    'Grace Miller',
+    'Emma Johnson',
+    'Alice Jones',
+    'Ivy Moore',
+    'Alice Taylor',
+    'Charlie Johnson',
+    'Alice Miller',
+    'Charlie Taylor',
+  ]
+  const ages = ['15-20', '21-25', '26-30', '31-35']
+  const bestDays = [
+    'Segunda-feira',
+    'Terça-feira',
+    'Quarta-feira',
+    'Quinta-feira',
+    'Sexta-feira',
+    'Sábado',
+    'Domingo',
+  ]
+  const bestTimes = ['Manhã', 'Tarde', 'Noite']
+
+  // Função para escolher aleatoriamente um elemento de um array
+  function getRandomElement(array) {
+    return array[Math.floor(Math.random() * array.length)]
+  }
+
+  // Objeto de dados simulados
+  const randomData = {
+    about:
+      'Ela é alta, clara e forte, gosta de fazer muitas perguntas e não tem problemas em sorrir.',
+    address: 'Machava sede, Moçambique',
+    age: getRandomElement(ages),
+    best_day: [getRandomElement(bestDays)],
+    best_time: [getRandomElement(bestTimes)],
+    email: 'example@example.com',
+    gender: getRandomElement(genders),
+    name: getRandomElement(names),
+    telephone: Math.floor(Math.random() * 1000000000).toString(),
+  }
+
+  return randomData
+}
+
+async function generateMassData(quantity) {
+  const massData = []
+  for (let i = 0; i < quantity; i++) {
+    massData.push(generateRandomData())
+  }
+
+  for await (const data of massData) {
+    console.log('Criando...', data)
+    await CREATE_STUDENTS(data)
+    console.log('...Sucesso')
+  }
+  return massData
+}
+
+export { generateReports, generateMassData }

@@ -73,7 +73,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         >
           Localizacao
         </Text>
-        <Text className="mt-1  mb-3 font-text">{data?.address}</Text>
+        <Text className="mt-1  mb-3 font-text">{data?.address || '...'}</Text>
         <Text
           className="text-base font-title"
           lightColor={Colors.light.tint}
