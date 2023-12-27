@@ -50,8 +50,6 @@ export default function Profile() {
   const [isLoading, setIsloading] = useState(true)
   const [visits, setVisits] = useState([1, 2, 3, 4, 5])
 
-  console.log('id', id)
-
   useEffect(() => {
     async function getProfileInformation(id: string | string[]) {
       try {

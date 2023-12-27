@@ -1,22 +1,53 @@
+import { IStudentsBody } from '@/@types/interfaces'
 import NoContent from '@/components/NoContent'
 import { Text, View } from '@/components/Themed'
 import { StudentCard } from '@/components/students/StudentCard'
 import { AnimatedButtonWithText } from '@/components/ui/ButtonAnimatedV2'
 import Colors from '@/constants/Colors'
+import { GET_STUDENT_DATA } from '@/database/actions/students/read'
+
 import useTheme from '@/hooks/useTheme'
+import { useIsFocused } from '@react-navigation/native'
 import { useRouter } from 'expo-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { ScrollView } from 'react-native-gesture-handler'
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler'
 
-export default function Students() {
+interface Idata extends IStudentsBody {
+  id: string
+  name: string
+  address: string
+}
+
+export default function StudentsHome() {
   const router = useRouter()
   const { isDark } = useTheme()
-  const [people, setPeople] = useState([1, 2, 3, 4, 5])
+  const [isLoading, setIsLoading] = useState(true)
+  const [people, setPeople] = useState<Idata[]>([])
+  const isFocused = useIsFocused()
 
   function handleAddPeople() {
     router.push('/(report)/(tabs)/students/createStudents')
   }
+  async function listStudents() {
+    try {
+      setIsLoading(true)
+      const students = await GET_STUDENT_DATA()
+      setPeople(students as Idata[])
+      console.log(students)
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isFocused) {
+      listStudents()
+    }
+  }, [isFocused])
+
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">
@@ -30,6 +61,13 @@ export default function Students() {
         />
       </View>
       <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={listStudents}
+            colors={[Colors.dark.tint]}
+          />
+        }
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
@@ -47,10 +85,16 @@ export default function Students() {
               return (
                 <StudentCard
                   onViewProfile={() => {
-                    router.push('/(report)/(tabs)/students/profile')
+                    router.push({
+                      pathname: '/(report)/(tabs)/students/profile',
+                      params: { id: data.id },
+                    })
                   }}
                   onAddVisit={() => {
-                    router.push('/(report)/(tabs)/students/createVisit')
+                    router.push({
+                      pathname: '/(report)/(tabs)/students/createVisit',
+                      params: { id: data.id },
+                    })
                   }}
                   data={data}
                   key={index}

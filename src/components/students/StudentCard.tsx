@@ -1,12 +1,17 @@
 import Colors from '@/constants/Colors'
+import Woman from '@/assets/images/Woman.svg'
 import useTheme from '@/hooks/useTheme'
 import Person from '@/assets/images/Person.svg'
 
 import TouchableOpacity, { View, Text } from '@/components/Themed'
 import { Ionicons } from '@expo/vector-icons'
+import { IStudentsBody } from '@/@types/interfaces'
+import { cortarString } from '@/utils/helper'
+
+type Idata = IStudentsBody
 
 interface StudentCardProps {
-  data: any
+  data: Idata
   onViewProfile: () => void
   onAddVisit: () => void
 }
@@ -33,14 +38,16 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
             darkColor="#FBEEBC"
             className="w-10 h-10 mr-2 rounded-lg flex items-center justify-center"
           >
-            <Person width={35} height={35} />
+            {data?.gender === 'man' ? (
+              <Person width={35} height={35} />
+            ) : (
+              <Woman width={35} height={35} />
+            )}
           </View>
           <View lightColor="transparent" darkColor="transparent">
-            <Text className="bg-none text-base font-textIBM">
-              Antonio Manuel Sitoe
-            </Text>
+            <Text className="bg-none text-base font-textIBM">{data?.name}</Text>
             <Text className="break-words font-textIBM flex-wrap w-52 text-[#717171]">
-              Machava-sede dsdsfhgfhdsg
+              {cortarString(data?.address) || '.....'}
             </Text>
           </View>
         </TouchableOpacity>

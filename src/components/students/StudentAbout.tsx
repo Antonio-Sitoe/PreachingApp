@@ -20,12 +20,12 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
     push({
       pathname: `/(report)/(tabs)/students/createStudents`,
       params: {
-        id: data?.id,
-        about: data?.about,
-        address: data?.address,
+        id: `${data?.id}`,
+        about: `${data?.about}`,
+        address: `${data?.address}`,
         age: data.age,
-        best_day: data.best_day,
-        best_time: data.best_time,
+        best_day: JSON.stringify(data.best_day),
+        best_time: JSON.stringify(data.best_time),
         email: data.email,
         gender: data.gender,
         name: data.name,
@@ -65,7 +65,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         >
           Sobre
         </Text>
-        <Text className="mt-1 font-text">{data?.about}</Text>
+        <Text className="mt-1 mb-3 font-text">{data?.about}</Text>
         <Text
           className="text-base font-title "
           darkColor={Colors.dark.Success200}

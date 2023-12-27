@@ -34,6 +34,7 @@ async function GET_STUDENTS_BY_ID(_id: string) {
   }
 
   const profileData = student_by_id.reduce((acc, item: any) => {
+    acc.id = item.id
     acc.about = `${item.about}`
     acc.address = `${item.address}`
     acc.age = `${item.age}`

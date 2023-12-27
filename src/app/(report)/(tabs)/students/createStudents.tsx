@@ -15,7 +15,7 @@ import { DialogActions, Button } from '@react-native-material/core'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { IStudentsBody } from '@/@types/interfaces'
 import { CREATE_STUDENTS } from '@/database/actions/students/create'
-import { Alert } from 'react-native'
+import { UPDATE_STUDENTS_BY_ID } from '@/database/actions/students/update'
 
 const SchemaStudennts = z.object({
   name: z
@@ -80,7 +80,10 @@ export default function CreateStudent() {
   const { isDark } = useTheme()
   const { back, push } = useRouter()
   const [step, setStep] = useState(false)
-  const data: IStudentsBody = useLocalSearchParams()
+  const data: any = useLocalSearchParams()
+
+  const weekDaysObj = data?.best_day && JSON.parse(data?.best_day)
+  const timesOfDayObj = data?.best_time && JSON.parse(data?.best_time)
 
   const {
     control,
@@ -93,8 +96,8 @@ export default function CreateStudent() {
   } = useForm<SchemaStudenntsType>({
     resolver: zodResolver(SchemaStudennts),
   })
-  const [weekDays, setWeekDays] = useState<string[]>(data?.best_day || [])
-  const [timesOfDay, settimeOfDay] = useState<string[]>(data?.best_time || [])
+  const [weekDays, setWeekDays] = useState<string[]>(weekDaysObj || [])
+  const [timesOfDay, settimeOfDay] = useState<string[]>(timesOfDayObj || [])
   const [gender, setGender] = useState({
     woman: data?.gender === 'woman',
     man: data?.gender === 'man',
@@ -122,7 +125,6 @@ export default function CreateStudent() {
       console.log('Error', error)
     }
   }
-
   function goBack() {
     setStep(false)
   }
@@ -139,7 +141,6 @@ export default function CreateStudent() {
       woman: genderParams === 'woman',
     })
   }
-
   function handleChangeAge(index: number) {
     clearErrors('age')
     const newAges = ages.map((age, i) => {
@@ -154,10 +155,8 @@ export default function CreateStudent() {
       setValue('age', age?.age)
     }
   }
-
   function handleToogleWeekday(weekDayIndex: string) {
     clearErrors('best_day')
-    console.log('weekDays', weekDays)
     if (weekDays.includes(weekDayIndex)) {
       setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex))
       setValue(
@@ -200,31 +199,39 @@ export default function CreateStudent() {
     }
     return { body }
   }
-
-  const onSubmit = async (data: IStudentsBody | any) => {
+  const onSubmit = async (databody: IStudentsBody | any) => {
     try {
-      const { body } = transformeData(data)
-      const newStudent = await CREATE_STUDENTS(body)
-      console.log('newStudent', newStudent)
-      if (newStudent) {
+      const { body } = transformeData(databody)
+      let studentData: any
+      if (data?.id) {
+        studentData = await UPDATE_STUDENTS_BY_ID(data.id, body)
+        console.log('[ESTUDANTE ATUALIZADO]', data?.id)
+      } else {
+        studentData = await CREATE_STUDENTS(body)
+        console.log('[ESTUDANTE CRIADO]', studentData)
+      }
+      if (studentData) {
         push('/(report)/(tabs)/students')
       }
     } catch (error) {
       console.log('Error', error)
     }
   }
+
   useEffect(() => {
-    if (data) {
+    if (data?.id) {
       setValue('name', data.name)
       if (data.telephone) setValue('telephone', `${data.telephone}`)
       if (data?.email) setValue('email', data?.email)
+      if (data?.about) setValue('about', data?.about)
       setValue('age', data?.age)
       setValue('gender', data.gender)
-      setValue('best_day', data.best_day)
-      setValue('best_time', data.best_time)
-      setValue('address', data.address)
+      setValue('best_day', JSON.parse(data.best_day))
+      setValue('best_time', JSON.parse(data.best_time))
+      setValue('address', data?.address)
     }
-  }, [data, setValue])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">

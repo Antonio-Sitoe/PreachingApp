@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { Alert } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
-export const StudentsVisits = () => {
+export const StudentsVisits = ({ data }) => {
   const { isDark } = useTheme()
   const [visits, setVists] = useState([1, 2, 3, 4, 5, 6])
 
@@ -23,7 +23,7 @@ export const StudentsVisits = () => {
   }
 
   return (
-    <View className="flex-1 px-5 pt-5" lightColor="transparent">
+    <View className="flex-1 px-5 pt-2" lightColor="transparent">
       <Text
         className="text-base font-title uppercase pb-2"
         darkColor={Colors.dark.Success200}
