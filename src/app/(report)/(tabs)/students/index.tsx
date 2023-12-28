@@ -8,6 +8,7 @@ import { GET_STUDENT_DATA } from '@/database/actions/students/read'
 
 import useTheme from '@/hooks/useTheme'
 import { useIsFocused } from '@react-navigation/native'
+import { FlashList } from '@shopify/flash-list'
 import { useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 
@@ -60,7 +61,12 @@ export default function StudentsHome() {
           className="w-11 h-1 mx-auto rounded-lg mt-2"
         />
       </View>
-      <ScrollView
+      {people.length === 0 && (
+        <View className="mt-10">
+          <NoContent text="Sem dados" />
+        </View>
+      )}
+      <FlashList
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
@@ -68,42 +74,36 @@ export default function StudentsHome() {
             colors={[Colors.dark.tint]}
           />
         }
+        data={people}
+        estimatedItemSize={30}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
           paddingBottom: 60,
-          paddingTop: 10,
+          paddingTop: 20,
         }}
-      >
-        {people.length === 0 ? (
-          <View className="mt-10">
-            <NoContent text="Sem dados" />
-          </View>
-        ) : (
-          <>
-            {people.map((data, index) => {
-              return (
-                <StudentCard
-                  onViewProfile={() => {
-                    router.push({
-                      pathname: '/(report)/(tabs)/students/profile',
-                      params: { id: data.id },
-                    })
-                  }}
-                  onAddVisit={() => {
-                    router.push({
-                      pathname: '/(report)/(tabs)/students/createVisit',
-                      params: { id: data.id, name: data?.name },
-                    })
-                  }}
-                  data={data}
-                  key={index}
-                />
-              )
-            })}
-          </>
-        )}
-      </ScrollView>
+        keyExtractor={(item, i) => i + String(item.id)}
+        renderItem={({ item }) => {
+          return (
+            <StudentCard
+              onViewProfile={() => {
+                router.push({
+                  pathname: '/(report)/(tabs)/students/profile',
+                  params: { id: item.id },
+                })
+              }}
+              onAddVisit={() => {
+                router.push({
+                  pathname: '/(report)/(tabs)/students/createVisit',
+                  params: { id: item.id, name: item?.name },
+                })
+              }}
+              data={item}
+            />
+          )
+        }}
+      />
+
       <AnimatedButtonWithText
         text="Adicionar Pessoa"
         onPress={handleAddPeople}

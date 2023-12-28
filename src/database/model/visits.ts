@@ -3,7 +3,11 @@ import { field, relation } from '@nozbe/watermelondb/decorators'
 
 export class Visits extends Model {
   static table = 'visits'
-  @relation('students', 'students_id') students_id!: string
+  static associations = {
+    students: { type: 'belongs_to', key: 'students_id' },
+  }
+
+  @relation('students', 'students_id') students
   @field('notes') notes!: string
   @field('publications') publications!: string
   @field('biblical_texts') biblical_texts!: string

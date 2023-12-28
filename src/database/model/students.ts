@@ -1,8 +1,13 @@
 import { Model } from '@nozbe/watermelondb'
-import { field, json } from '@nozbe/watermelondb/decorators'
+import { children, field, json } from '@nozbe/watermelondb/decorators'
 
 export class Students extends Model {
   static table = 'students'
+
+  static associations = {
+    visits: { type: 'has_many', foreignKey: 'students_id' },
+  }
+
   @field('name') name!: string
   @field('age') age!: string
   @field('about') about!: string
@@ -13,6 +18,8 @@ export class Students extends Model {
   @json('best_time', sanitizeArray) best_time: string[] | undefined
   @json('best_day', sanitizeArray) best_day: string[] | undefined
   @field('createdAt') createdAt!: Date | string
+
+  @children('visits') visits: any
 }
 
 function sanitizeArray(array: string[]) {

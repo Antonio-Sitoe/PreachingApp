@@ -16,6 +16,7 @@ import * as z from 'zod'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import Snackbar from 'react-native-snackbar'
+import { GET_VISITS } from '@/database/actions/visits/read'
 
 const schema = z.object({
   date_and_hours: z.date({
@@ -169,6 +170,7 @@ export default function CreateVisit() {
             <Button
               title="Guardar"
               onPress={handleSubmit(onSubmit)}
+              // onPress={GET_VISITS}
               loading={isSubmitting}
               disabled={isSubmitting}
               loadingIndicatorPosition="overlay"

@@ -21,7 +21,7 @@ export default function Settings() {
       <Button
         title="GENERATE STUDENTS DATA"
         onPress={() => {
-          generateMassData(30)
+          generateMassData(10)
         }}
       />
       <View className="my-2" />
