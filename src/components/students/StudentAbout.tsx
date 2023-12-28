@@ -108,7 +108,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
             <Pen color="white" />
           </View>
 
-          <Text className="text-base">Editar Perfil</Text>
+          <Text className="font-text">Editar Perfil</Text>
         </TouchableOpacity>
         <TouchableOpacity
           lightColor="transparent"
@@ -118,8 +118,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           <View className="bg-red-600 w-9 h-9 justify-center items-center rounded">
             <Trash2 color="white" />
           </View>
-
-          <Text className="text-base">Apagar Pessoa</Text>
+          <Text className="font-text">Apagar Pessoa</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

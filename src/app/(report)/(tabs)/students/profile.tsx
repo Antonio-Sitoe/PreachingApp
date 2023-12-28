@@ -16,6 +16,8 @@ import {
   IStudentsBodyHelper,
 } from '@/database/actions/students/read'
 import { ActivityIndicator } from '@react-native-material/core'
+import { push } from 'expo-router/src/global-state/routing'
+import profile from '../../profile'
 
 const renderTabBar = (props: any, isDark: boolean) => {
   return (
@@ -48,7 +50,6 @@ export default function Profile() {
   const { index, setIndex } = useTabBarIndex()
   const [profile, setProfile] = useState({} as IStudentsBodyHelper)
   const [isLoading, setIsloading] = useState(true)
-  const [visits, setVisits] = useState([1, 2, 3, 4, 5])
 
   useEffect(() => {
     async function getProfileInformation(id: string | string[]) {
@@ -77,7 +78,7 @@ export default function Profile() {
 
   const renderScene = SceneMap({
     about: () => <StudentAbout data={profile} />,
-    visits: () => <StudentsVisits data={profile} />,
+    visits: () => <StudentsVisits data={profile.visits} />,
   })
 
   const routes = [

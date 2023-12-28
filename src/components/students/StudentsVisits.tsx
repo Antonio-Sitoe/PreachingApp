@@ -1,14 +1,27 @@
+import { VisiteProps } from '@/@types/interfaces'
 import TouchableOpacity, { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
+import { Divider } from '@react-native-material/core'
 import { Pen, Trash2 } from 'lucide-react-native'
 import { useState } from 'react'
 import { Alert } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
-export const StudentsVisits = ({ data }) => {
+const IRESULT = {
+  attended: 'Esteve na visita',
+  not_at_home: 'Não estava em casa',
+  no_longer_interested: 'Já não está interessada',
+  no_time: 'Não tinha tempo',
+  called: 'Ligou por telefone',
+}
+
+interface IStudentsVisitsProps {
+  data: VisiteProps[]
+}
+export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
   const { isDark } = useTheme()
-  const [visits, setVists] = useState([1, 2, 3, 4, 5, 6])
+  const [visits, setVisits] = useState(data || [])
 
   function handleDeleteVisit() {
     Alert.alert(
@@ -39,10 +52,11 @@ export const StudentsVisits = ({ data }) => {
         }}
       >
         {visits.map((item) => {
+          console.log(item)
           return (
             <View
-              key={item}
-              className="flex-1 pb-3 mt-5 border-b-[1px] border-b-zinc-400"
+              key={item.id}
+              className="flex-1 pb-3 mt-5"
               lightColor="transparent"
             >
               <View
@@ -51,6 +65,7 @@ export const StudentsVisits = ({ data }) => {
               >
                 <Text className="flex-1">
                   Domingo, 6 de abril de 2023 - 01:06
+                  {item?.date_and_hours}
                 </Text>
                 <View
                   className="flex-row items-center gap-2"
@@ -78,12 +93,9 @@ export const StudentsVisits = ({ data }) => {
                   darkColor={Colors.dark.Success200}
                   lightColor={Colors.light.tint}
                 >
-                  Informacao da visita
+                  O que dizer na proxima visita ?
                 </Text>
-                <Text className="mt-1 mb-3 font-text">
-                  NativeBase ships with a default theme for each component.
-                  Check out the default theme of the textArea here .
-                </Text>
+                <Text className="mt-1 mb-3 font-text">{item.notes}</Text>
               </View>
               <View
                 lightColor="transparent"
@@ -97,7 +109,9 @@ export const StudentsVisits = ({ data }) => {
                   >
                     Textos lidos
                   </Text>
-                  <Text className="mt-1 mb-3 font-text">Mateus 24:14</Text>
+                  <Text className="mt-1 mb-3 font-text">
+                    {item.biblical_texts || '...'}
+                  </Text>
                 </View>
                 <View lightColor="transparent">
                   <Text
@@ -107,7 +121,9 @@ export const StudentsVisits = ({ data }) => {
                   >
                     Publicacoes
                   </Text>
-                  <Text className="mt-1 mb-3 font-text">Mateus 24:14</Text>
+                  <Text className="mt-1 mb-3 font-text">
+                    {item?.publications || '...'}
+                  </Text>
                 </View>
               </View>
               <View
@@ -122,7 +138,9 @@ export const StudentsVisits = ({ data }) => {
                   >
                     Videos Mostrados
                   </Text>
-                  <Text className="mt-1 mb-3 font-text">Mateus 24:14</Text>
+                  <Text className="mt-1 mb-3 font-text">
+                    {item?.videos || '...'}
+                  </Text>
                 </View>
                 <View lightColor="transparent">
                   <Text
@@ -132,22 +150,12 @@ export const StudentsVisits = ({ data }) => {
                   >
                     Resultado
                   </Text>
-                  <Text className="mt-1 mb-3 font-text">Mateus 24:14</Text>
+                  <Text className="mt-1 mb-3 font-text">
+                    {IRESULT[item.result]}
+                  </Text>
                 </View>
               </View>
-              <View lightColor="transparent" className="mt-2">
-                <Text
-                  className="text-base font-title "
-                  darkColor={Colors.dark.Success200}
-                  lightColor={Colors.light.tint}
-                >
-                  O que dizer da proxima vez:
-                </Text>
-                <Text className="mt-1 mb-3 font-text">
-                  NativeBase ships with a default theme for each component.
-                  Check out the default theme of the textArea here .
-                </Text>
-              </View>
+              <Divider style={{ marginTop: 10 }} />
             </View>
           )
         })}

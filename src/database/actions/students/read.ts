@@ -1,10 +1,11 @@
-import { IStudentsBody } from '@/@types/interfaces'
+import { IStudentsBody, VisiteProps } from '@/@types/interfaces'
 import { database } from '@/database/database'
 import { Students } from '@/database/model/students'
+import { Visits } from '@/database/model/visits'
 import { Q } from '@nozbe/watermelondb'
 
 export interface IStudentsBodyHelper extends IStudentsBody {
-  visits: string[]
+  visits: VisiteProps[]
 }
 
 async function GET_STUDENT_DATA() {
@@ -25,6 +26,7 @@ async function GET_STUDENT_DATA() {
 
 async function GET_STUDENTS_BY_ID(_id: string) {
   const colletion = database.collections.get<Students>('students')
+  const collectionVisits = database.collections.get<Visits>('visits')
   const student_by_id = await colletion.query(Q.where('id', _id)).fetch()
 
   if (student_by_id.length === 0) {
@@ -32,6 +34,23 @@ async function GET_STUDENTS_BY_ID(_id: string) {
       data: {},
     }
   }
+
+  const visitsData = await collectionVisits
+    .query(Q.where('students_id', _id))
+    .fetch()
+
+  const Visits = visitsData.map((item) => {
+    return {
+      id: item.id,
+      biblical_texts: item.biblical_texts,
+      date_and_hours: item.date_and_hours,
+      notes: item.notes,
+      publications: item.publications,
+      result: item.result,
+      students_id: item.students,
+      videos: item.videos,
+    }
+  })
 
   const profileData = student_by_id.reduce((acc, item: any) => {
     acc.id = item.id
@@ -44,9 +63,10 @@ async function GET_STUDENTS_BY_ID(_id: string) {
     acc.gender = item.gender
     acc.name = item.name
     acc.telephone = item.telephone || ''
-    acc.visits = []
     return acc
   }, {} as IStudentsBodyHelper)
+
+  profileData.visits = Visits
 
   return { data: profileData }
 }

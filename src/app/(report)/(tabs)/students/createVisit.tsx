@@ -39,7 +39,7 @@ export default function CreateVisit() {
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -58,11 +58,11 @@ export default function CreateVisit() {
       console.log('[DATA TO SEND]', data)
       const newVisit = await CREATE_VISIT_BY_STUDENT_ID(data)
       console.log('[NOVA VISITA]', newVisit)
-      if (isSubmitting) router.back()
       Snackbar.show({
         text: 'Visita adicionada a ' + name,
         duration: Snackbar.LENGTH_LONG,
       })
+      if (isSubmitSuccessful) router.back()
     } catch (error) {
       console.log('[ERROR] : ', error)
     }
@@ -170,7 +170,6 @@ export default function CreateVisit() {
             <Button
               title="Guardar"
               onPress={handleSubmit(onSubmit)}
-              // onPress={GET_VISITS}
               loading={isSubmitting}
               disabled={isSubmitting}
               loadingIndicatorPosition="overlay"
