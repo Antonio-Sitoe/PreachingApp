@@ -9,7 +9,8 @@ async function GET_VISITS(_id: string) {
 
   return { visits }
 }
-async function GET_VISIT_BY_ID(_id: string) {
+
+async function GET_VISIT_BY_STUDENT_ID(_id: string) {
   const collectionVisits = database.collections.get<Visits>('visits')
   const visitsData = await collectionVisits
     .query(Q.where('students_id', _id))
@@ -32,5 +33,30 @@ async function GET_VISIT_BY_ID(_id: string) {
 
   return { visits: Visits }
 }
+async function GET_VISIT_BY_ID(_id: string) {
+  const collectionVisits = database.collections.get<Visits>('visits')
+  const visitsData = await collectionVisits.query(Q.where('id', _id)).fetch()
 
-export { GET_VISITS, GET_VISIT_BY_ID }
+  if (visitsData.length === 0) {
+    return {
+      visit: null,
+    }
+  }
+
+  const visit = visitsData.map((item) => {
+    return {
+      id: item.id,
+      biblical_texts: item.biblical_texts,
+      date_and_hours: stringToDate(item.date_and_hours),
+      notes: item.notes,
+      publications: item.publications,
+      result: item.result,
+      students_id: item.students,
+      videos: item.videos,
+    }
+  })
+
+  return { visit: visit[0] }
+}
+
+export { GET_VISITS, GET_VISIT_BY_STUDENT_ID, GET_VISIT_BY_ID }

@@ -3,7 +3,7 @@ import { AnimatedButtonWithText } from '@/components/ui/ButtonAnimatedV2'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import Person from '@/assets/images/Person.svg'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { router, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react'
 import Woman from '@/assets/images/Woman.svg'
 import { useWindowDimensions } from 'react-native'
@@ -15,7 +15,7 @@ import {
   IStudentsBodyHelper,
 } from '@/database/actions/students/read'
 import { ActivityIndicator } from '@react-native-material/core'
-import { GET_VISIT_BY_ID } from '@/database/actions/visits/read'
+import { GET_VISIT_BY_STUDENT_ID } from '@/database/actions/visits/read'
 import { VisiteProps } from '@/@types/interfaces'
 import { useIsFocused } from '@react-navigation/native'
 
@@ -73,7 +73,7 @@ export default function Profile() {
   async function getVisitInfo(id: string | string[]) {
     try {
       setLoadVisit(true)
-      const { visits } = await GET_VISIT_BY_ID(`${id}`)
+      const { visits } = await GET_VISIT_BY_STUDENT_ID(`${id}`)
       setVisits(visits)
     } catch (error) {
       console.log('[Error BUSCAR VISITAS]', error)
@@ -88,13 +88,17 @@ export default function Profile() {
     }
   }, [id, isFocused])
 
-  function handleAddVisit() {
+  function handleAddVisit(visitID?: string) {
+    const params: any = {
+      id,
+      name: profile.name,
+    }
+    if (visitID) {
+      params.visitID = visitID
+    }
     push({
       pathname: `/(report)/(tabs)/students/createVisit`,
-      params: {
-        id,
-        name: profile.name,
-      },
+      params,
     })
   }
 
@@ -105,6 +109,7 @@ export default function Profile() {
         reset={() => getVisitInfo(id)}
         visits={visits}
         load={loadVisit}
+        handleAddVisit={handleAddVisit}
       />
     ),
   })
@@ -176,7 +181,7 @@ export default function Profile() {
           </View>
           <AnimatedButtonWithText
             text="Adicionar Visita"
-            onPress={handleAddVisit}
+            onPress={() => handleAddVisit()}
           />
         </>
       )}

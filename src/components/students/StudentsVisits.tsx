@@ -4,7 +4,6 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import dayjs from 'dayjs'
 
-import { stringToDate } from '@/utils/dates'
 import { capitalizeString } from '@/utils/helper'
 import { ActivityIndicator, Divider } from '@react-native-material/core'
 import { Alert } from 'react-native'
@@ -12,6 +11,7 @@ import { Pen, Trash2 } from 'lucide-react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 import { DELETE_VISIT_BY_ID } from '@/database/actions/visits/delete'
 import NoContent from '../NoContent'
+import { useRouter } from 'expo-router'
 
 const IRESULT = {
   attended: 'Esteve na visita',
@@ -28,12 +28,14 @@ function formateDate(date: string | Date) {
 
 interface IStudentsVisitsProps {
   visits: VisiteProps[]
+  handleAddVisit(id: string): void
   load: boolean
   reset(): void
 }
 export const StudentsVisits = ({
   visits,
   load,
+  handleAddVisit,
   reset,
 }: IStudentsVisitsProps) => {
   const { isDark } = useTheme()
@@ -102,7 +104,7 @@ export const StudentsVisits = ({
                     lightColor={Colors.light.tint}
                     darkColor={Colors.dark.tint}
                     className="w-9 h-9 justify-center items-center rounded"
-                    onPress={() => {}}
+                    onPress={() => handleAddVisit(item.id)}
                   >
                     <Pen color="white" />
                   </TouchableOpacity>

@@ -1,6 +1,6 @@
 import { Select } from '@/components/ui/Select'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ScrollView } from 'react-native-gesture-handler'
 import { Text, View } from '@/components/Themed'
 import { BackButton } from '@/components/ui/BackButton'
@@ -17,6 +17,7 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import Snackbar from 'react-native-snackbar'
 import dayjs from 'dayjs'
+import { GET_VISIT_BY_ID } from '@/database/actions/visits/read'
 
 const schema = z.object({
   date_and_hours: z.date({
@@ -33,13 +34,14 @@ const schema = z.object({
 export default function CreateVisit() {
   const router = useRouter()
   const { isDark } = useTheme()
-  const { id, name } = useLocalSearchParams()
+  const { id, name, visitID } = useLocalSearchParams()
   const [date, setDate] = useState(new Date())
 
   const {
     control,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    setValue,
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -74,7 +76,15 @@ export default function CreateVisit() {
       console.log('[ERROR] : ', error)
     }
   }
-  console.log('isSubmitSuccessful', isSubmitSuccessful)
+
+  useEffect(() => {
+    console.log(visitID)
+    if (visitID) {
+      GET_VISIT_BY_ID(visitID as string).then((visit) => {
+        console.log({ visit })
+      })
+    }
+  }, [visitID])
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
