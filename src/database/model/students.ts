@@ -1,10 +1,11 @@
 import { Model } from '@nozbe/watermelondb'
+import { Associations } from '@nozbe/watermelondb/Model'
 import { children, field, json } from '@nozbe/watermelondb/decorators'
 
 export class Students extends Model {
   static table = 'students'
 
-  static associations = {
+  static associations: Associations = {
     visits: { type: 'has_many', foreignKey: 'students_id' },
   }
 

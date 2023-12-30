@@ -1,9 +1,11 @@
 import { Model } from '@nozbe/watermelondb'
+import { Associations } from '@nozbe/watermelondb/Model'
 import { field, relation } from '@nozbe/watermelondb/decorators'
 
 export class Visits extends Model {
   static table = 'visits'
-  static associations = {
+
+  static associations: Associations = {
     students: { type: 'belongs_to', key: 'students_id' },
   }
 
