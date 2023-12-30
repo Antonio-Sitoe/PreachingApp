@@ -84,7 +84,7 @@ export function defineProfiletext(
   return ''
 }
 
-export function capitalizeString(inputString) {
+export function capitalizeString(inputString: string) {
   if (inputString)
     return inputString.charAt(0).toUpperCase() + inputString.slice(1)
   else return ''
