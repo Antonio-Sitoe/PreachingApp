@@ -10,6 +10,8 @@ import { ActivityIndicator, Divider } from '@react-native-material/core'
 import { Alert } from 'react-native'
 import { Pen, Trash2 } from 'lucide-react-native'
 import { ScrollView } from 'react-native-gesture-handler'
+import { DELETE_VISIT_BY_ID } from '@/database/actions/visits/delete'
+import NoContent from '../NoContent'
 
 const IRESULT = {
   attended: 'Esteve na visita',
@@ -27,16 +29,27 @@ function formateDate(date: string | Date) {
 interface IStudentsVisitsProps {
   visits: VisiteProps[]
   load: boolean
+  reset(): void
 }
-export const StudentsVisits = ({ visits, load }: IStudentsVisitsProps) => {
+export const StudentsVisits = ({
+  visits,
+  load,
+  reset,
+}: IStudentsVisitsProps) => {
   const { isDark } = useTheme()
 
-  function handleDeleteVisit() {
+  function handleDeleteVisit(id: string) {
     Alert.alert(
       'Tem certeza de que deseja excluir esta visita?',
       'Se eliminar, não poderá mais acessá-la.',
       [
-        { text: 'Apagar', onPress: () => console.log('Botão 2 Pressionado') },
+        {
+          text: 'Apagar',
+          onPress: async () => {
+            await DELETE_VISIT_BY_ID(id)
+            reset()
+          },
+        },
         { text: 'Cancelar', style: 'cancel' },
       ],
       { cancelable: true },
@@ -60,6 +73,11 @@ export const StudentsVisits = ({ visits, load }: IStudentsVisitsProps) => {
         }}
       >
         {load && <ActivityIndicator />}
+        {visits.length === 0 && (
+          <View className="mt-10">
+            <NoContent text="Sem visitas" />
+          </View>
+        )}
         {visits.map((item) => {
           return (
             <View
@@ -90,7 +108,7 @@ export const StudentsVisits = ({ visits, load }: IStudentsVisitsProps) => {
                   </TouchableOpacity>
                   <TouchableOpacity
                     className="bg-red-600 w-9 h-9 justify-center items-center rounded"
-                    onPress={() => handleDeleteVisit()}
+                    onPress={() => handleDeleteVisit(item.id)}
                   >
                     <Trash2 color="white" />
                   </TouchableOpacity>
@@ -128,7 +146,7 @@ export const StudentsVisits = ({ visits, load }: IStudentsVisitsProps) => {
                     darkColor={Colors.dark.Success200}
                     lightColor={Colors.light.tint}
                   >
-                    Publicacoes
+                    Publicações
                   </Text>
                   <Text className="mt-1 mb-3 font-text">
                     {item?.publications || '...'}
@@ -145,7 +163,7 @@ export const StudentsVisits = ({ visits, load }: IStudentsVisitsProps) => {
                     darkColor={Colors.dark.Success200}
                     lightColor={Colors.light.tint}
                   >
-                    Videos Mostrados
+                    Videos
                   </Text>
                   <Text className="mt-1 mb-3 font-text">
                     {item?.videos || '...'}

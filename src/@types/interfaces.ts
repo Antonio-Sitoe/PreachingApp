@@ -37,7 +37,7 @@ export interface IStudentsBody {
 }
 
 export interface VisiteProps {
-  id?: string
+  id: string
   biblical_texts: string
   date_and_hours: string | Date
   notes: string

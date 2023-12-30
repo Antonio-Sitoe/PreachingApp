@@ -70,18 +70,19 @@ export default function Profile() {
     getProfileInformation(id)
   }, [id])
 
-  useEffect(() => {
-    async function getVisitInfo(id: string | string[]) {
-      try {
-        setLoadVisit(true)
-        const { visits } = await GET_VISIT_BY_ID(`${id}`)
-        setVisits(visits)
-      } catch (error) {
-        console.log('[Error BUSCAR VISITAS]', error)
-      } finally {
-        setLoadVisit(false)
-      }
+  async function getVisitInfo(id: string | string[]) {
+    try {
+      setLoadVisit(true)
+      const { visits } = await GET_VISIT_BY_ID(`${id}`)
+      setVisits(visits)
+    } catch (error) {
+      console.log('[Error BUSCAR VISITAS]', error)
+    } finally {
+      setLoadVisit(false)
     }
+  }
+
+  useEffect(() => {
     if (id || isFocused) {
       getVisitInfo(id)
     }
@@ -99,7 +100,13 @@ export default function Profile() {
 
   const renderScene = SceneMap({
     about: () => <StudentAbout data={profile} />,
-    visits: () => <StudentsVisits visits={visits} load={loadVisit} />,
+    visits: () => (
+      <StudentsVisits
+        reset={() => getVisitInfo(id)}
+        visits={visits}
+        load={loadVisit}
+      />
+    ),
   })
 
   const routes = [
