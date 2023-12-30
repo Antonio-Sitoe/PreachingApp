@@ -6,7 +6,7 @@ import { Text, View } from '@/components/Themed'
 import { BackButton } from '@/components/ui/BackButton'
 import { DatePicker } from '@/components/ui/DatePicker'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { VisiteProps } from '@/@types/interfaces'
+
 import { TextInputForm } from '@/components/ui/TextInputForm'
 import { useLocalSearchParams, useRouter } from 'expo-router'
 import { Button, DialogActions } from '@react-native-material/core'
@@ -16,7 +16,7 @@ import * as z from 'zod'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import Snackbar from 'react-native-snackbar'
-import { GET_VISITS } from '@/database/actions/visits/read'
+import dayjs from 'dayjs'
 
 const schema = z.object({
   date_and_hours: z.date({
@@ -55,6 +55,8 @@ export default function CreateVisit() {
 
   const onSubmit = async (data: any) => {
     try {
+      const dateformated = dayjs(date).format('DD/MM/YYYY')
+      data.date_and_hours = dateformated
       console.log('[DATA TO SEND]', data)
       const newVisit = await CREATE_VISIT_BY_STUDENT_ID(data)
       console.log('[NOVA VISITA]', newVisit)
@@ -62,11 +64,17 @@ export default function CreateVisit() {
         text: 'Visita adicionada a ' + name,
         duration: Snackbar.LENGTH_LONG,
       })
-      if (isSubmitSuccessful) router.back()
+      if (newVisit) {
+        router.push({
+          pathname: '/(report)/(tabs)/students/profile',
+          params: { id },
+        })
+      }
     } catch (error) {
       console.log('[ERROR] : ', error)
     }
   }
+  console.log('isSubmitSuccessful', isSubmitSuccessful)
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -148,7 +156,7 @@ export default function CreateVisit() {
             control={control}
             errors={errors}
             label="Videos"
-            name="video"
+            name="videos"
             placeholder="Videos"
             rules={{}}
             height

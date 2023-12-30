@@ -2,10 +2,13 @@ import { VisiteProps } from '@/@types/interfaces'
 import TouchableOpacity, { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import { Divider } from '@react-native-material/core'
-import { Pen, Trash2 } from 'lucide-react-native'
-import { useState } from 'react'
+import dayjs from 'dayjs'
+
+import { stringToDate } from '@/utils/dates'
+import { capitalizeString } from '@/utils/helper'
+import { ActivityIndicator, Divider } from '@react-native-material/core'
 import { Alert } from 'react-native'
+import { Pen, Trash2 } from 'lucide-react-native'
 import { ScrollView } from 'react-native-gesture-handler'
 
 const IRESULT = {
@@ -16,12 +19,17 @@ const IRESULT = {
   called: 'Ligou por telefone',
 }
 
-interface IStudentsVisitsProps {
-  data: VisiteProps[]
+function formateDate(date: string | Date) {
+  const formattedDate = dayjs(date).format('dddd, D [de] MMMM [de] YYYY')
+  return capitalizeString(formattedDate)
 }
-export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
+
+interface IStudentsVisitsProps {
+  visits: VisiteProps[]
+  load: boolean
+}
+export const StudentsVisits = ({ visits, load }: IStudentsVisitsProps) => {
   const { isDark } = useTheme()
-  const [visits, setVisits] = useState(data || [])
 
   function handleDeleteVisit() {
     Alert.alert(
@@ -51,8 +59,8 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
           paddingBottom: 60,
         }}
       >
+        {load && <ActivityIndicator />}
         {visits.map((item) => {
-          console.log(item)
           return (
             <View
               key={item.id}
@@ -64,8 +72,9 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
                 lightColor="transparent"
               >
                 <Text className="flex-1">
-                  Domingo, 6 de abril de 2023 - 01:06
-                  {item?.date_and_hours}
+                  {item?.date_and_hours
+                    ? formateDate(item?.date_and_hours)
+                    : '...'}
                 </Text>
                 <View
                   className="flex-row items-center gap-2"
@@ -87,7 +96,7 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
                   </TouchableOpacity>
                 </View>
               </View>
-              <View lightColor="transparent" className="mt-2">
+              <View lightColor="transparent" className="mt-3">
                 <Text
                   className="text-base font-title "
                   darkColor={Colors.dark.Success200}
@@ -99,9 +108,9 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
               </View>
               <View
                 lightColor="transparent"
-                className="flex-1 mt-2 flex-row items-start justify-between"
+                className="flex-1 mt-2 gap-2 flex-row items-start justify-between"
               >
-                <View lightColor="transparent">
+                <View lightColor="transparent" className="flex-1">
                   <Text
                     className="text-base font-title "
                     darkColor={Colors.dark.Success200}
@@ -113,7 +122,7 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
                     {item.biblical_texts || '...'}
                   </Text>
                 </View>
-                <View lightColor="transparent">
+                <View lightColor="transparent" className="flex-1">
                   <Text
                     className="text-base font-title "
                     darkColor={Colors.dark.Success200}
@@ -128,9 +137,9 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
               </View>
               <View
                 lightColor="transparent"
-                className="flex-1 mt-2 flex-row items-start justify-between"
+                className="flex-1 mt-2 gap-2 flex-row items-start justify-between"
               >
-                <View lightColor="transparent">
+                <View lightColor="transparent" className="flex-1">
                   <Text
                     className="text-base font-title "
                     darkColor={Colors.dark.Success200}
@@ -142,7 +151,7 @@ export const StudentsVisits = ({ data }: IStudentsVisitsProps) => {
                     {item?.videos || '...'}
                   </Text>
                 </View>
-                <View lightColor="transparent">
+                <View lightColor="transparent" className="flex-1">
                   <Text
                     className="text-base font-title "
                     darkColor={Colors.dark.Success200}

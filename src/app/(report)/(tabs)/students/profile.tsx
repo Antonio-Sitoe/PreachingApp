@@ -8,7 +8,6 @@ import { useEffect, useState } from 'react'
 import Woman from '@/assets/images/Woman.svg'
 import { useWindowDimensions } from 'react-native'
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
-import { useTabBarIndex } from '@/contexts/ReportContext'
 import { StudentAbout } from '@/components/students/StudentAbout'
 import { StudentsVisits } from '@/components/students/StudentsVisits'
 import {
@@ -16,8 +15,9 @@ import {
   IStudentsBodyHelper,
 } from '@/database/actions/students/read'
 import { ActivityIndicator } from '@react-native-material/core'
-import { push } from 'expo-router/src/global-state/routing'
-import profile from '../../profile'
+import { GET_VISIT_BY_ID } from '@/database/actions/visits/read'
+import { VisiteProps } from '@/@types/interfaces'
+import { useIsFocused } from '@react-navigation/native'
 
 const renderTabBar = (props: any, isDark: boolean) => {
   return (
@@ -47,9 +47,13 @@ export default function Profile() {
   const { isDark } = useTheme()
   const { push } = useRouter()
   const { id } = useLocalSearchParams()
-  const { index, setIndex } = useTabBarIndex()
+  const [index, setIndex] = useState(0)
+
+  const [visits, setVisits] = useState<VisiteProps[]>([])
+  const [loadVisit, setLoadVisit] = useState(true)
   const [profile, setProfile] = useState({} as IStudentsBodyHelper)
   const [isLoading, setIsloading] = useState(true)
+  const isFocused = useIsFocused()
 
   useEffect(() => {
     async function getProfileInformation(id: string | string[]) {
@@ -66,6 +70,23 @@ export default function Profile() {
     getProfileInformation(id)
   }, [id])
 
+  useEffect(() => {
+    async function getVisitInfo(id: string | string[]) {
+      try {
+        setLoadVisit(true)
+        const { visits } = await GET_VISIT_BY_ID(`${id}`)
+        setVisits(visits)
+      } catch (error) {
+        console.log('[Error BUSCAR VISITAS]', error)
+      } finally {
+        setLoadVisit(false)
+      }
+    }
+    if (id || isFocused) {
+      getVisitInfo(id)
+    }
+  }, [id, isFocused])
+
   function handleAddVisit() {
     push({
       pathname: `/(report)/(tabs)/students/createVisit`,
@@ -78,7 +99,7 @@ export default function Profile() {
 
   const renderScene = SceneMap({
     about: () => <StudentAbout data={profile} />,
-    visits: () => <StudentsVisits data={profile.visits} />,
+    visits: () => <StudentsVisits visits={visits} load={loadVisit} />,
   })
 
   const routes = [
