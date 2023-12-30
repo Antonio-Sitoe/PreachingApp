@@ -9,7 +9,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import { TextInputForm } from '@/components/ui/TextInputForm'
 import { useLocalSearchParams, useRouter } from 'expo-router'
-import { Button, DialogActions } from '@react-native-material/core'
+import {
+  ActivityIndicator,
+  Button,
+  DialogActions,
+} from '@react-native-material/core'
 import { CREATE_VISIT_BY_STUDENT_ID } from '@/database/actions/visits/create'
 
 import * as z from 'zod'
@@ -18,6 +22,7 @@ import useTheme from '@/hooks/useTheme'
 import Snackbar from 'react-native-snackbar'
 import dayjs from 'dayjs'
 import { GET_VISIT_BY_ID } from '@/database/actions/visits/read'
+import { UPDATE_VISIT_BY_STUDENT_ID_AND_VISI_ID } from '@/database/actions/visits/update'
 
 const schema = z.object({
   date_and_hours: z.date({
@@ -34,6 +39,7 @@ const schema = z.object({
 export default function CreateVisit() {
   const router = useRouter()
   const { isDark } = useTheme()
+  const [load, setLoad] = useState(false)
   const { id, name, visitID } = useLocalSearchParams()
   const [date, setDate] = useState(new Date())
 
@@ -60,10 +66,18 @@ export default function CreateVisit() {
       const dateformated = dayjs(date).format('DD/MM/YYYY')
       data.date_and_hours = dateformated
       console.log('[DATA TO SEND]', data)
-      const newVisit = await CREATE_VISIT_BY_STUDENT_ID(data)
+      let newVisit
+      if (visitID) {
+        newVisit = await UPDATE_VISIT_BY_STUDENT_ID_AND_VISI_ID(
+          visitID as string,
+          data,
+        )
+      } else {
+        newVisit = await CREATE_VISIT_BY_STUDENT_ID(data)
+      }
       console.log('[NOVA VISITA]', newVisit)
       Snackbar.show({
-        text: 'Visita adicionada a ' + name,
+        text: `Visita ${visitID ? 'atualizada' : 'adicionada'} a  ${name}`,
         duration: Snackbar.LENGTH_LONG,
       })
       if (newVisit) {
@@ -78,13 +92,28 @@ export default function CreateVisit() {
   }
 
   useEffect(() => {
-    console.log(visitID)
-    if (visitID) {
-      GET_VISIT_BY_ID(visitID as string).then((visit) => {
-        console.log({ visit })
-      })
+    async function loadVisitData(visitID: string | string[]) {
+      try {
+        setLoad(true)
+        const { visit } = await GET_VISIT_BY_ID(visitID as string)
+        if (!visit) return
+        setDate(visit?.date_and_hours)
+        setValue('biblical_texts', visit?.biblical_texts)
+        setValue('date_and_hours', visit?.date_and_hours)
+        setValue('notes', visit?.notes)
+        setValue('publications', visit?.publications)
+        setValue('result', visit?.result)
+        setValue('videos', visit?.videos)
+      } catch (error) {
+        console.log('[Falha ao carregar dados da visita]', error)
+      } finally {
+        setLoad(false)
+      }
     }
-  }, [visitID])
+    if (visitID) {
+      loadVisitData(visitID)
+    }
+  }, [visitID, setValue])
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -95,7 +124,7 @@ export default function CreateVisit() {
         >
           <BackButton />
           <View className="flex-1" lightColor="transparent">
-            <Text className="font-bold font-textIBM text-base break-words over">
+            <Text className="font-bold font-textIBM text-base break-words over items-center gap-2">
               Visita ao Morador ({name})
             </Text>
             <View
@@ -115,6 +144,7 @@ export default function CreateVisit() {
             paddingTop: 5,
           }}
         >
+          {load && <ActivityIndicator />}
           <DatePicker date={date} setDate={setDate} />
           <Select
             label="Resultado"
