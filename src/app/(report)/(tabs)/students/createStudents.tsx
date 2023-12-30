@@ -29,7 +29,7 @@ const SchemaStudennts = z.object({
   }),
   telephone: z.string().optional(),
   about: z.string().optional(),
-  email: z.string().email('Digite um email valido').optional(),
+  email: z.string().optional(),
   address: z.string().optional(),
 
   best_time: z
