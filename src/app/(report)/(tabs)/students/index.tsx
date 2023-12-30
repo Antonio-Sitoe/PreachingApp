@@ -61,11 +61,7 @@ export default function StudentsHome() {
           className="w-11 h-1 mx-auto rounded-lg mt-2"
         />
       </View>
-      {people.length === 0 && (
-        <View className="mt-10">
-          <NoContent text="Sem dados" />
-        </View>
-      )}
+
       <FlashList
         refreshControl={
           <RefreshControl
@@ -83,6 +79,13 @@ export default function StudentsHome() {
           paddingTop: 20,
         }}
         keyExtractor={(item, i) => i + String(item.id)}
+        ListEmptyComponent={() => {
+          return (
+            <View className="mt-10">
+              <NoContent text="Sem dados" />
+            </View>
+          )
+        }}
         renderItem={({ item }) => {
           return (
             <StudentCard
