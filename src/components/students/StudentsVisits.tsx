@@ -65,7 +65,7 @@ export const StudentsVisits = ({
         darkColor={Colors.dark.Success200}
         lightColor={Colors.light.tint}
       >
-        VISITAS
+        VISITAS ({visits.length})
       </Text>
       <ScrollView
         showsVerticalScrollIndicator={false}

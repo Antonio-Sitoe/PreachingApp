@@ -1,12 +1,14 @@
 import { IStudentsBody } from '@/@types/interfaces'
 import TouchableOpacity, { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
+import { DELETE_STUDENT_WITH_OWN_VISITS } from '@/database/actions/students/delete'
 import useTheme from '@/hooks/useTheme'
-import { useRouter } from 'expo-router'
+import { router, useRouter } from 'expo-router'
 
 import { Pen, Trash2 } from 'lucide-react-native'
 import { Alert } from 'react-native'
 import { ScrollView } from 'react-native-gesture-handler'
+import Snackbar from 'react-native-snackbar'
 
 interface StudentAboutProps {
   data: IStudentsBody
@@ -33,7 +35,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
       },
     })
   }
-  function handleDeleteStudent() {
+  function handleDeleteStudent(id: string) {
     Alert.alert(
       `Tem certeza de que deseja excluir ${data?.name}?`,
       'Se eliminar, não poderá mais acessá-la.',
@@ -41,7 +43,16 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         {
           text: 'Apagar',
           style: 'destructive',
-          onPress: () => console.log('Botão 2 Pressionado'),
+          onPress: async () => {
+            const { sucess } = await DELETE_STUDENT_WITH_OWN_VISITS(id)
+            Snackbar.show({
+              text: `${data?.name} apagado com sucesso`,
+              duration: Snackbar.LENGTH_LONG,
+            })
+            if (sucess) {
+              push('/(report)/(tabs)/students')
+            }
+          },
         },
         { text: 'Cancelar', style: 'cancel' },
       ],
@@ -113,7 +124,11 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         <TouchableOpacity
           lightColor="transparent"
           className="flex-row items-center gap-2 mt-6"
-          onPress={handleDeleteStudent}
+          onPress={() => {
+            if (data?.id) {
+              handleDeleteStudent(data?.id as string)
+            }
+          }}
         >
           <View className="bg-red-600 w-9 h-9 justify-center items-center rounded">
             <Trash2 color="white" />

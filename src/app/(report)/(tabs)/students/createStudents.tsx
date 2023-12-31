@@ -16,6 +16,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router'
 import { IStudentsBody } from '@/@types/interfaces'
 import { CREATE_STUDENTS } from '@/database/actions/students/create'
 import { UPDATE_STUDENTS_BY_ID } from '@/database/actions/students/update'
+import Snackbar from 'react-native-snackbar'
 
 const SchemaStudennts = z.object({
   name: z
@@ -211,6 +212,10 @@ export default function CreateStudent() {
         studentData = await CREATE_STUDENTS(body)
         console.log('[ESTUDANTE CRIADO]', studentData)
       }
+      Snackbar.show({
+        text: `${data?.id ? 'atualizado o' : 'Adicionado'} ${body.name}`,
+        duration: Snackbar.LENGTH_LONG,
+      })
       if (studentData) {
         push('/(report)/(tabs)/students')
       }
