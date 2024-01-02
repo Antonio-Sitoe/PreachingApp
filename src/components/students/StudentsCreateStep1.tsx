@@ -4,6 +4,7 @@ import { TextInputForm } from '@/components/ui/TextInputForm'
 import Person from '@/assets/images/Person.svg'
 import Woman from '@/assets/images/Woman.svg'
 import Colors from '@/constants/Colors'
+import useTheme from '@/hooks/useTheme'
 
 interface Age {
   age: string
@@ -18,6 +19,7 @@ const StudentsCreateStep1 = ({
   handleChangeAge,
   handleChangeGender,
 }) => {
+  const { isDark } = useTheme()
   return (
     <>
       <TextInputForm
@@ -56,20 +58,27 @@ const StudentsCreateStep1 = ({
           lightColor="transparent"
         >
           {ages.map((age: Age, index: number) => {
+            const backgroundColor = age.state
+              ? isDark
+                ? Colors.dark.tint
+                : Colors.light.tint
+              : isDark
+              ? Colors.dark.darkBgSecundary
+              : Colors.light.inputBg
+
+            const color = age.state ? 'white' : isDark ? '#a3afb73f' : '#252525'
             return (
               <TouchableOpacity
                 onPress={() => handleChangeAge(index)}
                 key={index}
                 style={{
-                  backgroundColor: age.state
-                    ? Colors.light.tint
-                    : Colors.light.inputBg,
+                  backgroundColor,
                 }}
                 className="w-14 h-[47px] items-center justify-center bg-violet-200 rounded-lg"
               >
                 <Text
                   style={{
-                    color: age.state ? 'white' : 'black',
+                    color,
                   }}
                   className="text-sm font-normal font-text"
                 >

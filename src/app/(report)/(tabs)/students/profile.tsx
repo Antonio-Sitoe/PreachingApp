@@ -123,7 +123,9 @@ export default function Profile() {
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       {isLoading ? (
         <View className="my-3 mt-6 flex items-center" lightColor="transparent">
-          <ActivityIndicator />
+          <ActivityIndicator
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+          />
         </View>
       ) : (
         <>

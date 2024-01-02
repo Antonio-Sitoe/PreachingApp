@@ -218,6 +218,7 @@ export default function CreateStudent() {
       })
       if (studentData) {
         push('/(report)/(tabs)/students')
+        reset()
       }
     } catch (error) {
       console.log('Error', error)
@@ -312,7 +313,7 @@ export default function CreateStudent() {
               variant="text"
               color="#FF647C"
               titleStyle={{
-                color: '#252525',
+                color: isDark ? 'white' : '#252525',
                 fontFamily: 'Inter_400Regular',
                 textTransform: 'capitalize',
               }}
