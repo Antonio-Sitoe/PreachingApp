@@ -8,7 +8,7 @@ import useTheme from '@/hooks/useTheme'
 import { z } from 'zod'
 import { BackButton } from '@/components/ui/BackButton'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1'
 import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2'
 import { DialogActions, Button } from '@react-native-material/core'
@@ -81,6 +81,8 @@ export default function CreateStudent() {
   const { isDark } = useTheme()
   const { back, push } = useRouter()
   const [step, setStep] = useState(false)
+  const scrollViewRef = useRef<ScrollView>(null)
+
   const data: any = useLocalSearchParams()
 
   const weekDaysObj = data?.best_day && JSON.parse(data?.best_day)
@@ -96,7 +98,21 @@ export default function CreateStudent() {
     formState: { errors, isSubmitting },
   } = useForm<SchemaStudenntsType>({
     resolver: zodResolver(SchemaStudennts),
+    defaultValues: data?.id
+      ? {
+          name: data?.name || '',
+          telephone: `${data.telephone || ''}`,
+          email: data?.email || '',
+          about: data?.about || '',
+          age: data?.age || '',
+          gender: data.gender || 'man',
+          best_day: JSON.parse(data.best_day),
+          best_time: JSON.parse(data.best_time),
+          address: data?.address,
+        }
+      : {},
   })
+
   const [weekDays, setWeekDays] = useState<string[]>(weekDaysObj || [])
   const [timesOfDay, settimeOfDay] = useState<string[]>(timesOfDayObj || [])
   const [gender, setGender] = useState({
@@ -105,8 +121,10 @@ export default function CreateStudent() {
   })
   const [ages, setAge] = useState(
     defaultAges.map((item) => {
-      if (item.age === data?.age) {
-        item.state = true
+      if (data?.age) {
+        if (item.age === data?.age) {
+          item.state = true
+        }
       }
       return item
     }),
@@ -121,6 +139,7 @@ export default function CreateStudent() {
       const isValid = validations.every((item) => item)
       if (isValid) {
         setStep(true)
+        scrollToTop()
       }
     } catch (error) {
       console.log('Error', error)
@@ -200,6 +219,11 @@ export default function CreateStudent() {
     }
     return { body }
   }
+  function scrollToTop() {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({ y: 0, animated: true })
+    }
+  }
   const onSubmit = async (databody: IStudentsBody | any) => {
     try {
       const { body } = transformeData(databody)
@@ -224,21 +248,6 @@ export default function CreateStudent() {
       console.log('Error', error)
     }
   }
-
-  useEffect(() => {
-    if (data?.id) {
-      setValue('name', data.name)
-      if (data.telephone) setValue('telephone', `${data.telephone}`)
-      if (data?.email) setValue('email', data?.email)
-      if (data?.about) setValue('about', data?.about)
-      setValue('age', data?.age)
-      setValue('gender', data.gender)
-      setValue('best_day', JSON.parse(data.best_day))
-      setValue('best_time', JSON.parse(data.best_time))
-      setValue('address', data?.address)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data])
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -265,6 +274,7 @@ export default function CreateStudent() {
       </View>
 
       <ScrollView
+        ref={scrollViewRef}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',

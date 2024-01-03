@@ -37,7 +37,7 @@ export function TextInputForm({
             placeholder={placeholder}
             onBlur={onBlur}
             onChangeText={onChange}
-            placeholderTextColor={isDark ? `#a3afb73f` : '#a3afb73f'}
+            placeholderTextColor={isDark ? `#a3afb73f` : '#848f963e'}
             value={value}
             {...props}
             className={`bg-neutral-800 ${

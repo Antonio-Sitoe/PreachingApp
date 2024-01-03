@@ -74,7 +74,11 @@ export const StudentsVisits = ({
           paddingBottom: 60,
         }}
       >
-        {load && <ActivityIndicator />}
+        {load && (
+          <ActivityIndicator
+            color={isDark ? Colors.dark.tint : Colors.light.tint}
+          />
+        )}
         {visits.length === 0 && (
           <View className="mt-10">
             <NoContent text="Sem visitas" />
@@ -124,7 +128,9 @@ export const StudentsVisits = ({
                 >
                   O que dizer na proxima visita ?
                 </Text>
-                <Text className="mt-1 mb-3 font-text">{item.notes}</Text>
+                <Text className="mt-1 mb-3 font-text">
+                  {item.notes || '...'}
+                </Text>
               </View>
               <View
                 lightColor="transparent"

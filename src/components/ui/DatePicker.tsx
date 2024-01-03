@@ -16,8 +16,13 @@ function formateDate(date: Date) {
 interface DatePickerProps {
   date: string | Date
   setDate: Dispatch<SetStateAction<Date>>
+  backgroundColor?: string
 }
-export function DatePicker({ date, setDate }: DatePickerProps) {
+export function DatePicker({
+  date,
+  setDate,
+  backgroundColor = '',
+}: DatePickerProps) {
   const { isDark } = useTheme()
   const onChange = (
     event: DateTimePickerEvent,
@@ -51,7 +56,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
         marginBottom: 13,
         height: 47,
         width: 'auto',
-        backgroundColor: isDark ? Colors.dark.background : Colors.light.tint,
+        backgroundColor,
         padding: 10,
         flexDirection: 'row',
         alignItems: 'center',

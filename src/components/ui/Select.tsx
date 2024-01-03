@@ -1,8 +1,8 @@
 import { Controller } from 'react-hook-form'
 import { Picker } from '@react-native-picker/picker'
-import { Colors } from 'react-native/Libraries/NewAppScreen'
 import useTheme from '@/hooks/useTheme'
 import { View, Text } from '../Themed'
+import Colors from '@/constants/Colors'
 
 interface SelectProps {
   control: any
@@ -37,6 +37,7 @@ export function Select({ control, name, label, options, errors }: SelectProps) {
               borderColor: isDark ? '#38444d3e' : 'transparent',
               borderWidth: isDark ? 1 : 0,
               color: isDark ? `#D9D8FF` : '#252525',
+              borderRadius: 15,
             }}
           >
             {options.map((item, index) => {

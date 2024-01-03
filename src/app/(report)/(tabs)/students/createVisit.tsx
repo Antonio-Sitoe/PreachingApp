@@ -145,7 +145,11 @@ export default function CreateVisit() {
           }}
         >
           {load && <ActivityIndicator />}
-          <DatePicker date={date} setDate={setDate} />
+          <DatePicker
+            backgroundColor={isDark ? Colors.dark.darkBgSecundary : `#D9D8FF`}
+            date={date}
+            setDate={setDate}
+          />
           <Select
             label="Resultado"
             control={control}
