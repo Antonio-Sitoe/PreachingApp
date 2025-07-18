@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.antoniositoe533.preachingApp"
+      "bundleIdentifier": "com.antoniositoe533.preachingApp.dev"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.antoniositoe533.preachingApp"
+      "package": "com.antoniositoe533.preachingApp.dev"
     },
     "web": {
       "bundler": "metro",
