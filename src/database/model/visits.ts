@@ -1,5 +1,5 @@
 import { Model } from '@nozbe/watermelondb'
-import { Associations } from '@nozbe/watermelondb/Model'
+import type { Associations } from '@nozbe/watermelondb/Model'
 import { field, relation } from '@nozbe/watermelondb/decorators'
 
 export class Visits extends Model {

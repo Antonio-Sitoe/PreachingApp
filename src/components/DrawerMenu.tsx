@@ -1,11 +1,11 @@
 import {
-  DrawerContentComponentProps,
+  type DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer'
 
 import { StyleSheet, Text, View } from 'react-native'
-import { Route, useRouter } from 'expo-router'
+import { type Route, useRouter } from 'expo-router'
 
 import { IconIOS } from '@/assets/icons/Icon'
 import { DRAWER_ROUTES } from '@/utils/routes'

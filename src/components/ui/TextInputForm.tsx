@@ -1,8 +1,8 @@
 import { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
-import { Controller, RegisterOptions, Control } from 'react-hook-form'
-import { TextInputProps } from 'react-native'
+import { Controller, type RegisterOptions, type Control } from 'react-hook-form'
+import type { TextInputProps } from 'react-native'
 import { TextInput } from 'react-native-gesture-handler'
 
 interface ITextInputFormProps extends TextInputProps {

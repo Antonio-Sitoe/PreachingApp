@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { READ_USER } from '@/database/actions/user/read'
-import { IUser } from '@/@types/interfaces'
+import type { IUser } from '@/@types/interfaces'
 
 interface UserProps {
   user: IUser

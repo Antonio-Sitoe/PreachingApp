@@ -1,4 +1,4 @@
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { minutesToHoursAndMinutes } from './dates'
 
 export function sorteByYears(arr: any) {

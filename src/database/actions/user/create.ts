@@ -1,6 +1,6 @@
-import { IUser } from '@/@types/interfaces'
+import type { IUser } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { User } from '@/database/model/user'
+import type { User } from '@/database/model/user'
 
 const CREATE_USER = (data: IUser) => {
   return database.write(async () => {

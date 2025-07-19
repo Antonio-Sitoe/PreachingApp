@@ -1,5 +1,5 @@
 import { database } from '@/database/database'
-import { Visits } from '@/database/model/visits'
+import type { Visits } from '@/database/model/visits'
 import { stringToDate } from '@/utils/dates'
 import { Q } from '@nozbe/watermelondb'
 

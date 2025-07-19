@@ -1,12 +1,13 @@
 {
   "expo": {
-    "name": "preachingApp",
+    "name": "Preaching App",
     "slug": "preachingApp",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "preachingApp",
     "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -38,23 +39,10 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
+      "expo-build-properties",
+      "expo-font",
       "expo-router",
-      [
-        "@morrowdigital/watermelondb-expo-plugin",
-        {
-          "databases": [
-            "morrow.db"
-          ]
-        }
-      ],
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "1.6.10"
-          }
-        }
-      ]
+      "expo-web-browser"
     ],
     "experiments": {
       "tsconfigPaths": true,

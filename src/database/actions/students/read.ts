@@ -1,6 +1,6 @@
-import { IStudentsBody, VisiteProps } from '@/@types/interfaces'
+import type { IStudentsBody, VisiteProps } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { Students } from '@/database/model/students'
+import type { Students } from '@/database/model/students'
 import { Visits } from '@/database/model/visits'
 import { Q } from '@nozbe/watermelondb'
 

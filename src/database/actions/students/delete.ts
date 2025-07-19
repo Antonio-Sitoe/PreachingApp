@@ -1,6 +1,6 @@
 import { database } from '@/database/database'
-import { Students } from '@/database/model/students'
-import { Visits } from '@/database/model/visits'
+import type { Students } from '@/database/model/students'
+import type { Visits } from '@/database/model/visits'
 import { Q } from '@nozbe/watermelondb'
 
 const DELETE_STUDENT_WITH_OWN_VISITS = (id: string) => {

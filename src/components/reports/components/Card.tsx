@@ -3,7 +3,7 @@ import dayjs from 'dayjs'
 
 import { Link } from 'expo-router'
 import { Text, View } from '../../Themed'
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
 

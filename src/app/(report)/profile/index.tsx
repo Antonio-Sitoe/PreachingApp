@@ -7,7 +7,7 @@ import {
 } from '@react-native-material/core'
 import Snackbar from 'react-native-snackbar'
 
-import { IUser } from '@/@types/interfaces'
+import type { IUser } from '@/@types/interfaces'
 import { Picker } from '@react-native-picker/picker'
 import { useUser } from '@/contexts/UserContext'
 import { useState } from 'react'

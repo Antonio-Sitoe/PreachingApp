@@ -1,5 +1,5 @@
 import { database } from '@/database/database'
-import { User } from '@/database/model/user'
+import type { User } from '@/database/model/user'
 
 const READ_USER = async () => {
   const userColletion = database.collections.get<User>('user')

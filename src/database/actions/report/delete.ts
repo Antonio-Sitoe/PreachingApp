@@ -1,5 +1,5 @@
 import { database } from '@/database/database'
-import { Report } from '@/database/model/Report'
+import type { Report } from '@/database/model/Report'
 import { Q } from '@nozbe/watermelondb'
 
 const RESET_ALL_REPORT_DATA = () => {

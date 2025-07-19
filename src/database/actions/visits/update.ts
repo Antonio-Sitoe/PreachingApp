@@ -1,6 +1,6 @@
-import { IStudentsBody, VisiteProps } from '@/@types/interfaces'
+import { IStudentsBody, type VisiteProps } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { Visits } from '@/database/model/visits'
+import type { Visits } from '@/database/model/visits'
 import { Q } from '@nozbe/watermelondb'
 
 const UPDATE_VISIT_BY_STUDENT_ID_AND_VISI_ID = (

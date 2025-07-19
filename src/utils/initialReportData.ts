@@ -1,4 +1,4 @@
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import dayjs from 'dayjs'
 
 export const initialReportData: ReportData = {

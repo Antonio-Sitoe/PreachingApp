@@ -7,7 +7,7 @@ import { Picker } from '@react-native-picker/picker'
 import { ListItem } from '@/components/reports/ReportMonths'
 import { useRouter } from 'expo-router'
 
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { ChevronLeft } from 'lucide-react-native'
 import { currentDates } from '@/utils/dates'
 import { Dimensions, View } from 'react-native'

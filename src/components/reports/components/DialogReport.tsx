@@ -1,4 +1,4 @@
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'

@@ -4,7 +4,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 
 import useTheme from '@/hooks/useTheme'
 import Colors from '@/constants/Colors'
-import { Ionicons } from '@expo/vector-icons'
+import type { Ionicons } from '@expo/vector-icons'
 
 interface IButtonStopWatchProps {
   onPress?: () => void

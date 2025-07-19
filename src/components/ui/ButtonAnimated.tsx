@@ -7,7 +7,7 @@ import Animated, {
 import {
   StyleSheet,
   TouchableOpacity,
-  TouchableOpacityProps,
+  type TouchableOpacityProps,
 } from 'react-native'
 import { PanGestureHandler } from 'react-native-gesture-handler'
 import { Ionicons } from '@expo/vector-icons'

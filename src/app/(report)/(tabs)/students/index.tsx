@@ -1,4 +1,4 @@
-import { IStudentsBody } from '@/@types/interfaces'
+import type { IStudentsBody } from '@/@types/interfaces'
 import NoContent from '@/components/NoContent'
 import { Text, View } from '@/components/Themed'
 import { StudentCard } from '@/components/students/StudentCard'

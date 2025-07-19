@@ -1,7 +1,7 @@
-import { VisiteProps } from '@/@types/interfaces'
+import type { VisiteProps } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { Students } from '@/database/model/students'
-import { Visits } from '@/database/model/visits'
+import type { Students } from '@/database/model/students'
+import type { Visits } from '@/database/model/visits'
 
 const CREATE_VISIT_BY_STUDENT_ID = (data: VisiteProps) => {
   return database.write(async () => {

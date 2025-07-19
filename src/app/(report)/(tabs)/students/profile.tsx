@@ -12,11 +12,11 @@ import { StudentAbout } from '@/components/students/StudentAbout'
 import { StudentsVisits } from '@/components/students/StudentsVisits'
 import {
   GET_STUDENTS_BY_ID,
-  IStudentsBodyHelper,
+  type IStudentsBodyHelper,
 } from '@/database/actions/students/read'
 import { ActivityIndicator } from '@react-native-material/core'
 import { GET_VISIT_BY_STUDENT_ID } from '@/database/actions/visits/read'
-import { VisiteProps } from '@/@types/interfaces'
+import type { VisiteProps } from '@/@types/interfaces'
 import { useIsFocused } from '@react-navigation/native'
 
 const renderTabBar = (props: any, isDark: boolean) => {

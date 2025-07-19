@@ -1,13 +1,9 @@
-module.exports = function (api) {
+module.exports = (api) => {
   api.cache(true)
   return {
-    presets: ['babel-preset-expo', 'module:metro-react-native-babel-preset'],
+    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
     plugins: [
-      '@babel/plugin-proposal-export-namespace-from',
       'react-native-reanimated/plugin',
-      'nativewind/babel',
-      'expo-router/babel',
-      ['@babel/plugin-proposal-decorators', { legacy: true }],
     ],
   }
 }

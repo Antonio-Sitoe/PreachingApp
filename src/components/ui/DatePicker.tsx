@@ -2,12 +2,12 @@ import { IconIOS } from '@/assets/icons/Icon'
 import { Text, TouchableOpacity } from 'react-native'
 import {
   DateTimePickerAndroid,
-  DateTimePickerEvent,
+  type DateTimePickerEvent,
 } from '@react-native-community/datetimepicker'
 
 import dayjs from 'dayjs'
 import Colors from '@/constants/Colors'
-import { Dispatch, SetStateAction } from 'react'
+import type { Dispatch, SetStateAction } from 'react'
 import useTheme from '@/hooks/useTheme'
 
 function formateDate(date: Date) {

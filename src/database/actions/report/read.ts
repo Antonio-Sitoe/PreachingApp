@@ -1,7 +1,7 @@
 import { Q } from '@nozbe/watermelondb'
-import { Report } from '@/database/model/Report'
+import type { Report } from '@/database/model/Report'
 import { database } from '@/database/database'
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import {
   generateLast6MonthsNames,
   minutesToHoursAndMinutes,

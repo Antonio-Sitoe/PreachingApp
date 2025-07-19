@@ -1,6 +1,6 @@
-import { IStudentsBody } from '@/@types/interfaces'
+import type { IStudentsBody } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { Students } from '@/database/model/students'
+import type { Students } from '@/database/model/students'
 
 const CREATE_STUDENTS = (data: IStudentsBody) => {
   return database.write(async () => {

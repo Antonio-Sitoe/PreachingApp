@@ -1,10 +1,10 @@
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
-import { View, Share } from 'react-native'
-import { Link, usePathname, useRouter } from 'expo-router'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { View, Share } from 'react-native';
+import { Link, useNavigation, usePathname, useRouter } from 'expo-router';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   BarChart2,
   Menu,
@@ -13,22 +13,21 @@ import {
   Share2,
   LayoutList,
   ListMinus,
-} from 'lucide-react-native'
-import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext'
-import { DrawerActions } from '@react-navigation/native'
-import { useNavigation } from 'expo-router/src/useNavigation'
+} from 'lucide-react-native';
+import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext';
+import { DrawerActions } from '@react-navigation/native';
 
 export function Header() {
-  const top = useSafeAreaInsets().top
-  const navigation = useNavigation()
-  const { push } = useRouter()
-  const { isDark } = useTheme()
-  const { index } = useTabBarIndex()
+  const top = useSafeAreaInsets().top;
+  const navigation = useNavigation();
+  const { push } = useRouter();
+  const { isDark } = useTheme();
+  const { index } = useTabBarIndex();
   const { reportToShare, isLayoutList, handleChangeLayaltList } =
-    useReportsData()
-  const isReportPath = usePathname().includes('/report')
-  const isModalRoute = usePathname().includes('/modal')
-  const isChart = usePathname().includes('/chart')
+    useReportsData();
+  const isReportPath = usePathname().includes('/report');
+  const isModalRoute = usePathname().includes('/modal');
+  const isChart = usePathname().includes('/chart');
 
   async function handleShareReport() {
     try {
@@ -36,9 +35,9 @@ export function Header() {
         message: reportToShare,
         url: '',
         title: 'Relatório do Mes Actual',
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -133,5 +132,5 @@ export function Header() {
         </View>
       </View>
     </View>
-  )
+  );
 }

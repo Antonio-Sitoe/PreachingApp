@@ -1,6 +1,6 @@
-import { IStudentsBody } from '@/@types/interfaces'
+import type { IStudentsBody } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { Students } from '@/database/model/students'
+import type { Students } from '@/database/model/students'
 import { Q } from '@nozbe/watermelondb'
 
 const UPDATE_STUDENTS_BY_ID = (id: string, data: IStudentsBody) => {

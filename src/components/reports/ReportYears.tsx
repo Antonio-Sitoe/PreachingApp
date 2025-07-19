@@ -5,7 +5,7 @@ import useTheme from '@/hooks/useTheme'
 
 import { Flex } from '@react-native-material/core'
 import { View, Text } from '../Themed'
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { usePathname } from 'expo-router'
 import { currentDates } from '@/utils/dates'
 import { TouchableOpacity } from 'react-native-gesture-handler'

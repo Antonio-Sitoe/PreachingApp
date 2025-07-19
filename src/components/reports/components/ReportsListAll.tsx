@@ -5,7 +5,7 @@ import NoContent from '../../NoContent'
 
 import { FlashList } from '@shopify/flash-list'
 import { Text, View } from '../../Themed'
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { usePathname } from 'expo-router'
 import { useTabBarIndex } from '@/contexts/ReportContext'
 import { ActivityIndicator } from 'react-native'

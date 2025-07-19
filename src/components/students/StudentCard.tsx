@@ -5,7 +5,7 @@ import Person from '@/assets/images/Person.svg'
 
 import TouchableOpacity, { View, Text } from '@/components/Themed'
 import { Ionicons } from '@expo/vector-icons'
-import { IStudentsBody } from '@/@types/interfaces'
+import type { IStudentsBody } from '@/@types/interfaces'
 import { cortarString } from '@/utils/helper'
 
 type Idata = IStudentsBody

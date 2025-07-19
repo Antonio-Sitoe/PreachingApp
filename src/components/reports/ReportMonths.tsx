@@ -8,7 +8,7 @@ import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'
 import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
 import React, { useEffect, useState } from 'react'
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { useUser } from '@/contexts/UserContext'
 import { defineProfiletext } from '@/utils/helper'
 import { currentDates, monthNameToPortuguese } from '@/utils/dates'
@@ -55,7 +55,7 @@ export default function ReportMonths() {
   const changePathname = usePathname() === '/report'
   const isModalClose = isOpenCreateReportModal === false
 
-  const onMonthChange = async function (value: ValueProps) {
+  const onMonthChange = async (value: ValueProps) => {
     const month = monthNameToPortuguese(value.month)
     const year = value.year
     setTitle({ month, year })

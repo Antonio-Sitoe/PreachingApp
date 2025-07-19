@@ -6,7 +6,7 @@ import {
 } from 'lucide-react-native'
 
 import { IconIOS } from '@/assets/icons/Icon'
-import { Route } from 'expo-router'
+import type { Route } from 'expo-router'
 interface IroutesProps {
   label: string
   icon: {

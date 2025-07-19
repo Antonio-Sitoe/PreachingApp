@@ -1,4 +1,4 @@
-import { VisiteProps } from '@/@types/interfaces'
+import type { VisiteProps } from '@/@types/interfaces'
 import TouchableOpacity, { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'

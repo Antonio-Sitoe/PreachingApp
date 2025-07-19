@@ -1,6 +1,6 @@
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { database } from '@/database/database'
-import { Report } from '@/database/model/Report'
+import type { Report } from '@/database/model/Report'
 import { Q } from '@nozbe/watermelondb'
 
 const UPDATE_REPORT_BY_ID = (id: string, newRecordData: ReportData) => {

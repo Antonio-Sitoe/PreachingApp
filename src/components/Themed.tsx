@@ -6,7 +6,7 @@
 import {
   Text as DefaultText,
   View as DefaultView,
-  TouchableOpacityProps,
+  type TouchableOpacityProps,
 } from 'react-native'
 import { TouchableOpacity as DefaultTouchableOpacity } from 'react-native-gesture-handler'
 import { useColorScheme } from 'nativewind'

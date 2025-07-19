@@ -1,4 +1,4 @@
-import { IStudentsBody } from '@/@types/interfaces'
+import type { IStudentsBody } from '@/@types/interfaces'
 import TouchableOpacity, { Text, View } from '@/components/Themed'
 import Colors from '@/constants/Colors'
 import { DELETE_STUDENT_WITH_OWN_VISITS } from '@/database/actions/students/delete'

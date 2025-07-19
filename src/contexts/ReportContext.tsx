@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { ReportData } from '@/@types/interfaces'
+import type { ReportData } from '@/@types/interfaces'
 import { currentDates } from '@/utils/dates'
 import { initialReportData } from '@/utils/initialReportData'
 import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
@@ -42,7 +42,7 @@ export function ReportStorage({ children }: ReportStorageProps) {
     const { data } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(month, year)
     setReports({ ...data })
   }
-  const setTextToShare = useCallback(function ({ user, day, data }) {
+  const setTextToShare = useCallback(({ user, day, data }) => {
     const name = 'Relatório de ' + user
     const monthText = capitalizeString(day.month) + ' de ' + day.year
     const time = 'Total de Horas: ' + data?.hours
