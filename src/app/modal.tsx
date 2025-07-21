@@ -1,118 +1,115 @@
-import { useEffect, useState } from 'react'
-import { Text } from '@/components/Themed'
 import {
   TextInput as TextComent,
   DialogActions,
   Button,
-} from '@react-native-material/core'
+} from '@react-native-material/core';
 
-import dayjs from 'dayjs'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import Snackbar from 'react-native-snackbar'
+import dayjs from 'dayjs';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import Snackbar from 'react-native-snackbar';
 
-import { currentDates, monthNameToPortuguese } from '@/utils/dates'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import { UPDATE_REPORT_BY_ID } from '@/database/actions/report/update'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { GET_REPORT_BY_ID } from '@/database/actions/report/read'
-import { createReportData } from '@/database/actions/report/create'
-import { useReportsData } from '@/contexts/ReportContext'
-import { ViewWithLoad } from '@/components/ui/ViewWithLoad'
-import type { ReportData } from '@/@types/interfaces'
-import { FormInput } from '@/components/ui/FormInput'
-import { DatePicker } from '@/components/ui/DatePicker'
-import { Trash2 } from 'lucide-react-native'
-import { View } from 'react-native'
-import { DELETE_REPORT_BY_ID } from '@/database/actions/report/delete'
+import { Text } from '@/components/Themed';
+import { useEffect, useState } from 'react';
+import { currentDates, monthNameToPortuguese } from '@/utils/dates';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { TouchableOpacity } from 'react-native';
+import { type IReport, reportsActions } from '@/database/actions';
+import { useReportsData } from '@/contexts/ReportContext';
+import { ViewWithLoad } from '@/components/ui/ViewWithLoad';
+import { FormInput } from '@/components/ui/FormInput';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { Trash2 } from 'lucide-react-native';
+import { View } from 'react-native';
+import { id } from 'zod/v4/locales';
 
 export default function CreateReportModal() {
-  const { id, h, m } = useLocalSearchParams<any>()
-  const router = useRouter()
-  const { isDark } = useTheme()
-  const { updateCurrentReports } = useReportsData()
+  const { id, h, m } = useLocalSearchParams<any>();
+  const router = useRouter();
+  const { isDark } = useTheme();
+  const { updateCurrentReports } = useReportsData();
 
-  const [isRendered, setIsRendered] = useState(false)
-  const [hours, setHours] = useState<string | number>(h || '')
-  const [minutes, setminutes] = useState<string | number>(m || '')
-  const [videos, setvideos] = useState<string | number>('')
-  const [students, setstudents] = useState<string | number>('')
-  const [returnVisits, setreturnVisits] = useState<string | number>('')
-  const [publications, setpublications] = useState<string | number>('')
-  const [date, setDate] = useState(new Date())
-  const [comments, setComents] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<null | string>(null)
+  const [isRendered, setIsRendered] = useState(false);
+  const [hours, setHours] = useState<string | number>(h || '');
+  const [minutes, setminutes] = useState<string | number>(m || '');
+  const [videos, setvideos] = useState<string | number>('');
+  const [students, setstudents] = useState<string | number>('');
+  const [returnVisits, setreturnVisits] = useState<string | number>('');
+  const [publications, setpublications] = useState<string | number>('');
+  const [date, setDate] = useState(new Date());
+  const [comments, setComents] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<null | string>(null);
 
-  const handleChange = (setValue) => (value) => setValue(value)
-  const InCHours = () => setHours(Number(hours) + 1)
-  const decHours = () => setHours(Number(hours) > 1 ? Number(hours) - 1 : '')
+  const handleChange = (setValue) => (value) => setValue(value);
+  const InCHours = () => setHours(Number(hours) + 1);
+  const decHours = () => setHours(Number(hours) > 1 ? Number(hours) - 1 : '');
 
   const handleChangeMinuts = (value: string) => {
     if (Number(value) >= 60) {
-      return Number(value)
+      return Number(value);
     } else {
-      setminutes(Number(value))
+      setminutes(Number(value));
     }
-  }
+  };
 
   const InCMinutes = () =>
-    setminutes(Number(minutes) >= 59 ? minutes : Number(minutes) + 1)
+    setminutes(Number(minutes) >= 59 ? minutes : Number(minutes) + 1);
   const decMinutes = () =>
-    setminutes(Number(minutes) > 1 ? Number(minutes) - 1 : '')
+    setminutes(Number(minutes) > 1 ? Number(minutes) - 1 : '');
 
-  const incVideos = () => setvideos(Number(videos) + 1)
+  const incVideos = () => setvideos(Number(videos) + 1);
   const decVideos = () =>
-    setvideos(Number(videos) > 1 ? Number(videos) - 1 : '')
+    setvideos(Number(videos) > 1 ? Number(videos) - 1 : '');
 
-  const incStudents = () => setstudents(Number(students) + 1)
+  const incStudents = () => setstudents(Number(students) + 1);
   const decStudents = () =>
-    setstudents(Number(students) > 1 ? Number(students) - 1 : '')
+    setstudents(Number(students) > 1 ? Number(students) - 1 : '');
 
-  const incReturnVisits = () => setreturnVisits(Number(returnVisits) + 1)
+  const incReturnVisits = () => setreturnVisits(Number(returnVisits) + 1);
   const decReturnVisits = () =>
-    setreturnVisits(Number(returnVisits) > 1 ? Number(returnVisits) - 1 : '')
+    setreturnVisits(Number(returnVisits) > 1 ? Number(returnVisits) - 1 : '');
 
-  const incPublications = () => setpublications(Number(publications) + 1)
+  const incPublications = () => setpublications(Number(publications) + 1);
   const decPublications = () =>
-    setpublications(Number(publications) > 1 ? Number(publications) - 1 : '')
+    setpublications(Number(publications) > 1 ? Number(publications) - 1 : '');
 
   async function handleCreateReport() {
     try {
-      setError(null)
-      setIsLoading(true)
-      const { data, isQualified } = formateDataBeforeSend()
+      setError(null);
+      setIsLoading(true);
+      const { data, isQualified } = formateDataBeforeSend();
       if (isQualified === false) {
-        handleClose()
-        return false
+        handleClose();
+        return false;
       }
       if (id) {
-        await UPDATE_REPORT_BY_ID(id, data)
+        await reportsActions.update(id, data);
       } else {
-        await createReportData(data)
+        await reportsActions.create(data);
       }
-      await updateCurrentReports(currentDates.month, currentDates.year)
+      await updateCurrentReports(currentDates.month, currentDates.year);
       Snackbar.show({
         text: 'Relatório Adicionado com Sucesso',
         duration: Snackbar.LENGTH_LONG,
         backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
-      })
-      handleClose()
+      });
+      handleClose();
     } catch (error) {
-      setError('Falha ao criar o relatório')
-      console.log(error)
+      setError('Falha ao criar o relatório');
+      console.log(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
   function handleClose() {
-    router.back()
+    router.back();
   }
   function formateDataBeforeSend() {
-    const dateformated = dayjs(date).format('DD/MM/YYYY')
-    const day = dayjs(date).get('date')
-    const month = monthNameToPortuguese(dayjs(date).get('month') + 1)
-    const year = dayjs(date).get('y')
+    const dateformated = dayjs(date).format('DD/MM/YYYY');
+    const day = dayjs(date).get('date');
+    const month = monthNameToPortuguese(dayjs(date).get('month') + 1);
+    const year = dayjs(date).get('y');
 
     const data = {
       date: dateformated,
@@ -127,12 +124,12 @@ export default function CreateReportModal() {
       returnVisits: Number(returnVisits),
       videos: Number(videos),
       createdAt: date,
-    } as ReportData
-    const isQualified = simpleVerificationBeforeCreation(data)
-    console.log('data to send', data)
-    return { data, isQualified }
+    } as unknown as IReport;
+    const isQualified = simpleVerificationBeforeCreation(data);
+    console.log('data to send', data);
+    return { data, isQualified };
   }
-  function simpleVerificationBeforeCreation(data: ReportData) {
+  function simpleVerificationBeforeCreation(data: IReport) {
     if (
       data.hours === 0 &&
       data.minutes === 0 &&
@@ -140,47 +137,47 @@ export default function CreateReportModal() {
       data.videos === 0 &&
       data.students === 0 &&
       data.returnVisits === 0 &&
-      data.comments.trim().length === 0
+      data.comments?.trim().length === 0
     ) {
-      return false
-    } else return true
+      return false;
+    } else return true;
   }
 
   async function handleDeleteReport(id: string) {
     try {
-      const { sucess } = await DELETE_REPORT_BY_ID(id)
-      updateCurrentReports(currentDates.month, currentDates.year)
-      console.log('Apagou ', sucess)
+      const { success } = await reportsActions.delete(id);
+      updateCurrentReports(currentDates.month, currentDates.year);
+      console.log('Apagou ', success);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      handleClose()
+      handleClose();
     }
   }
   useEffect(() => {
-    const unmountData = (report: ReportData) => {
-      setpublications(report.publications)
-      setstudents(report.students)
-      setvideos(report.videos)
-      setreturnVisits(report.returnVisits)
-      setminutes(report.minutes)
-      setHours(report.hours)
-      setDate(new Date(report.createdAt))
-      setComents(report.comments)
-    }
+    const unmountData = (report: IReport) => {
+      setpublications(report.publications);
+      setstudents(report.students);
+      setvideos(report.videos);
+      setreturnVisits(report.returnVisits);
+      setminutes(report.minutes);
+      setHours(report.hours);
+      setDate(new Date(report.createdAt));
+      setComents(report.comments);
+    };
     async function get_report_by_id(id: string) {
       try {
-        const report = await GET_REPORT_BY_ID(id)
-        unmountData(report)
+        const report = await reportsActions.getById(id);
+        unmountData(report);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       } finally {
-        setIsRendered(true)
+        setIsRendered(true);
       }
     }
-    if (id) get_report_by_id(id)
-    else setIsRendered(true)
-  }, [id])
+    if (id) get_report_by_id(id);
+    else setIsRendered(true);
+  }, [id]);
   return (
     <View className="flex-1 items-center px-6 justify-center bg-[#00000080]">
       <View
@@ -328,5 +325,5 @@ export default function CreateReportModal() {
         {error && <Text className="mt-1 ml-1 text-red-600">{error}</Text>}
       </View>
     </View>
-  )
+  );
 }

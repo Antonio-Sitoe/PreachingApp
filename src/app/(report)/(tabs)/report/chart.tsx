@@ -1,60 +1,59 @@
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
-import React, { useEffect, useState } from 'react'
-import { Text } from '@/components/Themed'
-import { Picker } from '@react-native-picker/picker'
-import { ListItem } from '@/components/reports/ReportMonths'
-import { useRouter } from 'expo-router'
+import React, { useEffect, useState } from 'react';
+import { Text } from '@/components/Themed';
+import { Picker } from '@react-native-picker/picker';
+import { ListItem } from '@/components/reports/ReportMonths';
+import { useRouter } from 'expo-router';
 
-import type { ReportData } from '@/@types/interfaces'
-import { ChevronLeft } from 'lucide-react-native'
-import { currentDates } from '@/utils/dates'
-import { Dimensions, View } from 'react-native'
-import { best, bestMonthsStatics, capitalizeString } from '@/utils/helper'
-import { GET_REPORT_FOR_STATICS } from '@/database/actions/report/read'
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
-import { ActivityIndicator } from '@react-native-material/core'
+import { ChevronLeft } from 'lucide-react-native';
+import { currentDates } from '@/utils/dates';
+import { Dimensions, View } from 'react-native';
+import { best, bestMonthsStatics, capitalizeString } from '@/utils/helper';
+import { reportsActions } from '@/database/actions';
+import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
+import { ActivityIndicator } from '@react-native-material/core';
 
-import { LineChart } from 'react-native-chart-kit'
+import { LineChart } from 'react-native-chart-kit';
 
 interface IChartData {
-  month: string
-  reports: ReportData
+  month: string;
+  reports: any;
 }
 
 interface Ibest {
   hours: {
-    value: number
-    month: string
-  }
+    value: number;
+    month: string;
+  };
   publications: {
-    value: number
-    month: string
-  }
+    value: number;
+    month: string;
+  };
   returnVisits: {
-    value: number
-    month: string
-  }
+    value: number;
+    month: string;
+  };
   students: {
-    value: number
-    month: string
-  }
+    value: number;
+    month: string;
+  };
   videos: {
-    value: number
-    month: string
-  }
+    value: number;
+    month: string;
+  };
 }
 
 export default function Chart() {
-  const { back } = useRouter()
-  const { isDark } = useTheme()
-  const [isLoading, setIsLoading] = useState(true)
-  const [select, setSelect] = useState('hours')
-  const [data, setData] = useState<IChartData[]>([])
-  const [bestMonthData, setBestMonthData] = useState(best as Ibest)
-  const [reportValues, setReportValues] = useState<number[]>([])
-  const screenWidth = Dimensions.get('window').width - 24
+  const { back } = useRouter();
+  const { isDark } = useTheme();
+  const [isLoading, setIsLoading] = useState(true);
+  const [select, setSelect] = useState('hours');
+  const [data, setData] = useState<IChartData[]>([]);
+  const [bestMonthData, setBestMonthData] = useState(best as Ibest);
+  const [reportValues, setReportValues] = useState<number[]>([]);
+  const screenWidth = Dimensions.get('window').width - 24;
   const Chartdata = {
     labels:
       data.length > 0
@@ -65,7 +64,7 @@ export default function Chart() {
         data: reportValues.length > 0 ? reportValues : [0],
       },
     ],
-  }
+  };
 
   const chartConfig = {
     backgroundGradientFrom: isDark ? Colors.dark.tint : Colors.light.tint,
@@ -78,60 +77,61 @@ export default function Chart() {
       strokeWidth: '2',
       stroke: '#ffffff',
     },
-  }
+  };
   const graphStyle = {
     color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
     borderRadius: 16,
     boxShadow: 5,
-  }
+  };
   function handleChangeSelectData(value: string) {
-    setSelect(value)
+    setSelect(value);
     switch (value) {
       case 'hours': {
         const reportVa = data.map((item) => {
-          const [h, _] = String(item.reports.time).split(':')
-          return Number(h)
-        })
-        setReportValues(reportVa)
-        break
+          const [h, _] = String(item.reports.time).split(':');
+          return Number(h);
+        });
+        setReportValues(reportVa);
+        break;
       }
       case 'videos':
-        setReportValues(data.map((item) => item.reports.videos))
-        break
+        setReportValues(data.map((item) => item.reports.videos));
+        break;
       case 'publications':
-        setReportValues(data.map((item) => item.reports.publications))
-        break
+        setReportValues(data.map((item) => item.reports.publications));
+        break;
       case 'returnVisits':
-        setReportValues(data.map((item) => item.reports.returnVisits))
-        break
+        setReportValues(data.map((item) => item.reports.returnVisits));
+        break;
 
       default:
-        setReportValues(data.map((item) => item.reports.students))
-        break
+        setReportValues(data.map((item) => item.reports.students));
+        break;
     }
   }
 
   useEffect(() => {
     async function getReportForStats() {
       try {
-        const { data } = await GET_REPORT_FOR_STATICS(currentDates.year)
+        const data: IChartData[] = [];
+        // const { data } = await reportsActions.getReportForStats(currentDates.year)
         if (data.length) {
           const reportVa = data.map((item) => {
-            const [h, _] = String(item.reports.time).split(':')
-            return Number(h)
-          })
-          setReportValues(reportVa)
-          setData(data)
-          setBestMonthData(bestMonthsStatics(data))
+            const [h, _] = String(item.reports.time).split(':');
+            return Number(h);
+          });
+          setReportValues(reportVa);
+          setData(data);
+          setBestMonthData(bestMonthsStatics(data));
         }
       } catch (error) {
-        console.log(error)
+        console.log(error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     }
-    getReportForStats()
-  }, [])
+    getReportForStats();
+  }, []);
 
   return (
     <View
@@ -199,33 +199,31 @@ export default function Chart() {
               <ListItem
                 title="Total de Horas"
                 value={`${bestMonthData?.hours?.value} (${capitalizeString(
-                  bestMonthData?.hours?.month,
+                  bestMonthData?.hours?.month
                 )})`}
               />
               <ListItem
                 title="Publicacoes"
-                value={`${bestMonthData?.publications
-                  ?.value} (${capitalizeString(
-                  bestMonthData?.publications?.month,
-                )})`}
+                value={`${
+                  bestMonthData?.publications?.value
+                } (${capitalizeString(bestMonthData?.publications?.month)})`}
               />
               <ListItem
                 title="Videos Mostrados"
                 value={`${bestMonthData?.videos?.value} (${capitalizeString(
-                  bestMonthData?.videos?.month,
+                  bestMonthData?.videos?.month
                 )})`}
               />
               <ListItem
                 title="Revisitas"
-                value={`${bestMonthData?.returnVisits
-                  ?.value} (${capitalizeString(
-                  bestMonthData?.returnVisits?.month,
-                )})`}
+                value={`${
+                  bestMonthData?.returnVisits?.value
+                } (${capitalizeString(bestMonthData?.returnVisits?.month)})`}
               />
               <ListItem
                 title="Estudos"
                 value={`${bestMonthData?.students?.value} (${capitalizeString(
-                  bestMonthData?.students?.month,
+                  bestMonthData?.students?.month
                 )})`}
               />
             </View>
@@ -233,5 +231,5 @@ export default function Chart() {
         </View>
       </ScrollView>
     </View>
-  )
+  );
 }

@@ -1,22 +1,20 @@
-import { Text, View } from '@/components/Themed'
-import { useForm } from 'react-hook-form'
-import { ScrollView } from 'react-native-gesture-handler'
+import { Text, View } from '@/components/Themed';
+import { useForm } from 'react-hook-form';
+import { ScrollView } from 'react-native-gesture-handler';
 
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
-import { z } from 'zod'
-import { BackButton } from '@/components/ui/BackButton'
-import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useRef, useState } from 'react'
-import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1'
-import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2'
-import { DialogActions, Button } from '@react-native-material/core'
-import { useLocalSearchParams, useRouter } from 'expo-router'
-import type { IStudentsBody } from '@/@types/interfaces'
-import { CREATE_STUDENTS } from '@/database/actions/students/create'
-import { UPDATE_STUDENTS_BY_ID } from '@/database/actions/students/update'
-import Snackbar from 'react-native-snackbar'
+import { z } from 'zod';
+import { BackButton } from '@/components/ui/BackButton';
+import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useRef, useState } from 'react';
+import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1';
+import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2';
+import { DialogActions, Button } from '@react-native-material/core';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { studentsAction } from '@/database/actions';
+import Snackbar from 'react-native-snackbar';
 
 const SchemaStudennts = z.object({
   name: z
@@ -43,7 +41,7 @@ const SchemaStudennts = z.object({
       required_error: 'Escolha um dia para visitar.',
     })
     .min(1, 'Escolha um dia para visitar.'),
-})
+});
 
 const defaultAges = [
   {
@@ -74,19 +72,19 @@ const defaultAges = [
     age: '-100',
     state: false,
   },
-]
+];
 
-type SchemaStudenntsType = z.infer<typeof SchemaStudennts>
+type SchemaStudenntsType = z.infer<typeof SchemaStudennts>;
 export default function CreateStudent() {
-  const { isDark } = useTheme()
-  const { back, push } = useRouter()
-  const [step, setStep] = useState(false)
-  const scrollViewRef = useRef<ScrollView>(null)
+  const { isDark } = useTheme();
+  const { back, push } = useRouter();
+  const [step, setStep] = useState(false);
+  const scrollViewRef = useRef<ScrollView>(null);
 
-  const data: any = useLocalSearchParams()
+  const data: any = useLocalSearchParams();
 
-  const weekDaysObj = data?.best_day && JSON.parse(data?.best_day)
-  const timesOfDayObj = data?.best_time && JSON.parse(data?.best_time)
+  const weekDaysObj = data?.best_day && JSON.parse(data?.best_day);
+  const timesOfDayObj = data?.best_time && JSON.parse(data?.best_time);
 
   const {
     control,
@@ -111,98 +109,98 @@ export default function CreateStudent() {
           address: data?.address,
         }
       : {},
-  })
+  });
 
-  const [weekDays, setWeekDays] = useState<string[]>(weekDaysObj || [])
-  const [timesOfDay, settimeOfDay] = useState<string[]>(timesOfDayObj || [])
+  const [weekDays, setWeekDays] = useState<string[]>(weekDaysObj || []);
+  const [timesOfDay, settimeOfDay] = useState<string[]>(timesOfDayObj || []);
   const [gender, setGender] = useState({
     woman: data?.gender === 'woman',
     man: data?.gender === 'man',
-  })
+  });
   const [ages, setAge] = useState(
     defaultAges.map((item) => {
       if (data?.age) {
         if (item.age === data?.age) {
-          item.state = true
+          item.state = true;
         }
       }
-      return item
-    }),
-  )
+      return item;
+    })
+  );
 
   async function handleNext() {
     try {
-      const name = trigger('name')
-      const age = trigger('age')
-      const gender = trigger('gender')
-      const validations = await Promise.all([name, age, gender])
-      const isValid = validations.every((item) => item)
+      const name = trigger('name');
+      const age = trigger('age');
+      const gender = trigger('gender');
+      const validations = await Promise.all([name, age, gender]);
+      const isValid = validations.every((item) => item);
       if (isValid) {
-        setStep(true)
-        scrollToTop()
+        setStep(true);
+        scrollToTop();
       }
     } catch (error) {
-      console.log('Error', error)
+      console.log('Error', error);
     }
   }
   function goBack() {
-    setStep(false)
+    setStep(false);
   }
   function cancel() {
-    reset()
-    back()
+    reset();
+    back();
   }
   function handleChangeGender(genderParams: 'man' | 'woman') {
-    const gender = genderParams === 'man' ? 'man' : 'woman'
-    clearErrors('gender')
-    setValue('gender', gender)
+    const gender = genderParams === 'man' ? 'man' : 'woman';
+    clearErrors('gender');
+    setValue('gender', gender);
     setGender({
       man: genderParams === 'man',
       woman: genderParams === 'woman',
-    })
+    });
   }
   function handleChangeAge(index: number) {
-    clearErrors('age')
+    clearErrors('age');
     const newAges = ages.map((age, i) => {
       return {
         ...age,
         state: i === index,
-      }
-    })
-    setAge(newAges)
-    const age = newAges.find((age) => age.state === true)
+      };
+    });
+    setAge(newAges);
+    const age = newAges.find((age) => age.state === true);
     if (age) {
-      setValue('age', age?.age)
+      setValue('age', age?.age);
     }
   }
   function handleToogleWeekday(weekDayIndex: string) {
-    clearErrors('best_day')
+    clearErrors('best_day');
     if (weekDays.includes(weekDayIndex)) {
-      setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex))
+      setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex));
       setValue(
         'best_day',
-        weekDays.filter((weekday) => weekday !== weekDayIndex),
-      )
+        weekDays.filter((weekday) => weekday !== weekDayIndex)
+      );
     } else {
       setWeekDays((preview) => {
-        return [...preview, weekDayIndex]
-      })
-      setValue('best_day', [...weekDays, weekDayIndex])
+        return [...preview, weekDayIndex];
+      });
+      setValue('best_day', [...weekDays, weekDayIndex]);
     }
   }
   function handleToogleTimeOfDay(time: string) {
-    clearErrors('best_time')
+    clearErrors('best_time');
     if (timesOfDay.includes(time)) {
-      settimeOfDay(timesOfDay.filter((timeDay) => timeDay !== time))
+      settimeOfDay(timesOfDay.filter((timeDay) => timeDay !== time));
       setValue(
         'best_time',
-        timesOfDay.filter((timeDay) => timeDay !== time),
-      )
+        timesOfDay.filter((timeDay) => timeDay !== time)
+      );
     } else {
       settimeOfDay((preview) => {
-        return [...preview, time]
-      })
-      setValue('best_time', [...timesOfDay, time])
+        return [...preview, time];
+      });
+      setValue('best_time', [...timesOfDay, time]);
     }
   }
   function transformeData(data: IStudentsBody) {
@@ -216,38 +214,38 @@ export default function CreateStudent() {
       gender: data.gender || 'man',
       name: data.name || '',
       telephone: data.telephone,
-    }
-    return { body }
+    };
+    return { body };
   }
   function scrollToTop() {
     if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({ y: 0, animated: true })
+      scrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
   }
   const onSubmit = async (databody: IStudentsBody | any) => {
     try {
-      const { body } = transformeData(databody)
-      console.log('[data to send]', body)
-      let studentData: any
+      const { body } = transformeData(databody);
+      console.log('[data to send]', body);
+      let studentData: any;
       if (data?.id) {
-        studentData = await UPDATE_STUDENTS_BY_ID(data.id, body)
-        console.log('[ESTUDANTE ATUALIZADO]', data?.id)
+        studentData = await studentsAction.updateById(data.id, body);
+        console.log('[ESTUDANTE ATUALIZADO]', data?.id);
       } else {
-        studentData = await CREATE_STUDENTS(body)
-        console.log('[ESTUDANTE CRIADO]', studentData)
+        studentData = await studentsAction.create(body);
+        console.log('[ESTUDANTE CRIADO]', studentData);
       }
       Snackbar.show({
         text: `${data?.id ? 'atualizado o' : 'Adicionado'} ${body.name}`,
         duration: Snackbar.LENGTH_LONG,
-      })
+      });
       if (studentData) {
-        push('/(report)/(tabs)/students')
-        reset()
+        push('/(report)/(tabs)/students');
+        reset();
       }
     } catch (error) {
-      console.log('Error', error)
+      console.log('Error', error);
     }
-  }
+  };
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -358,5 +356,5 @@ export default function CreateStudent() {
         )}
       </ScrollView>
     </View>
-  )
+  );
 }

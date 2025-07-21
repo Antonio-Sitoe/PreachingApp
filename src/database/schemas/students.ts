@@ -1,18 +1,21 @@
-import { tableSchema } from '@nozbe/watermelondb'
+import { sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { v4 as uuid } from 'uuid';
 
-export const StudentSchema = tableSchema({
-  name: 'students',
-  columns: [
-    { name: 'name', type: 'string' },
-    { name: 'age', type: 'string' },
-    { name: 'about', type: 'string' },
-    { name: 'telephone', type: 'string', isOptional: true },
-    { name: 'email', type: 'string', isOptional: true },
-    { name: 'gender', type: 'string' },
-    { name: 'address', type: 'string' },
-    { name: 'best_time', type: 'string' },
-    { name: 'best_day', type: 'string' },
-    { name: 'language', type: 'string' },
-    { name: 'createdAt', type: 'string' },
-  ],
-})
+export const students = sqliteTable('students', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => uuid()),
+  name: text('name').notNull(),
+  age: text('age').notNull(),
+  about: text('about'),
+  telephone: text('telephone'),
+  email: text('email'),
+  gender: text('gender').notNull(),
+  address: text('address'),
+  bestTime: text('best_time'),
+  bestDay: text('best_day'),
+  createdAt: text('created_at').notNull(),
+});
+
+export type Student = typeof students.$inferSelect;
+export type NewStudent = typeof students.$inferInsert;

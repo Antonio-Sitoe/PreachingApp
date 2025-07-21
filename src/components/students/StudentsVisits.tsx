@@ -1,17 +1,15 @@
-import type { VisiteProps } from '@/@types/interfaces'
-import TouchableOpacity, { Text, View } from '@/components/Themed'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import dayjs from 'dayjs'
+import TouchableOpacity, { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import dayjs from 'dayjs';
 
-import { capitalizeString } from '@/utils/helper'
-import { ActivityIndicator, Divider } from '@react-native-material/core'
-import { Alert } from 'react-native'
-import { Pen, Trash2 } from 'lucide-react-native'
-import { ScrollView } from 'react-native-gesture-handler'
-import { DELETE_VISIT_BY_ID } from '@/database/actions/visits/delete'
-import NoContent from '../NoContent'
-import { useRouter } from 'expo-router'
+import { capitalizeString } from '@/utils/helper';
+import { ActivityIndicator, Divider } from '@react-native-material/core';
+import { Alert } from 'react-native';
+import { Pen, Trash2 } from 'lucide-react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { type IVisit, visitsAction } from '@/database/actions';
+import NoContent from '../NoContent';
 
 const IRESULT = {
   attended: 'Esteve na visita',
@@ -19,18 +17,18 @@ const IRESULT = {
   no_longer_interested: 'Já não está interessada',
   no_time: 'Não tinha tempo',
   called: 'Ligou por telefone',
-}
+};
 
 function formateDate(date: string | Date) {
-  const formattedDate = dayjs(date).format('dddd, D [de] MMMM [de] YYYY')
-  return capitalizeString(formattedDate)
+  const formattedDate = dayjs(date).format('dddd, D [de] MMMM [de] YYYY');
+  return capitalizeString(formattedDate);
 }
 
 interface IStudentsVisitsProps {
-  visits: VisiteProps[]
-  handleAddVisit(id: string): void
-  load: boolean
-  reset(): void
+  visits: IVisit[];
+  handleAddVisit(id: string): void;
+  load: boolean;
+  reset(): void;
 }
 export const StudentsVisits = ({
   visits,
@@ -38,7 +36,7 @@ export const StudentsVisits = ({
   handleAddVisit,
   reset,
 }: IStudentsVisitsProps) => {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
 
   function handleDeleteVisit(id: string) {
     Alert.alert(
@@ -48,14 +46,14 @@ export const StudentsVisits = ({
         {
           text: 'Apagar',
           onPress: async () => {
-            await DELETE_VISIT_BY_ID(id)
-            reset()
+            await visitsAction.deleteVisitById(id);
+            reset();
           },
         },
         { text: 'Cancelar', style: 'cancel' },
       ],
-      { cancelable: true },
-    )
+      { cancelable: true }
+    );
   }
 
   return (
@@ -192,9 +190,9 @@ export const StudentsVisits = ({
               </View>
               <Divider style={{ marginTop: 10 }} />
             </View>
-          )
+          );
         })}
       </ScrollView>
     </View>
-  )
-}
+  );
+};

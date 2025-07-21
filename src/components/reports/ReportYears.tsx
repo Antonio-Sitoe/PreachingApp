@@ -1,20 +1,19 @@
-import '@/utils/localeConfig'
+import '@/utils/localeConfig';
 
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
-import { Flex } from '@react-native-material/core'
-import { View, Text } from '../Themed'
-import type { ReportData } from '@/@types/interfaces'
-import { usePathname } from 'expo-router'
-import { currentDates } from '@/utils/dates'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { initialReportData } from '@/utils/initialReportData'
-import { useEffect, useState } from 'react'
-import { GET_REPORTS_BY_YEARS } from '@/database/actions/report/read'
-import { Calendar as CustomCalendar } from 'react-native-calendars'
-import { ChevronsLeft, ChevronsRight } from 'lucide-react-native'
-import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext'
+import { Flex } from '@react-native-material/core';
+import { View, Text } from '../Themed';
+import { usePathname } from 'expo-router';
+import { currentDates } from '@/utils/dates';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { initialReportData } from '@/utils/initialReportData';
+import { useEffect, useState } from 'react';
+import { type IReport, reportsActions } from '@/database/actions';
+import { Calendar as CustomCalendar } from 'react-native-calendars';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
+import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext';
 
 const ListItem = ({ title, value, ...props }) => {
   return (
@@ -26,35 +25,35 @@ const ListItem = ({ title, value, ...props }) => {
       <Text className="text-base font-text">{title}</Text>
       <Text className="text-base font-text">{value}</Text>
     </View>
-  )
-}
+  );
+};
 
 export default function ReportYears() {
-  const { colorScheme, isDark } = useTheme()
-  const { index } = useTabBarIndex()
-  const { isOpenCreateReportModal } = useReportsData()
+  const { colorScheme, isDark } = useTheme();
+  const { index } = useTabBarIndex();
+  const { isOpenCreateReportModal } = useReportsData();
 
-  const [data, setData] = useState(initialReportData as ReportData)
-  const [year, setYear] = useState(currentDates.year)
+  const [data, setData] = useState(initialReportData as IReport);
+  const [year, setYear] = useState(currentDates.year);
 
-  const isFirstElement = index === 1
-  const changePathname = usePathname() === '/report'
-  const isModalClose = isOpenCreateReportModal === false
+  const isFirstElement = index === 1;
+  const changePathname = usePathname() === '/report';
+  const isModalClose = isOpenCreateReportModal === false;
 
   function handleGotoNextYear() {
-    setYear((year) => year + 1)
+    setYear((year) => year + 1);
   }
   function handleGoBack() {
-    setYear((year) => year - 1)
+    setYear((year) => year - 1);
   }
   async function onChangeYear({ year }) {
-    const { data } = await GET_REPORTS_BY_YEARS(year)
-    setData(data)
+    const { data } = await reportsActions.getByYear(year);
+    setData(data as unknown as IReport);
   }
 
   useEffect(() => {
-    onChangeYear({ year })
-  }, [isFirstElement, changePathname, isModalClose, year])
+    onChangeYear({ year });
+  }, [isFirstElement, changePathname, isModalClose, year]);
 
   return (
     <View
@@ -75,7 +74,7 @@ export default function ReportYears() {
               >
                 <ChevronsLeft color={Colors[colorScheme].tint} size={30} />
               </TouchableOpacity>
-            )
+            );
           }
           return (
             <TouchableOpacity
@@ -85,7 +84,7 @@ export default function ReportYears() {
             >
               <ChevronsRight color={Colors[colorScheme].tint} size={30} />
             </TouchableOpacity>
-          )
+          );
         }}
         headerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
@@ -108,5 +107,5 @@ export default function ReportYears() {
         </View>
       </Flex>
     </View>
-  )
+  );
 }

@@ -1,23 +1,19 @@
-import { Text, View } from '@/components/Themed'
-import { AnimatedButtonWithText } from '@/components/ui/ButtonAnimatedV2'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import Person from '@/assets/images/Person.svg'
-import { router, useLocalSearchParams, useRouter } from 'expo-router'
-import { useEffect, useState } from 'react'
-import Woman from '@/assets/images/Woman.svg'
-import { useWindowDimensions } from 'react-native'
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
-import { StudentAbout } from '@/components/students/StudentAbout'
-import { StudentsVisits } from '@/components/students/StudentsVisits'
-import {
-  GET_STUDENTS_BY_ID,
-  type IStudentsBodyHelper,
-} from '@/database/actions/students/read'
-import { ActivityIndicator } from '@react-native-material/core'
-import { GET_VISIT_BY_STUDENT_ID } from '@/database/actions/visits/read'
-import type { VisiteProps } from '@/@types/interfaces'
-import { useIsFocused } from '@react-navigation/native'
+import { Text, View } from '@/components/Themed';
+import { AnimatedButtonWithText } from '@/components/ui/ButtonAnimatedV2';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import Person from '@/assets/images/Person.svg';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import Woman from '@/assets/images/Woman.svg';
+import { useWindowDimensions } from 'react-native';
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import { StudentAbout } from '@/components/students/StudentAbout';
+import { StudentsVisits } from '@/components/students/StudentsVisits';
+import { type IVisit, studentsAction } from '@/database/actions';
+import { ActivityIndicator } from '@react-native-material/core';
+import { visitsAction } from '@/database/actions';
+import { useIsFocused } from '@react-navigation/native';
 
 const renderTabBar = (props: any, isDark: boolean) => {
   return (
@@ -39,67 +35,67 @@ const renderTabBar = (props: any, isDark: boolean) => {
         }}
       />
     </View>
-  )
-}
+  );
+};
 
 export default function Profile() {
-  const layout = useWindowDimensions()
-  const { isDark } = useTheme()
-  const { push } = useRouter()
-  const { id } = useLocalSearchParams()
-  const [index, setIndex] = useState(0)
+  const layout = useWindowDimensions();
+  const { isDark } = useTheme();
+  const { push } = useRouter();
+  const { id } = useLocalSearchParams();
+  const [index, setIndex] = useState(0);
 
-  const [visits, setVisits] = useState<VisiteProps[]>([])
-  const [loadVisit, setLoadVisit] = useState(true)
-  const [profile, setProfile] = useState({} as IStudentsBodyHelper)
-  const [isLoading, setIsloading] = useState(true)
-  const isFocused = useIsFocused()
+  const [visits, setVisits] = useState<IVisit[]>([]);
+  const [loadVisit, setLoadVisit] = useState(true);
+  const [profile, setProfile] = useState({});
+  const [isLoading, setIsloading] = useState(true);
+  const isFocused = useIsFocused();
 
   useEffect(() => {
     async function getProfileInformation(id: string | string[]) {
       try {
-        setIsloading(true)
-        const { data } = await GET_STUDENTS_BY_ID(`${id}`)
-        setProfile(data as IStudentsBodyHelper)
+        setIsloading(true);
+        const data = await studentsAction.getById(`${id}`);
+        setProfile(data);
       } catch (error) {
-        console.log('Error', error)
+        console.log('Error', error);
       } finally {
-        setIsloading(false)
+        setIsloading(false);
       }
     }
-    getProfileInformation(id)
-  }, [id])
+    getProfileInformation(id);
+  }, [id]);
 
   async function getVisitInfo(id: string | string[]) {
     try {
-      setLoadVisit(true)
-      const { visits } = await GET_VISIT_BY_STUDENT_ID(`${id}`)
-      setVisits(visits)
+      setLoadVisit(true);
+      const data = await visitsAction.getByStudentId(`${id}`);
+      setVisits(data);
     } catch (error) {
-      console.log('[Error BUSCAR VISITAS]', error)
+      console.log('[Error BUSCAR VISITAS]', error);
     } finally {
-      setLoadVisit(false)
+      setLoadVisit(false);
     }
   }
 
   useEffect(() => {
     if (id || isFocused) {
-      getVisitInfo(id)
+      getVisitInfo(id);
     }
-  }, [id, isFocused])
+  }, [id, isFocused]);
 
   function handleAddVisit(visitID?: string) {
     const params: any = {
       id,
       name: profile.name,
-    }
+    };
     if (visitID) {
-      params.visitID = visitID
+      params.visitID = visitID;
     }
     push({
       pathname: `/(report)/(tabs)/students/createVisit`,
       params,
-    })
+    });
   }
 
   const renderScene = SceneMap({
@@ -112,12 +108,12 @@ export default function Profile() {
         handleAddVisit={handleAddVisit}
       />
     ),
-  })
+  });
 
   const routes = [
     { key: 'about', title: 'SOBRE' },
     { key: 'visits', title: 'VISITAS' },
-  ]
+  ];
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -141,7 +137,7 @@ export default function Profile() {
                 darkColor="#FBEEBC"
                 className="w-20 h-20 mr-6 rounded-2xl flex items-center justify-center relative"
               >
-                {profile.gender === 'man' ? (
+                {profile?.gender === 'man' ? (
                   <Person width={60} height={60} />
                 ) : (
                   <Woman width={60} height={60} />
@@ -188,5 +184,5 @@ export default function Profile() {
         </>
       )}
     </View>
-  )
+  );
 }

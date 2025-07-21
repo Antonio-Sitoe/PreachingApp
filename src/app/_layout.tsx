@@ -8,12 +8,15 @@ import { useColorScheme } from 'nativewind';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Stack, SplashScreen } from 'expo-router';
 import { Provider as MaterialProvider } from '@react-native-material/core';
-
+import { DrizzleStudio } from '@/components/studio';
 import {
   Inter_400Regular,
   Inter_500Medium,
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
+import { db } from '@/database/db';
+import migrations from '@/database/migrations/migrations';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -28,6 +31,9 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayoutNav() {
+  const { success: hasSuccessMigration, error: errorDbMigration } =
+    useMigrations(db, migrations);
+
   const [loaded, error] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
@@ -50,14 +56,15 @@ export default function RootLayoutNav() {
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
+    if (errorDbMigration) throw errorDbMigration;
     if (error) throw error;
-  }, [error]);
+  }, [error, errorDbMigration]);
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded && hasSuccessMigration) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, hasSuccessMigration]);
 
   if (!loaded) {
     return null;
@@ -77,6 +84,7 @@ export default function RootLayoutNav() {
               }}
             />
           </Stack>
+          {__DEV__ && <DrizzleStudio />}
         </ReportStorage>
       </UserStorage>
     </MaterialProvider>

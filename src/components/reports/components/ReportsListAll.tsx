@@ -1,62 +1,62 @@
-import Card from './Card'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import NoContent from '../../NoContent'
+import Card from './Card';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import NoContent from '../../NoContent';
 
-import { FlashList } from '@shopify/flash-list'
-import { Text, View } from '../../Themed'
-import type { ReportData } from '@/@types/interfaces'
-import { usePathname } from 'expo-router'
-import { useTabBarIndex } from '@/contexts/ReportContext'
-import { ActivityIndicator } from 'react-native'
-import { useEffect, useState } from 'react'
-import { GET_ALL_REPORT_DATA } from '@/database/actions/report/read'
+import { FlashList } from '@shopify/flash-list';
+import { Text, View } from '../../Themed';
+import type { ReportData } from '@/@types/interfaces';
+import { usePathname } from 'expo-router';
+import { useTabBarIndex } from '@/contexts/ReportContext';
+import { ActivityIndicator } from 'react-native';
+import { useEffect, useState } from 'react';
+import { reportsActions } from '@/database/actions';
 
 export interface Reports {
-  date: string
-  id: string
-  text: string
+  date: string;
+  id: string;
+  text: string;
 }
 
 export interface ReportDataProps {
-  year: string
-  reports: Array<[string, ReportData[]]>
+  year: string;
+  reports: Array<[string, ReportData[]]>;
 }
-export type CardProps = ReportDataProps[]
+export type CardProps = ReportDataProps[];
 
 export default function ReportsListAll() {
-  const [data, setData] = useState<CardProps>([])
-  const [isloadingReportData, setIsLoadingReportData] = useState(true)
+  const [data, setData] = useState<CardProps>([]);
+  const [isloadingReportData, setIsLoadingReportData] = useState(true);
 
-  const { isDark } = useTheme()
-  const { index } = useTabBarIndex()
+  const { isDark } = useTheme();
+  const { index } = useTabBarIndex();
 
-  const isFirstElement = index === 0
-  const changePathname = usePathname() === '/report'
-  const isEnableToRender = isFirstElement && changePathname
+  const isFirstElement = index === 0;
+  const changePathname = usePathname() === '/report';
+  const isEnableToRender = isFirstElement && changePathname;
 
   useEffect(() => {
     const getallreportDataAsync = async () => {
-      setIsLoadingReportData(true)
+      setIsLoadingReportData(true);
       try {
-        const { data } = await GET_ALL_REPORT_DATA()
-        setData(data)
+        const data = await reportsActions.getAll();
+        setData(data);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       } finally {
-        setIsLoadingReportData(false)
+        setIsLoadingReportData(false);
       }
-    }
+    };
     if (isEnableToRender) {
-      getallreportDataAsync()
+      getallreportDataAsync();
     }
     return () => {
-      setIsLoadingReportData(true)
-    }
-  }, [isEnableToRender])
+      setIsLoadingReportData(true);
+    };
+  }, [isEnableToRender]);
 
   if (data.length === 0) {
-    return <NoContent text="Sem dados" />
+    return <NoContent text="Sem dados" />;
   }
 
   return (
@@ -101,5 +101,5 @@ export default function ReportsListAll() {
         )}
       />
     </View>
-  )
+  );
 }

@@ -1,22 +1,21 @@
-import type { IStudentsBody } from '@/@types/interfaces'
-import TouchableOpacity, { Text, View } from '@/components/Themed'
-import Colors from '@/constants/Colors'
-import { DELETE_STUDENT_WITH_OWN_VISITS } from '@/database/actions/students/delete'
-import useTheme from '@/hooks/useTheme'
-import { router, useRouter } from 'expo-router'
+import TouchableOpacity, { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
+import { type Student, studentsAction } from '@/database/actions';
+import useTheme from '@/hooks/useTheme';
+import { useRouter } from 'expo-router';
 
-import { Pen, Trash2 } from 'lucide-react-native'
-import { Alert } from 'react-native'
-import { ScrollView } from 'react-native-gesture-handler'
-import Snackbar from 'react-native-snackbar'
+import { Pen, Trash2 } from 'lucide-react-native';
+import { Alert } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import Snackbar from 'react-native-snackbar';
 
 interface StudentAboutProps {
-  data: IStudentsBody
+  data: Student;
 }
 
 export const StudentAbout = ({ data }: StudentAboutProps) => {
-  const { isDark } = useTheme()
-  const { push } = useRouter()
+  const { isDark } = useTheme();
+  const { push } = useRouter();
 
   function handleGoToEdit() {
     push({
@@ -33,7 +32,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         name: data.name,
         telephone: data.telephone,
       },
-    })
+    });
   }
   function handleDeleteStudent(id: string) {
     Alert.alert(
@@ -44,20 +43,20 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           text: 'Apagar',
           style: 'destructive',
           onPress: async () => {
-            const { sucess } = await DELETE_STUDENT_WITH_OWN_VISITS(id)
+            const { sucess } = await studentsAction.deleteWithOwnVisits(id);
             Snackbar.show({
               text: `${data?.name} apagado com sucesso`,
               duration: Snackbar.LENGTH_LONG,
-            })
+            });
             if (sucess) {
-              push('/(report)/(tabs)/students')
+              push('/(report)/(tabs)/students');
             }
           },
         },
         { text: 'Cancelar', style: 'cancel' },
       ],
-      { cancelable: true },
-    )
+      { cancelable: true }
+    );
   }
 
   return (
@@ -126,7 +125,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           className="flex-row items-center gap-2 mt-6"
           onPress={() => {
             if (data?.id) {
-              handleDeleteStudent(data?.id as string)
+              handleDeleteStudent(data?.id as string);
             }
           }}
         >
@@ -137,5 +136,5 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         </TouchableOpacity>
       </View>
     </ScrollView>
-  )
-}
+  );
+};

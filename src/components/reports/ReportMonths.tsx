@@ -1,28 +1,27 @@
-import '@/utils/localeConfig'
-import { Calendar as CustomCalendar } from 'react-native-calendars'
-import { ChevronsLeft, ChevronsRight } from 'lucide-react-native'
-import { Button, Flex } from '@react-native-material/core'
-import { View, Text } from '../Themed'
+import '@/utils/localeConfig';
+import { Calendar as CustomCalendar } from 'react-native-calendars';
+import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
+import { Button, Flex } from '@react-native-material/core';
+import { View, Text } from '../Themed';
 
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import { GET_ALL_REPORTS_TO_GLOBAL_STATES } from '@/database/actions/report/read'
-import React, { useEffect, useState } from 'react'
-import type { ReportData } from '@/@types/interfaces'
-import { useUser } from '@/contexts/UserContext'
-import { defineProfiletext } from '@/utils/helper'
-import { currentDates, monthNameToPortuguese } from '@/utils/dates'
-import { initialReportData } from '@/utils/initialReportData'
-import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext'
-import { usePathname } from 'expo-router'
-import { DialogReport } from './components/DialogReport'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import { type IReport, reportsActions } from '@/database/actions';
+import React, { useEffect, useState } from 'react';
+import { useUser } from '@/contexts/UserContext';
+import { defineProfiletext } from '@/utils/helper';
+import { currentDates, monthNameToPortuguese } from '@/utils/dates';
+import { initialReportData } from '@/utils/initialReportData';
+import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext';
+import { usePathname } from 'expo-router';
+import { DialogReport } from './components/DialogReport';
 
 interface ValueProps {
-  dateString?: string
-  day?: number
-  month: number
-  timestamp?: number
-  year: number
+  dateString?: string;
+  day?: number;
+  month: number;
+  timestamp?: number;
+  year: number;
 }
 
 export const ListItem = ({ title, value, ...props }) => {
@@ -35,41 +34,41 @@ export const ListItem = ({ title, value, ...props }) => {
       <Text className="text-base font-text">{title}</Text>
       <Text className="text-base font-text">{value}</Text>
     </View>
-  )
-}
+  );
+};
 
 export default function ReportMonths() {
-  const { colorScheme, isDark } = useTheme()
-  const { user } = useUser()
-  const { index } = useTabBarIndex()
-  const [visible, setVisible] = useState(false)
-  const { isOpenCreateReportModal, setTextToShare } = useReportsData()
+  const { colorScheme, isDark } = useTheme();
+  const { user } = useUser();
+  const { index } = useTabBarIndex();
+  const [visible, setVisible] = useState(false);
+  const { isOpenCreateReportModal, setTextToShare } = useReportsData();
 
-  const [data, setData] = useState(initialReportData as ReportData)
-  const [reports, setReports] = useState<ReportData[]>([])
+  const [data, setData] = useState(initialReportData as IReport);
+  const [reports, setReports] = useState<IReport[]>([]);
   const [title, setTitle] = useState({
     month: monthNameToPortuguese(currentDates.month),
     year: currentDates.year,
-  })
-  const isFirstElement = index === 1
-  const changePathname = usePathname() === '/report'
-  const isModalClose = isOpenCreateReportModal === false
+  });
+  const isFirstElement = index === 1;
+  const changePathname = usePathname() === '/report';
+  const isModalClose = isOpenCreateReportModal === false;
 
   const onMonthChange = async (value: ValueProps) => {
-    const month = monthNameToPortuguese(value.month)
-    const year = value.year
-    setTitle({ month, year })
-    const { data, reports } = await GET_ALL_REPORTS_TO_GLOBAL_STATES(
+    const month = monthNameToPortuguese(value.month);
+    const year = value.year;
+    setTitle({ month, year });
+    const { data, reports } = await reportsActions.getGlobalStates({
       month,
       year,
-    )
-    setData(data)
-    setReports(reports)
-  }
+    });
+    setData(data as IReport);
+    setReports(reports as IReport[]);
+  };
 
   useEffect(() => {
-    onMonthChange({ month: currentDates.month, year: currentDates.year })
-  }, [isFirstElement, changePathname, isModalClose])
+    onMonthChange({ month: currentDates.month, year: currentDates.year });
+  }, [isFirstElement, changePathname, isModalClose]);
 
   useEffect(() => {
     setTextToShare({
@@ -79,8 +78,8 @@ export default function ReportMonths() {
         month: title.month,
         year: title.year,
       },
-    })
-  }, [data, setTextToShare, user.name, title])
+    });
+  }, [data, setTextToShare, user.name, title]);
 
   return (
     <View
@@ -93,9 +92,9 @@ export default function ReportMonths() {
       <CustomCalendar
         renderArrow={(direction) => {
           if (direction === 'left') {
-            return <ChevronsLeft color={Colors[colorScheme].tint} size={30} />
+            return <ChevronsLeft color={Colors[colorScheme].tint} size={30} />;
           }
-          return <ChevronsRight color={Colors[colorScheme].tint} size={30} />
+          return <ChevronsRight color={Colors[colorScheme].tint} size={30} />;
         }}
         headerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
@@ -143,5 +142,5 @@ export default function ReportMonths() {
         />
       )}
     </View>
-  )
+  );
 }

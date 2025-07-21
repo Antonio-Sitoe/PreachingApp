@@ -1,5 +1,4 @@
 import { createReportData } from '@/database/actions/report/create'
-import dayjs from 'dayjs'
 import { monthNameToPortuguese } from './dates'
 import { CREATE_STUDENTS } from '@/database/actions/students/create'
 
@@ -8,7 +7,6 @@ function getRandomNumber(min, max) {
 }
 
 function getRandomDate(year, month) {
-  const startDate = new Date(year, month, 1)
   const endDate = new Date(year, month + 1, 0)
   const randomDay = getRandomNumber(1, endDate.getDate())
   const randomDate = new Date(year, month, randomDay)

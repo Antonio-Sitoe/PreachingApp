@@ -4,40 +4,39 @@ import {
   Button,
   Flex,
   TextInput,
-} from '@react-native-material/core'
-import Snackbar from 'react-native-snackbar'
+} from '@react-native-material/core';
+import Snackbar from 'react-native-snackbar';
 
-import type { IUser } from '@/@types/interfaces'
-import { Picker } from '@react-native-picker/picker'
-import { useUser } from '@/contexts/UserContext'
-import { useState } from 'react'
-import { useRouter } from 'expo-router'
-import { View, Text } from '@/components/Themed'
-import { CREATE_USER } from '@/database/actions/user/create'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { Controller, useForm } from 'react-hook-form'
-import { Camera, ChevronLeft } from 'lucide-react-native'
-import { KeyboardAvoidingView } from 'react-native'
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
-import { zodResolver } from '@hookform/resolvers/zod'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import * as ImagePicker from 'expo-image-picker'
-import Z from 'zod'
+import { Picker } from '@react-native-picker/picker';
+import { useUser } from '@/contexts/UserContext';
+import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { View, Text } from '@/components/Themed';
+import { usersActions } from '@/database/actions';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Controller, useForm } from 'react-hook-form';
+import { Camera, ChevronLeft } from 'lucide-react-native';
+import { KeyboardAvoidingView, TouchableOpacity } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import * as ImagePicker from 'expo-image-picker';
+import Z from 'zod';
 
 const schema = Z.object({
   name: Z.string(),
   email: Z.string().email('Digite um email valido'),
   avatar_image: Z.string().url(),
   profile: Z.string(),
-})
+});
 
 export default function Profile() {
-  const { isDark } = useTheme()
-  const { back } = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const { setProfileUser, user } = useUser()
-  const [image, setImage] = useState(user.avatar_image || '')
+  const { isDark } = useTheme();
+  const { back } = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const { setProfileUser, user } = useUser();
+  const [image, setImage] = useState(user.avatar_image || '');
   const {
     control,
     handleSubmit,
@@ -51,35 +50,35 @@ export default function Profile() {
       avatar_image: user.avatar_image,
       profile: user.profile || 'publisher',
     },
-  })
+  });
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-    })
+    });
     if (!result.canceled) {
-      const { uri } = result.assets[0]
-      setImage(uri)
+      const { uri } = result.assets[0];
+      setImage(uri);
     }
   }
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
-      setIsLoading(true)
-      const newDate = { ...data, avatar_image: image } as IUser
-      const user = await CREATE_USER(newDate)
-      setProfileUser(user)
+      setIsLoading(true);
+      const newDate = { ...data, avatar_image: image };
+      const user = await usersActions.create(newDate);
+      setProfileUser(user);
       Snackbar.show({
         text: 'Perfil Atualizado com sucesso',
         duration: Snackbar.LENGTH_LONG,
-      })
+      });
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <View className="flex-1" darkColor={Colors.dark.darkBgSecundary}>
@@ -226,5 +225,5 @@ export default function Profile() {
         </KeyboardAvoidingView>
       </SafeAreaView>
     </View>
-  )
+  );
 }

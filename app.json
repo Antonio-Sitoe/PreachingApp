@@ -42,7 +42,8 @@
       "expo-build-properties",
       "expo-font",
       "expo-router",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-sqlite"
     ],
     "experiments": {
       "tsconfigPaths": true,

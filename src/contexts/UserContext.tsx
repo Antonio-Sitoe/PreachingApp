@@ -1,47 +1,46 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { READ_USER } from '@/database/actions/user/read'
-import type { IUser } from '@/@types/interfaces'
+import React, { useContext, useEffect, useState } from 'react';
+import { type User, usersActions } from '@/database/actions';
 
 interface UserProps {
-  user: IUser
-  setProfileUser(user: IUser): void
+  user: User;
+  setProfileUser(user: User): void;
 }
 
-export const UserContext = React.createContext({} as UserProps)
+export const UserContext = React.createContext({} as UserProps);
 
 interface UserStorageProps {
-  children: React.ReactNode
+  children: React.ReactNode;
 }
 
 export function UserStorage({ children }: UserStorageProps) {
-  const [user, setUser] = useState<IUser>({} as IUser)
+  const [user, setUser] = useState<User>({} as User);
 
-  function setProfileUser(user: IUser) {
-    setUser(user)
+  function setProfileUser(user: User) {
+    setUser(user);
   }
 
   useEffect(() => {
     async function getUser() {
       try {
-        const user = await READ_USER()
-        console.log('DADOS DO USUARIO', user)
-        setUser(user)
+        const user = await usersActions.getAllUsers()?.[0];
+        console.log('DADOS DO USUARIO', user);
+        setUser(user);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
     }
-    getUser()
-  }, [])
+    getUser();
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setProfileUser }}>
       {children}
     </UserContext.Provider>
-  )
+  );
 }
 
 export const useUser = () => {
-  const data = useContext(UserContext)
+  const data = useContext(UserContext);
 
-  return data
-}
+  return data;
+};

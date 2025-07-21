@@ -1,28 +1,26 @@
-import { Select } from '@/components/ui/Select'
-import { SubmitHandler, useForm } from 'react-hook-form'
-import { useEffect, useState } from 'react'
-import { ScrollView } from 'react-native-gesture-handler'
-import { Text, View } from '@/components/Themed'
-import { BackButton } from '@/components/ui/BackButton'
-import { DatePicker } from '@/components/ui/DatePicker'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { Select } from '@/components/ui/Select';
+import { useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
+import { Text, View } from '@/components/Themed';
+import { BackButton } from '@/components/ui/BackButton';
+import { DatePicker } from '@/components/ui/DatePicker';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-import { TextInputForm } from '@/components/ui/TextInputForm'
-import { useLocalSearchParams, useRouter } from 'expo-router'
+import { TextInputForm } from '@/components/ui/TextInputForm';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   Button,
   DialogActions,
-} from '@react-native-material/core'
-import { CREATE_VISIT_BY_STUDENT_ID } from '@/database/actions/visits/create'
+} from '@react-native-material/core';
+import { visitsAction } from '@/database/actions';
 
-import * as z from 'zod'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import Snackbar from 'react-native-snackbar'
-import dayjs from 'dayjs'
-import { GET_VISIT_BY_ID } from '@/database/actions/visits/read'
-import { UPDATE_VISIT_BY_STUDENT_ID_AND_VISI_ID } from '@/database/actions/visits/update'
+import * as z from 'zod';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import Snackbar from 'react-native-snackbar';
+import dayjs from 'dayjs';
 
 const schema = z.object({
   date_and_hours: z.date({
@@ -34,14 +32,14 @@ const schema = z.object({
   publications: z.string(),
   videos: z.string(),
   notes: z.string(),
-})
+});
 
 export default function CreateVisit() {
-  const router = useRouter()
-  const { isDark } = useTheme()
-  const [load, setLoad] = useState(false)
-  const { id, name, visitID } = useLocalSearchParams()
-  const [date, setDate] = useState(new Date())
+  const router = useRouter();
+  const { isDark } = useTheme();
+  const [load, setLoad] = useState(false);
+  const { id, name, visitID } = useLocalSearchParams();
+  const [date, setDate] = useState(new Date());
 
   const {
     control,
@@ -59,61 +57,58 @@ export default function CreateVisit() {
       videos: '',
       notes: '',
     },
-  })
+  });
 
   const onSubmit = async (data: any) => {
     try {
-      const dateformated = dayjs(date).format('DD/MM/YYYY')
-      data.date_and_hours = dateformated
-      console.log('[DATA TO SEND]', data)
-      let newVisit
+      const dateformated = dayjs(date).format('DD/MM/YYYY');
+      data.date_and_hours = dateformated;
+      console.log('[DATA TO SEND]', data);
+      let newVisit;
       if (visitID) {
-        newVisit = await UPDATE_VISIT_BY_STUDENT_ID_AND_VISI_ID(
-          visitID as string,
-          data,
-        )
+        newVisit = await visitsAction.updateById(visitID as string, data);
       } else {
-        newVisit = await CREATE_VISIT_BY_STUDENT_ID(data)
+        newVisit = await visitsAction.create(data);
       }
-      console.log('[NOVA VISITA]', newVisit)
+      console.log('[NOVA VISITA]', newVisit);
       Snackbar.show({
         text: `Visita ${visitID ? 'atualizada' : 'adicionada'} a  ${name}`,
         duration: Snackbar.LENGTH_LONG,
-      })
+      });
       if (newVisit) {
         router.push({
           pathname: '/(report)/(tabs)/students/profile',
           params: { id },
-        })
+        });
       }
     } catch (error) {
-      console.log('[ERROR] : ', error)
+      console.log('[ERROR] : ', error);
     }
-  }
+  };
 
   useEffect(() => {
     async function loadVisitData(visitID: string | string[]) {
       try {
-        setLoad(true)
-        const { visit } = await GET_VISIT_BY_ID(visitID as string)
-        if (!visit) return
-        setDate(visit?.date_and_hours)
-        setValue('biblical_texts', visit?.biblical_texts)
-        setValue('date_and_hours', visit?.date_and_hours)
-        setValue('notes', visit?.notes)
-        setValue('publications', visit?.publications)
-        setValue('result', visit?.result)
-        setValue('videos', visit?.videos)
+        setLoad(true);
+        const visit = await visitsAction.getById(visitID as string);
+        if (!visit) return;
+        setDate(visit?.date_and_hours);
+        setValue('biblical_texts', visit?.biblical_texts);
+        setValue('date_and_hours', visit?.date_and_hours);
+        setValue('notes', visit?.notes);
+        setValue('publications', visit?.publications);
+        setValue('result', visit?.result);
+        setValue('videos', visit?.videos);
       } catch (error) {
-        console.log('[Falha ao carregar dados da visita]', error)
+        console.log('[Falha ao carregar dados da visita]', error);
       } finally {
-        setLoad(false)
+        setLoad(false);
       }
     }
     if (visitID) {
-      loadVisitData(visitID)
+      loadVisitData(visitID);
     }
-  }, [visitID, setValue])
+  }, [visitID, setValue]);
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -236,5 +231,5 @@ export default function CreateVisit() {
         </ScrollView>
       </View>
     </View>
-  )
+  );
 }

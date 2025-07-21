@@ -1,66 +1,68 @@
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import NoContent from '../../NoContent'
-import CardWithButton from './CardWithButton'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import NoContent from '../../NoContent';
+import CardWithButton from './CardWithButton';
 
-import { FlashList } from '@shopify/flash-list'
-import { Button } from '@react-native-material/core'
-import { Text, View } from '../../Themed'
-import type { ReportData } from '@/@types/interfaces'
-import { ActivityIndicator } from 'react-native'
-import { useEffect, useState } from 'react'
-import { GET_PARTIAL_REPORTDATA } from '@/database/actions/report/read'
-import { usePathname } from 'expo-router'
+import { FlashList } from '@shopify/flash-list';
+import { Button } from '@react-native-material/core';
+import { Text, View } from '../../Themed';
+import { ActivityIndicator } from 'react-native';
+import { useEffect, useState } from 'react';
+import { type IReport, reportsActions } from '@/database/actions';
+import { usePathname } from 'expo-router';
 
-export type CardProps = ReportData[]
+export type CardProps = IReport[];
 
 export default function ReportListWithButton() {
-  const [data, setData] = useState<CardProps>([])
-  const [page, setPage] = useState(1)
-  const [totalPages, setTotalPage] = useState(0)
-  const [isloadingReportData, setIsLoadingReportData] = useState(true)
-  const isPath = usePathname() === '/report'
-  console.log('TOTAL DE ITEMS', data.length)
+  const [data, setData] = useState<CardProps>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPage] = useState(0);
+  const [isloadingReportData, setIsLoadingReportData] = useState(true);
+  const isPath = usePathname() === '/report';
+  console.log('TOTAL DE ITEMS', data.length);
 
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
 
   async function handleMoreData() {
     if (page < totalPages) {
-      const newPage = page + 1
-      setPage(newPage)
-      await getallreportDataAsync(newPage, false)
+      const newPage = page + 1;
+      setPage(newPage);
+      await getallreportDataAsync(newPage, false);
     }
   }
 
   const getallreportDataAsync = async (page: number, isInitial = false) => {
-    setIsLoadingReportData(true)
+    setIsLoadingReportData(true);
     try {
-      const limit = 10
-      const { data, totalPage } = await GET_PARTIAL_REPORTDATA(page, limit)
+      const limit = 10;
+      const { data, totalPage } = await reportsActions.getPartialReportData(
+        page,
+        limit
+      );
       if (page < totalPage) {
         if (isInitial) {
-          setData(data)
+          setData(data);
         } else {
-          setData((prev) => [...prev, ...data])
+          setData((prev) => [...prev, ...data]);
         }
       }
-      setTotalPage(totalPage)
+      setTotalPage(totalPage);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     } finally {
-      setIsLoadingReportData(false)
+      setIsLoadingReportData(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (isPath === true) {
-      getallreportDataAsync(0, true)
-      setPage(0)
+      getallreportDataAsync(0, true);
+      setPage(0);
     }
-  }, [isPath])
+  }, [isPath]);
 
   if (data.length === 0) {
-    return <NoContent text="Sem dados" />
+    return <NoContent text="Sem dados" />;
   }
 
   return (
@@ -124,5 +126,5 @@ export default function ReportListWithButton() {
         renderItem={({ item }) => <CardWithButton data={item} />}
       />
     </View>
-  )
+  );
 }
