@@ -74,8 +74,8 @@ export default function RootLayoutNav() {
     <MaterialProvider>
       <UserStorage>
         <ReportStorage>
-          <Stack>
-            <Stack.Screen name="(report)" options={{ headerShown: false }} />
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
             <Stack.Screen
               name="modal"
               options={{

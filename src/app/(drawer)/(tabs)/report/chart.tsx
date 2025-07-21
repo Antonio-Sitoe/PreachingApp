@@ -11,11 +11,11 @@ import { ChevronLeft } from 'lucide-react-native';
 import { currentDates } from '@/utils/dates';
 import { Dimensions, View } from 'react-native';
 import { best, bestMonthsStatics, capitalizeString } from '@/utils/helper';
-import { reportsActions } from '@/database/actions';
+// import { reportsActions } from '@/database/actions';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { ActivityIndicator } from '@react-native-material/core';
 
-import { LineChart } from 'react-native-chart-kit';
+// import { LineChart } from 'react-native-chart-kit';
 
 interface IChartData {
   month: string;
@@ -182,14 +182,17 @@ export default function Chart() {
               <ActivityIndicator />
             </View>
           ) : (
-            <LineChart
-              data={Chartdata}
-              width={screenWidth}
-              chartConfig={chartConfig}
-              style={graphStyle as any}
-              height={256}
-              bezier
-            />
+            <View>
+              <Text>Chart</Text>
+            </View>
+            // <LineChart
+            //   data={Chartdata}
+            //   width={screenWidth}
+            //   chartConfig={chartConfig}
+            //   style={graphStyle as any}
+            //   height={256}
+            //   bezier
+            // />
           )}
           <View className="w-full mt-2">
             <Text className="text-lg font-bold px-4 font-text">
