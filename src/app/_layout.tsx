@@ -44,7 +44,8 @@ export default function RootLayoutNav() {
   });
   const { setColorScheme } = useColorScheme();
   const { getItem } = useAsyncStorage('@THEME_KEY');
-  const { isAuthenticated } = useUser();
+  const { autoSignIn } = useUser();
+
   useEffect(() => {
     async function defineDefaultTheme() {
       const theme = await getItem();
@@ -61,6 +62,12 @@ export default function RootLayoutNav() {
   }, [error, errorDbMigration]);
 
   useEffect(() => {
+    if (loaded) {
+      autoSignIn();
+    }
+  }, [loaded]);
+
+  useEffect(() => {
     if (loaded && hasSuccessMigration) {
       SplashScreen.hideAsync();
     }
@@ -74,19 +81,14 @@ export default function RootLayoutNav() {
     <QueryClientProvider client={queryClient}>
       {__DEV__ && <DrizzleStudio />}
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Protected guard={isAuthenticated}>
-          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{
-              presentation: 'transparentModal',
-              headerShown: false,
-            }}
-          />
-        </Stack.Protected>
-        <Stack.Protected guard={!isAuthenticated}>
-          <Stack.Screen name="sign-in" />
-        </Stack.Protected>
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="modal"
+          options={{
+            presentation: 'transparentModal',
+            headerShown: false,
+          }}
+        />
       </Stack>
     </QueryClientProvider>
   );

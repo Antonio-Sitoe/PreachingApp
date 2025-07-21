@@ -32,6 +32,7 @@ interface UserState {
   isAuthenticated: boolean;
   isLoading: boolean;
   setProfileUser: (user: User) => void;
+  autoSignIn: () => Promise<void>;
   login: () => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -46,6 +47,26 @@ export const useUser = create<UserState>((set) => ({
   isAuthenticated: false,
   isLoading: false,
   setProfileUser: (user) => set({ user, isAuthenticated: !!user }),
+  autoSignIn: async () => {
+    set({ isLoading: true });
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) throw error;
+      const session = data.session;
+      if (session && session.user) {
+        set({
+          user: { id: session.user.id, email: session.user.email },
+          isAuthenticated: true,
+          isLoading: false,
+        });
+      } else {
+        set({ user: null, isAuthenticated: false, isLoading: false });
+      }
+    } catch (error) {
+      set({ user: null, isAuthenticated: false, isLoading: false });
+      console.log('AutoSignIn error:', error);
+    }
+  },
   login: async () => {
     set({ isLoading: true });
     try {
