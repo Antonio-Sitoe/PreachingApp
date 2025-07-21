@@ -15,6 +15,7 @@ import { db } from '@/database/db';
 import migrations from '@/database/migrations/migrations';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useUser } from '@/contexts/UserContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -43,7 +44,7 @@ export default function RootLayoutNav() {
   });
   const { setColorScheme } = useColorScheme();
   const { getItem } = useAsyncStorage('@THEME_KEY');
-
+  const { isAuthenticated } = useUser();
   useEffect(() => {
     async function defineDefaultTheme() {
       const theme = await getItem();
@@ -71,17 +72,22 @@ export default function RootLayoutNav() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{
-            presentation: 'transparentModal',
-            headerShown: false,
-          }}
-        />
-      </Stack>
       {__DEV__ && <DrizzleStudio />}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{
+              presentation: 'transparentModal',
+              headerShown: false,
+            }}
+          />
+        </Stack.Protected>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="sign-in" />
+        </Stack.Protected>
+      </Stack>
     </QueryClientProvider>
   );
 }

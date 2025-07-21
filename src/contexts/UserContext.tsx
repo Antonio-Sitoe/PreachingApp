@@ -1,46 +1,56 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { type User, usersActions } from '@/database/actions';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { supabase } from '@/lib/supabase';
+import { create } from 'zustand';
 
-interface UserProps {
-  user: User;
-  setProfileUser(user: User): void;
+export interface User {
+  id: string;
+  email?: string;
+  [key: string]: any;
 }
 
-export const UserContext = React.createContext({} as UserProps);
-
-interface UserStorageProps {
-  children: React.ReactNode;
+interface UserState {
+  user: User | null;
+  isAuthenticated: boolean;
+  setProfileUser: (user: User) => void;
+  login: () => Promise<void>;
+  logout: () => Promise<void>;
 }
 
-export function UserStorage({ children }: UserStorageProps) {
-  const [user, setUser] = useState<User>({} as User);
-
-  function setProfileUser(user: User) {
-    setUser(user);
-  }
-
-  useEffect(() => {
-    async function getUser() {
-      try {
-        const user = await usersActions.getAllUsers()?.[0];
-        console.log('DADOS DO USUARIO', user);
-        setUser(user);
-      } catch (error) {
-        console.log(error);
-      }
+export const useUser = create<UserState>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  setProfileUser: (user) => set({ user, isAuthenticated: !!user }),
+  login: async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      // Type assertion is used here because the return type from GoogleSignin.signIn()
+      // is not correctly typed in the package, but the docs confirm idToken exists.
+      const user = (await GoogleSignin.signIn()) as { idToken?: string };
+      const idToken = user?.idToken;
+      if (!idToken) throw new Error('No Google ID token');
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+      });
+      if (error) throw error;
+      const supaUser = data.user;
+      set({
+        user: supaUser ? { id: supaUser.id, email: supaUser.email } : null,
+        isAuthenticated: !!supaUser,
+      });
+    } catch (error) {
+      console.log('Login error:', error);
+      throw error;
     }
-    getUser();
-  }, []);
-
-  return (
-    <UserContext.Provider value={{ user, setProfileUser }}>
-      {children}
-    </UserContext.Provider>
-  );
-}
-
-export const useUser = () => {
-  const data = useContext(UserContext);
-
-  return data;
-};
+  },
+  logout: async () => {
+    try {
+      await supabase.auth.signOut();
+      await GoogleSignin.signOut();
+      set({ user: null, isAuthenticated: false });
+    } catch (error) {
+      console.log('Logout error:', error);
+      throw error;
+    }
+  },
+}));
