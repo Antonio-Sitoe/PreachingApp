@@ -1,5 +1,5 @@
-const tintColorLight = '#6979F8'
-const tintColorDark = '#328048'
+const tintColorLight = '#6979F8';
+const tintColorDark = '#328048';
 
 export default {
   light: {
@@ -20,4 +20,29 @@ export default {
     tabIconSelected: tintColorLight,
     Success200: '#C6F0C2',
   },
-}
+};
+
+// Tema de navegação para React Native Reusables
+export const navigationTheme = {
+  dark: false,
+  colors: {
+    primary: '#6979F8',
+    background: '#fff',
+    card: '#fff',
+    text: '#000',
+    border: '#e5e7eb',
+    notification: '#6979F8',
+  },
+};
+
+export const navigationDarkTheme = {
+  dark: true,
+  colors: {
+    primary: '#328048',
+    background: '#121214',
+    card: '#121214',
+    text: '#fff',
+    border: '#262626',
+    notification: '#328048',
+  },
+};

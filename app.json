@@ -43,7 +43,8 @@
       "expo-font",
       "expo-router",
       "expo-web-browser",
-      "expo-sqlite"
+      "expo-sqlite",
+      "@react-native-google-signin/google-signin"
     ],
     "experiments": {
       "tsconfigPaths": true,

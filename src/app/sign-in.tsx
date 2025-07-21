@@ -8,16 +8,19 @@ import {
 } from 'react-native';
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { useNavigation } from 'expo-router';
+import { useUser } from '@/contexts/UserContext';
 
 export default function SignInScreen() {
   const navigation = useNavigation();
+  const { login } = useUser();
 
   const handleGoogleSignIn = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
       const userInfo = await GoogleSignin.signIn();
       console.log('Google user:', userInfo);
-      // navega para o Home ou Dashboard se o login for bem-sucedido
       navigation.navigate('/(drawer)/(tabs)/report');
     } catch (error) {
       console.error('Google Sign-In error:', error);
@@ -25,11 +28,7 @@ export default function SignInScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../../assets/background.jpg')} // adiciona uma imagem na pasta assets
-      resizeMode="cover"
-      className="flex-1 justify-center items-center"
-    >
+    <View className="flex-1 justify-center items-center bg-black">
       <View className="bg-black/50 p-8 rounded-2xl">
         <Text className="text-white text-3xl font-bold mb-8">Bem-vindo</Text>
 
@@ -48,6 +47,6 @@ export default function SignInScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-    </ImageBackground>
+    </View>
   );
 }

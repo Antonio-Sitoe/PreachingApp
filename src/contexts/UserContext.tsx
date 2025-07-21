@@ -23,8 +23,6 @@ export const useUser = create<UserState>((set) => ({
   login: async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      // Type assertion is used here because the return type from GoogleSignin.signIn()
-      // is not correctly typed in the package, but the docs confirm idToken exists.
       const user = (await GoogleSignin.signIn()) as { idToken?: string };
       const idToken = user?.idToken;
       if (!idToken) throw new Error('No Google ID token');

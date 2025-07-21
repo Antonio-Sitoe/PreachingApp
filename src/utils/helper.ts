@@ -1,26 +1,26 @@
-import type { ReportData } from '@/@types/interfaces'
-import { minutesToHoursAndMinutes } from './dates'
+import type { ReportData } from '@/@types/interfaces';
+import { minutesToHoursAndMinutes } from './dates';
 
 export function sorteByYears(arr: any) {
   const objetoOrdenado = [...arr].sort((a, b) => {
     // converte as strings em números para comparar
-    const anoA = Number(a[0])
-    const anoB = Number(b[0])
+    const anoA = Number(a[0]);
+    const anoB = Number(b[0]);
 
     // se anoA for maior que anoB, retorna um número negativo para colocar a antes de b
     if (anoA > anoB) {
-      return -1
+      return -1;
     }
 
     // se anoA for menor que anoB, retorna um número positivo para colocar b antes de a
     if (anoA < anoB) {
-      return 1
+      return 1;
     }
 
     // se anoA for igual a anoB, retorna zero para manter a ordem original
-    return 0
-  })
-  return objetoOrdenado
+    return 0;
+  });
+  return objetoOrdenado;
 }
 
 const meses = [
@@ -36,65 +36,65 @@ const meses = [
   'outubro',
   'novembro',
   'dezembro',
-]
+];
 
 export function sorteByMonths(data) {
   const objetoOrdenado = [...data].sort((a, b) => {
     // obtém o índice dos meses no array de meses
-    const mesA = meses.indexOf(a[0])
-    const mesB = meses.indexOf(b[0])
+    const mesA = meses.indexOf(a[0]);
+    const mesB = meses.indexOf(b[0]);
 
     // se mesA for maior que mesB, retorna um número negativo para colocar a antes de b
     if (mesA > mesB) {
-      return -1
+      return -1;
     }
 
     // se mesA for menor que mesB, retorna um número positivo para colocar b antes de a
     if (mesA < mesB) {
-      return 1
+      return 1;
     }
 
     // se mesA for igual a mesB, retorna zero para manter a ordem original
-    return 0
-  })
-  return objetoOrdenado
+    return 0;
+  });
+  return objetoOrdenado;
 }
 
 export function sortByMonthAscending(monthsArray) {
   return monthsArray.sort((a, b) => {
-    const monthA = meses.indexOf(a.month.toLowerCase())
-    const monthB = meses.indexOf(b.month.toLowerCase())
+    const monthA = meses.indexOf(a.month.toLowerCase());
+    const monthB = meses.indexOf(b.month.toLowerCase());
 
     if (monthA < monthB) {
-      return -1
+      return -1;
     } else if (monthA > monthB) {
-      return 1
+      return 1;
     } else {
-      return 0
+      return 0;
     }
-  })
+  });
 }
 
 export function defineProfiletext(
-  profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string,
+  profile: 'publisher' | 'baptized_publisher' | 'pioneer' | string
 ) {
-  if (profile === 'publisher') return 'Publicador'
-  if (profile === 'baptized_publisher') return 'Batizado'
-  if (profile === 'pioneer') return 'Pioneiro'
-  return ''
+  if (profile === 'publisher') return 'Publicador';
+  if (profile === 'baptized_publisher') return 'Batizado';
+  if (profile === 'pioneer') return 'Pioneiro';
+  return '';
 }
 
 export function capitalizeString(inputString: string) {
   if (inputString)
-    return inputString.charAt(0).toUpperCase() + inputString.slice(1)
-  else return ''
+    return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+  else return '';
 }
 
 export function sortByYearMonthDay(data: any) {
   return data.sort((a, b) => {
     // Ordena por ano em ordem decrescente
     if (a.year !== b.year) {
-      return b.year - a.year
+      return b.year - a.year;
     }
 
     // Ordena por mês em ordem decrescente (considerando o nome do mês)
@@ -111,26 +111,26 @@ export function sortByYearMonthDay(data: any) {
       outubro: 10,
       novembro: 11,
       dezembro: 12,
-    }
+    };
     if (monthOrder[a.month] !== monthOrder[b.month]) {
-      return monthOrder[b.month] - monthOrder[a.month]
+      return monthOrder[b.month] - monthOrder[a.month];
     }
 
     // Ordena por dia em ordem decrescente
-    return b.day - a.day
-  })
+    return b.day - a.day;
+  });
 }
 export function group_list_into_chunks(reportsFiltered: ReportData[]) {
   const data: ReportData = reportsFiltered.reduce(
     (acc: any, state: any) => {
-      const oldState = state._raw
-      acc.hours += oldState.hours
-      acc.minutes += oldState.minutes
-      acc.videos += oldState.videos
-      acc.students += oldState.students
-      acc.returnVisits += oldState.returnVisits
-      acc.publications += oldState.publications
-      return acc
+      const oldState = state._raw;
+      acc.hours += oldState.hours;
+      acc.minutes += oldState.minutes;
+      acc.videos += oldState.videos;
+      acc.students += oldState.students;
+      acc.returnVisits += oldState.returnVisits;
+      acc.publications += oldState.publications;
+      return acc;
     },
     {
       hours: 0,
@@ -140,10 +140,10 @@ export function group_list_into_chunks(reportsFiltered: ReportData[]) {
       students: 0,
       videos: 0,
       time: '',
-    },
-  )
-  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
-  return data
+    }
+  );
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes);
+  return data;
 }
 export const best = {
   hours: {
@@ -166,40 +166,45 @@ export const best = {
     value: 0,
     month: '',
   },
-}
+};
 export function bestMonthsStatics(data: any) {
   for (const iterator of data) {
-    const [h] = String(iterator.reports.time).split(':')
-    console.log(h)
+    const [h] = String(iterator.reports.time).split(':');
+    console.log(h);
 
     if (Number(h) > best.hours.value) {
-      best.hours.value = Number(h)
-      best.hours.month = iterator.month
+      best.hours.value = Number(h);
+      best.hours.month = iterator.month;
     }
     if (iterator.reports.publications > best.publications.value) {
-      best.publications.value = iterator.reports.publications
-      best.publications.month = iterator.month
+      best.publications.value = iterator.reports.publications;
+      best.publications.month = iterator.month;
     }
     if (iterator.reports.returnVisits > best.returnVisits.value) {
-      best.returnVisits.value = iterator.reports.returnVisits
-      best.returnVisits.month = iterator.month
+      best.returnVisits.value = iterator.reports.returnVisits;
+      best.returnVisits.month = iterator.month;
     }
     if (iterator.reports.students > best.students.value) {
-      best.students.value = iterator.reports.students
-      best.students.month = iterator.month
+      best.students.value = iterator.reports.students;
+      best.students.month = iterator.month;
     }
     if (iterator.reports.videos > best.videos.value) {
-      best.videos.value = iterator.reports.videos
-      best.videos.month = iterator.month
+      best.videos.value = iterator.reports.videos;
+      best.videos.month = iterator.month;
     }
   }
-  return best
+  return best;
 }
 
 export function cortarString(descricao, limite = 25) {
   if (descricao.length <= limite) {
-    return descricao // Retorna a string original se não ultrapassar o limite
+    return descricao; // Retorna a string original se não ultrapassar o limite
   } else {
-    return descricao.slice(0, limite) + '...' // Corta a string e adiciona "..."
+    return descricao.slice(0, limite) + '...'; // Corta a string e adiciona "..."
   }
+}
+
+// Helper para combinar classes condicionalmente (classNames)
+export function cn(...inputs: any[]) {
+  return inputs.filter(Boolean).join(' ');
 }
