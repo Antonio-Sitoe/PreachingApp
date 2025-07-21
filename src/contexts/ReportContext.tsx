@@ -1,9 +1,8 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { currentDates } from '@/utils/dates';
+import { create } from 'zustand';
 import { initialReportData } from '@/utils/initialReportData';
 import { type IReport, reportsActions } from '@/database/actions';
 import { capitalizeString } from '@/utils/helper';
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface IShare {
   user: string;
@@ -11,86 +10,54 @@ interface IShare {
   data: IReport;
 }
 
-interface ReportContextPros {
+interface ReportStore {
   reports: IReport;
-  updateCurrentReports(monthId: string, year: number): Promise<void>;
-  setReportTabBarIndex(index: number): void;
+  updateCurrentReports: (month: string, year: number) => Promise<void>;
+  setReportTabBarIndex: (index: number) => void;
   reportTabBarIndex: number;
   isOpenCreateReportModal: boolean;
-  setisOpenCreateReportModal(index: boolean): void;
+  setisOpenCreateReportModal: (index: boolean) => void;
   reportToShare: string;
-  setTextToShare(data: IShare): void;
+  setTextToShare: (data: IShare) => void;
   isLayoutList: boolean;
-  handleChangeLayaltList(): void;
-}
-export const ReportContext = React.createContext({} as ReportContextPros);
-
-interface ReportStorageProps {
-  children: React.ReactNode;
+  handleChangeLayaltList: () => void;
 }
 
-export function ReportStorage({ children }: ReportStorageProps) {
-  const [reports, setReports] = useState<IReport>(initialReportData);
-  const { setItem, getItem } = useAsyncStorage('@LayoutList');
-  const [reportToShare, setreportToShare] = useState('');
-  const [reportTabBarIndex, setReportTabBarIndex] = useState(0);
-  const [isOpenCreateReportModal, setisOpenCreateReportModal] = useState(false);
-  const [isLayoutList, setIsLayoutList] = useState(false);
-
-  async function updateCurrentReports(month: string, year: number) {
+export const useReportsData = create<ReportStore>((set, get) => ({
+  reports: initialReportData,
+  reportTabBarIndex: 0,
+  isOpenCreateReportModal: false,
+  reportToShare: '',
+  isLayoutList: false,
+  async updateCurrentReports(month, year) {
     const { data } = await reportsActions.getGlobalStates({ month, year });
-    setReports({ ...data });
-  }
-  const setTextToShare = useCallback(({ user, day, data }) => {
+    set({ reports: { ...data } });
+  },
+  setReportTabBarIndex(index) {
+    set({ reportTabBarIndex: index });
+  },
+  setisOpenCreateReportModal(index) {
+    set({ isOpenCreateReportModal: index });
+  },
+  setTextToShare({ user, day, data }) {
     const name = 'Relatório de ' + user;
     const monthText = capitalizeString(day.month) + ' de ' + day.year;
     const time = 'Total de Horas: ' + data?.hours;
-    const pub = 'Publicacoes: ' + data?.publications;
-    const videos = 'Videos Mostrados: ' + data?.videos;
-    const returns = 'Revisitas: ' + data?.returnVisits;
-    const Estudos = 'Estudos: ' + data?.students;
-    const text = `${name}\n${monthText}\n${time}\n${pub}\n${videos}\n${returns}\n${Estudos}`;
-    setreportToShare(text);
-  }, []);
-  function handleChangeLayaltList() {
-    setIsLayoutList(!isLayoutList);
-    setItem(String(!isLayoutList));
-  }
+    const students = 'Estudos: ' + data?.students;
+    const text = `${name}\n${monthText}\n${time}\n${students}`;
+    set({ reportToShare: text });
+  },
+  handleChangeLayaltList() {
+    const current = get().isLayoutList;
+    set({ isLayoutList: !current });
+    AsyncStorage.setItem('@LayoutList', String(!current));
+  },
+}));
 
-  useEffect(() => {
-    updateCurrentReports(currentDates.month, currentDates.year);
-  }, []);
-
-  useEffect(() => {
-    async function getLayoutList() {
-      const islay = await getItem();
-      setIsLayoutList(islay !== 'false');
-    }
-    getLayoutList();
-  }, [getItem]);
-
-  const value = {
-    reports,
-    updateCurrentReports,
-    setReportTabBarIndex,
-    reportTabBarIndex,
-    isOpenCreateReportModal,
-    setisOpenCreateReportModal,
-    reportToShare,
-    setTextToShare,
-    isLayoutList,
-    handleChangeLayaltList,
-  };
-  return (
-    <ReportContext.Provider value={value}>{children}</ReportContext.Provider>
-  );
-}
-
-export const useReportsData = () => {
-  const data = useContext(ReportContext);
-  return data;
-};
 export const useTabBarIndex = () => {
-  const { reportTabBarIndex, setReportTabBarIndex } = useContext(ReportContext);
+  const reportTabBarIndex = useReportsData((state) => state.reportTabBarIndex);
+  const setReportTabBarIndex = useReportsData(
+    (state) => state.setReportTabBarIndex
+  );
   return { index: reportTabBarIndex, setIndex: setReportTabBarIndex };
 };

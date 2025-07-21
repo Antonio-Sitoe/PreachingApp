@@ -3,7 +3,6 @@ import '@/utils/localeConfig';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 
-import { Flex } from '@react-native-material/core';
 import { View, Text } from '../Themed';
 import { usePathname } from 'expo-router';
 import { currentDates } from '@/utils/dates';
@@ -94,9 +93,13 @@ export default function ReportYears() {
         }
         dayComponent={() => null}
       />
-      <Flex
-        bg={isDark ? Colors.dark.background : '#F6F6F9'}
-        style={{ position: 'absolute', top: 60, width: '100%' }}
+      <View
+        style={{
+          position: 'absolute',
+          top: 60,
+          width: '100%',
+          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+        }}
       >
         <View className="grid grid-cols-1 divide-y divide-slate-300">
           <ListItem title="Total de Horas" value={data?.time} />
@@ -105,7 +108,7 @@ export default function ReportYears() {
           <ListItem title="Revisitas" value={data?.returnVisits} />
           <ListItem title="Estudos" value={data?.students} />
         </View>
-      </Flex>
+      </View>
     </View>
   );
 }

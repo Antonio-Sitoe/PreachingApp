@@ -1,7 +1,6 @@
-import { Text, View } from '@/components/Themed'
-import { TextInputForm } from '@/components/ui/TextInputForm'
-import { CheckBox } from '@/components/ui/CheckBox'
-import { Divider } from '@react-native-material/core'
+import { Text, View } from '@/components/Themed';
+import { TextInputForm } from '@/components/ui/TextInputForm';
+import { CheckBox } from '@/components/ui/CheckBox';
 
 const availableWeekDays = [
   'Segunda-feira',
@@ -11,9 +10,9 @@ const availableWeekDays = [
   'Sexta-feira',
   'Sábado',
   'Domingo',
-]
+];
 
-const availableHours = ['Manhã', 'Tarde', 'Final da tarde', 'Fim de semana']
+const availableHours = ['Manhã', 'Tarde', 'Final da tarde', 'Fim de semana'];
 
 const StudentsCreateStep2 = ({
   control,
@@ -41,7 +40,7 @@ const StudentsCreateStep2 = ({
                 checked={timesOfDay.includes(time)}
                 onPress={() => handleToogleTimeOfDay(time)}
               />
-            )
+            );
           })}
         </View>
         {errors?.best_time?.message && (
@@ -50,7 +49,13 @@ const StudentsCreateStep2 = ({
           </Text>
         )}
       </View>
-      <Divider />
+      <View
+        style={{
+          height: 1,
+          backgroundColor: '#ccc',
+          marginVertical: 8,
+        }}
+      />
       <View className="flex-1 pb-2">
         <View
           className="flex-1 flex-row flex-wrap justify-between mt-4"
@@ -64,7 +69,7 @@ const StudentsCreateStep2 = ({
                 checked={weekDays.includes(weekDay)}
                 onPress={() => handleToogleWeekday(weekDay)}
               />
-            )
+            );
           })}
         </View>
         {errors?.best_day?.message && (
@@ -87,7 +92,7 @@ const StudentsCreateStep2 = ({
         />
       </View>
     </>
-  )
-}
+  );
+};
 
-export { StudentsCreateStep2 }
+export { StudentsCreateStep2 };

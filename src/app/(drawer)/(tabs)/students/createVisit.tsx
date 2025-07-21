@@ -9,11 +9,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { TextInputForm } from '@/components/ui/TextInputForm';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import {
-  ActivityIndicator,
-  Button,
-  DialogActions,
-} from '@react-native-material/core';
+import { ActivityIndicator, Button } from 'react-native';
 import { visitsAction } from '@/database/actions';
 
 import * as z from 'zod';
@@ -213,13 +209,11 @@ export default function CreateVisit() {
             textAlignVertical="top"
           />
           <View className="my-2" />
-          <DialogActions>
+          <View className="flex-row justify-center">
             <Button
               title="Guardar"
               onPress={handleSubmit(onSubmit)}
-              loading={isSubmitting}
               disabled={isSubmitting}
-              loadingIndicatorPosition="overlay"
               color={isDark ? Colors.dark.tint : Colors.light.tint}
               titleStyle={{
                 color: 'white',
@@ -227,7 +221,7 @@ export default function CreateVisit() {
                 textTransform: 'capitalize',
               }}
             />
-          </DialogActions>
+          </View>
         </ScrollView>
       </View>
     </View>

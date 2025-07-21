@@ -3,20 +3,20 @@ import {
   BookOpenCheck,
   LucidePresentation,
   MessageSquarePlus,
-} from 'lucide-react-native'
+} from 'lucide-react-native';
 
-import { IconIOS } from '@/assets/icons/Icon'
-import type { Route } from 'expo-router'
+import { IconIOS } from '@/assets/icons/Icon';
+import type { Route } from 'expo-router';
 interface IroutesProps {
-  label: string
+  label: string;
   icon: {
-    IconRoute: any
-    name: string
-  }
-  route: Route<string>
+    IconRoute: any;
+    name: string;
+  };
+  route: Route<string>;
 }
 
-type ROUTE_TYPE = IroutesProps[]
+type ROUTE_TYPE = IroutesProps[];
 
 export const DRAWER_ROUTES: ROUTE_TYPE = [
   {
@@ -27,15 +27,7 @@ export const DRAWER_ROUTES: ROUTE_TYPE = [
     },
     route: '/(tabs)/',
   },
-  {
-    label: 'Conversas sobre a Biblia',
-    icon: {
-      IconRoute: LucidePresentation,
-      name: '',
-    },
 
-    route: '/presentation',
-  },
   {
     label: 'Guia de Usuario',
 
@@ -71,4 +63,4 @@ export const DRAWER_ROUTES: ROUTE_TYPE = [
     },
     route: '/helpUs',
   },
-]
+];

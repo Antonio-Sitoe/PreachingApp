@@ -4,8 +4,7 @@ import useTheme from '@/hooks/useTheme';
 import dayjs from 'dayjs';
 
 import { capitalizeString } from '@/utils/helper';
-import { ActivityIndicator, Divider } from '@react-native-material/core';
-import { Alert } from 'react-native';
+import { ActivityIndicator, Alert } from 'react-native';
 import { Pen, Trash2 } from 'lucide-react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { type IVisit, visitsAction } from '@/database/actions';
@@ -188,7 +187,13 @@ export const StudentsVisits = ({
                   </Text>
                 </View>
               </View>
-              <Divider style={{ marginTop: 10 }} />
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: '#ccc',
+                  marginVertical: 8,
+                }}
+              />
             </View>
           );
         })}

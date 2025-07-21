@@ -1,17 +1,7 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Flex,
-  TextInput,
-} from '@react-native-material/core';
-import Snackbar from 'react-native-snackbar';
-
-import { Picker } from '@react-native-picker/picker';
 import { useUser } from '@/contexts/UserContext';
 import { useState } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Text } from '@/components/Themed';
+import { View, Text, TextInput, Button, Image } from 'react-native';
 import { usersActions } from '@/database/actions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
@@ -23,6 +13,8 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import * as ImagePicker from 'expo-image-picker';
 import Z from 'zod';
+import Snackbar from 'react-native-snackbar';
+import { Picker } from '@react-native-picker/picker';
 
 const schema = Z.object({
   name: Z.string(),
@@ -102,33 +94,51 @@ export default function Profile() {
             <Text className="font-title text-xl text-center mb-4">
               Editar Perfil
             </Text>
-            <Flex className="w-full" mt={10} mb={10} items="center">
+            <View className="w-full" style={{ flexDirection: 'row' }}>
               <TouchableOpacity className="relative" onPress={pickImage}>
                 {image ? (
-                  <Avatar
-                    color={isDark ? Colors.dark.tint : Colors.light.tint}
-                    size={150}
-                    image={{ uri: image }}
+                  <Image
+                    source={{ uri: image }}
+                    style={{
+                      width: 150,
+                      height: 150,
+                      borderRadius: 75,
+                    }}
                   />
                 ) : (
-                  <Avatar
-                    label={
-                      getValues().name ? getValues().name : 'Preaching App'
-                    }
-                    color={isDark ? Colors.dark.tint : Colors.light.tint}
-                    size={150}
-                  />
+                  <View
+                    style={{
+                      width: 150,
+                      height: 150,
+                      borderRadius: 75,
+                      backgroundColor: isDark
+                        ? Colors.dark.tint
+                        : Colors.light.tint,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Text style={{ color: 'white', fontSize: 20 }}>
+                      {getValues().name ? getValues().name : 'Preaching App'}
+                    </Text>
+                  </View>
                 )}
                 <Camera
                   color="white"
                   fill={isDark ? Colors.dark.tint : Colors.light.tint}
                   size={28}
-                  className="absolute bottom-1 right-3 w-2 h-2"
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    right: 0,
+                    width: 28,
+                    height: 28,
+                  }}
                 />
               </TouchableOpacity>
-            </Flex>
+            </View>
 
-            <Box mt={20}>
+            <View style={{ marginTop: 20 }}>
               <Controller
                 control={control}
                 rules={{
@@ -136,23 +146,20 @@ export default function Profile() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    variant="outlined"
-                    placeholder="Nome"
-                    label={isDark ? '' : 'Nome'}
-                    color={isDark ? Colors.dark.tint : Colors.light.tint}
-                    maxLength={25}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
                     style={{
                       marginBottom: 10,
-                    }}
-                    inputStyle={{
                       backgroundColor: isDark
                         ? Colors.dark.background
                         : 'white',
                       color: isDark ? 'white' : Colors.dark.background,
                     }}
+                    placeholder="Nome"
+                    placeholderTextColor={
+                      isDark ? Colors.dark.tint : Colors.light.tint
+                    }
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
                   />
                 )}
                 name="name"
@@ -165,22 +172,21 @@ export default function Profile() {
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
-                    style={{ marginBottom: 10 }}
-                    variant="outlined"
-                    placeholder="Email"
-                    keyboardType="email-address"
-                    label={isDark ? '' : 'Email'}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                    color={isDark ? Colors.dark.tint : Colors.light.tint}
-                    helperText={errors.email?.message}
-                    inputStyle={{
+                    style={{
+                      marginBottom: 10,
                       backgroundColor: isDark
                         ? Colors.dark.background
                         : 'white',
                       color: isDark ? 'white' : Colors.dark.background,
                     }}
+                    placeholder="Email"
+                    placeholderTextColor={
+                      isDark ? Colors.dark.tint : Colors.light.tint
+                    }
+                    keyboardType="email-address"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
                   />
                 )}
                 name="email"
@@ -192,7 +198,16 @@ export default function Profile() {
                   required: true,
                 }}
                 render={({ field: { onChange, value } }) => (
-                  <View className="border rounded border-gray-200">
+                  <View
+                    style={{
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: '#ccc',
+                      backgroundColor: isDark
+                        ? Colors.dark.background
+                        : 'white',
+                    }}
+                  >
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
@@ -211,7 +226,7 @@ export default function Profile() {
                 )}
                 name="profile"
               />
-            </Box>
+            </View>
 
             <Button
               loading={isLoading}

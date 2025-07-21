@@ -1,8 +1,5 @@
-import {
-  TextInput as TextComent,
-  DialogActions,
-  Button,
-} from '@react-native-material/core';
+import { TextInput as TextComent } from 'react-native';
+import { View, Button } from 'react-native';
 
 import dayjs from 'dayjs';
 import Colors from '@/constants/Colors';
@@ -10,7 +7,7 @@ import useTheme from '@/hooks/useTheme';
 import Snackbar from 'react-native-snackbar';
 
 import { Text } from '@/components/Themed';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { currentDates, monthNameToPortuguese } from '@/utils/dates';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { TouchableOpacity } from 'react-native';
@@ -20,7 +17,6 @@ import { ViewWithLoad } from '@/components/ui/ViewWithLoad';
 import { FormInput } from '@/components/ui/FormInput';
 import { DatePicker } from '@/components/ui/DatePicker';
 import { Trash2 } from 'lucide-react-native';
-import { View } from 'react-native';
 import { id } from 'zod/v4/locales';
 
 export default function CreateReportModal() {
@@ -295,7 +291,9 @@ export default function CreateReportModal() {
           ) : (
             <View />
           )}
-          <DialogActions className="mt-6 flex-1 flex-row justify-between">
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}
+          >
             <Button
               onPress={handleClose}
               title="Cancel"
@@ -320,7 +318,7 @@ export default function CreateReportModal() {
                 textTransform: 'capitalize',
               }}
             />
-          </DialogActions>
+          </View>
         </View>
         {error && <Text className="mt-1 ml-1 text-red-600">{error}</Text>}
       </View>

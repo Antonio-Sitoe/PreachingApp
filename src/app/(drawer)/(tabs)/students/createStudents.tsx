@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useRef, useState } from 'react';
 import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1';
 import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2';
-import { DialogActions, Button } from '@react-native-material/core';
+import { Button } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { studentsAction } from '@/database/actions';
 import Snackbar from 'react-native-snackbar';
@@ -301,7 +301,9 @@ export default function CreateStudent() {
         )}
 
         {!step ? (
-          <DialogActions>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}
+          >
             <Button
               title="Próximo"
               onPress={handleNext}
@@ -312,9 +314,11 @@ export default function CreateStudent() {
                 textTransform: 'capitalize',
               }}
             />
-          </DialogActions>
+          </View>
         ) : (
-          <DialogActions>
+          <View
+            style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}
+          >
             <Button
               onPress={goBack}
               title="Voltar"
@@ -352,7 +356,7 @@ export default function CreateStudent() {
                 marginHorizontal: 15,
               }}
             />
-          </DialogActions>
+          </View>
         )}
       </ScrollView>
     </View>

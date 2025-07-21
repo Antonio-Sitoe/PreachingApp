@@ -11,7 +11,7 @@ import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { StudentAbout } from '@/components/students/StudentAbout';
 import { StudentsVisits } from '@/components/students/StudentsVisits';
 import { type IVisit, studentsAction } from '@/database/actions';
-import { ActivityIndicator } from '@react-native-material/core';
+import { ActivityIndicator } from 'react-native';
 import { visitsAction } from '@/database/actions';
 import { useIsFocused } from '@react-navigation/native';
 

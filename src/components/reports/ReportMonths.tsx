@@ -1,8 +1,7 @@
 import '@/utils/localeConfig';
 import { Calendar as CustomCalendar } from 'react-native-calendars';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
-import { Button, Flex } from '@react-native-material/core';
-import { View, Text } from '../Themed';
+import { View, Text, Button } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
@@ -107,10 +106,7 @@ export default function ReportMonths() {
         dayComponent={() => null}
         onMonthChange={onMonthChange}
       />
-      <Flex
-        bg={isDark ? Colors.dark.background : '#F6F6F9'}
-        style={{ position: 'absolute', top: 60, width: '100%' }}
-      >
+      <View style={{ flexDirection: 'row' }}>
         <View className="grid grid-cols-1 divide-y divide-slate-300">
           <ListItem title="Total de Horas" value={data?.time} />
           <ListItem title="Publicacoes" value={data?.publications} />
@@ -133,7 +129,7 @@ export default function ReportMonths() {
             marginHorizontal: 5,
           }}
         />
-      </Flex>
+      </View>
       {visible && (
         <DialogReport
           setVisible={setVisible}

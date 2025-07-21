@@ -2607,18 +2607,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/virtualized-lists@npm:^0.72.4":
-  version: 0.72.8
-  resolution: "@react-native/virtualized-lists@npm:0.72.8"
-  dependencies:
-    invariant: "npm:^2.2.4"
-    nullthrows: "npm:^1.1.1"
-  peerDependencies:
-    react-native: "*"
-  checksum: 10c0/1fe43afeacf5aacec270d7f64b9ce6c69afe1c65d1e487fff75e647d1f57114527f2223602d546b95fc982b348a6f1773db66184a2e90ba434f4f013f3991bac
-  languageName: node
-  linkType: hard
-
 "@react-navigation/bottom-tabs@npm:^7.3.10":
   version: 7.4.2
   resolution: "@react-navigation/bottom-tabs@npm:7.4.2"
@@ -2919,6 +2907,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/query-core@npm:5.83.0":
+  version: 5.83.0
+  resolution: "@tanstack/query-core@npm:5.83.0"
+  checksum: 10c0/e6dc480bc99eaca552a9ad65423788b60368cf99308681252fc7dbe42a3f2c1c978db0d3471cc3349b9112cfb4d967ace4e192a1d7e987e30c5c1ff74809c77c
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:^5.83.0":
+  version: 5.83.0
+  resolution: "@tanstack/react-query@npm:5.83.0"
+  dependencies:
+    "@tanstack/query-core": "npm:5.83.0"
+  peerDependencies:
+    react: ^18 || ^19
+  checksum: 10c0/883229f9219ca906a54d7caafd44d59b57db5dbe87e954f8a7027f460e9f8b97842dfbd0d676dc3111d577baf312c64f6c1fdd67cd1e4b0f0bf574e29670c606
+  languageName: node
+  linkType: hard
+
 "@tootallnate/once@npm:2":
   version: 2.0.0
   resolution: "@tootallnate/once@npm:2.0.0"
@@ -3048,25 +3054,6 @@ __metadata:
   dependencies:
     undici-types: "npm:~7.8.0"
   checksum: 10c0/39ead0c0ff25dde29357630b5eaa7dd73cf3af796dbd0f01ed439a8af01cbddfa6b68aa9d67fb3243962836170a4463ff856c47fa822250c585987f707eb42b3
-  languageName: node
-  linkType: hard
-
-"@types/react-native@npm:^0.72.8":
-  version: 0.72.8
-  resolution: "@types/react-native@npm:0.72.8"
-  dependencies:
-    "@react-native/virtualized-lists": "npm:^0.72.4"
-    "@types/react": "npm:*"
-  checksum: 10c0/2dde171c2331ac8f6102f9b7a88616c695d158d3140e7b7aee3a393e3645f2aaa202b3411ae371fbbcd28386459fca8d47bd5d3801a0adfdd8815a8ba5c0d5fe
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:*":
-  version: 19.1.8
-  resolution: "@types/react@npm:19.1.8"
-  dependencies:
-    csstype: "npm:^3.0.2"
-  checksum: 10c0/4908772be6dc941df276931efeb0e781777fa76e4d5d12ff9f75eb2dcc2db3065e0100efde16fde562c5bafa310cc8f50c1ee40a22640459e066e72cd342143e
   languageName: node
   linkType: hard
 
@@ -7366,7 +7353,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.13, lodash@npm:^4.17.15, lodash@npm:^4.17.19":
+"lodash@npm:^4.17.15, lodash@npm:^4.17.19":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -8443,13 +8430,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"paths-js@npm:^0.4.10":
-  version: 0.4.11
-  resolution: "paths-js@npm:0.4.11"
-  checksum: 10c0/4ac4f2ecc3d5a5a3c6e7b6f6e7cfc30857f3055b870e353cbb77c1967dce23812e15c622ed2df1db26edfa2c881f720ec5031d6a1581fdf2b4c168757217f9b7
-  languageName: node
-  linkType: hard
-
 "picocolors@npm:^1.0.0, picocolors@npm:^1.1.1":
   version: 1.1.1
   resolution: "picocolors@npm:1.1.1"
@@ -8516,13 +8496,6 @@ __metadata:
   version: 3.4.0
   resolution: "pngjs@npm:3.4.0"
   checksum: 10c0/88ee73e2ad3f736e0b2573722309eb80bd2aa28916f0862379b4fd0f904751b4f61bb6bd1ecd7d4242d331f2b5c28c13309dd4b7d89a9b78306e35122fdc5011
-  languageName: node
-  linkType: hard
-
-"point-in-polygon@npm:^1.0.1":
-  version: 1.1.0
-  resolution: "point-in-polygon@npm:1.1.0"
-  checksum: 10c0/de00419585ee25555d97585b7a23eeb2464a87ef29404264bee55654ca2ecab5a5a99d33e689c07d045faf80091e838f44a1fd130bdd6134493df53114947343
   languageName: node
   linkType: hard
 
@@ -8636,9 +8609,9 @@ __metadata:
     "@react-navigation/drawer": "npm:^7.3.9"
     "@react-navigation/native": "npm:^7.1.6"
     "@shopify/flash-list": "npm:1.7.6"
+    "@tanstack/react-query": "npm:^5.83.0"
     "@types/better-sqlite3": "npm:^7.6.13"
     "@types/react": "npm:~19.0.10"
-    "@types/react-native": "npm:^0.72.8"
     babel-plugin-inline-import: "npm:^3.0.0"
     dayjs: "npm:^1.11.13"
     drizzle-kit: "npm:^0.31.4"
@@ -8669,7 +8642,6 @@ __metadata:
     react-hook-form: "npm:^7.60.0"
     react-native: "npm:0.79.5"
     react-native-calendars: "npm:^1.1313.0"
-    react-native-chart-kit: "npm:^6.12.0"
     react-native-gesture-handler: "npm:~2.24.0"
     react-native-pager-view: "npm:6.7.1"
     react-native-reanimated: "npm:~3.17.4"
@@ -9014,21 +8986,6 @@ __metadata:
     moment:
       optional: true
   checksum: 10c0/a1c7325755ebac65bfed8224c1308ab430fa5dea43c95fed027eb23745b075f6ec1906cce18d95a3f5dcd127860aebebddb3a040408a281071e3f6d0cd19c5b9
-  languageName: node
-  linkType: hard
-
-"react-native-chart-kit@npm:^6.12.0":
-  version: 6.12.0
-  resolution: "react-native-chart-kit@npm:6.12.0"
-  dependencies:
-    lodash: "npm:^4.17.13"
-    paths-js: "npm:^0.4.10"
-    point-in-polygon: "npm:^1.0.1"
-  peerDependencies:
-    react: "> 16.7.0"
-    react-native: ">= 0.50.0"
-    react-native-svg: "> 6.4.1"
-  checksum: 10c0/37962ea0688914c4e9cdb87dfff5b89251fc40f6e09ec8f03635051882d13c2ede23886aec8f47c8e55a46e7cfba905871380d3b41af29473ae88eed78595494
   languageName: node
   linkType: hard
 

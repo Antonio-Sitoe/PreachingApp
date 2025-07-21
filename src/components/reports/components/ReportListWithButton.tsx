@@ -4,9 +4,8 @@ import NoContent from '../../NoContent';
 import CardWithButton from './CardWithButton';
 
 import { FlashList } from '@shopify/flash-list';
-import { Button } from '@react-native-material/core';
 import { Text, View } from '../../Themed';
-import { ActivityIndicator } from 'react-native';
+import { Button, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { type IReport, reportsActions } from '@/database/actions';
 import { usePathname } from 'expo-router';

@@ -4,7 +4,6 @@ import { IconIOS } from '@/assets/icons/Icon';
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { type Route, useRouter } from 'expo-router';
 import Colors from '@/constants/Colors';
-import { Avatar } from '@react-native-material/core';
 import { useUser } from '@/contexts/UserContext';
 import { defineProfiletext } from '@/utils/helper';
 
@@ -30,33 +29,23 @@ export default function AvatarPerfil({
         className="flex p-6 flex-row gap-2 align-top bg-primary justify-between dark:bg-dark-darkPrimary"
       >
         {user?.avatar_image ? (
-          <Avatar
-            color={isDarkTheme ? Colors.dark.tint : Colors.light.tint}
-            image={
-              <Image
-                className="w-14 h-14 rounded"
-                source={{
-                  uri: user?.avatar_image,
-                }}
-                alt="profile image"
-              />
-            }
+          <Image
+            className="w-14 h-14 rounded"
+            source={{
+              uri: user?.avatar_image,
+            }}
+            alt="profile image"
           />
         ) : (
-          <Avatar
-            label={user?.name ? user?.name : 'Preaching App'}
-            color={isDarkTheme ? Colors.dark.tint : '#4252c5'}
-            tintColor="white"
-          />
+          <View>
+            <Text className="text-base font-bold break-all w-40 text-white">
+              {user?.name ? user?.name : 'Seu nome Aqui 😁'}
+            </Text>
+            <Text className="font-sm text-gray-50">
+              {defineProfiletext(user?.profile)}
+            </Text>
+          </View>
         )}
-        <View>
-          <Text className="text-base font-bold break-all w-40 text-white">
-            {user?.name ? user?.name : 'Seu nome Aqui 😁'}
-          </Text>
-          <Text className="font-sm text-gray-50">
-            {defineProfiletext(user?.profile)}
-          </Text>
-        </View>
         <TouchableOpacity
           style={{
             backgroundColor: isDarkTheme

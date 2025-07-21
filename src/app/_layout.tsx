@@ -2,12 +2,9 @@ import '@/lib/dayjs';
 import './global.css';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
-import { UserStorage } from '@/contexts/UserContext';
-import { ReportStorage } from '@/contexts/ReportContext';
 import { useColorScheme } from 'nativewind';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Stack, SplashScreen } from 'expo-router';
-import { Provider as MaterialProvider } from '@react-native-material/core';
 import { DrizzleStudio } from '@/components/studio';
 import {
   Inter_400Regular,
@@ -17,6 +14,7 @@ import {
 import { db } from '@/database/db';
 import migrations from '@/database/migrations/migrations';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -27,8 +25,9 @@ export const unstable_settings = {
   initialRouteName: '(tabs)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const queryClient = new QueryClient();
 
 export default function RootLayoutNav() {
   const { success: hasSuccessMigration, error: errorDbMigration } =
@@ -71,22 +70,18 @@ export default function RootLayoutNav() {
   }
 
   return (
-    <MaterialProvider>
-      <UserStorage>
-        <ReportStorage>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="modal"
-              options={{
-                presentation: 'transparentModal',
-                headerShown: false,
-              }}
-            />
-          </Stack>
-          {__DEV__ && <DrizzleStudio />}
-        </ReportStorage>
-      </UserStorage>
-    </MaterialProvider>
+    <QueryClientProvider client={queryClient}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="modal"
+          options={{
+            presentation: 'transparentModal',
+            headerShown: false,
+          }}
+        />
+      </Stack>
+      {__DEV__ && <DrizzleStudio />}
+    </QueryClientProvider>
   );
 }

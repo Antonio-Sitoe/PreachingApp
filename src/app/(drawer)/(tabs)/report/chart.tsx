@@ -9,12 +9,10 @@ import { useRouter } from 'expo-router';
 
 import { ChevronLeft } from 'lucide-react-native';
 import { currentDates } from '@/utils/dates';
-import { Dimensions, View } from 'react-native';
+import { ActivityIndicator, Dimensions, View } from 'react-native';
 import { best, bestMonthsStatics, capitalizeString } from '@/utils/helper';
 // import { reportsActions } from '@/database/actions';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
-import { ActivityIndicator } from '@react-native-material/core';
-
 // import { LineChart } from 'react-native-chart-kit';
 
 interface IChartData {
