@@ -1,7 +1,7 @@
 import '@/lib/dayjs';
 import './global.css';
 import { useFonts } from 'expo-font';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useColorScheme } from 'nativewind';
 import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 import { Stack, SplashScreen } from 'expo-router';
@@ -17,15 +17,10 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useUser } from '@/contexts/UserContext';
 
-import { Drawer } from 'expo-router/drawer';
-import { StatusBar } from 'expo-status-bar';
-
-import { CustomDrawerContent } from '@/components/DrawerMenu';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-import Colors from '@/constants/Colors';
-
-export { ErrorBoundary } from 'expo-router';
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
 
 export const unstable_settings = {
   initialRouteName: '(drawer)',
@@ -47,9 +42,9 @@ export default function RootLayoutNav() {
     IBMPLEX_Medium: require('../assets/fonts/IBMPlexSansCondensed-Medium.ttf'),
     IBMPLEX_Bold: require('../assets/fonts/IBMPlexSansCondensed-Bold.ttf'),
   });
-  const { setColorScheme, colorScheme } = useColorScheme();
+  const { setColorScheme } = useColorScheme();
   const { getItem } = useAsyncStorage('@THEME_KEY');
-  const { autoSignIn } = useUser();
+  const { isAuthenticated } = useUser();
   useEffect(() => {
     async function defineDefaultTheme() {
       const theme = await getItem();
@@ -58,13 +53,6 @@ export default function RootLayoutNav() {
     }
     defineDefaultTheme();
   }, [getItem, setColorScheme]);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: Dependencies
-  useEffect(() => {
-    if (loaded) {
-      autoSignIn();
-    }
-  }, [loaded]);
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -82,37 +70,24 @@ export default function RootLayoutNav() {
     return null;
   }
 
-  const isDark = colorScheme === 'dark';
-
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        {__DEV__ && <DrizzleStudio />}
-        <StatusBar animated translucent style="auto" />
-
-        <Stack screenOptions={{ headerShown: false }}>
-          <Drawer
-            initialRouteName="(tabs)"
-            drawerContent={(props) => <CustomDrawerContent {...props} />}
-            screenOptions={() => ({
+    <QueryClientProvider client={queryClient}>
+      {__DEV__ && <DrizzleStudio />}
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Protected guard={isAuthenticated}>
+          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{
+              presentation: 'transparentModal',
               headerShown: false,
-              headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
-              headerStyle: {
-                height: 85,
-                borderBottomRightRadius: isDark ? 0 : 10,
-                borderBottomLeftRadius: isDark ? 0 : 10,
-                backgroundColor: isDark
-                  ? Colors.dark.darkBgSecundary
-                  : Colors.light.background,
-              },
-              title: '',
-              drawerStyle: {
-                width: 320,
-              },
-            })}
+            }}
           />
-        </Stack>
-      </QueryClientProvider>
-    </GestureHandlerRootView>
+        </Stack.Protected>
+        <Stack.Protected guard={!isAuthenticated}>
+          <Stack.Screen name="sign-in" />
+        </Stack.Protected>
+      </Stack>
+    </QueryClientProvider>
   );
 }
