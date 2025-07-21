@@ -1,4 +1,4 @@
-import TouchableOpacity, { Text } from '@/components/Themed'
+import TouchableOpacity, { Text } from '@/components/Themed';
 
 export function ButtonPrimary({
   onPress,
@@ -19,5 +19,5 @@ export function ButtonPrimary({
     >
       <Text className="font-text text-white text-sm font-normal">{text}</Text>
     </TouchableOpacity>
-  )
+  );
 }
