@@ -8,11 +8,6 @@ class UsersActions {
     return user[0];
   }
 
-  async getUserByEmail(email: string) {
-    const user = await db.select().from(users).where(eq(users.email, email));
-    return user[0];
-  }
-
   async findFirstUser() {
     const user = await db.select().from(users).limit(1);
     return user[0];
@@ -23,28 +18,20 @@ class UsersActions {
     return allUsers;
   }
 
-  async create(data: Omit<NewUser, 'id'>) {
+  async upsert(data: NewUser) {
     try {
-      const upsertedUser = await db
-        .insert(users)
-        .values({
-          username: data.username,
-          email: data.email,
-          avatarImage: data.avatarImage,
-          profile: data.profile,
-          createdAt: new Date().toISOString(),
-        })
-        .onConflictDoUpdate({
-          target: users.email,
-          set: {
-            username: data.username,
-            avatarImage: data.avatarImage,
-            profile: data.profile,
-          },
-        })
-        .returning();
-
-      return upsertedUser[0];
+      const hasUser = await this.getAllUsers();
+      if (hasUser.length === 0) {
+        const user = await db.insert(users).values(data).returning();
+        return user[0];
+      } else {
+        const user = await db
+          .update(users)
+          .set(data)
+          .where(eq(users.id, data.id!))
+          .returning();
+        return user[0];
+      }
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;

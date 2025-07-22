@@ -1,19 +1,18 @@
 import {
   BadgeDollarSign,
   BookOpenCheck,
-  LucidePresentation,
   MessageSquarePlus,
 } from 'lucide-react-native';
 
 import { IconIOS } from '@/assets/icons/Icon';
-import type { Route } from 'expo-router';
+import type { Href } from 'expo-router';
 interface IroutesProps {
   label: string;
   icon: {
     IconRoute: any;
     name: string;
   };
-  route: Route<string>;
+  route: Href;
 }
 
 type ROUTE_TYPE = IroutesProps[];
@@ -23,7 +22,7 @@ export const DRAWER_ROUTES: ROUTE_TYPE = [
     label: 'Home',
     icon: {
       IconRoute: IconIOS,
-      name: 'ios-home-outline',
+      name: 'home-outline',
     },
     route: '/(tabs)/',
   },

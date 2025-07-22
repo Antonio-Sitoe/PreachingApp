@@ -1,5 +1,6 @@
 import '@/lib/dayjs';
 import './global.css';
+import 'react-native-get-random-values';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
 import { useColorScheme } from 'nativewind';
@@ -61,6 +62,7 @@ export default function RootLayoutNav() {
     if (error) throw error;
   }, [error, errorDbMigration]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     if (loaded) {
       autoSignIn();

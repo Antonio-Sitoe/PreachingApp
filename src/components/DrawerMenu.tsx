@@ -2,36 +2,36 @@ import {
   type DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItem,
-} from '@react-navigation/drawer'
+} from '@react-navigation/drawer';
 
-import { StyleSheet, Text, View } from 'react-native'
-import { type Route, useRouter } from 'expo-router'
+import { StyleSheet, Text, View } from 'react-native';
+import { type Href, useRouter } from 'expo-router';
 
-import { IconIOS } from '@/assets/icons/Icon'
-import { DRAWER_ROUTES } from '@/utils/routes'
-import { useColorScheme } from 'nativewind'
-import { Switch, TouchableOpacity } from 'react-native-gesture-handler'
+import { IconIOS } from '@/assets/icons/Icon';
+import { DRAWER_ROUTES } from '@/utils/routes';
+import { useColorScheme } from 'nativewind';
+import { Switch, TouchableOpacity } from 'react-native-gesture-handler';
 
-import Colors from '@/constants/Colors'
-import AvatarPerfil from './AvatarPerfil'
-import { useAsyncStorage } from '@react-native-async-storage/async-storage'
+import Colors from '@/constants/Colors';
+import AvatarPerfil from './AvatarPerfil';
+import { useAsyncStorage } from '@react-native-async-storage/async-storage';
 
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
-  const router = useRouter()
-  const { colorScheme, toggleColorScheme } = useColorScheme()
-  const { setItem } = useAsyncStorage('@THEME_KEY')
+  const router = useRouter();
+  const { colorScheme, toggleColorScheme } = useColorScheme();
+  const { setItem } = useAsyncStorage('@THEME_KEY');
 
-  const isDarkTheme = colorScheme === 'dark'
+  const isDarkTheme = colorScheme === 'dark';
 
   const onChangeToggle = () => {
-    toggleColorScheme()
-    if (colorScheme === 'dark') setItem('light')
-    else setItem('dark')
-  }
+    toggleColorScheme();
+    if (colorScheme === 'dark') setItem('light');
+    else setItem('dark');
+  };
 
-  function handleGotoRoute(route: Route<string>) {
-    router.push(route)
-    props.navigation.closeDrawer()
+  function handleGotoRoute(route: Href) {
+    router.push(route);
+    props.navigation.closeDrawer();
   }
 
   return (
@@ -39,6 +39,9 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
       {...props}
       style={{
         backgroundColor: isDarkTheme ? Colors.dark.background : '#fefefe',
+        paddingLeft: 0,
+        paddingRight: 0,
+        margin: 0,
       }}
     >
       <AvatarPerfil
@@ -48,7 +51,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
       />
       <View className="w-full h-full pt-6 pr-6 pl-2">
         {DRAWER_ROUTES.map(({ icon, label, route }, index) => {
-          const { IconRoute, name } = icon
+          const { IconRoute, name } = icon;
           return (
             <DrawerItem
               key={index + label}
@@ -70,7 +73,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
               )}
               onPress={() => handleGotoRoute(route)}
             />
-          )
+          );
         })}
         <View
           style={styles.themeContainer}
@@ -105,7 +108,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
         </View>
       </View>
     </DrawerContentScrollView>
-  )
+  );
 }
 
 export const styles = StyleSheet.create({
@@ -122,4 +125,4 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-})
+});

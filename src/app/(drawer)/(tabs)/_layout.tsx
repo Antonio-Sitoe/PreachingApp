@@ -1,15 +1,15 @@
-import { Tabs } from 'expo-router'
-import { IconIOS } from '@/assets/icons/Icon'
-import { useColorScheme } from 'nativewind'
-import { StatusBar } from 'expo-status-bar'
-import { Header } from '@/components/Header'
+import { Tabs } from 'expo-router';
+import { IconIOS } from '@/assets/icons/Icon';
+import { useColorScheme } from 'nativewind';
+import { StatusBar } from 'expo-status-bar';
+import { Header } from '@/components/Header';
 
-import Colors from '@/constants/Colors'
-import Note from '@/assets/icons/Note.svg'
+import Colors from '@/constants/Colors';
+import Note from '@/assets/icons/Note.svg';
 
 export default function TabLayout() {
-  const { colorScheme } = useColorScheme()
-  const isDark = colorScheme === 'dark'
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
 
   return (
     <>
@@ -23,7 +23,7 @@ export default function TabLayout() {
         screenOptions={{
           title: '',
           header() {
-            return <Header />
+            return <Header />;
           },
           tabBarActiveTintColor: isDark ? Colors.dark.tint : Colors.light.tint,
           tabBarLabelStyle: {
@@ -51,7 +51,7 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             tabBarIcon: ({ color }) => (
-              <IconIOS name="ios-home-outline" size={28} color={color} />
+              <IconIOS name="home-outline" size={28} color={color} />
             ),
           }}
         />
@@ -82,5 +82,5 @@ export default function TabLayout() {
         />
       </Tabs>
     </>
-  )
+  );
 }

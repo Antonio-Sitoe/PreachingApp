@@ -1,14 +1,14 @@
-import { Drawer } from 'expo-router/drawer'
-import { StatusBar } from 'expo-status-bar'
+import { Drawer } from 'expo-router/drawer';
+import { StatusBar } from 'expo-status-bar';
 
-import { CustomDrawerContent } from '@/components/DrawerMenu'
-import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { CustomDrawerContent } from '@/components/DrawerMenu';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
 export default function RootLayout() {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -28,11 +28,8 @@ export default function RootLayout() {
               : Colors.light.background,
           },
           title: '',
-          drawerStyle: {
-            width: 320,
-          },
         })}
       />
     </GestureHandlerRootView>
-  )
+  );
 }

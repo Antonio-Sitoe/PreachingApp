@@ -1,7 +1,7 @@
 import { useUser } from '@/contexts/UserContext';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
-import { View, Text, TextInput, Button, Image } from 'react-native';
+import { View, TextInput, Image } from 'react-native';
 import { usersActions } from '@/database/actions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
@@ -12,55 +12,60 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import * as ImagePicker from 'expo-image-picker';
-import Z from 'zod';
+import { z } from 'zod/v4';
 import Snackbar from 'react-native-snackbar';
 import { Picker } from '@react-native-picker/picker';
+import { cn } from '@/lib/utils';
+import { Text } from '@/components/Themed';
 
-const schema = Z.object({
-  name: Z.string(),
-  email: Z.string().email('Digite um email valido'),
-  avatar_image: Z.string().url(),
-  profile: Z.string(),
+const schema = z.object({
+  username: z.string().min(2, 'Nome é obrigatório'),
+  avatarImage: z.url('URL da imagem inválida').optional().or(z.literal('')),
+  profile: z
+    .enum(['publisher', 'baptized_publisher', 'pioneer'])
+    .default('publisher'),
 });
 
 export default function Profile() {
   const { isDark } = useTheme();
   const { back } = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const { setProfileUser, user } = useUser();
-  const [image, setImage] = useState(user.avatar_image || '');
-  const {
-    control,
-    handleSubmit,
-    getValues,
-    formState: { errors },
-  } = useForm({
+  const { setProfileUser, user, userSession } = useUser();
+  const userName = user?.username || userSession?.name || '';
+
+  const [image, setImage] = useState(user?.avatarImage || '');
+  const { control, handleSubmit, getValues } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: user.name,
-      email: user.email,
-      avatar_image: user.avatar_image,
-      profile: user.profile || 'publisher',
+      username: userName,
+      avatarImage: image,
+      profile:
+        user?.profile &&
+        ['publisher', 'baptized_publisher', 'pioneer'].includes(user.profile)
+          ? (user.profile as 'publisher' | 'baptized_publisher' | 'pioneer')
+          : 'publisher',
     },
   });
-  async function pickImage() {
+
+  const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
     });
+
     if (!result.canceled) {
-      const { uri } = result.assets[0];
-      setImage(uri);
+      setImage(result.assets[0].uri);
     }
-  }
+  };
+
   const onSubmit = async (data: any) => {
     try {
       setIsLoading(true);
-      const newDate = { ...data, avatar_image: image };
-      const user = await usersActions.create(newDate);
-      setProfileUser(user);
+      const newDate = { ...data, avatarImage: image, id: user?.id ?? '' };
+      const userUpdated = await usersActions.upsert(newDate);
+      setProfileUser(userUpdated);
       Snackbar.show({
         text: 'Perfil Atualizado com sucesso',
         duration: Snackbar.LENGTH_LONG,
@@ -71,16 +76,29 @@ export default function Profile() {
       setIsLoading(false);
     }
   };
+  useEffect(() => {
+    if (user?.avatarImage) {
+      setImage(user?.avatarImage);
+    } else if (userSession?.avatarImage) {
+      setImage(userSession?.avatarImage);
+    } else {
+      setImage('');
+    }
+  }, [user, userSession]);
 
   return (
-    <View className="flex-1" darkColor={Colors.dark.darkBgSecundary}>
+    <View
+      className="flex-1"
+      style={{
+        backgroundColor: isDark
+          ? Colors.dark.darkBgSecundary
+          : Colors.light.background,
+      }}
+    >
       <SafeAreaView className="flex-1 px-4">
         <KeyboardAvoidingView behavior="height">
           <ScrollView showsVerticalScrollIndicator={false}>
-            <View
-              className="flex-row justify-between mt-8 items-center"
-              darkColor={Colors.dark.darkBgSecundary}
-            >
+            <View className="flex-row justify-between mt-8 items-center">
               <TouchableOpacity
                 className="w-10 h-10 items-center justify-center"
                 onPress={back}
@@ -91,10 +109,14 @@ export default function Profile() {
                 />
               </TouchableOpacity>
             </View>
-            <Text className="font-title text-xl text-center mb-4">
+            <Text
+              className="font-title text-xl text-center mb-4"
+              lightColor="black"
+              darkColor="white"
+            >
               Editar Perfil
             </Text>
-            <View className="w-full" style={{ flexDirection: 'row' }}>
+            <View className="w-full justify-center items-center mb-4">
               <TouchableOpacity className="relative" onPress={pickImage}>
                 {image ? (
                   <Image
@@ -119,7 +141,9 @@ export default function Profile() {
                     }}
                   >
                     <Text style={{ color: 'white', fontSize: 20 }}>
-                      {getValues().name ? getValues().name : 'Preaching App'}
+                      {getValues().username
+                        ? getValues().username
+                        : 'Preaching App'}
                     </Text>
                   </View>
                 )}
@@ -152,8 +176,15 @@ export default function Profile() {
                         ? Colors.dark.background
                         : 'white',
                       color: isDark ? 'white' : Colors.dark.background,
+                      height: 50,
+                      borderRadius: 8,
+                      borderWidth: 1,
+                      borderColor: isDark
+                        ? Colors.dark.tint
+                        : Colors.light.tint,
+                      paddingHorizontal: 10,
                     }}
-                    placeholder="Nome"
+                    placeholder="Digite o teu nome"
                     placeholderTextColor={
                       isDark ? Colors.dark.tint : Colors.light.tint
                     }
@@ -162,34 +193,7 @@ export default function Profile() {
                     value={value}
                   />
                 )}
-                name="name"
-              />
-
-              <Controller
-                control={control}
-                rules={{
-                  required: true,
-                }}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={{
-                      marginBottom: 10,
-                      backgroundColor: isDark
-                        ? Colors.dark.background
-                        : 'white',
-                      color: isDark ? 'white' : Colors.dark.background,
-                    }}
-                    placeholder="Email"
-                    placeholderTextColor={
-                      isDark ? Colors.dark.tint : Colors.light.tint
-                    }
-                    keyboardType="email-address"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value}
-                  />
-                )}
-                name="email"
+                name="username"
               />
 
               <Controller
@@ -228,14 +232,22 @@ export default function Profile() {
               />
             </View>
 
-            <Button
-              loading={isLoading}
-              title="Salvar"
-              titleStyle={{ textTransform: 'capitalize', color: 'white' }}
-              color={isDark ? Colors.dark.tint : Colors.light.tint}
-              style={{ padding: 5, marginTop: 20 }}
+            <TouchableOpacity
+              disabled={isLoading}
+              className={cn('text-center p-4 rounded-md mt-10')}
+              style={{
+                backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+              }}
               onPress={handleSubmit(onSubmit)}
-            />
+            >
+              <Text
+                className="text-white text-center"
+                lightColor="white"
+                darkColor="white"
+              >
+                {isLoading ? 'Salvando...' : 'Salvar'}
+              </Text>
+            </TouchableOpacity>
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
