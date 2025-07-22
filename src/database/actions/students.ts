@@ -72,12 +72,24 @@ class StudentsActions {
     }
   }
 
-  async getAll() {
+  async getAll({ page = 1, pageSize = 10 } = {}) {
+    const offset = (page - 1) * pageSize;
+    const [{ count }] = await db
+      .select({ count: db.$count(students) })
+      .from(students);
     const allStudents = await db
       .select()
       .from(students)
-      .orderBy(desc(students.createdAt));
-    return allStudents;
+      .orderBy(desc(students.createdAt))
+      .limit(pageSize)
+      .offset(offset);
+
+    return {
+      data: allStudents,
+      total: Number(count),
+      page,
+      pageSize,
+    };
   }
 
   async getById(id: string) {

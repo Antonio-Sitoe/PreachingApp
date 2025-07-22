@@ -1,4 +1,3 @@
-import type { IStudentsBody } from '@/@types/interfaces';
 import NoContent from '@/components/NoContent';
 import { Text, View } from '@/components/Themed';
 import { StudentCard } from '@/components/students/StudentCard';
@@ -10,44 +9,46 @@ import useTheme from '@/hooks/useTheme';
 import { useIsFocused } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
 
-import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+import { RefreshControl } from 'react-native-gesture-handler';
+import { useInfiniteQuery } from '@tanstack/react-query';
 
-interface Idata extends IStudentsBody {
-  id: string;
-  name: string;
-  address: string;
-}
+const PAGE_SIZE = 20;
 
 export default function StudentsHome() {
   const router = useRouter();
   const { isDark } = useTheme();
-  const [isLoading, setIsLoading] = useState(true);
-  const [people, setPeople] = useState<Idata[]>([]);
   const isFocused = useIsFocused();
+
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    fetchNextPage,
+    hasNextPage,
+    refetch,
+  } = useInfiniteQuery({
+    queryKey: ['students'],
+    queryFn: async ({ pageParam = 1 }: { pageParam?: number }) => {
+      return studentsAction.getAll({ page: pageParam, pageSize: PAGE_SIZE });
+    },
+    getNextPageParam: (
+      lastPage: { data: any[]; total: number },
+      allPages: { data: any[]; total: number }[]
+    ) => {
+      const loaded = allPages.reduce((acc, page) => acc + page.data.length, 0);
+      if (loaded >= lastPage.total) return undefined;
+      return allPages.length + 1;
+    },
+    initialPageParam: 1,
+    enabled: isFocused,
+  });
+
+  const students = data?.pages.flatMap((page) => page.data) ?? [];
 
   function handleAddPeople() {
     router.push('/(report)/(tabs)/students/createStudents');
   }
-  async function listStudents() {
-    try {
-      setIsLoading(true);
-      const students = await studentsAction.getAll();
-      setPeople(students as Idata[]);
-      console.log(students);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (isFocused) {
-      listStudents();
-    }
-  }, [isFocused]);
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
@@ -69,11 +70,11 @@ export default function StudentsHome() {
         refreshControl={
           <RefreshControl
             refreshing={isLoading}
-            onRefresh={listStudents}
+            onRefresh={refetch}
             colors={[Colors.dark.tint]}
           />
         }
-        data={people}
+        data={students}
         estimatedItemSize={30}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
@@ -108,12 +109,19 @@ export default function StudentsHome() {
             />
           );
         }}
+        onEndReached={() => {
+          if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+        }}
+        onEndReachedThreshold={0.2}
+        ListFooterComponent={
+          isFetchingNextPage ? <Text>Carregando mais...</Text> : null
+        }
       />
 
-      <AnimatedButtonWithText
+      {/* <AnimatedButtonWithText
         text="Adicionar Pessoa"
         onPress={handleAddPeople}
-      />
+      /> */}
     </View>
   );
 }
