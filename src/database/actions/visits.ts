@@ -13,7 +13,6 @@ class VisitsActions {
           notes: data.notes,
           publications: data.publications,
           biblicalTexts: data.biblicalTexts,
-          videos: data.videos,
           result: data.result,
           dateAndHours: String(data.dateAndHours),
           createdAt: new Date().toISOString(),
@@ -36,7 +35,6 @@ class VisitsActions {
           notes: data.notes,
           publications: data.publications,
           biblicalTexts: data.biblicalTexts,
-          videos: data.videos,
           result: data.result,
           dateAndHours: data.dateAndHours,
         })

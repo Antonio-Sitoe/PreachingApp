@@ -13,7 +13,6 @@ export const visits = sqliteTable('visits', {
   publications: text('publications'),
   biblicalTexts: text('biblical_texts'),
   nextTime: text('next_time'),
-  videos: text('videos'),
   result: text('result'),
   dateAndHours: text('date_and_hours').notNull(),
   createdAt: text('created_at').notNull(),

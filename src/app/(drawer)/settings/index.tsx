@@ -1,7 +1,7 @@
 import { Text, Button, View } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { reportsAction, studentsAction } from '@/database/actions';
+import { generateMassData, generateReports } from '@/utils/generateData';
 
 export default function Settings() {
   return (
@@ -12,23 +12,14 @@ export default function Settings() {
         quisquam laborum natus quod sunt nulla laboriosam odio consequuntur
         quaerat maiores labore.
       </Text>
-      <Button title="RESET ALL DATA" onPress={reportsAction.resetAll} />
+      <Button title="RESET ALL DATA" onPress={() => {}} />
       <View className="my-2" />
       <Button
         title="GENERATE REPORT DATA"
-        onPress={reportsAction.generateReports}
-      />
-      <View className="my-2" />
-      <Button
-        title="GENERATE STUDENTS DATA"
         onPress={() => {
-          studentsAction.generateMassData(10);
+          generateReports();
+          generateMassData();
         }}
-      />
-      <View className="my-2" />
-      <Button
-        title="LIST REPORT DATA"
-        onPress={reportsAction.getAllReportData}
       />
     </SafeAreaView>
   );

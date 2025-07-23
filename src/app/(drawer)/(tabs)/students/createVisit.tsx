@@ -9,32 +9,25 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { TextInputForm } from '@/components/ui/TextInputForm';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ActivityIndicator, Button } from 'react-native';
-import { visitsAction } from '@/database/actions';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
+import { type IVisit, visitsAction } from '@/database/actions';
 
-import * as z from 'zod';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import Snackbar from 'react-native-snackbar';
 import dayjs from 'dayjs';
-
-const schema = z.object({
-  date_and_hours: z.date({
-    required_error: 'Digite uma data',
-  }),
-  students_id: z.string(),
-  result: z.string(),
-  biblical_texts: z.string(),
-  publications: z.string(),
-  videos: z.string(),
-  notes: z.string(),
-});
+import { createVisitSchema } from '@/utils/validations/create-visit';
+import type z from 'zod';
 
 export default function CreateVisit() {
   const router = useRouter();
   const { isDark } = useTheme();
   const [load, setLoad] = useState(false);
-  const { id, name, visitID } = useLocalSearchParams();
+  const { id, name, visitID } = useLocalSearchParams() as {
+    id: string;
+    name: string;
+    visitID: string;
+  };
   const [date, setDate] = useState(new Date());
 
   const {
@@ -43,28 +36,36 @@ export default function CreateVisit() {
     setValue,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(createVisitSchema),
     defaultValues: {
-      date_and_hours: date,
-      students_id: id,
-      result: 'attended',
-      biblical_texts: '',
-      publications: '',
-      videos: '',
+      studentsId: id ?? '',
       notes: '',
+      publications: '',
+      biblicalTexts: '',
+      result: 'attended',
+      dateAndHours: date,
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: z.infer<typeof createVisitSchema>) => {
     try {
       const dateformated = dayjs(date).format('DD/MM/YYYY');
-      data.date_and_hours = dateformated;
-      console.log('[DATA TO SEND]', data);
-      let newVisit;
+      const visitData: Omit<IVisit, 'id'> = {
+        studentsId: data.studentsId,
+        notes: data.notes,
+        publications: data.publications,
+        biblicalTexts: data.biblicalTexts,
+        result: data.result,
+        dateAndHours: dateformated,
+        createdAt: dayjs().format('DD/MM/YYYY'),
+        nextTime: '',
+      };
+      console.log('[DATA TO SEND]', visitData);
+      let newVisit: IVisit;
       if (visitID) {
-        newVisit = await visitsAction.updateById(visitID as string, data);
+        newVisit = await visitsAction.updateById(visitID as string, visitData);
       } else {
-        newVisit = await visitsAction.create(data);
+        newVisit = await visitsAction.create(visitData);
       }
       console.log('[NOVA VISITA]', newVisit);
       Snackbar.show({
@@ -73,7 +74,7 @@ export default function CreateVisit() {
       });
       if (newVisit) {
         router.push({
-          pathname: '/(report)/(tabs)/students/profile',
+          pathname: '/(drawer)/(tabs)/students/profile',
           params: { id },
         });
       }
@@ -84,22 +85,34 @@ export default function CreateVisit() {
 
   useEffect(() => {
     async function loadVisitData(visitID: string | string[]) {
-      try {
-        setLoad(true);
-        const visit = await visitsAction.getById(visitID as string);
-        if (!visit) return;
-        setDate(visit?.date_and_hours);
-        setValue('biblical_texts', visit?.biblical_texts);
-        setValue('date_and_hours', visit?.date_and_hours);
-        setValue('notes', visit?.notes);
-        setValue('publications', visit?.publications);
-        setValue('result', visit?.result);
-        setValue('videos', visit?.videos);
-      } catch (error) {
-        console.log('[Falha ao carregar dados da visita]', error);
-      } finally {
+      setLoad(true);
+      const visit = await visitsAction.getById(visitID as string);
+      if (!visit) {
         setLoad(false);
+        return;
       }
+      setDate(
+        visit.dateAndHours
+          ? dayjs(
+              new Date(visit.dateAndHours.split('/').reverse().join('-')),
+              'DD/MM/YYYY'
+            ).toDate()
+          : new Date()
+      );
+      setValue('biblicalTexts', visit.biblicalTexts ?? '');
+      setValue(
+        'dateAndHours',
+        visit.dateAndHours
+          ? dayjs(
+              new Date(visit.dateAndHours.split('/').reverse().join('-')),
+              'DD/MM/YYYY'
+            ).toDate()
+          : new Date()
+      );
+      setValue('notes', visit.notes ?? '');
+      setValue('publications', visit.publications ?? '');
+      setValue('result', visit?.result ?? '');
+      setLoad(false);
     }
     if (visitID) {
       loadVisitData(visitID);
@@ -136,11 +149,7 @@ export default function CreateVisit() {
           }}
         >
           {load && <ActivityIndicator />}
-          <DatePicker
-            backgroundColor={isDark ? Colors.dark.darkBgSecundary : `#D9D8FF`}
-            date={date}
-            setDate={setDate}
-          />
+          <DatePicker date={date} setDate={setDate} />
           <Select
             label="Resultado"
             control={control}
@@ -173,9 +182,9 @@ export default function CreateVisit() {
             height
             control={control}
             errors={errors}
-            label="Textos biblicos"
-            name="biblical_texts"
-            placeholder="Textos biblicos"
+            label="Textos bíblicos"
+            name="biblicalTexts"
+            placeholder="Textos bíblicos"
             rules={{}}
           />
           <TextInputForm
@@ -187,40 +196,42 @@ export default function CreateVisit() {
             rules={{}}
             height
           />
-          <TextInputForm
-            control={control}
-            errors={errors}
-            label="Videos"
-            name="videos"
-            placeholder="Videos"
-            rules={{}}
-            height
-          />
 
           <TextInputForm
             control={control}
             errors={errors}
-            label="O que dizer da proxima vez?"
+            label="O que dizer da próxima vez?"
             name="notes"
-            placeholder="O que dizer da proxima vez?"
+            placeholder="O que dizer da próxima vez?"
             rules={{}}
             multiline={true}
             numberOfLines={6}
             textAlignVertical="top"
           />
           <View className="my-2" />
-          <View className="flex-row justify-center">
-            <Button
-              title="Guardar"
+          <View className="flex-row justify-end">
+            <TouchableOpacity
+              activeOpacity={0.7}
               onPress={handleSubmit(onSubmit)}
               disabled={isSubmitting}
-              color={isDark ? Colors.dark.tint : Colors.light.tint}
-              titleStyle={{
-                color: 'white',
-                fontFamily: 'Inter_400Regular',
-                textTransform: 'capitalize',
+              style={{
+                backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+                borderRadius: 8,
+                paddingVertical: 14,
+                paddingHorizontal: 32,
+                opacity: isSubmitting ? 0.5 : 1,
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
-            />
+            >
+              <Text
+                className="text-white font-bold text-base"
+                lightColor="white"
+                darkColor="white"
+              >
+                Guardar
+              </Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </View>

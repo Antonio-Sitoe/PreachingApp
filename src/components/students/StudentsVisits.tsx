@@ -18,9 +18,12 @@ const IRESULT = {
   called: 'Ligou por telefone',
 };
 
-function formateDate(date: string | Date) {
-  const formattedDate = dayjs(date).format('dddd, D [de] MMMM [de] YYYY');
-  return capitalizeString(formattedDate);
+function formateDate(date: string) {
+  const parsedDate = dayjs(
+    new Date(date.split('/').reverse().join('-')),
+    'DD/MM/YYYY'
+  ).format('dddd, D [de] MMMM [de] YYYY');
+  return capitalizeString(parsedDate);
 }
 
 interface IStudentsVisitsProps {
@@ -93,9 +96,7 @@ export const StudentsVisits = ({
                 lightColor="transparent"
               >
                 <Text className="flex-1">
-                  {item?.date_and_hours
-                    ? formateDate(item?.date_and_hours)
-                    : '...'}
+                  {item?.dateAndHours ? formateDate(item?.dateAndHours) : '...'}
                 </Text>
                 <View
                   className="flex-row items-center gap-2"
@@ -110,7 +111,9 @@ export const StudentsVisits = ({
                     <Pen color="white" />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    className="bg-red-600 w-9 h-9 justify-center items-center rounded"
+                    lightColor={Colors.light.Error}
+                    darkColor={Colors.dark.Error}
+                    className="w-9 h-9 justify-center items-center rounded"
                     onPress={() => handleDeleteVisit(item.id)}
                   >
                     <Trash2 color="white" />
@@ -142,7 +145,7 @@ export const StudentsVisits = ({
                     Textos lidos
                   </Text>
                   <Text className="mt-1 mb-3 font-text">
-                    {item.biblical_texts || '...'}
+                    {item.biblicalTexts || '...'}
                   </Text>
                 </View>
                 <View lightColor="transparent" className="flex-1">
@@ -168,22 +171,10 @@ export const StudentsVisits = ({
                     darkColor={Colors.dark.Success200}
                     lightColor={Colors.light.tint}
                   >
-                    Videos
-                  </Text>
-                  <Text className="mt-1 mb-3 font-text">
-                    {item?.videos || '...'}
-                  </Text>
-                </View>
-                <View lightColor="transparent" className="flex-1">
-                  <Text
-                    className="text-base font-title "
-                    darkColor={Colors.dark.Success200}
-                    lightColor={Colors.light.tint}
-                  >
                     Resultado
                   </Text>
                   <Text className="mt-1 mb-3 font-text">
-                    {IRESULT[item.result]}
+                    {IRESULT[item.result as keyof typeof IRESULT] || '...'}
                   </Text>
                 </View>
               </View>
