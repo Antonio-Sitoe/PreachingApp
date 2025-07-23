@@ -6,19 +6,18 @@ import Colors from '@/constants/Colors';
 import { studentsAction } from '@/database/actions';
 
 import useTheme from '@/hooks/useTheme';
-import { useIsFocused } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
 
 import { RefreshControl } from 'react-native-gesture-handler';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import { ActivityIndicator } from 'react-native';
 
 const PAGE_SIZE = 20;
 
 export default function StudentsHome() {
   const router = useRouter();
   const { isDark } = useTheme();
-  const isFocused = useIsFocused();
 
   const {
     data,
@@ -30,6 +29,7 @@ export default function StudentsHome() {
   } = useInfiniteQuery({
     queryKey: ['students'],
     queryFn: async ({ pageParam = 1 }: { pageParam?: number }) => {
+      console.log('pageParam', pageParam);
       return studentsAction.getAll({ page: pageParam, pageSize: PAGE_SIZE });
     },
     getNextPageParam: (
@@ -41,13 +41,12 @@ export default function StudentsHome() {
       return allPages.length + 1;
     },
     initialPageParam: 1,
-    enabled: isFocused,
   });
 
   const students = data?.pages.flatMap((page) => page.data) ?? [];
 
   function handleAddPeople() {
-    router.push('/(report)/(tabs)/students/createStudents');
+    router.push('/(drawer)/(tabs)/students/add-student');
   }
 
   return (
@@ -95,13 +94,13 @@ export default function StudentsHome() {
             <StudentCard
               onViewProfile={() => {
                 router.push({
-                  pathname: '/(report)/(tabs)/students/profile',
+                  pathname: '/(drawer)/(tabs)/students/profile',
                   params: { id: item.id },
                 });
               }}
               onAddVisit={() => {
                 router.push({
-                  pathname: '/(report)/(tabs)/students/createVisit',
+                  pathname: '/(drawer)/(tabs)/students/createVisit',
                   params: { id: item.id, name: item?.name },
                 });
               }}
@@ -114,14 +113,22 @@ export default function StudentsHome() {
         }}
         onEndReachedThreshold={0.2}
         ListFooterComponent={
-          isFetchingNextPage ? <Text>Carregando mais...</Text> : null
+          isFetchingNextPage || isLoading ? (
+            <View
+              className="h-2"
+              lightColor="transparent"
+              darkColor="transparent"
+            >
+              <Text>Carregando...</Text>
+            </View>
+          ) : null
         }
       />
 
-      {/* <AnimatedButtonWithText
+      <AnimatedButtonWithText
         text="Adicionar Pessoa"
         onPress={handleAddPeople}
-      /> */}
+      />
     </View>
   );
 }

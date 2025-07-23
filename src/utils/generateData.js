@@ -1,6 +1,6 @@
-import { createReportData } from '@/database/actions/report/create'
+import { reportActions } from '@/database/actions'
 import { monthNameToPortuguese } from './dates'
-import { CREATE_STUDENTS } from '@/database/actions/students/create'
+import { studentsAction } from '@/database/actions'
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min
@@ -10,7 +10,6 @@ function getRandomDate(year, month) {
   const endDate = new Date(year, month + 1, 0)
   const randomDay = getRandomNumber(1, endDate.getDate())
   const randomDate = new Date(year, month, randomDay)
-
   return randomDate
 }
 
@@ -48,7 +47,7 @@ let i = 0
 async function generateReports() {
   for await (const data of dataArray) {
     console.log('Criando...', data)
-    await createReportData(data)
+    await reportActions.create(data)
     console.log('...Sucesso', i)
     i++
   }
@@ -113,8 +112,8 @@ function generateRandomData() {
       'Ela é alta, clara e forte, gosta de fazer muitas perguntas e não tem problemas em sorrir.',
     address: 'Machava sede, Moçambique',
     age: getRandomElement(ages),
-    best_day: [getRandomElement(bestDays)],
-    best_time: [getRandomElement(bestTimes)],
+    bestDay: JSON.stringify([getRandomElement(bestDays)]),
+    bestTime: JSON.stringify([getRandomElement(bestTimes)]),
     email: 'example@example.com',
     gender: getRandomElement(genders),
     name: getRandomElement(names),
@@ -132,7 +131,7 @@ async function generateMassData(quantity) {
 
   for await (const data of massData) {
     console.log('Criando...', data)
-    await CREATE_STUDENTS(data)
+    await studentsAction.create(data)
     console.log('...Sucesso')
   }
   return massData

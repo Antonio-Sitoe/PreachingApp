@@ -17,16 +17,19 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
   const { isDark } = useTheme();
   const { push } = useRouter();
 
+  const bestDay = data?.bestDay ? JSON.parse(data?.bestDay) : [];
+  const bestTime = data?.bestTime ? JSON.parse(data?.bestTime) : [];
+
   function handleGoToEdit() {
     push({
-      pathname: `/(report)/(tabs)/students/createStudents`,
+      pathname: `/(drawer)/(tabs)/students/add-student`,
       params: {
         id: `${data?.id}`,
         about: `${data?.about}`,
         address: `${data?.address}`,
         age: data.age,
-        best_day: JSON.stringify(data.best_day),
-        best_time: JSON.stringify(data.best_time),
+        bestDay: data.bestDay,
+        bestTime: data.bestTime,
         email: data.email,
         gender: data.gender,
         name: data.name,
@@ -42,6 +45,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         {
           text: 'Apagar',
           style: 'destructive',
+          isPreferred: true,
           onPress: async () => {
             const { sucess } = await studentsAction.deleteWithOwnVisits(id);
             Snackbar.show({
@@ -49,7 +53,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
               duration: Snackbar.LENGTH_LONG,
             });
             if (sucess) {
-              push('/(report)/(tabs)/students');
+              push('/(drawer)/(tabs)/students');
             }
           },
         },
@@ -69,13 +73,13 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
     >
       <View className="flex-1 px-5 pt-5" lightColor="transparent">
         <Text
-          className="text-base font-title uppercase"
+          className="text-base font-title"
           darkColor={Colors.dark.Success200}
           lightColor={Colors.light.tint}
         >
           Sobre
         </Text>
-        <Text className="mt-1 mb-3 font-text">{data?.about}</Text>
+        <Text className="mt-1 font-text mb-3">{data?.about}</Text>
         <Text
           className="text-base font-title "
           darkColor={Colors.dark.Success200}
@@ -92,7 +96,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           Dia de visitar
         </Text>
         <Text className="mt-1  mb-3 font-text">
-          {data.best_day.join(', ') || '...'}
+          {bestDay.join(', ') || '...'}
         </Text>
         <Text
           className="text-base font-title"
@@ -102,7 +106,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           Hora de visitar
         </Text>
         <Text className="mt-1  mb-3 font-text">
-          {data.best_time.join(', ') || '...'}
+          {bestTime.join(', ') || '...'}
         </Text>
 
         <TouchableOpacity
@@ -129,10 +133,14 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
             }
           }}
         >
-          <View className="bg-red-600 w-9 h-9 justify-center items-center rounded">
+          <View
+            darkColor={Colors.dark.Error}
+            lightColor={Colors.light.Error}
+            className="w-9 h-9 justify-center items-center rounded-sm"
+          >
             <Trash2 color="white" />
           </View>
-          <Text className="font-text">Apagar Pessoa</Text>
+          <Text className="font-text">Apagar {data?.name}</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

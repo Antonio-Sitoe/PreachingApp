@@ -3,7 +3,7 @@ import { db } from '../db';
 import { type NewStudent, type Student, students, visits } from '../schemas';
 
 class StudentsActions {
-  async create(data: Omit<NewStudent, 'id'>) {
+  async create(data: Omit<NewStudent, 'id' | 'createdAt'>) {
     try {
       const newStudent = await db
         .insert(students)
@@ -15,8 +15,8 @@ class StudentsActions {
           email: data.email,
           gender: data.gender,
           address: data.address,
-          bestTime: data.bestTime ? JSON.stringify(data.bestTime) : null,
-          bestDay: data.bestDay ? JSON.stringify(data.bestDay) : null,
+          bestTime: data.bestTime,
+          bestDay: data.bestDay,
           createdAt: new Date().toISOString(),
         })
         .returning();
@@ -116,7 +116,7 @@ class StudentsActions {
     return transformedStudents;
   }
 
-  async updateById(id: string, data: Omit<Student, 'id'>) {
+  async updateById(id: string, data: Omit<Student, 'id' | 'createdAt'>) {
     try {
       const updatedStudent = await db
         .update(students)
@@ -128,8 +128,8 @@ class StudentsActions {
           email: data.email,
           gender: data.gender,
           address: data.address,
-          bestTime: data.bestTime ? JSON.stringify(data.bestTime) : null,
-          bestDay: data.bestDay ? JSON.stringify(data.bestDay) : null,
+          bestTime: data.bestTime,
+          bestDay: data.bestDay,
         })
         .where(eq(students.id, id))
         .returning();

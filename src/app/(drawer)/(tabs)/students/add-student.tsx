@@ -1,47 +1,20 @@
 import { Text, View } from '@/components/Themed';
 import { useForm } from 'react-hook-form';
-import { ScrollView } from 'react-native-gesture-handler';
 
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 
-import { z } from 'zod';
-import { BackButton } from '@/components/ui/BackButton';
 import { zodResolver } from '@hookform/resolvers/zod';
 import React, { useRef, useState } from 'react';
 import { StudentsCreateStep1 } from '@/components/students/StudentsCreateStep1';
 import { StudentsCreateStep2 } from '@/components/students/StudentsCreateStep2';
-import { Button } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { studentsAction } from '@/database/actions';
+import { type Student, studentsAction } from '@/database/actions';
 import Snackbar from 'react-native-snackbar';
-
-const SchemaStudennts = z.object({
-  name: z
-    .string({
-      required_error: 'Digite um nome',
-    })
-    .min(1, 'Digite um nome'),
-  age: z.string({ required_error: 'Digite uma idade' }),
-  gender: z.string({
-    required_error: 'Escolha o genero',
-  }),
-  telephone: z.string().optional(),
-  about: z.string().optional(),
-  email: z.string().optional(),
-  address: z.string().optional(),
-
-  best_time: z
-    .array(z.string(), {
-      required_error: 'Escolha a melhor hora para visitar.',
-    })
-    .min(1, 'Escolha a melhor hora para visitar.'),
-  best_day: z
-    .array(z.string(), {
-      required_error: 'Escolha um dia para visitar.',
-    })
-    .min(1, 'Escolha um dia para visitar.'),
-});
+import { SchemaStudents } from '@/utils/validations/create-student';
+import { BackButton } from '@/components/ui/BackButton';
+import type { z } from 'zod';
 
 const defaultAges = [
   {
@@ -74,17 +47,18 @@ const defaultAges = [
   },
 ];
 
-type SchemaStudenntsType = z.infer<typeof SchemaStudennts>;
+type SchemaStudentsType = z.infer<typeof SchemaStudents>;
+
 export default function CreateStudent() {
   const { isDark } = useTheme();
   const { back, push } = useRouter();
   const [step, setStep] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const data: any = useLocalSearchParams();
+  const data: Student = useLocalSearchParams() as unknown as Student;
 
-  const weekDaysObj = data?.best_day && JSON.parse(data?.best_day);
-  const timesOfDayObj = data?.best_time && JSON.parse(data?.best_time);
+  const weekDaysObj = data?.bestDay ? JSON.parse(data?.bestDay) : [];
+  const timesOfDayObj = data?.bestTime ? JSON.parse(data?.bestTime) : [];
 
   const {
     control,
@@ -94,19 +68,19 @@ export default function CreateStudent() {
     reset,
     clearErrors,
     formState: { errors, isSubmitting },
-  } = useForm<SchemaStudenntsType>({
-    resolver: zodResolver(SchemaStudennts),
+  } = useForm<SchemaStudentsType>({
+    resolver: zodResolver(SchemaStudents),
     defaultValues: data?.id
       ? {
           name: data?.name || '',
-          telephone: `${data.telephone || ''}`,
+          telephone: data?.telephone ? data.telephone : '',
           email: data?.email || '',
           about: data?.about || '',
           age: data?.age || '',
           gender: data.gender || 'man',
-          best_day: JSON.parse(data.best_day),
-          best_time: JSON.parse(data.best_time),
-          address: data?.address,
+          bestDay: weekDaysObj,
+          bestTime: timesOfDayObj,
+          address: data?.address || '',
         }
       : {},
   });
@@ -119,12 +93,10 @@ export default function CreateStudent() {
   });
   const [ages, setAge] = useState(
     defaultAges.map((item) => {
-      if (data?.age) {
-        if (item.age === data?.age) {
-          item.state = true;
-        }
+      if (data?.age && item.age === data?.age) {
+        return { ...item, state: true };
       }
-      return item;
+      return { ...item, state: false };
     })
   );
 
@@ -174,46 +146,46 @@ export default function CreateStudent() {
     }
   }
   function handleToogleWeekday(weekDayIndex: string) {
-    clearErrors('best_day');
+    clearErrors('bestDay');
     if (weekDays.includes(weekDayIndex)) {
       setWeekDays(weekDays.filter((weekday) => weekday !== weekDayIndex));
       setValue(
-        'best_day',
+        'bestDay',
         weekDays.filter((weekday) => weekday !== weekDayIndex)
       );
     } else {
       setWeekDays((preview) => {
         return [...preview, weekDayIndex];
       });
-      setValue('best_day', [...weekDays, weekDayIndex]);
+      setValue('bestDay', [...weekDays, weekDayIndex]);
     }
   }
   function handleToogleTimeOfDay(time: string) {
-    clearErrors('best_time');
+    clearErrors('bestTime');
     if (timesOfDay.includes(time)) {
       settimeOfDay(timesOfDay.filter((timeDay) => timeDay !== time));
       setValue(
-        'best_time',
+        'bestTime',
         timesOfDay.filter((timeDay) => timeDay !== time)
       );
     } else {
       settimeOfDay((preview) => {
         return [...preview, time];
       });
-      setValue('best_time', [...timesOfDay, time]);
+      setValue('bestTime', [...timesOfDay, time]);
     }
   }
-  function transformeData(data: IStudentsBody) {
-    const body: IStudentsBody = {
+  function transformeData(data: SchemaStudentsType) {
+    const body: Omit<Student, 'id' | 'createdAt'> = {
       about: data.about || '',
       address: data.address || '',
       age: data.age,
-      best_day: data.best_day || [],
-      best_time: data.best_time || [],
+      bestDay: data.bestDay ? JSON.stringify(data.bestDay) : null,
+      bestTime: data.bestTime ? JSON.stringify(data.bestTime) : null,
       email: data.email || '',
       gender: data.gender || 'man',
       name: data.name || '',
-      telephone: data.telephone,
+      telephone: data?.telephone ? data.telephone : '',
     };
     return { body };
   }
@@ -222,24 +194,21 @@ export default function CreateStudent() {
       scrollViewRef.current.scrollTo({ y: 0, animated: true });
     }
   }
-  const onSubmit = async (databody: IStudentsBody | any) => {
+  const onSubmit = async (databody: SchemaStudentsType) => {
     try {
       const { body } = transformeData(databody);
-      console.log('[data to send]', body);
       let studentData: any;
       if (data?.id) {
         studentData = await studentsAction.updateById(data.id, body);
-        console.log('[ESTUDANTE ATUALIZADO]', data?.id);
       } else {
         studentData = await studentsAction.create(body);
-        console.log('[ESTUDANTE CRIADO]', studentData);
       }
       Snackbar.show({
         text: `${data?.id ? 'atualizado o' : 'Adicionado'} ${body.name}`,
         duration: Snackbar.LENGTH_LONG,
       });
       if (studentData) {
-        push('/(report)/(tabs)/students');
+        push('/(drawer)/(tabs)/students');
         reset();
       }
     } catch (error) {
@@ -304,61 +273,96 @@ export default function CreateStudent() {
           <View
             style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}
           >
-            <Button
-              title="Próximo"
+            <TouchableOpacity
               onPress={handleNext}
-              color={isDark ? Colors.dark.tint : Colors.light.tint}
-              titleStyle={{
-                color: 'white',
-                fontFamily: 'Inter_400Regular',
-                textTransform: 'capitalize',
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+                ...styles.button,
               }}
-            />
+            >
+              <Text
+                style={{
+                  color: 'white',
+                  fontFamily: 'Inter_400Regular',
+                  textTransform: 'capitalize',
+                  fontSize: 14,
+                }}
+              >
+                Próximo
+              </Text>
+            </TouchableOpacity>
           </View>
         ) : (
           <View
             style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}
           >
-            <Button
+            <TouchableOpacity
               onPress={goBack}
-              title="Voltar"
-              variant="text"
-              color="#FF647C"
-              titleStyle={{
-                color: isDark ? 'white' : '#252525',
-                fontFamily: 'Inter_400Regular',
-                textTransform: 'capitalize',
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: 'transparent',
+                borderColor: '#FF647C',
+                borderWidth: 1,
+                ...styles.button,
               }}
-            />
-            <Button
-              title="Cancel"
-              variant="contained"
-              color="#FF647C"
+            >
+              <Text
+                style={{
+                  ...styles.buttonText,
+                  ...(isDark ? { color: 'white' } : { color: '#FF647C' }),
+                }}
+              >
+                Voltar
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={cancel}
-              titleStyle={{
-                color: 'white',
-                fontFamily: 'Inter_400Regular',
-                textTransform: 'capitalize',
+              activeOpacity={0.7}
+              style={{
+                backgroundColor: '#FF647C',
+                ...styles.button,
               }}
-            />
+            >
+              <Text style={styles.buttonText}>Cancelar</Text>
+            </TouchableOpacity>
 
-            <Button
+            <TouchableOpacity
               onPress={handleSubmit(onSubmit)}
-              title="Guardar"
-              variant="contained"
-              loading={isSubmitting}
+              activeOpacity={0.7}
               disabled={isSubmitting}
-              color={isDark ? Colors.dark.tint : Colors.light.tint}
-              titleStyle={{
-                color: 'white',
-                fontFamily: 'Inter_400Regular',
-                textTransform: 'capitalize',
-                marginHorizontal: 15,
+              style={{
+                backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+                opacity: isSubmitting ? 0.6 : 1,
+                ...styles.button,
               }}
-            />
+            >
+              <Text
+                style={{
+                  ...styles.buttonText,
+                }}
+              >
+                {isSubmitting ? 'Guardando...' : 'Guardar'}
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
     </View>
   );
 }
+const styles = StyleSheet.create({
+  button: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontFamily: 'Inter_400Regular',
+    textTransform: 'capitalize',
+    fontSize: 14,
+  },
+});

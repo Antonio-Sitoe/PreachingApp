@@ -1,22 +1,20 @@
-import Colors from '@/constants/Colors'
-import Woman from '@/assets/images/Woman.svg'
-import useTheme from '@/hooks/useTheme'
-import Person from '@/assets/images/Person.svg'
+import Colors from '@/constants/Colors';
+import Woman from '@/assets/images/Woman.svg';
+import useTheme from '@/hooks/useTheme';
+import Person from '@/assets/images/Person.svg';
 
-import TouchableOpacity, { View, Text } from '@/components/Themed'
-import { Ionicons } from '@expo/vector-icons'
-import type { IStudentsBody } from '@/@types/interfaces'
-import { cortarString } from '@/utils/helper'
-
-type Idata = IStudentsBody
+import TouchableOpacity, { View, Text } from '@/components/Themed';
+import { Ionicons } from '@expo/vector-icons';
+import { cortarString } from '@/utils/helper';
+import type { Student } from '@/database/schemas';
 
 interface StudentCardProps {
-  data: Idata
-  onViewProfile: () => void
-  onAddVisit: () => void
+  data: Student;
+  onViewProfile: () => void;
+  onAddVisit: () => void;
 }
 function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
 
   return (
     <View className="flex-row w-full mb-5 shadow" lightColor="transparent">
@@ -30,7 +28,7 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
       >
         <TouchableOpacity
           onPress={onViewProfile}
-          className="flex-row p-4 items-center justify-between rounded-lg"
+          className="flex-row p-4 items-center justify-start gap-4 rounded-lg"
           lightColor="white"
           darkColor={Colors.dark.darkBgSecundary}
         >
@@ -65,6 +63,6 @@ function StudentCard({ data, onViewProfile, onAddVisit }: StudentCardProps) {
         </TouchableOpacity>
       </View>
     </View>
-  )
+  );
 }
-export { StudentCard }
+export { StudentCard };

@@ -1,92 +1,107 @@
-import Animated, {
-  useAnimatedGestureHandler,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated'
+import React from 'react';
 import {
   StyleSheet,
-  TouchableOpacity,
   type TouchableOpacityProps,
-} from 'react-native'
-import { PanGestureHandler } from 'react-native-gesture-handler'
-import { Ionicons } from '@expo/vector-icons'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import { Text } from '../Themed'
+  Platform,
+  type ViewStyle,
+  TouchableOpacity,
+} from 'react-native';
 
-const styles = StyleSheet.create({
-  button: {
-    height: 50,
-    boxShadow: 5,
-    borderRadius: 10,
-    paddingHorizontal: 15,
-    gap: 5,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+} from 'react-native-reanimated';
 
-const ButtonAnimated = Animated.createAnimatedComponent(TouchableOpacity)
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+
+import { Ionicons } from '@expo/vector-icons';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import { Text } from '../Themed';
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface Props extends TouchableOpacityProps {
-  text: string
+  text: string;
 }
 
-export function AnimatedButtonWithText({ onPress, text }: Props) {
-  const { isDark } = useTheme()
-  const positionY = useSharedValue(0)
-  const positionX = useSharedValue(0)
-  const myCarButtonStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateY: positionY.value },
-        { translateX: positionX.value },
-      ],
-    }
-  })
+export function AnimatedButtonWithText({ onPress, text, ...rest }: Props) {
+  const { isDark } = useTheme();
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
 
-  const onGestureEvent = useAnimatedGestureHandler({
-    onStart(_, ctx: any) {
-      ctx.positionX = positionX.value
-      ctx.positionY = positionY.value
-    },
-    onActive(event, ctx: any) {
-      positionY.value = event.translationY + ctx.positionY
-      positionX.value = event.translationX + ctx.positionX
-    },
-    onEnd(_, ctx: any) {
-      positionY.value = withSpring(0)
-      positionX.value = withSpring(0)
-    },
-  })
+  const panGesture = Gesture.Pan()
+    .onStart(() => {})
+    .onUpdate((event) => {
+      translateX.value = event.translationX;
+      translateY.value = event.translationY;
+    })
+    .onEnd(() => {
+      translateX.value = withSpring(0);
+      translateY.value = withSpring(0);
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+    ],
+  }));
+
   return (
-    <PanGestureHandler onGestureEvent={onGestureEvent}>
-      <Animated.View
-        className="shadow-lg"
-        style={[
-          myCarButtonStyle,
-          {
-            position: 'absolute',
-            bottom: 13,
-            right: 22,
-          },
-        ]}
-      >
-        <ButtonAnimated
+    <GestureDetector gesture={panGesture}>
+      <Animated.View style={[styles.floatingContainer, animatedStyle]}>
+        <AnimatedTouchable
           onPress={onPress}
+          activeOpacity={0.8}
           style={[
             styles.button,
             {
               backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
             },
           ]}
+          {...rest}
         >
-          <Text className="font-textIBM text-base text-white">{text}</Text>
+          <Text
+            lightColor="white"
+            darkColor="white"
+            className="font-textIBM text-base text-white"
+          >
+            {text}
+          </Text>
           <Ionicons color="white" name="add" size={20} />
-        </ButtonAnimated>
+        </AnimatedTouchable>
       </Animated.View>
-    </PanGestureHandler>
-  )
+    </GestureDetector>
+  );
 }
+
+const styles = StyleSheet.create({
+  floatingContainer: {
+    position: 'absolute',
+    bottom: 13,
+    right: 22,
+    zIndex: 100,
+  },
+  button: {
+    height: 50,
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 5,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  } as ViewStyle,
+});

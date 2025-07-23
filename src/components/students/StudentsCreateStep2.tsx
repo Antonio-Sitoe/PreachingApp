@@ -24,7 +24,7 @@ const StudentsCreateStep2 = ({
 }) => {
   return (
     <>
-      <Text className="text-sm font-normal font-text">
+      <Text className="text-sm font-normal font-title">
         Melhorar hora para vistar
       </Text>
       <View className="flex-1 pb-2">

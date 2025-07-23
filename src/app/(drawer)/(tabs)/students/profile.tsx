@@ -4,16 +4,18 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import Person from '@/assets/images/Person.svg';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Woman from '@/assets/images/Woman.svg';
-import { useWindowDimensions } from 'react-native';
+import { TouchableOpacity, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { StudentAbout } from '@/components/students/StudentAbout';
 import { StudentsVisits } from '@/components/students/StudentsVisits';
-import { type IVisit, studentsAction } from '@/database/actions';
+import { studentsAction, type Student } from '@/database/actions';
 import { ActivityIndicator } from 'react-native';
 import { visitsAction } from '@/database/actions';
 import { useIsFocused } from '@react-navigation/native';
+import { BackButton } from '@/components/ui/BackButton';
+import { useQuery } from '@tanstack/react-query';
 
 const renderTabBar = (props: any, isDark: boolean) => {
   return (
@@ -41,70 +43,50 @@ const renderTabBar = (props: any, isDark: boolean) => {
 export default function Profile() {
   const layout = useWindowDimensions();
   const { isDark } = useTheme();
-  const { push } = useRouter();
+  const { push, back } = useRouter();
   const { id } = useLocalSearchParams();
   const [index, setIndex] = useState(0);
-
-  const [visits, setVisits] = useState<IVisit[]>([]);
-  const [loadVisit, setLoadVisit] = useState(true);
-  const [profile, setProfile] = useState({});
-  const [isLoading, setIsloading] = useState(true);
   const isFocused = useIsFocused();
 
-  useEffect(() => {
-    async function getProfileInformation(id: string | string[]) {
-      try {
-        setIsloading(true);
-        const data = await studentsAction.getById(`${id}`);
-        setProfile(data);
-      } catch (error) {
-        console.log('Error', error);
-      } finally {
-        setIsloading(false);
-      }
-    }
-    getProfileInformation(id);
-  }, [id]);
+  const {
+    data: profile,
+    isLoading: isLoadingProfile,
+    error: errorProfile,
+  } = useQuery({
+    queryKey: ['student-profile', id],
+    queryFn: () => studentsAction.getById(`${id}`),
+  });
 
-  async function getVisitInfo(id: string | string[]) {
-    try {
-      setLoadVisit(true);
-      const data = await visitsAction.getByStudentId(`${id}`);
-      setVisits(data);
-    } catch (error) {
-      console.log('[Error BUSCAR VISITAS]', error);
-    } finally {
-      setLoadVisit(false);
-    }
-  }
-
-  useEffect(() => {
-    if (id || isFocused) {
-      getVisitInfo(id);
-    }
-  }, [id, isFocused]);
+  const {
+    data: visits = [],
+    isLoading: isLoadingVisits,
+    refetch: refetchVisits,
+  } = useQuery({
+    queryKey: ['student-visits', id, isFocused],
+    queryFn: () => visitsAction.getByStudentId(`${id}`),
+  });
 
   function handleAddVisit(visitID?: string) {
     const params: any = {
       id,
-      name: profile.name,
+      name: profile?.name,
     };
     if (visitID) {
       params.visitID = visitID;
     }
     push({
-      pathname: `/(report)/(tabs)/students/createVisit`,
+      pathname: `/(drawer)/(tabs)/students/createVisit`,
       params,
     });
   }
 
   const renderScene = SceneMap({
-    about: () => <StudentAbout data={profile} />,
+    about: () => <StudentAbout data={profile as Student} />,
     visits: () => (
       <StudentsVisits
-        reset={() => getVisitInfo(id)}
+        reset={() => refetchVisits()}
         visits={visits}
-        load={loadVisit}
+        load={isLoadingVisits}
         handleAddVisit={handleAddVisit}
       />
     ),
@@ -117,13 +99,15 @@ export default function Profile() {
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
-      {isLoading ? (
+      {isLoadingProfile ? (
         <View className="my-3 mt-6 flex items-center" lightColor="transparent">
           <ActivityIndicator
             color={isDark ? Colors.dark.tint : Colors.light.tint}
           />
         </View>
-      ) : (
+      ) : errorProfile ? (
+        <Text>Erro ao carregar perfil.</Text>
+      ) : profile ? (
         <>
           <View
             className="my-3 mt-6 flex items-center"
@@ -133,27 +117,33 @@ export default function Profile() {
               className="flex-row items-center w-full justify-center"
               lightColor="#F6F6F9"
             >
-              <View
-                darkColor="#FBEEBC"
-                className="w-20 h-20 mr-6 rounded-2xl flex items-center justify-center relative"
-              >
-                {profile?.gender === 'man' ? (
-                  <Person width={60} height={60} />
-                ) : (
-                  <Woman width={60} height={60} />
-                )}
-
+              <BackButton />
+              <TouchableOpacity onPress={() => back()} className="relative">
                 <View
-                  darkColor={Colors.dark.tint}
-                  lightColor={Colors.light.tint}
-                  className="w-10 h-7 items-center justify-center rounded-lg absolute bottom-[-5px] right-[-10px]"
+                  darkColor="#FBEEBC"
+                  className="w-20 h-20 mr-6 rounded-2xl flex items-center justify-center relative"
                 >
-                  <Text lightColor="#FBEEBC">{profile.age}</Text>
+                  {profile?.gender === 'man' || profile?.gender === 'M' ? (
+                    <Person width={60} height={60} />
+                  ) : profile?.gender === 'woman' || profile?.gender === 'F' ? (
+                    <Woman width={60} height={60} />
+                  ) : (
+                    <Person width={60} height={60} />
+                  )}
+
+                  <View
+                    darkColor={Colors.dark.tint}
+                    lightColor={Colors.light.tint}
+                    className="w-10 h-7 items-center justify-center rounded-lg absolute bottom-[-5px] right-[-10px]"
+                  >
+                    <Text lightColor="#FBEEBC">{profile?.age}</Text>
+                  </View>
                 </View>
-              </View>
+              </TouchableOpacity>
+
               <View className="flex-1" lightColor="transparent">
                 <Text className="font-bold font-textIBM text-base break-words over">
-                  {profile.name}
+                  {profile?.name}
                 </Text>
                 <Text>{profile?.telephone}</Text>
                 <Text>{profile?.email}</Text>
@@ -182,6 +172,8 @@ export default function Profile() {
             onPress={() => handleAddVisit()}
           />
         </>
+      ) : (
+        <Text>Perfil não encontrado.</Text>
       )}
     </View>
   );

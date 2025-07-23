@@ -1,12 +1,12 @@
-import { type TouchableOpacityProps, TouchableOpacity } from 'react-native'
-import { Feather } from '@expo/vector-icons'
-import colors from 'tailwindcss/colors'
-import { View, Text } from '../Themed'
-import Colors from '@/constants/Colors'
+import { type TouchableOpacityProps, TouchableOpacity } from 'react-native';
+import { Feather } from '@expo/vector-icons';
+import colors from 'tailwindcss/colors';
+import { View, Text } from '../Themed';
+import Colors from '@/constants/Colors';
 
 interface CheckboxProps extends TouchableOpacityProps {
-  checked?: boolean
-  title: string
+  checked?: boolean;
+  title: string;
 }
 
 export function CheckBox({ title, checked = false, ...props }: CheckboxProps) {
@@ -33,5 +33,5 @@ export function CheckBox({ title, checked = false, ...props }: CheckboxProps) {
       )}
       <Text className="ml-3 text-semibold">{title}</Text>
     </TouchableOpacity>
-  )
+  );
 }

@@ -71,4 +71,5 @@ function TouchableOpacity(props: TouchebleProps, ref) {
     />
   );
 }
+
 export default forwardRef(TouchableOpacity);
