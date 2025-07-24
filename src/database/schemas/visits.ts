@@ -12,7 +12,6 @@ export const visits = sqliteTable('visits', {
   notes: text('notes'),
   publications: text('publications'),
   biblicalTexts: text('biblical_texts'),
-  nextTime: text('next_time'),
   result: text('result'),
   dateAndHours: text('date_and_hours').notNull(),
   createdAt: text('created_at').notNull(),

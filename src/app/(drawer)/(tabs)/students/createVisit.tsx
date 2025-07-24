@@ -58,7 +58,6 @@ export default function CreateVisit() {
         result: data.result,
         dateAndHours: dateformated,
         createdAt: dayjs().format('DD/MM/YYYY'),
-        nextTime: '',
       };
       console.log('[DATA TO SEND]', visitData);
       let newVisit: IVisit;

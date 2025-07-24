@@ -12,8 +12,6 @@ export const students = sqliteTable('students', {
   email: text('email'),
   gender: text('gender').notNull(),
   address: text('address'),
-  bestTime: text('best_time'),
-  bestDay: text('best_day'),
   createdAt: text('created_at').notNull(),
 });
 
