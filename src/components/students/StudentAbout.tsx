@@ -4,7 +4,7 @@ import { type Student, studentsAction } from '@/database/actions';
 import useTheme from '@/hooks/useTheme';
 import { useRouter } from 'expo-router';
 
-import { Pen, Trash2 } from 'lucide-react-native';
+import { Calendar, Pen, Trash2 } from 'lucide-react-native';
 import { Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Snackbar from 'react-native-snackbar';
@@ -17,9 +17,6 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
   const { isDark } = useTheme();
   const { push } = useRouter();
 
-  const bestDay = data?.bestDay ? JSON.parse(data?.bestDay) : [];
-  const bestTime = data?.bestTime ? JSON.parse(data?.bestTime) : [];
-
   function handleGoToEdit() {
     push({
       pathname: `/(drawer)/(tabs)/students/add-student`,
@@ -28,8 +25,6 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         about: `${data?.about}`,
         address: `${data?.address}`,
         age: data.age,
-        bestDay: data.bestDay,
-        bestTime: data.bestTime,
         email: data.email,
         gender: data.gender,
         name: data.name,
@@ -63,6 +58,12 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
     );
   }
 
+  function handleGoToAvailability() {
+    push({
+      pathname: '/(drawer)/(tabs)/students/add-student/availability',
+      params: { data: JSON.stringify(data) },
+    });
+  }
   return (
     <ScrollView
       showsVerticalScrollIndicator={false}
@@ -95,9 +96,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         >
           Dia de visitar
         </Text>
-        <Text className="mt-1  mb-3 font-text">
-          {bestDay.join(', ') || '...'}
-        </Text>
+        <Text className="mt-1  mb-3 font-text">{data?.bestDay || '...'}</Text>
         <Text
           className="text-base font-title"
           lightColor={Colors.light.tint}
@@ -105,10 +104,25 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
         >
           Hora de visitar
         </Text>
-        <Text className="mt-1  mb-3 font-text">
-          {bestTime.join(', ') || '...'}
-        </Text>
+        <Text className="mt-1  mb-3 font-text">{data?.bestTime || '...'}</Text>
 
+        <TouchableOpacity
+          className="flex-row items-center gap-2 mt-6"
+          lightColor="transparent"
+          onPress={handleGoToAvailability}
+        >
+          <View
+            lightColor={Colors.light.tint}
+            darkColor={Colors.dark.tint}
+            className="w-9 h-9 justify-center items-center rounded"
+          >
+            <Calendar color="white" />
+          </View>
+
+          <Text className="font-text font-text">
+            Adicionar/Editar Disponibilidade
+          </Text>
+        </TouchableOpacity>
         <TouchableOpacity
           className="flex-row items-center gap-2 mt-6"
           lightColor="transparent"

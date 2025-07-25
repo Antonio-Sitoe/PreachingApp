@@ -1,18 +1,22 @@
-import { Text, View } from '@/components/Themed'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import { Controller, type RegisterOptions, type Control } from 'react-hook-form'
-import type { TextInputProps } from 'react-native'
-import { TextInput } from 'react-native-gesture-handler'
+import { Text, View } from '@/components/Themed';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import {
+  Controller,
+  type RegisterOptions,
+  type Control,
+} from 'react-hook-form';
+import type { TextInputProps } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 
 interface ITextInputFormProps extends TextInputProps {
-  rules: RegisterOptions
-  label: string
-  name: string
-  placeholder: string
-  control: Control<any>
-  errors: any
-  height?: boolean
+  rules: RegisterOptions;
+  label: string;
+  name: string;
+  placeholder: string;
+  control: Control<any>;
+  errors: any;
+  height?: boolean;
 }
 
 export function TextInputForm({
@@ -25,7 +29,7 @@ export function TextInputForm({
   label,
   ...props
 }: ITextInputFormProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
   return (
     <View className="flex flex-1 mt-4" lightColor="transparent">
       {label && <Text className="text-sm font-normal font-text">{label}</Text>}
@@ -54,10 +58,10 @@ export function TextInputForm({
         name={name}
       />
       {errors[name]?.message && (
-        <Text className="text-[12px] ml-2 text-red-600">
+        <Text className="text-[12px] ml-2 text-red-600" lightColor="red">
           {errors[name]?.message}
         </Text>
       )}
     </View>
-  )
+  );
 }

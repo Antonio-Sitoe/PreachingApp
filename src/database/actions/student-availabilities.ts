@@ -1,6 +1,6 @@
 import { db } from '../db';
-import {
-  studentAvailabilities,
+import { studentAvailabilities } from '../schemas/student-availabilities';
+import type {
   StudentAvailability,
   NewStudentAvailability,
 } from '../schemas/student-availabilities';
@@ -32,5 +32,11 @@ export class StudentAvailabilityActions {
     return db
       .delete(studentAvailabilities)
       .where(eq(studentAvailabilities.id, id));
+  }
+
+  async deleteAllForStudent(studentId: string) {
+    return db
+      .delete(studentAvailabilities)
+      .where(eq(studentAvailabilities.studentId, studentId));
   }
 }

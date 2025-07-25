@@ -15,8 +15,6 @@ class StudentsActions {
           email: data.email,
           gender: data.gender,
           address: data.address,
-          bestTime: data.bestTime,
-          bestDay: data.bestDay,
           createdAt: new Date().toISOString(),
         })
         .returning();
@@ -102,18 +100,7 @@ class StudentsActions {
       .select()
       .from(students)
       .orderBy(desc(students.createdAt));
-
-    const transformedStudents = allStudents.map(
-      (student) => ({
-        ...student,
-        best_time: student.bestTime ? JSON.parse(student.bestTime) : [],
-        best_day: student.bestDay ? JSON.parse(student.bestDay) : [],
-        visits: [],
-      }),
-      {} as Student
-    );
-
-    return transformedStudents;
+    return allStudents;
   }
 
   async updateById(id: string, data: Omit<Student, 'id' | 'createdAt'>) {
@@ -128,8 +115,6 @@ class StudentsActions {
           email: data.email,
           gender: data.gender,
           address: data.address,
-          bestTime: data.bestTime,
-          bestDay: data.bestDay,
         })
         .where(eq(students.id, id))
         .returning();
