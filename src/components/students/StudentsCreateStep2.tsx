@@ -1,8 +1,7 @@
-import { Text, View } from '@/components/Themed';
+import TouchableOpacity, { Text, View } from '@/components/Themed';
 import { TextInputForm } from '@/components/ui/TextInputForm';
 
 import React, { useState } from 'react';
-import { TouchableOpacity } from 'react-native';
 
 import {
   Select,
@@ -28,7 +27,7 @@ import {
 
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
-import { ChevronDownIcon } from 'lucide-react-native';
+import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
 import { CheckBox } from '../ui/CheckBox';
 
 const weekDays = [
@@ -49,7 +48,6 @@ function formatTime(date) {
   });
 }
 
-// Define the type for availability
 interface Availability {
   weekDay: string;
   startTime: string;
@@ -132,10 +130,11 @@ export function StudentsCreateStep2({
   const handleRemove = (index: number) => {
     const newAvailabilities = availabilities.filter((_, i) => i !== index);
     setAvailabilities(newAvailabilities);
-    onChange && onChange(newAvailabilities);
+    if (onChange) {
+      onChange(newAvailabilities);
+    }
   };
 
-  // Função utilitária para adicionar 1 hora a um Date
   function addOneHour(date: Date): Date {
     const newDate = new Date(date);
     newDate.setHours((date.getHours() + 1) % 24);
@@ -146,7 +145,7 @@ export function StudentsCreateStep2({
     <>
       <View style={{ marginVertical: 16 }}>
         <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 8 }}>
-          Disponibilidade para Visitas
+          Melhores Horários para Visitas
         </Text>
         {availabilities.length === 0 && (
           <Text style={{ color: '#888' }}>
@@ -155,30 +154,60 @@ export function StudentsCreateStep2({
         )}
         {availabilities.map((item, index) => (
           <View
-            key={item.weekDay + '-' + item.startTime + '-' + item.endTime}
+            key={item.weekDay + '-' + index.toString()}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
               marginBottom: 8,
             }}
           >
-            <Text style={{ flex: 1 }}>
-              {item.weekDay} {item.startTime} - {item.endTime} | Lembrete:{' '}
-              {item.notificationEnabled ? 'Sim' : 'Não'}
-            </Text>
-            <TouchableOpacity onPress={() => handleEdit(index)}>
-              <Text style={{ color: 'blue', marginRight: 10 }}>Editar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleRemove(index)}>
-              <Text style={{ color: 'red' }}>Remover</Text>
-            </TouchableOpacity>
+            <View className="flex-1 rounded-lg flex-row justify-between items-center">
+              <View className="flex-1 p-3">
+                <Text className="font-title text-base mb-1 flex-row items-center justify-between gap-4">
+                  {item.weekDay}
+                </Text>
+                <Text className="font-body text-sm text-[#717171] mb-1">
+                  {item.startTime} - {item.endTime} | Receber Lembrete:{' '}
+                  {item.notificationEnabled ? 'Sim' : 'Não'}
+                </Text>
+              </View>
+            </View>
+
+            <View
+              className="flex-row items-center gap-2"
+              lightColor="transparent"
+            >
+              <TouchableOpacity
+                lightColor={Colors.light.tint}
+                darkColor={Colors.dark.tint}
+                className="w-9 h-9 justify-center items-center rounded"
+                onPress={() => handleEdit(index)}
+              >
+                <Pen color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                lightColor={Colors.light.Error}
+                darkColor={Colors.dark.Error}
+                className="w-9 h-9 justify-center items-center rounded"
+                onPress={() => handleRemove(index)}
+              >
+                <Trash2 color="white" />
+              </TouchableOpacity>
+            </View>
           </View>
         ))}
         <TouchableOpacity
+          lightColor={Colors.light.tint}
+          darkColor={Colors.dark.tint}
           onPress={() => setShowForm(true)}
-          style={{ marginTop: 12, alignSelf: 'flex-start' }}
+          className="rounded-lg p-2 mt-4"
+          style={{ alignSelf: 'flex-start' }}
         >
-          <Text style={{ color: 'blue', fontWeight: 'bold' }}>
+          <Text
+            lightColor="white"
+            darkColor="white"
+            className="text-white font-title text-base"
+          >
             + Adicionar Disponibilidade
           </Text>
         </TouchableOpacity>
