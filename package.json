@@ -27,6 +27,7 @@
     "@gluestack-ui/icon": "^0.1.27",
     "@gluestack-ui/nativewind-utils": "^1.0.26",
     "@gluestack-ui/overlay": "^0.1.22",
+    "@gluestack-ui/select": "^0.1.31",
     "@gluestack-ui/toast": "^1.0.9",
     "@gorhom/bottom-sheet": "^5.0.0-alpha.11",
     "@hookform/resolvers": "^5.1.1",

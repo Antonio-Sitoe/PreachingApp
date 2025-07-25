@@ -1,14 +1,14 @@
-import TouchableOpacity, { Text, View } from '@/components/Themed'
-import { TextInputForm } from '@/components/ui/TextInputForm'
+import TouchableOpacity, { Text, View } from '@/components/Themed';
+import { TextInputForm } from '@/components/ui/TextInputForm';
 
-import Person from '@/assets/images/Person.svg'
-import Woman from '@/assets/images/Woman.svg'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
+import Person from '@/assets/images/Person.svg';
+import Woman from '@/assets/images/Woman.svg';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
 interface Age {
-  age: string
-  state: boolean
+  age: string;
+  state: boolean;
 }
 
 const StudentsCreateStep1 = ({
@@ -19,7 +19,7 @@ const StudentsCreateStep1 = ({
   handleChangeAge,
   handleChangeGender,
 }) => {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
   return (
     <>
       <TextInputForm
@@ -64,13 +64,17 @@ const StudentsCreateStep1 = ({
                 : Colors.light.tint
               : isDark
               ? Colors.dark.darkBgSecundary
-              : Colors.light.inputBg
+              : Colors.light.inputBg;
 
-            const color = age.state ? 'white' : isDark ? '#a3afb73f' : '#252525'
+            const color = age.state
+              ? 'white'
+              : isDark
+              ? '#a3afb73f'
+              : '#252525';
             return (
               <TouchableOpacity
                 onPress={() => handleChangeAge(index)}
-                key={index}
+                key={age.age}
                 style={{
                   backgroundColor,
                 }}
@@ -85,7 +89,7 @@ const StudentsCreateStep1 = ({
                   {age.age}
                 </Text>
               </TouchableOpacity>
-            )
+            );
           })}
         </View>
         {errors?.age?.message && (
@@ -137,7 +141,7 @@ const StudentsCreateStep1 = ({
         />
       </View>
     </>
-  )
-}
+  );
+};
 
-export { StudentsCreateStep1 }
+export { StudentsCreateStep1 };
