@@ -57,8 +57,8 @@ export default function CreateStudent() {
 
   const data: Student = useLocalSearchParams() as unknown as Student;
 
-  const weekDaysObj = data?.bestDay ? JSON.parse(data?.bestDay) : [];
-  const timesOfDayObj = data?.bestTime ? JSON.parse(data?.bestTime) : [];
+  // Estado para blocos de disponibilidade (cadastro e edição)
+  const [availabilities, setAvailabilities] = useState<any[]>([]);
 
   const {
     control,
@@ -78,15 +78,11 @@ export default function CreateStudent() {
           about: data?.about || '',
           age: data?.age || '',
           gender: data.gender || 'man',
-          bestDay: weekDaysObj,
-          bestTime: timesOfDayObj,
           address: data?.address || '',
         }
       : {},
   });
 
-  const [weekDays, setWeekDays] = useState<string[]>(weekDaysObj || []);
-  const [timesOfDay, settimeOfDay] = useState<string[]>(timesOfDayObj || []);
   const [gender, setGender] = useState({
     woman: data?.gender === 'woman',
     man: data?.gender === 'man',
@@ -180,8 +176,6 @@ export default function CreateStudent() {
       about: data.about || '',
       address: data.address || '',
       age: data.age,
-      bestDay: data.bestDay ? JSON.stringify(data.bestDay) : null,
-      bestTime: data.bestTime ? JSON.stringify(data.bestTime) : null,
       email: data.email || '',
       gender: data.gender || 'man',
       name: data.name || '',
@@ -260,12 +254,10 @@ export default function CreateStudent() {
           />
         ) : (
           <StudentsCreateStep2
-            timesOfDay={timesOfDay}
-            weekDays={weekDays}
-            handleToogleTimeOfDay={handleToogleTimeOfDay}
-            handleToogleWeekday={handleToogleWeekday}
             control={control}
             errors={errors}
+            value={availabilities}
+            onChange={setAvailabilities}
           />
         )}
 

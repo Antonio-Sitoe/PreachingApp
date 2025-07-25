@@ -17,6 +17,7 @@ import migrations from '@/database/migrations/migrations';
 import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useUser } from '@/contexts/UserContext';
+import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -43,7 +44,7 @@ export default function RootLayoutNav() {
     IBMPLEX_Medium: require('../assets/fonts/IBMPlexSansCondensed-Medium.ttf'),
     IBMPLEX_Bold: require('../assets/fonts/IBMPlexSansCondensed-Bold.ttf'),
   });
-  const { setColorScheme } = useColorScheme();
+  const { setColorScheme, colorScheme } = useColorScheme();
   const { getItem } = useAsyncStorage('@THEME_KEY');
   const { autoSignIn } = useUser();
 
@@ -80,18 +81,23 @@ export default function RootLayoutNav() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {__DEV__ && <DrizzleStudio />}
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="modal"
-          options={{
-            presentation: 'transparentModal',
-            headerShown: false,
-          }}
-        />
-      </Stack>
-    </QueryClientProvider>
+    <GluestackUIProvider
+      mode={colorScheme === 'dark' ? 'dark' : 'light'}
+      style={{ flex: 1 }}
+    >
+      <QueryClientProvider client={queryClient}>
+        {__DEV__ && <DrizzleStudio />}
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="modal"
+            options={{
+              presentation: 'transparentModal',
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </QueryClientProvider>
+    </GluestackUIProvider>
   );
 }
