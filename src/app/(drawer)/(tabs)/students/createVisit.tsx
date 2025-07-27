@@ -128,7 +128,7 @@ export default function CreateVisit() {
           <BackButton />
           <View className="flex-1" lightColor="transparent">
             <Text className="font-bold font-textIBM text-base break-words over items-center gap-2">
-              Visita ao Morador ({name})
+              Visita ao Morador {name ? `(${name})` : ''}
             </Text>
             <View
               darkColor={Colors.dark.tint}
