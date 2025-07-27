@@ -43,7 +43,7 @@ const renderTabBar = (props: any, isDark: boolean) => {
 export default function Profile() {
   const layout = useWindowDimensions();
   const { isDark } = useTheme();
-  const { push, back } = useRouter();
+  const { push, dismissTo } = useRouter();
   const { id } = useLocalSearchParams();
   const [index, setIndex] = useState(0);
   const isFocused = useIsFocused();
@@ -78,6 +78,10 @@ export default function Profile() {
       pathname: `/(drawer)/(tabs)/students/createVisit`,
       params,
     });
+  }
+
+  function handleGoBack() {
+    dismissTo('/(drawer)/(tabs)/students');
   }
 
   const renderScene = SceneMap({
@@ -117,8 +121,8 @@ export default function Profile() {
               className="flex-row items-center w-full justify-center"
               lightColor="#F6F6F9"
             >
-              <BackButton />
-              <TouchableOpacity onPress={() => back()} className="relative">
+              <BackButton onPress={handleGoBack} />
+              <TouchableOpacity onPress={handleGoBack} className="relative">
                 <View
                   darkColor="#FBEEBC"
                   className="w-20 h-20 mr-6 rounded-2xl flex items-center justify-center relative"

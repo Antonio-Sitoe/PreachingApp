@@ -1,6 +1,21 @@
 import TouchableOpacity, { Text, View } from '@/components/Themed';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { ScrollView, Alert } from 'react-native';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { BackButton } from '@/components/ui/BackButton';
+import {
+  type Student,
+  availabilitiesAction,
+  type NewStudentAvailability,
+} from '@/database/actions';
+import { useQuery } from '@tanstack/react-query';
+import { Skeleton } from '@/components/ui/skeleton';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
+import { CheckBox } from '@/components/ui/CheckBox';
+import { WeeklyNotificationManager } from '@/lib/notifications/weekly-notification';
 
 import {
   Select,
@@ -15,7 +30,6 @@ import {
   SelectItem,
 } from '@/components/ui/select';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {
   Actionsheet,
   ActionsheetContent,
@@ -23,138 +37,233 @@ import {
   ActionsheetDragIndicatorWrapper,
   ActionsheetBackdrop,
 } from '@/components/ui/actionsheet';
-
-import Colors from '@/constants/Colors';
-import useTheme from '@/hooks/useTheme';
-import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
-import { CheckBox } from '@/components/ui/CheckBox';
+import { WeekDayEnum } from '@/@types/enums';
 
 const weekDays = [
-  'Segunda-feira',
-  'Terça-feira',
-  'Quarta-feira',
-  'Quinta-feira',
-  'Sexta-feira',
-  'Sábado',
-  'Domingo',
+  { label: 'Segunda-feira', value: WeekDayEnum.MONDAY },
+  { label: 'Terça-feira', value: WeekDayEnum.TUESDAY },
+  { label: 'Quarta-feira', value: WeekDayEnum.WEDNESDAY },
+  { label: 'Quinta-feira', value: WeekDayEnum.THURSDAY },
+  { label: 'Sexta-feira', value: WeekDayEnum.FRIDAY },
+  { label: 'Sábado', value: WeekDayEnum.SATURDAY },
+  { label: 'Domingo', value: WeekDayEnum.SUNDAY },
 ];
 
-function formatTime(date) {
-  return date.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-}
+const getWeekdayLabel = (weekday: WeekDayEnum): string => {
+  const day = weekDays.find((d) => d.value === weekday);
+  return day?.label || 'Selecione um dia';
+};
 
-interface Availability {
-  weekDay: string;
-  startTime: string;
-  endTime: string;
-  notificationEnabled: boolean;
-}
+interface Availability extends NewStudentAvailability {}
 
-import { ScrollView, StyleSheet } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { BackButton } from '@/components/ui/BackButton';
-import { studentsAction, type Student } from '@/database/actions';
+const notificationManager = new WeeklyNotificationManager();
 
 export default function CreateStudent() {
   const { isDark } = useTheme();
-  const { push } = useRouter();
+  const { navigate } = useRouter();
   const { data } = useLocalSearchParams();
   const studentData = JSON.parse(data as string) as Student;
-  console.log('studentData', studentData);
+  const studentId = String(studentData?.id);
+  const studentName = studentData?.name;
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [availabilities, setAvailabilities] = useState<Availability[]>([]);
-  const [showForm, setShowForm] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [form, setForm] = useState<{
-    weekDay: string;
-    startTime: Date;
-    endTime: Date;
-    notificationEnabled: boolean;
-  }>({
-    weekDay: weekDays[0],
-    startTime: new Date(2023, 0, 1, 8, 0),
-    endTime: new Date(2023, 0, 1, 10, 0),
-    notificationEnabled: true,
-  });
   const [showStartPicker, setShowStartPicker] = useState(false);
-  const [showEndPicker, setShowEndPicker] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editingAvailability, setEditingAvailability] =
+    useState<Availability | null>(null);
+  const [form, setForm] = useState<Availability>({
+    weekday: WeekDayEnum.MONDAY,
+    hour: 8,
+    minute: 0,
+    title: '',
+    body: '',
+    isActive: true,
+    studentId: studentId,
+  });
+
+  const {
+    data: availabilities = [],
+    isLoading: isLoadingAvailabilities,
+    refetch: refetchAvailabilities,
+  } = useQuery<Availability[]>({
+    queryKey: ['availabilities', studentId],
+    queryFn: async () => {
+      return await availabilitiesAction.getByStudentId(studentId);
+    },
+  });
+
+  const checkTimeConflict = (
+    weekday: WeekDayEnum,
+    hour: number,
+    minute: number
+  ): boolean => {
+    return availabilities.some(
+      (a) =>
+        a.weekday === weekday &&
+        a.hour === hour &&
+        a.minute === minute &&
+        (editingAvailability ? a.id !== editingAvailability.id : true)
+    );
+  };
+
+  const checkNearbyTime = (
+    weekday: WeekDayEnum,
+    hour: number,
+    minute: number
+  ): boolean => {
+    return availabilities.some(
+      (a) =>
+        a.weekday === weekday &&
+        Math.abs(a.hour * 60 + a.minute - (hour * 60 + minute)) <= 30 &&
+        (editingAvailability ? a.id !== editingAvailability.id : true)
+    );
+  };
 
   const resetForm = () => {
     setForm({
-      weekDay: weekDays[0],
-      startTime: new Date(2023, 0, 1, 8, 0),
-      endTime: new Date(2023, 0, 1, 10, 0),
-      notificationEnabled: true,
+      weekday: WeekDayEnum.MONDAY,
+      hour: 8,
+      minute: 0,
+      title: '',
+      body: '',
+      isActive: true,
+      studentId: studentId,
     });
-    setEditingIndex(null);
+    setEditingAvailability(null);
     setShowForm(false);
     setIsSubmitting(false);
   };
 
-  const handleAddOrUpdate = () => {
+  const handleAddOrUpdate = async () => {
     const newBlock: Availability = {
-      weekDay: form.weekDay,
-      startTime: formatTime(form.startTime),
-      endTime: formatTime(form.endTime),
-      notificationEnabled: form.notificationEnabled,
+      ...form,
+      studentId: studentId,
     };
-    let newAvailabilities: Availability[];
-    if (editingIndex !== null) {
-      newAvailabilities = availabilities.map((a, i) =>
-        i === editingIndex ? newBlock : a
+    const hasTimeConflict = availabilities.some(
+      (a) =>
+        a.weekday === newBlock.weekday &&
+        a.hour === newBlock.hour &&
+        a.minute === newBlock.minute &&
+        (editingAvailability ? a.id !== editingAvailability.id : true)
+    );
+    if (hasTimeConflict) {
+      const conflictingDay = getWeekdayLabel(newBlock.weekday);
+      const timeString = `${String(newBlock.hour).padStart(2, '0')}:${String(
+        newBlock.minute
+      ).padStart(2, '0')}`;
+      Alert.alert(
+        'Conflito de Horário',
+        `Já existe um lembrete configurado para ${conflictingDay} às ${timeString}.\n\nPor favor, escolha um horário diferente.`,
+        [{ text: 'OK', style: 'default' }]
       );
-    } else {
-      newAvailabilities = [...availabilities, newBlock];
+      return;
     }
-    setAvailabilities(newAvailabilities);
-    setShowForm(false);
-    resetForm();
+
+    // Validação adicional: verifica se há disponibilidades muito próximas (dentro de 30 minutos)
+    const hasNearbyTime = availabilities.some(
+      (a) =>
+        a.weekday === newBlock.weekday &&
+        Math.abs(
+          a.hour * 60 + a.minute - (newBlock.hour * 60 + newBlock.minute)
+        ) <= 30 &&
+        (editingAvailability ? a.id !== editingAvailability.id : true)
+    );
+
+    if (hasNearbyTime && !editingAvailability) {
+      Alert.alert(
+        'Horários Próximos',
+        'Existe um lembrete próximo a este horário no mesmo dia. Recomendamos um intervalo de pelo menos 30 minutos entre lembretes.',
+        [{ text: 'Escolher Outro Horário', style: 'cancel' }]
+      );
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      if (editingAvailability) {
+        await notificationManager.updateNotification(editingAvailability.id!, {
+          ...newBlock,
+        });
+      } else {
+        await notificationManager.createWeeklyNotification({
+          ...newBlock,
+          title: `📅 Visita para ${studentName}`,
+          body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
+            newBlock.hour
+          ).padStart(2, '0')}:${String(newBlock.minute).padStart(2, '0')}.`,
+        });
+      }
+      await refetchAvailabilities();
+      resetForm();
+    } catch (error) {
+      console.error('Erro ao salvar disponibilidade:', error);
+      Alert.alert('Erro', 'Não foi possível salvar a disponibilidade.');
+    }
+    setIsSubmitting(false);
   };
 
-  const handleEdit = (index: number) => {
-    const a = availabilities[index];
+  const handleEdit = (availability: Availability) => {
     setForm({
-      weekDay: a.weekDay,
-      startTime: new Date(2023, 0, 1, ...a.startTime.split(':').map(Number)),
-      endTime: new Date(2023, 0, 1, ...a.endTime.split(':').map(Number)),
-      notificationEnabled: a.notificationEnabled,
+      id: availability.id,
+      weekday: availability.weekday,
+      hour: availability.hour,
+      minute: availability.minute,
+      title: availability.title,
+      body: availability.body,
+      isActive: availability.isActive,
+      studentId: availability.studentId,
     });
-    setEditingIndex(index);
+    setEditingAvailability(availability);
     setShowForm(true);
   };
 
-  const handleRemove = (index: number) => {
-    const newAvailabilities = availabilities.filter((_, i) => i !== index);
-    setAvailabilities(newAvailabilities);
+  const handleRemove = async (availability: Availability) => {
+    Alert.alert(
+      'Confirmar exclusão',
+      'Tem certeza que deseja remover esta disponibilidade?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Remover',
+          style: 'destructive',
+          onPress: async () => {
+            setIsSubmitting(true);
+            try {
+              if (availability.id) {
+                await notificationManager.deleteNotification(availability.id);
+              }
+              await refetchAvailabilities();
+            } catch (error) {
+              console.error('Erro ao remover disponibilidade:', error);
+            }
+            setIsSubmitting(false);
+          },
+        },
+      ]
+    );
   };
 
-  function addOneHour(date: Date): Date {
-    const newDate = new Date(date);
-    newDate.setHours((date.getHours() + 1) % 24);
-    return newDate;
+  function onGoBack() {
+    navigate({
+      pathname: '/(drawer)/(tabs)/students/profile',
+      params: {
+        id: studentData.id,
+      },
+    });
   }
 
-  const onSubmit = async () => {
-    setIsSubmitting(true);
-    // await studentsAction.updateById(studentData.id, {
-    //   bestDay: JSON.stringify(availabilities.map((a) => a.weekDay)),
-    //   bestTime: JSON.stringify(availabilities.map((a) => a.startTime)),
-    // });
-    setIsSubmitting(false);
-  };
-
-  const goBack = () => {
-    push({
-      pathname: '/(drawer)/(tabs)/students/profile',
-      params: { id: studentData.id },
+  const handleAddAvailability = () => {
+    setShowForm(true);
+    setEditingAvailability(null);
+    setForm({
+      weekday: WeekDayEnum.MONDAY,
+      hour: 8,
+      minute: 0,
+      title: '',
+      body: '',
+      isActive: true,
+      studentId: studentId,
     });
   };
-
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">
@@ -162,10 +271,10 @@ export default function CreateStudent() {
           className="flex-row items-center w-full justify-center gap-2"
           lightColor="#F6F6F9"
         >
-          <BackButton onPress={goBack} />
+          <BackButton onPress={onGoBack} />
           <View className="flex-1" lightColor="transparent">
             <Text className="font-bold font-textIBM text-base break-words over">
-              Morador (Informações de Serviço)
+              Melhores Horários para Visita ({studentName})
             </Text>
             <View
               darkColor={Colors.dark.tint}
@@ -181,74 +290,84 @@ export default function CreateStudent() {
         contentContainerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
           paddingBottom: 60,
-          paddingTop: 10,
         }}
       >
-        <View style={{ marginVertical: 16 }}>
-          <Text style={{ fontWeight: 'bold', fontSize: 16, marginBottom: 8 }}>
-            Melhores Horários para Visitas
-          </Text>
-          {availabilities.length === 0 && (
+        <View className="mt-4">
+          {isLoadingAvailabilities ? (
+            <View className="gap-2">
+              <View className="flex-row items-center gap-4">
+                <Skeleton variant="rounded" className="h-10 w-10" />
+                <Skeleton variant="rounded" className="h-10 w-full" />
+              </View>
+              <View className="flex-row items-center gap-4">
+                <Skeleton variant="rounded" className="h-10 w-10" />
+                <Skeleton variant="rounded" className="h-10 w-full" />
+              </View>
+            </View>
+          ) : availabilities.length === 0 ? (
             <Text style={{ color: '#888' }}>
               Nenhuma disponibilidade cadastrada.
             </Text>
-          )}
-          {availabilities.map((item, index) => (
-            <View
-              key={item.weekDay + '-' + index.toString()}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginBottom: 8,
-              }}
-            >
-              <View className="flex-1 rounded-lg flex-row justify-between items-center">
-                <View className="flex-1 p-3">
-                  <Text className="font-title text-base mb-1 flex-row items-center justify-between gap-4">
-                    {item.weekDay}
-                  </Text>
-                  <Text className="font-body text-sm text-[#717171] mb-1">
-                    {item.startTime} - {item.endTime} | Receber Lembrete:{' '}
-                    {item.notificationEnabled ? 'Sim' : 'Não'}
-                  </Text>
+          ) : (
+            availabilities.map((item, index) => (
+              <View
+                key={item.id ?? item.weekday + '-' + index.toString()}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: 8,
+                }}
+              >
+                <View className="flex-1 rounded-lg flex-row justify-between items-center">
+                  <View className="flex-1 p-3">
+                    <Text className="font-title text-base mb-1 flex-row items-center justify-between gap-4">
+                      {getWeekdayLabel(item?.weekday as WeekDayEnum)}
+                    </Text>
+                    <Text className="font-body text-sm text-[#717171] mb-1">
+                      {item?.hour?.toString().padStart(2, '0')}:
+                      {item?.minute?.toString().padStart(2, '0')} - Receber
+                      Lembrete: {item.isActive ? 'Sim' : 'Não'}
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  className="flex-row items-center gap-2"
+                  lightColor="transparent"
+                >
+                  <TouchableOpacity
+                    lightColor={Colors.light.tint}
+                    darkColor={Colors.dark.tint}
+                    className="w-9 h-9 justify-center items-center rounded"
+                    onPress={() => handleEdit(item)}
+                  >
+                    <Pen color="white" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    lightColor={Colors.light.Error}
+                    darkColor={Colors.dark.Error}
+                    className="w-9 h-9 justify-center items-center rounded"
+                    onPress={() => handleRemove(item)}
+                  >
+                    <Trash2 color="white" />
+                  </TouchableOpacity>
                 </View>
               </View>
+            ))
+          )}
 
-              <View
-                className="flex-row items-center gap-2"
-                lightColor="transparent"
-              >
-                <TouchableOpacity
-                  lightColor={Colors.light.tint}
-                  darkColor={Colors.dark.tint}
-                  className="w-9 h-9 justify-center items-center rounded"
-                  onPress={() => handleEdit(index)}
-                >
-                  <Pen color="white" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  lightColor={Colors.light.Error}
-                  darkColor={Colors.dark.Error}
-                  className="w-9 h-9 justify-center items-center rounded"
-                  onPress={() => handleRemove(index)}
-                >
-                  <Trash2 color="white" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
           <TouchableOpacity
+            onPress={handleAddAvailability}
+            activeOpacity={0.7}
             lightColor={Colors.light.tint}
             darkColor={Colors.dark.tint}
-            onPress={() => setShowForm(true)}
-            className="rounded-lg p-2 mt-4"
-            style={{ alignSelf: 'flex-start' }}
+            disabled={isSubmitting}
+            className="rounded-lg py-3 px-4 mt-4 w-3/4 flex items-center justify-center"
+            style={{
+              opacity: isSubmitting ? 0.6 : 1,
+            }}
           >
-            <Text
-              lightColor="white"
-              darkColor="white"
-              className="text-white font-title text-base"
-            >
+            <Text lightColor="white" darkColor="white" className="text-base">
               + Adicionar Disponibilidade
             </Text>
           </TouchableOpacity>
@@ -277,18 +396,23 @@ export default function CreateStudent() {
                 lightColor={Colors.light.tint}
                 darkColor={Colors.dark.tint}
               >
-                Adicionar/Editar Disponibilidade
+                {editingAvailability
+                  ? 'Editar Disponibilidade'
+                  : 'Adicionar Disponibilidade'}
               </Text>
               <Text className="text-base font-title mb-2">Dia da semana:</Text>
               <Select
-                selectedValue={form.weekDay}
-                onValueChange={(v) => setForm((f) => ({ ...f, weekDay: v }))}
+                selectedValue={form.weekday.toString()}
+                onValueChange={(v) =>
+                  setForm((f) => ({ ...f, weekday: Number(v) as WeekDayEnum }))
+                }
                 style={{ marginBottom: 8 }}
               >
                 <SelectTrigger variant="outline" size="lg">
                   <SelectInput
-                    placeholder="Select option"
+                    placeholder="Selecione um dia"
                     className="text-base font-body h-14"
+                    value={getWeekdayLabel(form.weekday)}
                   />
                   <SelectIcon className="mr-3 pt-2" as={ChevronDownIcon} />
                 </SelectTrigger>
@@ -299,50 +423,81 @@ export default function CreateStudent() {
                       <SelectDragIndicator />
                     </SelectDragIndicatorWrapper>
                     {weekDays.map((day) => (
-                      <SelectItem label={day} value={day} key={day}>
-                        {day}
+                      <SelectItem
+                        label={day.label}
+                        value={day.value.toString()}
+                        key={day.value}
+                      >
+                        {day.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </SelectPortal>
               </Select>
 
-              <Text className="text-base font-title">Horário de início:</Text>
+              <Text className="text-base font-title">
+                Horário da notificação:
+              </Text>
               <TouchableOpacity onPress={() => setShowStartPicker(true)}>
                 <Text
                   style={{
                     padding: 12,
-                    backgroundColor: '#eee',
+                    backgroundColor: checkTimeConflict(
+                      form.weekday,
+                      form.hour,
+                      form.minute
+                    )
+                      ? '#ffebee'
+                      : checkNearbyTime(form.weekday, form.hour, form.minute)
+                      ? '#fff3e0'
+                      : '#eee',
                     borderRadius: 4,
+                    borderWidth: checkTimeConflict(
+                      form.weekday,
+                      form.hour,
+                      form.minute
+                    )
+                      ? 1
+                      : 0,
+                    borderColor: checkTimeConflict(
+                      form.weekday,
+                      form.hour,
+                      form.minute
+                    )
+                      ? '#f44336'
+                      : 'transparent',
                   }}
                   className="text-base font-body"
                 >
-                  {formatTime(form.startTime)}
+                  {form.hour?.toString().padStart(2, '0')}:
+                  {form.minute?.toString().padStart(2, '0')}
                 </Text>
               </TouchableOpacity>
 
-              <Text className="text-base font-title">Horário de fim:</Text>
-              <TouchableOpacity onPress={() => setShowEndPicker(true)}>
-                <Text
-                  style={{
-                    padding: 12,
-                    backgroundColor: '#eee',
-                    borderRadius: 4,
-                  }}
-                  className="text-base font-body"
-                >
-                  {formatTime(form.endTime)}
+              {/* Feedback visual para conflitos */}
+              {checkTimeConflict(form.weekday, form.hour, form.minute) && (
+                <Text style={{ color: '#f44336', fontSize: 12, marginTop: 4 }}>
+                  ⚠️ Conflito: Já existe um lembrete neste horário
                 </Text>
-              </TouchableOpacity>
+              )}
+
+              {checkNearbyTime(form.weekday, form.hour, form.minute) &&
+                !checkTimeConflict(form.weekday, form.hour, form.minute) && (
+                  <Text
+                    style={{ color: '#ff9800', fontSize: 12, marginTop: 4 }}
+                  >
+                    ⚠️ Atenção: Existe um lembrete próximo a este horário
+                  </Text>
+                )}
 
               <View className="flex-row items-center mt-2 gap-2 w-full">
                 <CheckBox
                   title="Receber lembrete"
-                  checked={form.notificationEnabled}
+                  checked={form.isActive}
                   onPress={() =>
                     setForm((f) => ({
                       ...f,
-                      notificationEnabled: !f.notificationEnabled,
+                      isActive: !f.isActive,
                     }))
                   }
                 />
@@ -370,14 +525,23 @@ export default function CreateStudent() {
                     backgroundColor: isDark
                       ? Colors.dark.tint
                       : Colors.light.tint,
+                    opacity:
+                      checkTimeConflict(form.weekday, form.hour, form.minute) ||
+                      isSubmitting
+                        ? 0.5
+                        : 1,
                   }}
+                  disabled={
+                    isSubmitting ||
+                    checkTimeConflict(form.weekday, form.hour, form.minute)
+                  }
                 >
                   <Text
                     lightColor="white"
                     darkColor="white"
                     className="text-white font-text capitalize text-base"
                   >
-                    {editingIndex !== null ? 'Salvar' : 'Adicionar'}
+                    {editingAvailability ? 'Salvar' : 'Adicionar'}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -385,107 +549,25 @@ export default function CreateStudent() {
 
             {showStartPicker && (
               <DateTimePicker
-                value={form.startTime}
+                value={new Date(2023, 0, 1, form.hour, form.minute)}
                 mode="time"
                 is24Hour
                 display="default"
                 onChange={(_, date) => {
                   setShowStartPicker(false);
                   if (date) {
-                    // Se a nova hora de início for >= hora de fim, ajusta a hora de fim
-                    let newEndTime = form.endTime;
-                    if (
-                      date.getHours() > form.endTime.getHours() ||
-                      (date.getHours() === form.endTime.getHours() &&
-                        date.getMinutes() >= form.endTime.getMinutes())
-                    ) {
-                      newEndTime = addOneHour(date);
-                    }
                     setForm((f) => ({
                       ...f,
-                      startTime: date,
-                      endTime: newEndTime,
+                      hour: date.getHours(),
+                      minute: date.getMinutes(),
                     }));
-                  }
-                }}
-              />
-            )}
-
-            {showEndPicker && (
-              <DateTimePicker
-                value={form.endTime}
-                mode="time"
-                is24Hour
-                display="default"
-                onChange={(_, date) => {
-                  setShowEndPicker(false);
-                  if (date) {
-                    // Se a nova hora de fim for <= hora de início, ajusta para igual à hora de início
-                    if (
-                      date.getHours() < form.startTime.getHours() ||
-                      (date.getHours() === form.startTime.getHours() &&
-                        date.getMinutes() <= form.startTime.getMinutes())
-                    ) {
-                      setForm((f) => ({ ...f, endTime: f.startTime }));
-                    } else {
-                      setForm((f) => ({ ...f, endTime: date }));
-                    }
                   }
                 }}
               />
             )}
           </ActionsheetContent>
         </Actionsheet>
-
-        <View
-          style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8 }}
-        >
-          <TouchableOpacity
-            onPress={goBack}
-            activeOpacity={0.7}
-            style={{
-              backgroundColor: '#FF647C',
-              ...styles.button,
-            }}
-          >
-            <Text style={styles.buttonText}>Cancelar</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={onSubmit}
-            activeOpacity={0.7}
-            disabled={isSubmitting}
-            style={{
-              backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
-              opacity: isSubmitting ? 0.6 : 1,
-              ...styles.button,
-            }}
-          >
-            <Text
-              style={{
-                ...styles.buttonText,
-              }}
-            >
-              {isSubmitting ? 'Guardando...' : 'Guardar'}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </View>
   );
 }
-const styles = StyleSheet.create({
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: 'white',
-    fontFamily: 'Inter_400Regular',
-    textTransform: 'capitalize',
-    fontSize: 14,
-  },
-});

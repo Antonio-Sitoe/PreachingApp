@@ -1,13 +1,14 @@
 import TouchableOpacity, { Text, View } from '@/components/Themed';
-import Colors from '@/constants/Colors';
-import { type Student, studentsAction } from '@/database/actions';
-import useTheme from '@/hooks/useTheme';
+import React from 'react';
+import { ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
-
+import { studentsAction } from '@/database/actions';
+import type { Student } from '@/database/schemas';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 import { Calendar, Pen, Trash2 } from 'lucide-react-native';
-import { Alert } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
 import Snackbar from 'react-native-snackbar';
+import { weeklyNotificationManager } from '@/lib/notifications/weekly-notification';
 
 interface StudentAboutProps {
   data: Student;
@@ -32,6 +33,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
       },
     });
   }
+
   function handleDeleteStudent(id: string) {
     Alert.alert(
       `Tem certeza de que deseja excluir ${data?.name}?`,
@@ -42,13 +44,22 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           style: 'destructive',
           isPreferred: true,
           onPress: async () => {
-            const { sucess } = await studentsAction.deleteWithOwnVisits(id);
-            Snackbar.show({
-              text: `${data?.name} apagado com sucesso`,
-              duration: Snackbar.LENGTH_LONG,
-            });
-            if (sucess) {
-              push('/(drawer)/(tabs)/students');
+            try {
+              const { sucess } = await studentsAction.deleteWithOwnVisits(id);
+              if (sucess) {
+                await weeklyNotificationManager.cleanupStudentNotifications(id);
+                Snackbar.show({
+                  text: `${data?.name} apagado com sucesso`,
+                  duration: Snackbar.LENGTH_LONG,
+                });
+                push('/(drawer)/(tabs)/students');
+              }
+            } catch (error) {
+              console.error('Erro ao deletar estudante:', error);
+              Snackbar.show({
+                text: 'Erro ao deletar estudante',
+                duration: Snackbar.LENGTH_LONG,
+              });
             }
           },
         },
@@ -89,22 +100,6 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
           Localizacao
         </Text>
         <Text className="mt-1  mb-3 font-text">{data?.address || '...'}</Text>
-        <Text
-          className="text-base font-title"
-          lightColor={Colors.light.tint}
-          darkColor={Colors.dark.Success200}
-        >
-          Dia de visitar
-        </Text>
-        <Text className="mt-1  mb-3 font-text">{data?.bestDay || '...'}</Text>
-        <Text
-          className="text-base font-title"
-          lightColor={Colors.light.tint}
-          darkColor={Colors.dark.Success200}
-        >
-          Hora de visitar
-        </Text>
-        <Text className="mt-1  mb-3 font-text">{data?.bestTime || '...'}</Text>
 
         <TouchableOpacity
           className="flex-row items-center gap-2 mt-6"

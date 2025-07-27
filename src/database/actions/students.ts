@@ -45,6 +45,7 @@ class StudentsActions {
           .returning();
 
         if (deletedStudent.length > 0) {
+          console.log(`Estudante ${studentsId} deletado com sucesso.`);
           return { sucess: true };
         }
       }

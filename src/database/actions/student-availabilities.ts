@@ -6,32 +6,54 @@ import type {
 } from '../schemas/student-availabilities';
 import { eq } from 'drizzle-orm';
 
-export class StudentAvailabilityActions {
+class StudentAvailabilityActions {
   async create(data: NewStudentAvailability) {
-    return db.insert(studentAvailabilities).values(data).returning();
+    return await db
+      .insert(studentAvailabilities)
+      .values({
+        id: data.id,
+        weekday: data.weekday,
+        studentId: data.studentId,
+        hour: data.hour,
+        minute: data.minute,
+        title: data.title,
+        body: data.body,
+        isActive: data.isActive,
+      })
+      .returning();
   }
 
-  async getStudentAvailabilities(
-    studentId: string
-  ): Promise<StudentAvailability[]> {
-    return db
-      .select()
-      .from(studentAvailabilities)
-      .where(eq(studentAvailabilities.studentId, studentId));
+  async getAll(): Promise<StudentAvailability[]> {
+    return db.select().from(studentAvailabilities);
+  }
+
+  async getByStudentId(studentId: string): Promise<StudentAvailability[]> {
+    try {
+      return db
+        .select()
+        .from(studentAvailabilities)
+        .where(eq(studentAvailabilities.studentId, studentId));
+    } catch (error) {
+      console.error('Error fetching student availabilities:', error);
+      throw error;
+    }
   }
 
   async update(id: string, data: Partial<NewStudentAvailability>) {
     return db
       .update(studentAvailabilities)
-      .set(data)
+      .set({
+        ...data,
+      })
       .where(eq(studentAvailabilities.id, id))
       .returning();
   }
 
   async delete(id: string) {
-    return db
+    return await db
       .delete(studentAvailabilities)
-      .where(eq(studentAvailabilities.id, id));
+      .where(eq(studentAvailabilities.id, id))
+      .returning();
   }
 
   async deleteAllForStudent(studentId: string) {
@@ -39,4 +61,10 @@ export class StudentAvailabilityActions {
       .delete(studentAvailabilities)
       .where(eq(studentAvailabilities.studentId, studentId));
   }
+
+  async clear() {
+    return db.delete(studentAvailabilities);
+  }
 }
+
+export const availabilitiesAction = new StudentAvailabilityActions();

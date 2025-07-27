@@ -198,13 +198,12 @@ export function bestMonthsStatics(data: any) {
 
 export function cortarString(descricao, limite = 25) {
   if (descricao.length <= limite) {
-    return descricao; // Retorna a string original se não ultrapassar o limite
+    return descricao;
   } else {
-    return descricao.slice(0, limite) + '...'; // Corta a string e adiciona "..."
+    return descricao.slice(0, limite) + '...';
   }
 }
 
-// Helper para combinar classes condicionalmente (classNames)
 export function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');
 }

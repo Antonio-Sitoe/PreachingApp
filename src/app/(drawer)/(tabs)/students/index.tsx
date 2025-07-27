@@ -11,12 +11,13 @@ import { useRouter } from 'expo-router';
 
 import { RefreshControl } from 'react-native-gesture-handler';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { ActivityIndicator } from 'react-native';
+import { useIsFocused } from '@react-navigation/native';
 
 const PAGE_SIZE = 20;
 
 export default function StudentsHome() {
   const router = useRouter();
+  const isFocused = useIsFocused();
   const { isDark } = useTheme();
 
   const {
@@ -27,7 +28,7 @@ export default function StudentsHome() {
     hasNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ['students'],
+    queryKey: ['students', isFocused],
     queryFn: async ({ pageParam = 1 }: { pageParam?: number }) => {
       console.log('pageParam', pageParam);
       return studentsAction.getAll({ page: pageParam, pageSize: PAGE_SIZE });
@@ -82,13 +83,6 @@ export default function StudentsHome() {
           paddingTop: 20,
         }}
         keyExtractor={(item, i) => i + String(item.id)}
-        ListEmptyComponent={() => {
-          return (
-            <View className="mt-10">
-              <NoContent text="Sem dados" />
-            </View>
-          );
-        }}
         renderItem={({ item }) => {
           return (
             <StudentCard
@@ -115,7 +109,7 @@ export default function StudentsHome() {
         ListFooterComponent={
           isFetchingNextPage || isLoading ? (
             <View
-              className="h-2"
+              className="h-2 mt-4 mx-auto justify-center items-center"
               lightColor="transparent"
               darkColor="transparent"
             >
@@ -123,6 +117,13 @@ export default function StudentsHome() {
             </View>
           ) : null
         }
+        ListEmptyComponent={() => {
+          return (
+            <View className="mt-10">
+              <NoContent text="Sem dados" />
+            </View>
+          );
+        }}
       />
 
       <AnimatedButtonWithText

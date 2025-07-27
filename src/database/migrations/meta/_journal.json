@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1753092767634,
-      "tag": "0000_swift_millenium_guard",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1753173482129,
-      "tag": "0001_naive_sheva_callister",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1753444281246,
-      "tag": "0002_amused_freak",
+      "when": 1753644461753,
+      "tag": "0000_polite_bug",
       "breakpoints": true
     }
   ]

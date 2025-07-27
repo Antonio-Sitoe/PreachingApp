@@ -1,7 +1,6 @@
 CREATE TABLE `user` (
 	`id` text PRIMARY KEY NOT NULL,
 	`username` text NOT NULL,
-	`email` text NOT NULL,
 	`avatar_image` text,
 	`profile` text,
 	`created_at` text NOT NULL
@@ -27,8 +26,6 @@ CREATE TABLE `visits` (
 	`notes` text,
 	`publications` text,
 	`biblical_texts` text,
-	`next_time` text,
-	`videos` text,
 	`result` text,
 	`date_and_hours` text NOT NULL,
 	`created_at` text NOT NULL,
@@ -44,7 +41,19 @@ CREATE TABLE `students` (
 	`email` text,
 	`gender` text NOT NULL,
 	`address` text,
-	`best_time` text,
-	`best_day` text,
 	`created_at` text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE `student_availabilities` (
+	`id` text PRIMARY KEY NOT NULL,
+	`studentId` text NOT NULL,
+	`weekday` integer NOT NULL,
+	`hour` integer NOT NULL,
+	`minute` integer NOT NULL,
+	`title` text NOT NULL,
+	`body` text NOT NULL,
+	`isActive` integer DEFAULT true NOT NULL,
+	`createdAt` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`updatedAt` integer DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	FOREIGN KEY (`studentId`) REFERENCES `students`(`id`) ON UPDATE no action ON DELETE no action
 );
