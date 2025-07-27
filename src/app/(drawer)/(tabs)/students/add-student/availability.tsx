@@ -1,5 +1,5 @@
 import TouchableOpacity, { Text, View } from '@/components/Themed';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -16,6 +16,7 @@ import useTheme from '@/hooks/useTheme';
 import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
 import { CheckBox } from '@/components/ui/CheckBox';
 import { WeeklyNotificationManager } from '@/lib/notifications/weekly-notification';
+import * as Notifications from 'expo-notifications';
 
 import {
   Select,
@@ -245,6 +246,11 @@ export default function CreateStudent() {
       studentId: studentId,
     });
   };
+
+  useEffect(() => {
+    Notifications.requestPermissionsAsync();
+  }, []);
+
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">
@@ -255,7 +261,8 @@ export default function CreateStudent() {
           <BackButton onPress={onGoBack} />
           <View className="flex-1" lightColor="transparent">
             <Text className="font-bold font-textIBM text-base break-words over">
-              Melhores Horários para Visita ({studentName})
+              Melhores Horários para Visita{' '}
+              {studentName ? `(${studentName})` : ''}
             </Text>
             <View
               darkColor={Colors.dark.tint}
@@ -293,11 +300,7 @@ export default function CreateStudent() {
             availabilities.map((item, index) => (
               <View
                 key={item.id ?? item.weekday + '-' + index.toString()}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: 8,
-                }}
+                className="flex-row items-center mb-4"
               >
                 <View className="flex-1 rounded-lg flex-row justify-between items-center">
                   <View className="flex-1 p-3">
@@ -468,8 +471,7 @@ export default function CreateStudent() {
                     style={{ color: '#ff9800', fontSize: 12, marginTop: 4 }}
                   >
                     ⚠️ Atenção: Existe um lembrete próximo a este horário no
-                    mesmo dia. Recomendamos um intervalo de pelo menos 30
-                    minutos entre lembretes.
+                    mesmo dia.
                   </Text>
                 )}
 
@@ -487,15 +489,15 @@ export default function CreateStudent() {
               </View>
               <View className="flex-row justify-end gap-2 mt-4 w-full">
                 <TouchableOpacity
-                  className="py-2 px-5 rounded-lg items-center justify-center bg-[#FF647C]"
+                  className="py-2 px-5 rounded-lg items-center justify-center"
                   onPress={() => {
                     setShowForm(false);
                     resetForm();
                   }}
                 >
                   <Text
-                    lightColor="white"
-                    darkColor="white"
+                    lightColor={Colors.light.Error}
+                    darkColor={Colors.dark.Error}
                     className="text-white font-text capitalize text-base"
                   >
                     Cancelar
@@ -534,8 +536,7 @@ export default function CreateStudent() {
               <DateTimePicker
                 value={new Date(2023, 0, 1, form.hour, form.minute)}
                 mode="time"
-                is24Hour
-                display="default"
+                display="spinner"
                 onChange={(_, date) => {
                   setShowStartPicker(false);
                   if (date) {
