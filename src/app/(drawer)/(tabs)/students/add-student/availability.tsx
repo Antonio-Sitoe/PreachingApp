@@ -158,25 +158,6 @@ export default function CreateStudent() {
       return;
     }
 
-    // Validação adicional: verifica se há disponibilidades muito próximas (dentro de 30 minutos)
-    const hasNearbyTime = availabilities.some(
-      (a) =>
-        a.weekday === newBlock.weekday &&
-        Math.abs(
-          a.hour * 60 + a.minute - (newBlock.hour * 60 + newBlock.minute)
-        ) <= 30 &&
-        (editingAvailability ? a.id !== editingAvailability.id : true)
-    );
-
-    if (hasNearbyTime && !editingAvailability) {
-      Alert.alert(
-        'Horários Próximos',
-        'Existe um lembrete próximo a este horário no mesmo dia. Recomendamos um intervalo de pelo menos 30 minutos entre lembretes.',
-        [{ text: 'Escolher Outro Horário', style: 'cancel' }]
-      );
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       if (editingAvailability) {
@@ -486,7 +467,9 @@ export default function CreateStudent() {
                   <Text
                     style={{ color: '#ff9800', fontSize: 12, marginTop: 4 }}
                   >
-                    ⚠️ Atenção: Existe um lembrete próximo a este horário
+                    ⚠️ Atenção: Existe um lembrete próximo a este horário no
+                    mesmo dia. Recomendamos um intervalo de pelo menos 30
+                    minutos entre lembretes.
                   </Text>
                 )}
 
