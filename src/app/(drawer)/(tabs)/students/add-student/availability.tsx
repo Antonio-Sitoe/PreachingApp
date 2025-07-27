@@ -15,7 +15,7 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
 import { CheckBox } from '@/components/ui/CheckBox';
-import { WeeklyNotificationManager } from '@/lib/notifications/weekly-notification';
+import { notificationManager } from '@/lib/notifications/weekly-notification';
 import * as Notifications from 'expo-notifications';
 
 import {
@@ -56,8 +56,6 @@ const getWeekdayLabel = (weekday: WeekDayEnum): string => {
 };
 
 interface Availability extends NewStudentAvailability {}
-
-const notificationManager = new WeeklyNotificationManager();
 
 export default function CreateStudent() {
   const { isDark } = useTheme();
