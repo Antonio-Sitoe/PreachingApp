@@ -16,6 +16,7 @@ export const studentAvailabilities = sqliteTable('student_availabilities', {
   minute: integer().notNull(),
   title: text().notNull(),
   body: text().notNull(),
+  systemId: text().notNull().default(''),
   isActive: integer({ mode: 'boolean' }).notNull().default(true),
   createdAt: integer({ mode: 'timestamp' })
     .notNull()
