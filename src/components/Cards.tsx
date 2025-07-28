@@ -1,14 +1,21 @@
-import { View, Text } from 'react-native'
-import useTheme from '@/hooks/useTheme'
-import Colors from '@/constants/Colors'
+import { View, Text } from 'react-native';
+import useTheme from '@/hooks/useTheme';
+import Colors from '@/constants/Colors';
+import type { ComponentType } from 'react';
+
+interface IconProps {
+  strokeWidth?: number;
+  size?: number;
+  color?: string;
+}
 
 interface ICardsProps {
-  title: string
-  content: string | number | undefined
-  Icon: any
+  title: string;
+  content: string | number | undefined;
+  Icon: ComponentType<IconProps>;
 }
 export default function Cards({ title, content, Icon }: ICardsProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
 
   return (
     <View
@@ -56,5 +63,5 @@ export default function Cards({ title, content, Icon }: ICardsProps) {
         </Text>
       </View>
     </View>
-  )
+  );
 }

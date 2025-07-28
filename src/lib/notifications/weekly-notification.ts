@@ -11,12 +11,21 @@ type WeeklyNotificationParams = NewStudentAvailability & {
 };
 
 class WeeklyNotificationManager {
+  private static _instance: WeeklyNotificationManager | null = null;
+
   private isListenerConfigured = false;
   private navigationDebouncer = new NavigationDebouncer();
   private responseSubscription?: Notifications.EventSubscription;
 
-  constructor() {
+  private constructor() {
     this.initializeNotificationHandler();
+  }
+
+  public static getInstance(): WeeklyNotificationManager {
+    if (!WeeklyNotificationManager._instance) {
+      WeeklyNotificationManager._instance = new WeeklyNotificationManager();
+    }
+    return WeeklyNotificationManager._instance;
   }
 
   private initializeNotificationHandler(): void {
@@ -602,4 +611,4 @@ class WeeklyNotificationManager {
   }
 }
 
-export const notificationManager = new WeeklyNotificationManager();
+export const notificationManager = WeeklyNotificationManager.getInstance();

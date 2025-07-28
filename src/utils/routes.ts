@@ -1,6 +1,7 @@
 import {
   BadgeDollarSign,
   BookOpenCheck,
+  type LucideIcon,
   MessageSquarePlus,
 } from 'lucide-react-native';
 
@@ -9,7 +10,7 @@ import type { Href } from 'expo-router';
 interface IroutesProps {
   label: string;
   icon: {
-    IconRoute: any;
+    IconRoute: LucideIcon | typeof IconIOS;
     name: string;
   };
   route: Href;

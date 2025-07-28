@@ -4,7 +4,7 @@ export const ViewWithLoad = ({ children, isRendered }) => {
   return (
     <>
       {isRendered ? (
-        <>{children}</>
+        children
       ) : (
         <View
           lightColor="#f5f5f5"

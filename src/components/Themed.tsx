@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import Colors from '@/constants/Colors';
-import React, { forwardRef } from 'react';
+import { forwardRef } from 'react';
 
 type ThemeProps = {
   lightColor?: string;

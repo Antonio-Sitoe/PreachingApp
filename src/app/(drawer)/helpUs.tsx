@@ -1,6 +1,5 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Link } from 'expo-router'
+import { View, Text } from 'react-native';
+import { Link } from 'expo-router';
 
 export default function HelpUs() {
   return (
@@ -8,5 +7,5 @@ export default function HelpUs() {
       <Link href="/feedback">Feedback</Link>
       <Text>HelpUs</Text>
     </View>
-  )
+  );
 }

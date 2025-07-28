@@ -6,7 +6,7 @@ import { View, Text, Button } from 'react-native';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import { type IReport, reportsActions } from '@/database/actions';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useUser } from '@/contexts/UserContext';
 import { defineProfiletext } from '@/utils/helper';
 import { currentDates, monthNameToPortuguese } from '@/utils/dates';
@@ -49,9 +49,9 @@ export default function ReportMonths() {
     month: monthNameToPortuguese(currentDates.month),
     year: currentDates.year,
   });
-  const isFirstElement = index === 1;
-  const changePathname = usePathname() === '/report';
-  const isModalClose = isOpenCreateReportModal === false;
+  const _isFirstElement = index === 1;
+  const _changePathname = usePathname() === '/report';
+  const _isModalClose = isOpenCreateReportModal === false;
 
   const onMonthChange = async (value: ValueProps) => {
     const month = monthNameToPortuguese(value.month);
@@ -67,7 +67,7 @@ export default function ReportMonths() {
 
   useEffect(() => {
     onMonthChange({ month: currentDates.month, year: currentDates.year });
-  }, [isFirstElement, changePathname, isModalClose]);
+  }, [onMonthChange]);
 
   useEffect(() => {
     setTextToShare({

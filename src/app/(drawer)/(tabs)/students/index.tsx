@@ -3,7 +3,7 @@ import { Text, View } from '@/components/Themed';
 import { StudentCard } from '@/components/students/StudentCard';
 import { AnimatedButtonWithText } from '@/components/ui/ButtonAnimatedV2';
 import Colors from '@/constants/Colors';
-import { studentsAction } from '@/database/actions';
+import { type Student, studentsAction } from '@/database/actions';
 
 import useTheme from '@/hooks/useTheme';
 import { FlashList } from '@shopify/flash-list';
@@ -34,8 +34,8 @@ export default function StudentsHome() {
       return studentsAction.getAll({ page: pageParam, pageSize: PAGE_SIZE });
     },
     getNextPageParam: (
-      lastPage: { data: any[]; total: number },
-      allPages: { data: any[]; total: number }[]
+      lastPage: { data: Student[]; total: number },
+      allPages: { data: Student[]; total: number }[]
     ) => {
       const loaded = allPages.reduce((acc, page) => acc + page.data.length, 0);
       if (loaded >= lastPage.total) return undefined;

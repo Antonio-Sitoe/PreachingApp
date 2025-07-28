@@ -6,13 +6,13 @@ import {
   View,
   ScrollView,
   Dimensions,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native';
 import {
   Motion,
   AnimatePresence,
   createMotionAnimatedComponent,
-  MotionComponentProps,
+  type MotionComponentProps,
 } from '@legendapp/motion';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
 import {

@@ -89,36 +89,32 @@ export default function ReportListWithButton() {
           >
             {isloadingReportData ? (
               <ActivityIndicator />
+            ) : page < totalPages ? (
+              <View
+                className="flex items-center justify-center mt-4"
+                lightColor="transparent"
+              >
+                <Button
+                  title="Ver mais"
+                  onPress={handleMoreData}
+                  variant="contained"
+                  color={isDark ? Colors.dark.tint : Colors.light.tint}
+                  className="font-text capitalize text-white"
+                  style={{ width: 150 }}
+                  titleStyle={{
+                    color: isDark ? Colors.dark.Success200 : 'white',
+                    fontFamily: 'Inter_400Regular',
+                    textTransform: 'capitalize',
+                  }}
+                />
+              </View>
             ) : (
-              <>
-                {page < totalPages ? (
-                  <View
-                    className="flex items-center justify-center mt-4"
-                    lightColor="transparent"
-                  >
-                    <Button
-                      title="Ver mais"
-                      onPress={handleMoreData}
-                      variant="contained"
-                      color={isDark ? Colors.dark.tint : Colors.light.tint}
-                      className="font-text capitalize text-white"
-                      style={{ width: 150 }}
-                      titleStyle={{
-                        color: isDark ? Colors.dark.Success200 : 'white',
-                        fontFamily: 'Inter_400Regular',
-                        textTransform: 'capitalize',
-                      }}
-                    />
-                  </View>
-                ) : (
-                  <Text
-                    className="mt-2 font-textIBM text-center"
-                    lightColor={Colors.light.tint}
-                  >
-                    Sem mais dados por mostrar 😎
-                  </Text>
-                )}
-              </>
+              <Text
+                className="mt-2 font-textIBM text-center"
+                lightColor={Colors.light.tint}
+              >
+                Sem mais dados por mostrar 😎
+              </Text>
             )}
           </View>
         )}

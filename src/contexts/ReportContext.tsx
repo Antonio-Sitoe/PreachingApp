@@ -40,10 +40,10 @@ export const useReportsData = create<ReportStore>((set, get) => ({
     set({ isOpenCreateReportModal: index });
   },
   setTextToShare({ user, day, data }) {
-    const name = 'Relatório de ' + user;
-    const monthText = capitalizeString(day.month) + ' de ' + day.year;
-    const time = 'Total de Horas: ' + data?.hours;
-    const students = 'Estudos: ' + data?.students;
+    const name = `Relatório de ${user}`;
+    const monthText = `${capitalizeString(day.month)} de ${day.year}`;
+    const time = `Total de Horas: ${data?.hours}`;
+    const students = `Estudos: ${data?.students}`;
     const text = `${name}\n${monthText}\n${time}\n${students}`;
     set({ reportToShare: text });
   },

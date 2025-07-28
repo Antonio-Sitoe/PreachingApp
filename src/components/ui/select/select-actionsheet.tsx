@@ -10,7 +10,7 @@ import {
   VirtualizedList,
   FlatList,
   SectionList,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
@@ -21,7 +21,7 @@ import {
   Motion,
   AnimatePresence,
   createMotionAnimatedComponent,
-  MotionComponentProps,
+  type MotionComponentProps,
 } from '@legendapp/motion';
 
 import React from 'react';

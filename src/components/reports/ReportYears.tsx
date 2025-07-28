@@ -35,9 +35,9 @@ export default function ReportYears() {
   const [data, setData] = useState(initialReportData as IReport);
   const [year, setYear] = useState(currentDates.year);
 
-  const isFirstElement = index === 1;
-  const changePathname = usePathname() === '/report';
-  const isModalClose = isOpenCreateReportModal === false;
+  const _isFirstElement = index === 1;
+  const _changePathname = usePathname() === '/report';
+  const _isModalClose = isOpenCreateReportModal === false;
 
   function handleGotoNextYear() {
     setYear((year) => year + 1);
@@ -52,7 +52,7 @@ export default function ReportYears() {
 
   useEffect(() => {
     onChangeYear({ year });
-  }, [isFirstElement, changePathname, isModalClose, year]);
+  }, [onChangeYear, year]);
 
   return (
     <View

@@ -1,14 +1,22 @@
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import ReportMonths from '@/components/reports/ReportMonths'
-import ReportYears from '@/components/reports/ReportYears'
-import ReportsList from '@/components/reports/ReportsList'
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import ReportMonths from '@/components/reports/ReportMonths';
+import ReportYears from '@/components/reports/ReportYears';
+import ReportsList from '@/components/reports/ReportsList';
 
-import { View, useWindowDimensions } from 'react-native'
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view'
-import { useTabBarIndex } from '@/contexts/ReportContext'
+import { View, useWindowDimensions } from 'react-native';
+import {
+  TabView,
+  SceneMap,
+  TabBar,
+  type TabBarProps,
+} from 'react-native-tab-view';
+import { useTabBarIndex } from '@/contexts/ReportContext';
 
-const renderTabBar = (props: any, isDark: boolean) => {
+const renderTabBar = (
+  props: TabBarProps<{ key: string; title: string }>,
+  isDark: boolean
+) => {
   return (
     <View className="px-3 pb-3">
       <TabBar
@@ -31,36 +39,34 @@ const renderTabBar = (props: any, isDark: boolean) => {
         }}
       />
     </View>
-  )
-}
+  );
+};
 const renderScene = SceneMap({
   list: ReportsList,
   months: ReportMonths,
   years: ReportYears,
-})
+});
 const routes = [
   { key: 'list', title: 'Relatórios' },
   { key: 'months', title: 'MÊS' },
   { key: 'years', title: 'ANOS' },
-]
+];
 
 export default function Report() {
-  const layout = useWindowDimensions()
-  const { isDark } = useTheme()
-  const { index, setIndex } = useTabBarIndex()
+  const layout = useWindowDimensions();
+  const { isDark } = useTheme();
+  const { index, setIndex } = useTabBarIndex();
 
   return (
-    <>
-      <TabView
-        renderTabBar={(props) => renderTabBar(props, isDark)}
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-        style={{
-          backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
-        }}
-      />
-    </>
-  )
+    <TabView
+      renderTabBar={(props) => renderTabBar(props, isDark)}
+      navigationState={{ index, routes }}
+      renderScene={renderScene}
+      onIndexChange={setIndex}
+      initialLayout={{ width: layout.width }}
+      style={{
+        backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+      }}
+    />
+  );
 }

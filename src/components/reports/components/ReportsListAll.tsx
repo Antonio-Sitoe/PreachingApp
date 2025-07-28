@@ -85,14 +85,12 @@ export default function ReportsListAll() {
             {isloadingReportData ? (
               <ActivityIndicator />
             ) : (
-              <>
-                <Text
+              <Text
                   className="mt-2 font-textIBM text-center"
                   lightColor={Colors.light.tint}
                 >
                   Sem mais dados por mostrar 😎
                 </Text>
-              </>
             )}
           </View>
         )}

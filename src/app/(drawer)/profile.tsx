@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { View, TextInput, Image } from 'react-native';
 import { usersActions } from '@/database/actions';
+import type { NewUser } from '@/database/actions';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
 import { Camera, ChevronLeft } from 'lucide-react-native';
@@ -60,10 +61,14 @@ export default function Profile() {
     }
   };
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: Record<string, unknown>) => {
     try {
       setIsLoading(true);
-      const newDate = { ...data, avatarImage: image, id: user?.id ?? '' };
+      const newDate = {
+        ...data,
+        avatarImage: image,
+        id: user?.id ?? '',
+      } as NewUser;
       const userUpdated = await usersActions.upsert(newDate);
       setProfileUser(userUpdated);
       Snackbar.show({

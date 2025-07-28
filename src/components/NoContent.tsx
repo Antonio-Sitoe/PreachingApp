@@ -1,16 +1,15 @@
-import React from 'react'
-import useTheme from '@/hooks/useTheme'
-import Colors from '@/constants/Colors'
-import Logo from '@/assets/images/illo.svg'
-import LogoDark from '@/assets/images/darkill.svg'
-import { Text, View } from './Themed'
+import useTheme from '@/hooks/useTheme';
+import Colors from '@/constants/Colors';
+import Logo from '@/assets/images/illo.svg';
+import LogoDark from '@/assets/images/darkill.svg';
+import { Text, View } from './Themed';
 
 interface NoContentProps {
-  text: string
+  text: string;
 }
 
 export default function NoContent({ text }: NoContentProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
   return (
     <View
       style={{
@@ -23,5 +22,5 @@ export default function NoContent({ text }: NoContentProps) {
         {text}
       </Text>
     </View>
-  )
+  );
 }

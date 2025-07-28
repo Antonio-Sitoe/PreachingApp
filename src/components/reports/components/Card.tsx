@@ -1,34 +1,34 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import dayjs from 'dayjs'
+import dayjs from 'dayjs';
 
-import { Link } from 'expo-router'
-import { Text, View } from '../../Themed'
-import type { ReportData } from '@/@types/interfaces'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers'
+import { Link } from 'expo-router';
+import { Text, View } from '../../Themed';
+import type { ReportData } from '@/@types/interfaces';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers';
 
-import Colors from '@/constants/Colors'
-import React from 'react'
+import Colors from '@/constants/Colors';
+import React from 'react';
 
 const Card = ({
   data,
   year,
   isDark,
 }: {
-  data: Array<[string, ReportData[]]>
-  year: string
-  isDark: boolean
+  data: Array<[string, ReportData[]]>;
+  year: string;
+  isDark: boolean;
 }) =>
   data.map((report, index) => {
-    const monthName = report[0] as string
-    const listOfReports = report[1] as ReportData[]
-    const { data } = calculeTotalNumbers(report[1])
+    const monthName = report[0] as string;
+    const listOfReports = report[1] as ReportData[];
+    const { data } = calculeTotalNumbers(report[1]);
     return (
       <View
         lightColor="#c1e9e2"
         darkColor={Colors.dark.darkBgSecundary}
         className="bg-[] p-2 mb-4 rounded-lg"
-        key={index + Math.random() * 50}
+        key={index.toString()}
       >
         <View
           style={{
@@ -65,10 +65,10 @@ const Card = ({
           {listOfReports.map((item, index) => {
             const date = dayjs(item.createdAt)
               .locale('pt-br')
-              .format('dddd, D [de] MMMM [de] YYYY')
+              .format('dddd, D [de] MMMM [de] YYYY');
             return (
               <Link
-                key={item.id + ' ' + index}
+                key={`${item.id} ${index}`}
                 // @ts-ignore
                 href={{
                   pathname: '/modal',
@@ -90,8 +90,8 @@ const Card = ({
                     {date}
                   </Text>
                   <Text className="ml-2">
-                    {`${item.hours >= 10 ? item.hours : '0' + item.hours}:${
-                      item.minutes >= 10 ? item.minutes : '0' + item.minutes
+                    {`${item.hours >= 10 ? item.hours : `0${item.hours}`}:${
+                      item.minutes >= 10 ? item.minutes : `0${item.minutes}`
                     } horas, ${item.publications} publicações, ${
                       item.videos
                     } videos mostrados, ${item.returnVisits} revisitas, ${
@@ -100,11 +100,11 @@ const Card = ({
                   </Text>
                 </TouchableOpacity>
               </Link>
-            )
+            );
           })}
         </View>
       </View>
-    )
-  })
+    );
+  });
 
-export default React.memo(Card)
+export default React.memo(Card);

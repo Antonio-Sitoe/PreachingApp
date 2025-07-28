@@ -63,72 +63,67 @@ export function Header() {
           />
         </TouchableOpacity>
         <View className="flex-row gap-2 items-end">
-          <>
-            {index === 0 && isReportPath && (
-              <TouchableOpacity
-                className="px-2 py-1"
-                onPress={handleChangeLayaltList}
-              >
-                {isLayoutList ? (
-                  <LayoutList
-                    color={isDark ? Colors.dark.text : Colors.light.tint}
-                    size={28}
-                    strokeWidth={1.5}
-                  />
-                ) : (
-                  <ListMinus
-                    color={isDark ? Colors.dark.text : Colors.light.tint}
-                    size={28}
-                    strokeWidth={1.5}
-                  />
-                )}
-              </TouchableOpacity>
-            )}
-
-            {(index === 0 || index === 1) && isReportPath && (
-              <TouchableOpacity
-                className="px-2 py-1"
-                onPress={handleShareReport}
-              >
-                <Share2
+          {index === 0 && isReportPath && (
+            <TouchableOpacity
+              className="px-2 py-1"
+              onPress={handleChangeLayaltList}
+            >
+              {isLayoutList ? (
+                <LayoutList
                   color={isDark ? Colors.dark.text : Colors.light.tint}
                   size={28}
                   strokeWidth={1.5}
                 />
-              </TouchableOpacity>
-            )}
-
-            {index === 2 && isReportPath && !isChart && (
-              <Link href="/(report)/(tabs)/report/chart" asChild>
-                <TouchableOpacity className="py-1">
-                  <BarChart2
-                    color={isDark ? Colors.dark.text : Colors.light.tint}
-                    size={28}
-                    strokeWidth={1.5}
-                  />
-                </TouchableOpacity>
-              </Link>
-            )}
-            {(isReportPath || isModalRoute) && !isChart && (
-              <TouchableOpacity className="py-1" onPress={() => push('/modal')}>
-                <Plus
+              ) : (
+                <ListMinus
                   color={isDark ? Colors.dark.text : Colors.light.tint}
                   size={28}
                   strokeWidth={1.5}
                 />
-              </TouchableOpacity>
-            )}
-            {!isReportPath && !isModalRoute && (
+              )}
+            </TouchableOpacity>
+          )}
+
+          {(index === 0 || index === 1) && isReportPath && (
+            <TouchableOpacity className="px-2 py-1" onPress={handleShareReport}>
+              <Share2
+                color={isDark ? Colors.dark.text : Colors.light.tint}
+                size={28}
+                strokeWidth={1.5}
+              />
+            </TouchableOpacity>
+          )}
+
+          {index === 2 && isReportPath && !isChart && (
+            <Link href="/(report)/(tabs)/report/chart" asChild>
               <TouchableOpacity className="py-1">
-                <RefreshCcw
+                <BarChart2
                   color={isDark ? Colors.dark.text : Colors.light.tint}
-                  className="rotate-45"
                   size={28}
                   strokeWidth={1.5}
                 />
               </TouchableOpacity>
-            )}
-          </>
+            </Link>
+          )}
+          {(isReportPath || isModalRoute) && !isChart && (
+            <TouchableOpacity className="py-1" onPress={() => push('/modal')}>
+              <Plus
+                color={isDark ? Colors.dark.text : Colors.light.tint}
+                size={28}
+                strokeWidth={1.5}
+              />
+            </TouchableOpacity>
+          )}
+          {!isReportPath && !isModalRoute && (
+            <TouchableOpacity className="py-1">
+              <RefreshCcw
+                color={isDark ? Colors.dark.text : Colors.light.tint}
+                className="rotate-45"
+                size={28}
+                strokeWidth={1.5}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </View>

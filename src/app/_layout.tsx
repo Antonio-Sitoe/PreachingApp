@@ -20,8 +20,6 @@ import { useUser } from '@/contexts/UserContext';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 
 import { notificationManager } from '@/lib/notifications/weekly-notification';
-import { BootReceiverService } from '@/lib/notifications/BootReceiverService';
-import { Platform } from 'react-native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -67,7 +65,7 @@ export default function RootLayoutNav() {
     if (error) throw error;
   }, [error, errorDbMigration]);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+  // biome-ignore lint/correctness/useExhaustiveDependencies: autoSignIn doesn't need to be in deps as it's stable
   useEffect(() => {
     if (loaded) {
       autoSignIn();
@@ -75,22 +73,11 @@ export default function RootLayoutNav() {
   }, [loaded]);
 
   useEffect(() => {
-    async function setupNotificationListener() {
-      notificationManager.setupNotificationListener();
-      const bootReceiver = BootReceiverService.getInstance();
-      await bootReceiver.handleBootCompleted();
-    }
-    if (loaded) {
-      let isMounted = true;
-      if (isMounted) {
-        setupNotificationListener();
-        isMounted = false;
-      }
-      return () => {
-        isMounted = false;
-        notificationManager.cleanup();
-      };
-    }
+    if (!loaded) return;
+    notificationManager.setupNotificationListener();
+    return () => {
+      notificationManager.cleanup();
+    };
   }, [loaded]);
 
   useEffect(() => {

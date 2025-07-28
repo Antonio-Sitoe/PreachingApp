@@ -1,5 +1,4 @@
 import TouchableOpacity, { Text, View } from '@/components/Themed';
-import React from 'react';
 import { ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { studentsAction } from '@/database/actions';

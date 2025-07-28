@@ -1,4 +1,4 @@
-import type { ReportData } from '@/@types/interfaces';
+import type { IReport } from '@/database/actions';
 import { Text, View, Modal, ActivityIndicator } from 'react-native';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
@@ -14,13 +14,8 @@ export const DialogReport = ({ visible, setVisible, reports }) => {
   const [loading, setLoading] = useState(false);
   return (
     <Modal visible={visible} onDismiss={() => setVisible(false)}>
-      <View
-        className="w-full flex-1 flex-row justify-between"
-        darkColor="white"
-      >
-        <Text className="font-subTitle text-lg" darkColor="black">
-          Editar relatório
-        </Text>
+      <View className="w-full flex-1 flex-row justify-between">
+        <Text className="font-subTitle text-lg">Editar relatório</Text>
         {loading && <ActivityIndicator />}
       </View>
 
@@ -28,35 +23,17 @@ export const DialogReport = ({ visible, setVisible, reports }) => {
         style={{ maxHeight: 400 }}
         showsVerticalScrollIndicator={false}
       >
-        {reports?.map((item: ReportData, index: number) => {
+        {reports?.map((item: IReport, index: number) => {
           const date = dayjs(item.createdAt)
             .locale('pt-br')
             .format('dddd, D [de] MMMM [de] YYYY');
           return (
-            <View
-              key={index}
-              lightColor="#c1e9e2"
-              className="p-3 pt-0 rounded mb-2"
-              darkColor={Colors.dark.darkBgSecundary}
-            >
+            <View key={index.toString()} className="p-3 pt-0 rounded mb-2">
               <TouchableOpacity
                 className="mt-3"
                 onPress={async () => {
                   setLoading(true);
                   setVisible(false);
-                  await new Promise(() => {
-                    setTimeout(() => {
-                      router.push({
-                        pathname: '/modal',
-                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                        // @ts-ignore-
-                        params: {
-                          id: item.id,
-                        },
-                      });
-                      setLoading(false);
-                    }, 120);
-                  });
                 }}
               >
                 <Text
@@ -72,8 +49,8 @@ export const DialogReport = ({ visible, setVisible, reports }) => {
                   {date}
                 </Text>
                 <Text className="ml-2">
-                  {`${item.hours >= 10 ? item.hours : '0' + item.hours}:${
-                    item.minutes >= 10 ? item.minutes : '0' + item.minutes
+                  {`${item.hours >= 10 ? item.hours : `0${item.hours}`}:${
+                    item.minutes >= 10 ? item.minutes : `0${item.minutes}`
                   } horas, ${item.publications} publicações, ${
                     item.videos
                   } videos mostrados, ${item.returnVisits} revisitas, ${

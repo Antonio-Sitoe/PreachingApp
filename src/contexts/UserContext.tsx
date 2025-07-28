@@ -76,7 +76,7 @@ export const useUser = create<UserState>((set, get) => ({
       const { data, error } = await supabase.auth.getSession();
       if (error) throw error;
       const session = data.session;
-      if (session && session.user) {
+      if (session?.user) {
         set({
           userSession: {
             id: session.user.id,

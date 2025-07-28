@@ -48,7 +48,7 @@ export function AnimatedButton({ onPress }: TouchableOpacityProps) {
       positionY.value = event.translationY + ctx.positionY
       positionX.value = event.translationX + ctx.positionX
     },
-    onEnd(_, ctx: any) {
+    onEnd(_, _ctx: any) {
       positionY.value = withSpring(0)
       positionX.value = withSpring(0)
     },

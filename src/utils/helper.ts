@@ -200,7 +200,7 @@ export function cortarString(descricao, limite = 25) {
   if (descricao.length <= limite) {
     return descricao;
   } else {
-    return descricao.slice(0, limite) + '...';
+    return `${descricao.slice(0, limite)}...`;
   }
 }
 

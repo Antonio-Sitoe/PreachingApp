@@ -5,7 +5,7 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { type Student, studentsAction } from '@/database/actions';
@@ -146,7 +146,7 @@ export default function CreateStudent() {
     }
     try {
       const { body } = transformeData(databody);
-      let studentData: any;
+      let studentData: Student | undefined;
       if (data?.id) {
         studentData = await studentsAction.updateById(data.id, body);
       } else {

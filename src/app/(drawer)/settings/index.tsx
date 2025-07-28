@@ -1,6 +1,9 @@
-import React from 'react';
-import { BootReceiverTestComponent } from '@/components/BootReceiverTestComponent';
+import { View, Text } from 'react-native';
 
 export default function Settings() {
-  return <BootReceiverTestComponent />;
+  return (
+    <View>
+      <Text>Settings</Text>
+    </View>
+  );
 }

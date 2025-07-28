@@ -1,4 +1,5 @@
-import React, { forwardRef } from 'react';
+import type React from 'react';
+import { forwardRef } from 'react';
 import type { VariantProps } from '@gluestack-ui/nativewind-utils';
 import { Animated, Easing, Platform, View } from 'react-native';
 import { skeletonStyle, skeletonTextStyle } from './styles';
@@ -103,7 +104,7 @@ const SkeletonText = forwardRef<
         >
           {Array.from({ length: _lines }).map((_, index) => (
             <Skeleton
-              key={index}
+              key={index.toString()}
               className={`${startColor} ${skeletonTextStyle({
                 class: className,
               })}`}

@@ -1,5 +1,4 @@
 import { View, Text } from 'react-native'
-import React from 'react'
 import { Minus, Plus } from 'lucide-react-native'
 import Colors from '@/constants/Colors'
 import useTheme from '@/hooks/useTheme'

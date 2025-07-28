@@ -7,7 +7,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import Woman from '@/assets/images/Woman.svg';
 import { TouchableOpacity, useWindowDimensions } from 'react-native';
-import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
+import {
+  TabView,
+  SceneMap,
+  TabBar,
+  type TabBarProps,
+} from 'react-native-tab-view';
 import { StudentAbout } from '@/components/students/StudentAbout';
 import { StudentsVisits } from '@/components/students/StudentsVisits';
 import { studentsAction, type Student } from '@/database/actions';
@@ -17,7 +22,10 @@ import { useIsFocused } from '@react-navigation/native';
 import { BackButton } from '@/components/ui/BackButton';
 import { useQuery } from '@tanstack/react-query';
 
-const renderTabBar = (props: any, isDark: boolean) => {
+const renderTabBar = (
+  props: TabBarProps<{ key: string; title: string }>,
+  isDark: boolean
+) => {
   return (
     <View className="px-3 pb-3" lightColor="transparent">
       <TabBar
@@ -67,9 +75,9 @@ export default function Profile() {
   });
 
   function handleAddVisit(visitID?: string) {
-    const params: any = {
-      id,
-      name: profile?.name,
+    const params: Record<string, string> = {
+      id: String(id),
+      name: profile?.name || '',
     };
     if (visitID) {
       params.visitID = visitID;

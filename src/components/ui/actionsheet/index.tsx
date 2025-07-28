@@ -10,8 +10,8 @@ import {
   VirtualizedList,
   FlatList,
   SectionList,
-  PressableProps,
-  ViewStyle,
+  type PressableProps,
+  type ViewStyle,
 } from 'react-native';
 import { PrimitiveIcon, UIIcon } from '@gluestack-ui/icon';
 import { tva } from '@gluestack-ui/nativewind-utils/tva';
@@ -21,7 +21,7 @@ import {
   Motion,
   AnimatePresence,
   createMotionAnimatedComponent,
-  MotionComponentProps,
+  type MotionComponentProps,
 } from '@legendapp/motion';
 
 const ItemWrapper = React.forwardRef<

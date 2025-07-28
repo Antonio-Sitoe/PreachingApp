@@ -2,7 +2,7 @@
   "expo": {
     "name": "Preaching App",
     "slug": "preachingApp",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "preachingapp",
@@ -25,21 +25,7 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.antoniositoe533.preachingApp.dev",
-      "permissions": [
-        "RECEIVE_BOOT_COMPLETED",
-        "WAKE_LOCK",
-        "USE_FULL_SCREEN_INTENT",
-        "VIBRATE"
-      ],
-      "intentFilters": [
-        {
-          "action": "android.intent.action.BOOT_COMPLETED",
-          "category": [
-            "android.intent.category.DEFAULT"
-          ]
-        }
-      ]
+      "package": "com.antoniositoe533.preachingApp.dev"
     },
     "web": {
       "bundler": "metro",
@@ -67,9 +53,6 @@
     "extra": {
       "router": {
         "origin": false
-      },
-      "eas": {
-        "projectId": "a3b371ea-6c0f-4db3-9d99-9d96e4f548b3"
       }
     }
   }

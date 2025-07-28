@@ -14,7 +14,6 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#6979F8',
         lightBg: '#F6F6F9',
         ligtInputbG: '#F6F6F9',
 
@@ -26,7 +25,7 @@ module.exports = {
           Success200: '#C6F0C2',
         },
         primary: {
-          0: 'rgb(var(--color-primary-0)/<alpha-value>)',
+          0: '#6979F8',
           50: 'rgb(var(--color-primary-50)/<alpha-value>)',
           100: 'rgb(var(--color-primary-100)/<alpha-value>)',
           200: 'rgb(var(--color-primary-200)/<alpha-value>)',

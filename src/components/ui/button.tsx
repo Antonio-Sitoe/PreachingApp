@@ -60,10 +60,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  // Variants
-  default: {
-    backgroundColor: '#18181b',
-  },
   outline: {
     backgroundColor: 'transparent',
     borderWidth: 1,
@@ -72,6 +68,8 @@ const styles = StyleSheet.create({
   ghost: {
     backgroundColor: 'transparent',
   },
+  // Variants
+  
   // Sizes
   default: {
     paddingHorizontal: 16,

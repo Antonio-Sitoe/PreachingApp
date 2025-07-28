@@ -1,21 +1,21 @@
-import { Controller } from 'react-hook-form'
-import { Picker } from '@react-native-picker/picker'
-import useTheme from '@/hooks/useTheme'
-import { View, Text } from '../Themed'
-import Colors from '@/constants/Colors'
+import { Controller } from 'react-hook-form';
+import { Picker } from '@react-native-picker/picker';
+import useTheme from '@/hooks/useTheme';
+import { View, Text } from '../Themed';
+import Colors from '@/constants/Colors';
 
 interface SelectProps {
-  control: any
-  name: string
-  errors: any
-  label: string
+  control: any;
+  name: string;
+  errors: any;
+  label: string;
   options: {
-    label: string
-    value: string
-  }[]
+    label: string;
+    value: string;
+  }[];
 }
 export function Select({ control, name, label, options, errors }: SelectProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
   return (
     <Controller
       name={name}
@@ -45,14 +45,14 @@ export function Select({ control, name, label, options, errors }: SelectProps) {
                 <Picker.Item
                   label={item.label}
                   value={item.value}
-                  key={index}
+                  key={index.toString()}
                   style={{
                     fontSize: 14,
                     fontFamily: 'Inter_400Regular',
                     borderRadius: 12,
                   }}
                 />
-              )
+              );
             })}
           </Picker>
           {errors[name]?.message && (
@@ -63,5 +63,5 @@ export function Select({ control, name, label, options, errors }: SelectProps) {
         </View>
       )}
     />
-  )
+  );
 }

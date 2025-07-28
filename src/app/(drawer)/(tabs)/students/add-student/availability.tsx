@@ -1,5 +1,5 @@
 import TouchableOpacity, { Text, View } from '@/components/Themed';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ScrollView, Alert } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -302,7 +302,7 @@ export default function CreateStudent() {
           ) : (
             availabilities.map((item, index) => (
               <View
-                key={item.id ?? item.weekday + '-' + index.toString()}
+                key={item.id ?? `${item.weekday}-${index.toString()}`}
                 className="flex-row items-center mb-4"
               >
                 <View className="flex-1 rounded-lg flex-row justify-between items-center">
