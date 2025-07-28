@@ -1,24 +1,19 @@
 import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform, Alert } from 'react-native';
-import type { WeekDayEnum } from '@/@types/enums';
 import { v4 as uuid } from 'uuid';
-import type {
-  NewStudentAvailability,
-  StudentAvailability,
-} from '@/database/schemas/student-availabilities';
+import type { NewStudentAvailability } from '@/database/schemas/student-availabilities';
 import { availabilitiesAction } from '@/database/actions/student-availabilities';
+import { router } from 'expo-router';
+import { NavigationDebouncer } from '@/utils/notification/navigation-debouncer';
 
-type WeeklyNotificationData = NewStudentAvailability;
-
-interface NotificationStorage {
-  systemId: string;
-  data: WeeklyNotificationData;
-}
+type WeeklyNotificationParams = NewStudentAvailability & {
+  name: string;
+};
 
 class WeeklyNotificationManager {
-  private static readonly STORAGE_KEY = '@weekly_notifications';
-  private notifications: Map<string, NotificationStorage> = new Map();
+  private isListenerConfigured = false;
+  private navigationDebouncer = new NavigationDebouncer();
+  private responseSubscription?: Notifications.EventSubscription;
 
   constructor() {
     this.initializeNotificationHandler();
@@ -27,12 +22,90 @@ class WeeklyNotificationManager {
   private initializeNotificationHandler(): void {
     Notifications.setNotificationHandler({
       handleNotification: async () => ({
-        shouldPlaySound: false,
+        shouldPlaySound: true,
         shouldSetBadge: false,
         shouldShowBanner: true,
         shouldShowList: true,
       }),
     });
+  }
+
+  public setupNotificationListener(): void {
+    if (this.isListenerConfigured) {
+      console.log('⚠️ Listener já configurado, ignorando...');
+      return;
+    }
+
+    console.log('🔔 Configurando listener de notificações...');
+
+    if (this.responseSubscription) {
+      this.responseSubscription.remove();
+    }
+
+    this.responseSubscription =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log('👆 Notificação clicada!', response);
+
+        const { actionIdentifier, notification } = response;
+        const notificationData = notification.request.content.data as any;
+
+        console.log('📱 Dados da notificação:', notificationData);
+        console.log('🎯 Action identifier:', actionIdentifier);
+
+        if (actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER) {
+          if (notificationData?.studentId) {
+            console.log(
+              '🚀 Tentando navegar para createVisit com studentId:',
+              notificationData.studentId
+            );
+
+            if (!this.navigationDebouncer.canNavigate()) {
+              return;
+            }
+            this.navigationDebouncer.startNavigation();
+            this.navigateToCreateVisit(
+              notificationData.studentId,
+              notificationData.name || 'Estudante'
+            );
+          } else {
+            console.warn(
+              '⚠️ studentId não encontrado nos dados da notificação'
+            );
+          }
+        }
+      });
+
+    this.isListenerConfigured = true;
+    console.log('✅ Listener de notificações configurado com sucesso');
+  }
+
+  private navigateToCreateVisit(studentId: string, name: string): void {
+    setTimeout(() => {
+      try {
+        router.replace({
+          pathname: '/(drawer)/(tabs)/students/createVisit',
+          params: {
+            id: studentId,
+            name,
+          },
+        });
+        console.log('✅ Navegação executada com sucesso');
+      } catch (navError) {
+        console.error('❌ Erro na navegação:', navError);
+      }
+    }, 300);
+  }
+
+  public cleanup(): void {
+    console.log('🧹 Limpando listeners de notificação...');
+
+    if (this.responseSubscription) {
+      this.responseSubscription.remove();
+      this.responseSubscription = undefined;
+    }
+
+    this.isListenerConfigured = false;
+    console.log('✅ Cleanup concluído');
   }
 
   public async requestPermissions(): Promise<boolean> {
@@ -50,6 +123,9 @@ class WeeklyNotificationManager {
           importance: Notifications.AndroidImportance.HIGH,
           vibrationPattern: [0, 250, 250, 250],
           lightColor: '#FF231F',
+          enableVibrate: true,
+          enableLights: true,
+          showBadge: true,
         });
       }
 
@@ -67,80 +143,94 @@ class WeeklyNotificationManager {
     minute,
     title,
     body,
-  }: NewStudentAvailability): Promise<string | null> {
+    name,
+    isActive,
+  }: WeeklyNotificationParams): Promise<string | null> {
     try {
       const hasPermission = await this.requestPermissions();
       if (!hasPermission) return null;
 
-      if (!this.validateNotificationData(weekday, hour, minute, title, body)) {
-        return null;
+      const notificationId = uuid();
+      let systemId = '';
+
+      if (isActive) {
+        systemId = await Notifications.scheduleNotificationAsync({
+          content: {
+            title,
+            body,
+            sound: 'default',
+            categoryIdentifier: 'weekly_reminder',
+            data: {
+              studentId,
+              action: 'create_visit',
+              screen: 'createVisit',
+              notificationId,
+              name,
+            },
+          },
+          trigger: {
+            type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+            weekday,
+            hour,
+            minute,
+          },
+        });
       }
 
-      const notificationId = uuid();
-
-      const systemId = await Notifications.scheduleNotificationAsync({
-        content: {
-          title,
-          body,
-          sound: 'default',
-          categoryIdentifier: 'weekly_reminder',
-        },
-        trigger: {
-          type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
-          weekday,
-          hour,
-          minute,
-        },
-      });
-
-      const notificationData: WeeklyNotificationData = {
+      await availabilitiesAction.create({
         id: notificationId,
         weekday,
         hour,
         minute,
         title,
         body,
-        isActive: true,
+        isActive,
         studentId,
-      };
-
-      const storageData: NotificationStorage = {
         systemId,
-        data: notificationData,
-      };
+      });
 
-      await this.saveToStorage(notificationId, storageData);
-      await availabilitiesAction.create(notificationData); // BASE DE DADOS
       console.log(
-        `Notificação criada: ${notificationId} (Sistema: ${systemId})`
+        `✅ Notificação criada: ${notificationId} (Sistema: ${systemId})`
       );
       return notificationId;
     } catch (error) {
-      console.error('Erro ao criar notificação:', error);
+      console.error('❌ Erro ao criar notificação:', error);
       return null;
     }
   }
 
-  public async getAllNotifications(): Promise<WeeklyNotificationData[]> {
+  public async createTestNotification(studentId: string): Promise<void> {
     try {
-      await this.loadFromStorage();
-      return Array.from(this.notifications.values()).map((n) => n.data);
-    } catch (error) {
-      console.error('Erro ao carregar notificações:', error);
-      return [];
-    }
-  }
+      const hasPermission = await this.requestPermissions();
+      if (!hasPermission) return;
 
-  public async getNotificationById(
-    id: string
-  ): Promise<WeeklyNotificationData | null> {
-    try {
-      await this.loadFromStorage();
-      const notification = this.notifications.get(id);
-      return notification ? notification.data : null;
+      const testId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: '🧪 Teste de Notificação',
+          body: 'Clique para testar navegação (DB only)',
+          sound: 'default',
+          data: {
+            studentId,
+            action: 'create_visit',
+            screen: 'createVisit',
+            isTest: true,
+            name: 'Teste',
+            notificationId: uuid(),
+          },
+        },
+        trigger: {
+          type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+          seconds: 3,
+        },
+      });
+
+      console.log('🧪 Notificação de teste criada:', testId);
+      Alert.alert(
+        'Teste (DB Only)',
+        'Notificação será exibida em 3 segundos.\n\n✅ Usando apenas banco de dados!'
+      );
     } catch (error) {
-      console.error('Erro ao buscar notificação:', error);
-      return null;
+      console.error('Erro ao criar notificação de teste:', error);
     }
   }
 
@@ -154,28 +244,28 @@ class WeeklyNotificationManager {
       body,
       isActive,
       studentId,
-    }: NewStudentAvailability
+      name,
+    }: WeeklyNotificationParams
   ): Promise<boolean> {
     try {
-      await this.loadFromStorage();
-      const existing = this.notifications.get(id);
-
+      console.log('🔄 Atualizando notificação:', id);
+      const existing = await availabilitiesAction.getById(id);
       if (!existing) {
-        console.error('Notificação não encontrada:', id);
+        console.error('Notificação não encontrada no banco:', id);
         return false;
       }
 
-      await Notifications.cancelScheduledNotificationAsync(existing.systemId);
+      await this.cancelNotificationByData(id);
 
-      const updatedData: WeeklyNotificationData = {
-        ...existing.data,
-        weekday: weekday ?? existing.data.weekday,
-        hour: hour ?? existing.data.hour,
-        minute: minute ?? existing.data.minute,
-        title: title ?? existing.data.title,
-        body: body ?? existing.data.body,
-        isActive: isActive ?? existing.data.isActive,
-        studentId: studentId ?? existing.data.studentId,
+      const updatedData: NewStudentAvailability = {
+        ...existing,
+        weekday: weekday ?? existing.weekday,
+        hour: hour ?? existing.hour,
+        minute: minute ?? existing.minute,
+        title: title ?? existing.title,
+        body: body ?? existing.body,
+        isActive: isActive ?? existing.isActive,
+        studentId: studentId ?? existing.studentId,
       };
 
       let newSystemId = '';
@@ -186,6 +276,13 @@ class WeeklyNotificationManager {
             body: updatedData.body,
             sound: 'default',
             categoryIdentifier: 'weekly_reminder',
+            data: {
+              studentId: updatedData.studentId,
+              action: 'create_visit',
+              screen: 'createVisit',
+              notificationId: id,
+              name: name || 'Estudante',
+            },
           },
           trigger: {
             type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
@@ -196,14 +293,18 @@ class WeeklyNotificationManager {
         });
       }
 
-      const updatedStorage: NotificationStorage = {
+      await availabilitiesAction.update(id, {
+        weekday: updatedData.weekday,
+        hour: updatedData.hour,
+        minute: updatedData.minute,
+        title: updatedData.title,
+        body: updatedData.body,
+        isActive: updatedData.isActive,
+        studentId: updatedData.studentId,
         systemId: newSystemId,
-        data: updatedData,
-      };
+      });
 
-      await this.saveToStorage(id, updatedStorage);
-      await availabilitiesAction.update(id, updatedData);
-      console.log(`Notificação atualizada: ${id}`);
+      console.log(`✅ Notificação atualizada: ${id}`);
       return true;
     } catch (error) {
       console.error('Erro ao atualizar notificação:', error);
@@ -213,25 +314,8 @@ class WeeklyNotificationManager {
 
   public async deleteNotification(id: string): Promise<boolean> {
     try {
-      console.log('Deletando notificação:', id);
-      await this.loadFromStorage();
-      const notification = this.notifications.get(id);
-
-      if (!notification) {
-        console.error('Notificação não encontrada:', id);
-        return false;
-      }
-
-      await Notifications.cancelScheduledNotificationAsync(
-        notification.systemId
-      );
-
-      this.notifications.delete(id);
-      await this.saveAllToStorage();
-
+      await this.cancelNotificationByData(id);
       await availabilitiesAction.delete(id);
-
-      console.log(`Notificação removida: ${id}`);
       return true;
     } catch (error) {
       console.error('Erro ao remover notificação:', error);
@@ -243,24 +327,24 @@ class WeeklyNotificationManager {
     studentId: string
   ): Promise<boolean> {
     try {
+      console.log(
+        '🗑️ Deletando todas as notificações do estudante:',
+        studentId
+      );
+
       const studentNotifications = await availabilitiesAction.getByStudentId(
         studentId
       );
 
       for (const notification of studentNotifications) {
-        await this.loadFromStorage();
-        const storageNotification = this.notifications.get(notification.id);
-        if (storageNotification) {
-          await Notifications.cancelScheduledNotificationAsync(
-            storageNotification.systemId
-          );
-          this.notifications.delete(notification.id);
-        }
+        await this.cancelNotificationByData(notification.id);
       }
 
-      await this.saveAllToStorage();
       await availabilitiesAction.deleteAllForStudent(studentId);
 
+      console.log(
+        `✅ ${studentNotifications.length} notificações removidas para o estudante ${studentId}`
+      );
       return true;
     } catch (error) {
       console.error('Erro ao remover notificações do estudante:', error);
@@ -268,43 +352,12 @@ class WeeklyNotificationManager {
     }
   }
 
-  public async cleanupStudentNotifications(studentId: string): Promise<void> {
-    try {
-      console.log(
-        `Limpando notificações do estudante ${studentId} do AsyncStorage...`
-      );
-
-      await this.loadFromStorage();
-      let cleanedCount = 0;
-
-      for (const [id, notification] of this.notifications.entries()) {
-        if (notification.data.studentId === studentId) {
-          await Notifications.cancelScheduledNotificationAsync(
-            notification.systemId
-          );
-          this.notifications.delete(id);
-          cleanedCount++;
-        }
-      }
-
-      // Salvar o AsyncStorage atualizado
-      await this.saveAllToStorage();
-
-      console.log(
-        `${cleanedCount} notificações limpas do AsyncStorage para o estudante ${studentId}`
-      );
-    } catch (error) {
-      console.error('Erro ao limpar notificações do AsyncStorage:', error);
-    }
-  }
-
   public async deleteAllNotifications(): Promise<boolean> {
     try {
+      console.log('🗑️ Deletando todas as notificações...');
       await Notifications.cancelAllScheduledNotificationsAsync();
-      this.notifications.clear();
-      await AsyncStorage.removeItem(WeeklyNotificationManager.STORAGE_KEY);
       await availabilitiesAction.clear();
-      console.log('Todas as notificações foram removidas');
+      console.log('✅ Todas as notificações foram removidas');
       return true;
     } catch (error) {
       console.error('Erro ao remover todas as notificações:', error);
@@ -314,13 +367,15 @@ class WeeklyNotificationManager {
 
   public async restoreNotificationsFromDatabase(): Promise<number> {
     try {
-      console.log('Iniciando restauração de notificações...');
-      const dbNotifications = await this.loadFromDatabase();
-      let restoredCount = 0;
+      console.log('🔄 Iniciando restauração de notificações do banco...');
+
       const hasPermission = await this.requestPermissions();
       if (!hasPermission) {
         throw new Error('Permissões não concedidas');
       }
+
+      const dbNotifications = await availabilitiesAction.getAll();
+      let restoredCount = 0;
 
       for (const notification of dbNotifications) {
         if (notification.isActive) {
@@ -331,6 +386,13 @@ class WeeklyNotificationManager {
                 body: notification.body,
                 sound: 'default',
                 categoryIdentifier: 'weekly_reminder',
+                data: {
+                  studentId: notification.studentId,
+                  action: 'create_visit',
+                  screen: 'createVisit',
+                  notificationId: notification.id,
+                  name: 'Estudante',
+                },
               },
               trigger: {
                 type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
@@ -340,31 +402,29 @@ class WeeklyNotificationManager {
               },
             });
 
-            const storageData: NotificationStorage = {
+            // Atualizar systemId no banco (se tiver o campo)
+            await availabilitiesAction.update(notification.id!, {
+              ...notification,
               systemId,
-              data: notification,
-            };
+            });
 
-            await this.saveToStorage(notification?.id!, storageData);
             restoredCount++;
-
-            console.log(`Notificação restaurada: ${notification.id}`);
+            console.log(`✅ Notificação restaurada: ${notification.id}`);
           } catch (error) {
             console.error(
-              `Erro ao restaurar notificação ${notification.id}:`,
+              `❌ Erro ao restaurar notificação ${notification.id}:`,
               error
             );
           }
         }
       }
 
-      console.log(`${restoredCount} notificações restauradas com sucesso`);
+      console.log(`✅ ${restoredCount} notificações restauradas com sucesso`);
 
-      // Mostrar alerta ao usuário
       if (restoredCount > 0) {
         Alert.alert(
           'Notificações Restauradas',
-          `${restoredCount} lembretes foram restaurados automaticamente.`,
+          `${restoredCount} lembretes foram restaurados do banco de dados.`,
           [{ text: 'OK', style: 'default' }]
         );
       }
@@ -376,114 +436,98 @@ class WeeklyNotificationManager {
     }
   }
 
+  private async cancelNotificationByData(
+    notificationId: string
+  ): Promise<void> {
+    try {
+      console.log('🔍 Procurando notificação para cancelar:', notificationId);
+
+      const scheduledNotifications =
+        await Notifications.getAllScheduledNotificationsAsync();
+
+      const notificationToCancel = scheduledNotifications.find(
+        (n) => n.content.data?.notificationId === notificationId
+      );
+
+      if (notificationToCancel) {
+        await Notifications.cancelScheduledNotificationAsync(
+          notificationToCancel.identifier
+        );
+        console.log(
+          '✅ Notificação cancelada do sistema:',
+          notificationToCancel.identifier
+        );
+      } else {
+        console.log(
+          '⚠️ Notificação não encontrada no sistema (pode já ter sido disparada)'
+        );
+      }
+    } catch (error) {
+      console.error('Erro ao cancelar notificação:', error);
+    }
+  }
+
   public async syncWithSystem(): Promise<void> {
     try {
+      console.log('🔄 Sincronizando notificações...');
+
       const systemNotifications =
         await Notifications.getAllScheduledNotificationsAsync();
-      const systemIds = new Set(systemNotifications.map((n) => n.identifier));
+      const systemNotificationIds = new Set(
+        systemNotifications
+          .map((n) => n.content.data?.notificationId)
+          .filter(Boolean)
+      );
 
-      await this.loadFromStorage();
+      const dbNotifications = await availabilitiesAction.getAll();
 
-      // Verificar notificações órfãs (no storage mas não no sistema)
-      for (const [id, notification] of this.notifications.entries()) {
+      for (const dbNotification of dbNotifications) {
         if (
-          notification.data.isActive &&
-          !systemIds.has(notification.systemId)
+          dbNotification.isActive &&
+          !systemNotificationIds.has(dbNotification.id)
         ) {
-          console.log(`Reagendando notificação órfã: ${id}`);
-          await this.updateNotification(id, {
-            ...notification.data,
-            isActive: true,
-            studentId: notification.data.studentId,
+          console.log(`🔄 Reagendando notificação órfã: ${dbNotification.id}`);
+
+          const systemId = await Notifications.scheduleNotificationAsync({
+            content: {
+              title: dbNotification.title,
+              body: dbNotification.body,
+              sound: 'default',
+              categoryIdentifier: 'weekly_reminder',
+              data: {
+                studentId: dbNotification.studentId,
+                action: 'create_visit',
+                screen: 'createVisit',
+                notificationId: dbNotification.id,
+                name: 'Estudante',
+              },
+            },
+            trigger: {
+              type: Notifications.SchedulableTriggerInputTypes.WEEKLY,
+              weekday: dbNotification.weekday,
+              hour: dbNotification.hour,
+              minute: dbNotification.minute,
+            },
+          });
+
+          await availabilitiesAction.update(dbNotification.id!, {
+            weekday: dbNotification.weekday,
+            hour: dbNotification.hour,
+            minute: dbNotification.minute,
+            title: dbNotification.title,
+            body: dbNotification.body,
+            isActive: dbNotification.isActive,
+            studentId: dbNotification.studentId,
+            systemId,
           });
         }
       }
+
+      console.log('✅ Sincronização concluída');
     } catch (error) {
       console.error('Erro na sincronização:', error);
     }
   }
-
-  private validateNotificationData(
-    weekday: number,
-    hour: number,
-    minute: number,
-    title: string,
-    body: string
-  ): boolean {
-    if (weekday < 1 || weekday > 7) {
-      Alert.alert(
-        'Erro',
-        'Dia da semana deve ser entre 1 (Domingo) e 7 (Sábado)'
-      );
-      return false;
-    }
-    if (hour < 0 || hour > 23) {
-      Alert.alert('Erro', 'Hora deve ser entre 0 e 23');
-      return false;
-    }
-    if (minute < 0 || minute > 59) {
-      Alert.alert('Erro', 'Minuto deve ser entre 0 e 59');
-      return false;
-    }
-    if (!title.trim()) {
-      Alert.alert('Erro', 'Título é obrigatório');
-      return false;
-    }
-    if (!body.trim()) {
-      Alert.alert('Erro', 'Mensagem é obrigatória');
-      return false;
-    }
-    return true;
-  }
-  private async loadFromStorage(): Promise<void> {
-    try {
-      const stored = await AsyncStorage.getItem(
-        WeeklyNotificationManager.STORAGE_KEY
-      );
-      if (stored) {
-        const data = JSON.parse(stored);
-        this.notifications = new Map(Object.entries(data));
-      }
-    } catch (error) {
-      console.error('Erro ao carregar do AsyncStorage:', error);
-    }
-  }
-  private async saveToStorage(
-    id: string,
-    data: NotificationStorage
-  ): Promise<void> {
-    this.notifications.set(id, data);
-    await this.saveAllToStorage();
-  }
-  private async saveAllToStorage(): Promise<void> {
-    try {
-      const data = Object.fromEntries(this.notifications);
-      await AsyncStorage.setItem(
-        WeeklyNotificationManager.STORAGE_KEY,
-        JSON.stringify(data)
-      );
-    } catch (error) {
-      console.error('Erro ao salvar no AsyncStorage:', error);
-    }
-  }
-  private async loadFromDatabase(): Promise<WeeklyNotificationData[]> {
-    try {
-      const records = await availabilitiesAction.getAll();
-      return records.map((record: StudentAvailability) => ({
-        id: record.id,
-        weekday: Number(record.weekday) as WeekDayEnum,
-        hour: record.hour,
-        minute: record.minute,
-        title: record.title,
-        body: record.body,
-        isActive: record.isActive,
-        studentId: record.studentId,
-      }));
-    } catch (error) {
-      console.error('Erro ao carregar do banco:', error);
-      return [];
-    }
-  }
 }
 
-export { WeeklyNotificationManager };
+export const notificationManager = new WeeklyNotificationManager();

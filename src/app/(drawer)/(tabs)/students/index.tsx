@@ -106,20 +106,9 @@ export default function StudentsHome() {
           if (hasNextPage && !isFetchingNextPage) fetchNextPage();
         }}
         onEndReachedThreshold={0.2}
-        ListFooterComponent={
-          isFetchingNextPage || isLoading ? (
-            <View
-              className="h-2 mt-4 mx-auto justify-center items-center"
-              lightColor="transparent"
-              darkColor="transparent"
-            >
-              <Text>Carregando...</Text>
-            </View>
-          ) : null
-        }
         ListEmptyComponent={() => {
           return (
-            <View className="mt-10">
+            <View className="mt-10 h-full">
               <NoContent text="Sem dados" />
             </View>
           );

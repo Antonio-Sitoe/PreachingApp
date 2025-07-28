@@ -8,19 +8,7 @@ import { eq } from 'drizzle-orm';
 
 class StudentAvailabilityActions {
   async create(data: NewStudentAvailability) {
-    return await db
-      .insert(studentAvailabilities)
-      .values({
-        id: data.id,
-        weekday: data.weekday,
-        studentId: data.studentId,
-        hour: data.hour,
-        minute: data.minute,
-        title: data.title,
-        body: data.body,
-        isActive: data.isActive,
-      })
-      .returning();
+    return await db.insert(studentAvailabilities).values(data).returning();
   }
 
   async getAll(): Promise<StudentAvailability[]> {
@@ -39,12 +27,19 @@ class StudentAvailabilityActions {
     }
   }
 
+  async getById(id: string): Promise<StudentAvailability | null> {
+    const result = await db
+      .select()
+      .from(studentAvailabilities)
+      .where(eq(studentAvailabilities.id, id))
+      .limit(1);
+    return result.length > 0 ? result[0] : null;
+  }
+
   async update(id: string, data: Partial<NewStudentAvailability>) {
     return db
       .update(studentAvailabilities)
-      .set({
-        ...data,
-      })
+      .set(data)
       .where(eq(studentAvailabilities.id, id))
       .returning();
   }

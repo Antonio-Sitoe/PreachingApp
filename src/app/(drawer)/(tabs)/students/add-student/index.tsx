@@ -304,7 +304,7 @@ export default function CreateStudent() {
         </View>
         <View className="mb-4 flex-1">
           <TextInputForm
-            placeholder="Informacoes Adicionais"
+            placeholder="O que você gostaria de adicionar?"
             control={control}
             errors={errors}
             label="Informacoes Adicionais"

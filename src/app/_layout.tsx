@@ -19,6 +19,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useUser } from '@/contexts/UserContext';
 import { GluestackUIProvider } from '@/components/ui/gluestack-ui-provider';
 
+import { notificationManager } from '@/lib/notifications/weekly-notification';
+
 export {
   // Catch any errors thrown by the Layout component.
   ErrorBoundary,
@@ -67,6 +69,19 @@ export default function RootLayoutNav() {
   useEffect(() => {
     if (loaded) {
       autoSignIn();
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    if (loaded) {
+      let isMounted = true;
+      if (isMounted) {
+        notificationManager.setupNotificationListener();
+        isMounted = false;
+      }
+      return () => {
+        isMounted = false;
+      };
     }
   }, [loaded]);
 

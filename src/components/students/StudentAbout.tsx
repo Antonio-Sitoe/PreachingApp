@@ -47,7 +47,7 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
             try {
               const { sucess } = await studentsAction.deleteWithOwnVisits(id);
               if (sucess) {
-                await notificationManager.cleanupStudentNotifications(id);
+                await notificationManager.deleteAllNotificationsByStudentId(id);
                 Snackbar.show({
                   text: `${data?.name} apagado com sucesso`,
                   duration: Snackbar.LENGTH_LONG,
