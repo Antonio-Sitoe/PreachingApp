@@ -39,7 +39,9 @@ class StudentAvailabilityActions {
   async update(id: string, data: Partial<NewStudentAvailability>) {
     return db
       .update(studentAvailabilities)
-      .set(data)
+      .set({
+        ...data,
+      })
       .where(eq(studentAvailabilities.id, id))
       .returning();
   }

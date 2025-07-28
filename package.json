@@ -5,7 +5,7 @@
   "scripts": {
     "start": "npx expo start",
     "android": "DARK_MODE=media npx expo run:android",
-    "delivery": "npx react-native run-android --mode=release",
+    "delivery": "npx expo run:android --variant release",
     "lint": "biome lint .",
     "format": "biome lint --write . && biome format --write .",
     "check": "biome check .",

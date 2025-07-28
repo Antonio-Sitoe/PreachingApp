@@ -25,7 +25,21 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.antoniositoe533.preachingApp.dev"
+      "package": "com.antoniositoe533.preachingApp.dev",
+      "permissions": [
+        "RECEIVE_BOOT_COMPLETED",
+        "WAKE_LOCK",
+        "USE_FULL_SCREEN_INTENT",
+        "VIBRATE"
+      ],
+      "intentFilters": [
+        {
+          "action": "android.intent.action.BOOT_COMPLETED",
+          "category": [
+            "android.intent.category.DEFAULT"
+          ]
+        }
+      ]
     },
     "web": {
       "bundler": "metro",

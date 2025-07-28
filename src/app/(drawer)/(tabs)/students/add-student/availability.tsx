@@ -16,7 +16,6 @@ import useTheme from '@/hooks/useTheme';
 import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
 import { CheckBox } from '@/components/ui/CheckBox';
 import { notificationManager } from '@/lib/notifications/weekly-notification';
-import * as Notifications from 'expo-notifications';
 
 import {
   Select,
@@ -162,10 +161,16 @@ export default function CreateStudent() {
       if (editingAvailability) {
         await notificationManager.updateNotification(editingAvailability.id!, {
           ...newBlock,
+          name: studentName ?? '',
+          title: `📅 Visita para ${studentName}`,
+          body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
+            newBlock.hour
+          ).padStart(2, '0')}:${String(newBlock.minute).padStart(2, '0')}.`,
         });
       } else {
         await notificationManager.createWeeklyNotification({
           ...newBlock,
+          name: studentName ?? '',
           title: `📅 Visita para ${studentName}`,
           body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
             newBlock.hour
@@ -246,7 +251,7 @@ export default function CreateStudent() {
   };
 
   useEffect(() => {
-    Notifications.requestPermissionsAsync();
+    notificationManager.requestPermissions();
   }, []);
 
   return (

@@ -374,11 +374,20 @@ class WeeklyNotificationManager {
         throw new Error('Permissões não concedidas');
       }
 
+      // Primeiro, obter notificações existentes no sistema para evitar duplicatas
+      const existingNotifications =
+        await Notifications.getAllScheduledNotificationsAsync();
+      const existingIds = new Set(
+        existingNotifications
+          .map((n) => n.content.data?.notificationId)
+          .filter(Boolean)
+      );
+
       const dbNotifications = await availabilitiesAction.getAll();
       let restoredCount = 0;
 
       for (const notification of dbNotifications) {
-        if (notification.isActive) {
+        if (notification.isActive && !existingIds.has(notification.id)) {
           try {
             const systemId = await Notifications.scheduleNotificationAsync({
               content: {
@@ -402,20 +411,38 @@ class WeeklyNotificationManager {
               },
             });
 
-            // Atualizar systemId no banco (se tiver o campo)
-            await availabilitiesAction.update(notification.id!, {
-              ...notification,
-              systemId,
-            });
+            // Tentar atualizar systemId no banco com tratamento de erro
+            try {
+              await availabilitiesAction.update(notification.id!, {
+                weekday: notification.weekday,
+                hour: notification.hour,
+                minute: notification.minute,
+                title: notification.title,
+                body: notification.body,
+                isActive: notification.isActive,
+                studentId: notification.studentId,
+                systemId,
+              });
+            } catch (updateError) {
+              console.warn(
+                `⚠️ Não foi possível atualizar systemId para ${notification.id}:`,
+                updateError
+              );
+              // Continuar mesmo se não conseguir atualizar o systemId
+            }
 
             restoredCount++;
-            console.log(`✅ Notificação restaurada: ${notification.id}`);
+            console.log(
+              `✅ Notificação restaurada: ${notification.id} -> ${systemId}`
+            );
           } catch (error) {
             console.error(
               `❌ Erro ao restaurar notificação ${notification.id}:`,
               error
             );
           }
+        } else if (notification.isActive && existingIds.has(notification.id)) {
+          console.log(`⏭️ Notificação ${notification.id} já existe no sistema`);
         }
       }
 
@@ -526,6 +553,51 @@ class WeeklyNotificationManager {
       console.log('✅ Sincronização concluída');
     } catch (error) {
       console.error('Erro na sincronização:', error);
+    }
+  }
+
+  public async cleanupDuplicateNotifications(): Promise<number> {
+    try {
+      console.log('🧹 Iniciando limpeza de notificações duplicadas...');
+
+      const systemNotifications =
+        await Notifications.getAllScheduledNotificationsAsync();
+      const dbNotifications = await availabilitiesAction.getAll();
+      const activeDbIds = new Set(
+        dbNotifications.filter((n) => n.isActive).map((n) => n.id)
+      );
+
+      let removedCount = 0;
+
+      // Remover notificações do sistema que não estão no banco ou não estão ativas
+      for (const sysNotif of systemNotifications) {
+        const notificationId = sysNotif.content?.data?.notificationId;
+        if (
+          typeof notificationId === 'string' &&
+          !activeDbIds.has(notificationId)
+        ) {
+          try {
+            await Notifications.cancelScheduledNotificationAsync(
+              sysNotif.identifier as string
+            );
+            removedCount++;
+            console.log(`🗑️ Removida notificação órfã: ${notificationId}`);
+          } catch (cancelError) {
+            console.warn(
+              `⚠️ Erro ao cancelar notificação ${notificationId}:`,
+              cancelError
+            );
+          }
+        }
+      }
+
+      console.log(
+        `🧹 Limpeza concluída: ${removedCount} notificações removidas`
+      );
+      return removedCount;
+    } catch (error) {
+      console.error('❌ Erro na limpeza de duplicatas:', error);
+      return 0;
     }
   }
 }
