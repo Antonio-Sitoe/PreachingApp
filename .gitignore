@@ -15,3 +15,39 @@ apk/preachingApp.0.apk
 
 # Biome
 .biome/
+
+# Expo generated native folders (root level only)
+/android/
+/ios/
+
+# Expo
+.expo/
+.yarn/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.development
+.env.test
+.env.production
+
+# Build outputs in modules
+**/build/
+**/tmp/
+**/.transforms/
+**/intermediates/
+**/generated/
+**/outputs/
+
+# Android specific
+*.apk
+*.aab
+local.properties
+
+# iOS specific  
+*.ipa
+*.xcworkspace/xcuserdata/
+*.xcuserdata/

@@ -15,7 +15,7 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
 import { CheckBox } from '@/components/ui/CheckBox';
-import { notificationManager } from '@/lib/notifications/weekly-notification';
+import { bootAwareNotificationManager } from '@/lib/notifications/boot-aware-notification-manager';
 
 import {
   Select,
@@ -38,6 +38,7 @@ import {
   ActionsheetBackdrop,
 } from '@/components/ui/actionsheet';
 import { WeekDayEnum } from '@/@types/enums';
+import { notificationManager } from '@/lib/notifications/weekly-notification';
 
 const weekDays = [
   { label: 'Segunda-feira', value: WeekDayEnum.MONDAY },
@@ -159,16 +160,19 @@ export default function CreateStudent() {
     setIsSubmitting(true);
     try {
       if (editingAvailability) {
-        await notificationManager.updateNotification(editingAvailability.id!, {
-          ...newBlock,
-          name: studentName ?? '',
-          title: `📅 Visita para ${studentName}`,
-          body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
-            newBlock.hour
-          ).padStart(2, '0')}:${String(newBlock.minute).padStart(2, '0')}.`,
-        });
+        await bootAwareNotificationManager.updateNotification(
+          editingAvailability.id!,
+          {
+            ...newBlock,
+            name: studentName ?? '',
+            title: `📅 Visita para ${studentName}`,
+            body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
+              newBlock.hour
+            ).padStart(2, '0')}:${String(newBlock.minute).padStart(2, '0')}.`,
+          }
+        );
       } else {
-        await notificationManager.createWeeklyNotification({
+        await bootAwareNotificationManager.createWeeklyNotification({
           ...newBlock,
           name: studentName ?? '',
           title: `📅 Visita para ${studentName}`,
@@ -214,7 +218,9 @@ export default function CreateStudent() {
             setIsSubmitting(true);
             try {
               if (availability.id) {
-                await notificationManager.deleteNotification(availability.id);
+                await bootAwareNotificationManager.deleteNotification(
+                  availability.id
+                );
               }
               await refetchAvailabilities();
             } catch (error) {
@@ -539,7 +545,7 @@ export default function CreateStudent() {
               <DateTimePicker
                 value={new Date(2023, 0, 1, form.hour, form.minute)}
                 mode="time"
-                display="spinner"
+                display="calendar"
                 onChange={(_, date) => {
                   setShowStartPicker(false);
                   if (date) {

@@ -36,10 +36,12 @@ interface UserState {
   logout: () => Promise<void>;
 }
 
-GoogleSignin.configure({
-  webClientId: ENV.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
-  offlineAccess: false,
-});
+if (ENV.EXPO_PUBLIC_GOOGLE_CLIENT_ID) {
+  GoogleSignin.configure({
+    webClientId: ENV.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    offlineAccess: false,
+  });
+}
 
 export const useUser = create<UserState>((set, get) => ({
   user: null,

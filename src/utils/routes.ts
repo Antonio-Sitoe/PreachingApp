@@ -7,11 +7,12 @@ import {
 
 import { IconIOS } from '@/assets/icons/Icon';
 import type { Href } from 'expo-router';
+import type { IconIOSPropName } from '@/assets/icons/Icon';
 interface IroutesProps {
   label: string;
   icon: {
     IconRoute: LucideIcon | typeof IconIOS;
-    name: string;
+    name: IconIOSPropName | string;
   };
   route: Href;
 }

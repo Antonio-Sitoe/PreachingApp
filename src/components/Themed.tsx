@@ -21,7 +21,7 @@ type ThemeProps = {
 export type TextProps = ThemeProps & DefaultText['props'];
 export type ViewProps = ThemeProps & DefaultView['props'];
 export type TouchebleProps = ThemeProps &
-  DefaultTouchableOpacity['props'] &
+  React.ComponentProps<typeof DefaultTouchableOpacity> &
   TouchableOpacityProps;
 
 export function useThemeColor(

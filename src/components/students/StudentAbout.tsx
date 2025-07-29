@@ -8,6 +8,7 @@ import useTheme from '@/hooks/useTheme';
 import { Calendar, Pen, Trash2 } from 'lucide-react-native';
 import Snackbar from 'react-native-snackbar';
 import { notificationManager } from '@/lib/notifications/weekly-notification';
+import { bootAwareNotificationManager } from '@/lib/notifications/boot-aware-notification-manager';
 
 interface StudentAboutProps {
   data: Student;
@@ -46,7 +47,9 @@ export const StudentAbout = ({ data }: StudentAboutProps) => {
             try {
               const { sucess } = await studentsAction.deleteWithOwnVisits(id);
               if (sucess) {
-                await notificationManager.deleteAllNotificationsByStudentId(id);
+                await bootAwareNotificationManager.deleteAllNotificationsByStudentId(
+                  id
+                );
                 Snackbar.show({
                   text: `${data?.name} apagado com sucesso`,
                   duration: Snackbar.LENGTH_LONG,

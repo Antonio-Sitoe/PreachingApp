@@ -87,13 +87,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.antoniositoe533.preachingApp.dev'
+    namespace 'com.antoniositoe533.preaching_app'
     defaultConfig {
-        applicationId 'com.antoniositoe533.preachingApp.dev'
+        applicationId 'com.antoniositoe533.preaching_app'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.1"
+        versionName "1.0.2"
     }
     signingConfigs {
         debug {

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import Constants from 'expo-constants';
 
 export const envSchema = z.object({
   EXPO_PUBLIC_SUPABASE_URL: z.string(),
@@ -6,4 +7,4 @@ export const envSchema = z.object({
   EXPO_PUBLIC_GOOGLE_CLIENT_ID: z.string().min(1),
 });
 
-export const ENV = envSchema.parse(process.env);
+export const ENV = envSchema.parse(Constants.expoConfig?.extra);

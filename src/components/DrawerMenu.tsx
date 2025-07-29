@@ -4,30 +4,22 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Switch } from 'react-native';
 import { type Href, useRouter } from 'expo-router';
 
 import { IconIOS } from '@/assets/icons/Icon';
 import { DRAWER_ROUTES } from '@/utils/routes';
-import { useColorScheme } from 'nativewind';
-import { Switch, TouchableOpacity } from 'react-native-gesture-handler';
 
 import Colors from '@/constants/Colors';
 import AvatarPerfil from './AvatarPerfil';
-import { useAsyncStorage } from '@react-native-async-storage/async-storage';
+import useTheme from '@/hooks/useTheme';
+import type { IconIOSPropName } from '@/assets/icons/Icon';
 
 export function CustomDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter();
-  const { colorScheme, toggleColorScheme } = useColorScheme();
-  const { setItem } = useAsyncStorage('@THEME_KEY');
+  const { isDark, toggleTheme } = useTheme();
 
-  const isDarkTheme = colorScheme === 'dark';
-
-  const onChangeToggle = () => {
-    toggleColorScheme();
-    if (colorScheme === 'dark') setItem('light');
-    else setItem('dark');
-  };
+  const isDarkTheme = isDark;
 
   function handleGotoRoute(route: Href) {
     router.push(route);
@@ -65,7 +57,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
               style={{ width: '100%' }}
               icon={() => (
                 <IconRoute
-                  name={name}
+                  name={name as IconIOSPropName}
                   strokeWidth={1.5}
                   size={28}
                   color={isDarkTheme ? Colors.dark.tint : '#535763'}
@@ -100,7 +92,7 @@ export function CustomDrawerContent(props: DrawerContentComponentProps) {
             className="flex flex-row items-center"
           >
             <Switch
-              onChange={onChangeToggle}
+              onValueChange={toggleTheme}
               value={isDarkTheme}
               trackColor={{ true: Colors.dark.tint, false: Colors.light.tint }}
             />
