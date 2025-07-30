@@ -545,7 +545,7 @@ export default function CreateStudent() {
               <DateTimePicker
                 value={new Date(2023, 0, 1, form.hour, form.minute)}
                 mode="time"
-                display="calendar"
+                display="clock"
                 onChange={(_, date) => {
                   setShowStartPicker(false);
                   if (date) {
