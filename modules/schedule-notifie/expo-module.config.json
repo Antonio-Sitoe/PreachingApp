@@ -1,9 +1,0 @@
-{
-  "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["ScheduleNotifieModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.schedulenotifie.ScheduleNotifieModule"]
-  }
-}

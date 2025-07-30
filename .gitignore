@@ -17,6 +17,9 @@ apk/preachingApp.0.apk
 .biome/
 
 # Expo generated native folders (root level only)
+android/
+./android/
+.ios/
 /android/
 /ios/
 
