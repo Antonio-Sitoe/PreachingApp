@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { capitalizeString } from '@/utils/helper';
 import { ActivityIndicator, Alert } from 'react-native';
 import { Pen, Trash2 } from 'lucide-react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native';
 import { type IVisit, visitsAction } from '@/database/actions';
 import NoContent from '../NoContent';
 

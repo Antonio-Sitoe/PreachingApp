@@ -1,39 +1,56 @@
-import { IconIOS } from '@/assets/icons/Icon'
-import { Text } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { IconIOS } from '@/assets/icons/Icon';
+import { Text, TouchableOpacity } from 'react-native';
 
-import useTheme from '@/hooks/useTheme'
-import Colors from '@/constants/Colors'
-import type { Ionicons } from '@expo/vector-icons'
+import useTheme from '@/hooks/useTheme';
+import Colors from '@/constants/Colors';
+import type { Ionicons } from '@expo/vector-icons';
 
 interface IButtonStopWatchProps {
-  onPress?: () => void
-  text: string
-  iconName: React.ComponentProps<typeof Ionicons>['name']
+  onPress?: () => void;
+  text: string;
+  iconName: React.ComponentProps<typeof Ionicons>['name'];
+  isSmallScreen?: boolean;
+  isMediumScreen?: boolean;
 }
 
 export function ButtonStopWatch({
   onPress,
   text,
   iconName,
+  isSmallScreen = false,
+  isMediumScreen = false,
 }: IButtonStopWatchProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
+
+  const iconSize = isSmallScreen ? 28 : isMediumScreen ? 32 : 40;
+  const buttonPadding = isSmallScreen ? 8 : isMediumScreen ? 10 : 12;
+  const textSize = isSmallScreen ? 10 : isMediumScreen ? 11 : 12;
+  const minWidth = isSmallScreen ? 60 : isMediumScreen ? 65 : 70;
+
   return (
     <TouchableOpacity
       onPress={onPress}
-      className="flex items-center justify-center p-2 min-w-[70px]"
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: buttonPadding,
+        minWidth: minWidth,
+      }}
     >
       <IconIOS
         name={iconName}
-        size={40}
+        size={iconSize}
         color={isDark ? Colors.dark.text : Colors.light.tint}
       />
       <Text
-        style={{ color: isDark ? 'white' : Colors.light.tint }}
-        className="font-textIBM text-[12px] text-primary dark:text-white"
+        style={{
+          color: isDark ? 'white' : Colors.light.tint,
+          fontSize: textSize,
+        }}
+        className="font-textIBM text-primary dark:text-white"
       >
         {text}
       </Text>
     </TouchableOpacity>
-  )
+  );
 }

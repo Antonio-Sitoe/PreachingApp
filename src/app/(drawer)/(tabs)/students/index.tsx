@@ -9,7 +9,7 @@ import useTheme from '@/hooks/useTheme';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
 
-import { RefreshControl } from 'react-native-gesture-handler';
+import { RefreshControl } from 'react-native';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useIsFocused } from '@react-navigation/native';
 

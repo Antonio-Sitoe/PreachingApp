@@ -6,9 +6,9 @@ import useTheme from '@/hooks/useTheme';
 import { View, Text } from '../Themed';
 import { usePathname } from 'expo-router';
 import { currentDates } from '@/utils/dates';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native';
 import { initialReportData } from '@/utils/initialReportData';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { type IReport, reportsActions } from '@/database/actions';
 import { Calendar as CustomCalendar } from 'react-native-calendars';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
@@ -45,14 +45,14 @@ export default function ReportYears() {
   function handleGoBack() {
     setYear((year) => year - 1);
   }
-  async function onChangeYear({ year }) {
+  const onChangeYear = useCallback(async ({ year }) => {
     const { data } = await reportsActions.getByYear(year);
     setData(data as unknown as IReport);
-  }
+  }, []);
 
   useEffect(() => {
     onChangeYear({ year });
-  }, [onChangeYear, year]);
+  }, [year, onChangeYear]);
 
   return (
     <View

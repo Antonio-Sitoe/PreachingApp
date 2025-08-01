@@ -2,9 +2,8 @@
 import dayjs from 'dayjs';
 
 import { Link } from 'expo-router';
-import { Text, View } from '../../Themed';
+import { Text, View, TouchableOpacity } from 'react-native';
 import type { ReportData } from '@/@types/interfaces';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { calculeTotalNumbers } from '@/utils/calculeTotalNumbers';
 
 import Colors from '@/constants/Colors';

@@ -5,10 +5,13 @@ import CardWithButton from './CardWithButton';
 
 import { FlashList } from '@shopify/flash-list';
 import { Text, View } from '../../Themed';
-import { Button, ActivityIndicator } from 'react-native';
+import { ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
-import { type IReport, reportsActions } from '@/database/actions';
+import { reportsActions } from '@/database/actions';
 import { usePathname } from 'expo-router';
+import { useReportsData } from '@/contexts/ReportContext';
+import { Plus } from 'lucide-react-native';
+import { type IReport } from '@/database/schemas/reports';
 
 export type CardProps = IReport[];
 
@@ -21,6 +24,7 @@ export default function ReportListWithButton() {
   console.log('TOTAL DE ITEMS', data.length);
 
   const { isDark } = useTheme();
+  const { setisOpenCreateReportModal } = useReportsData();
 
   async function handleMoreData() {
     if (page < totalPages) {
@@ -94,19 +98,30 @@ export default function ReportListWithButton() {
                 className="flex items-center justify-center mt-4"
                 lightColor="transparent"
               >
-                <Button
-                  title="Ver mais"
+                <TouchableOpacity
                   onPress={handleMoreData}
-                  variant="contained"
-                  color={isDark ? Colors.dark.tint : Colors.light.tint}
-                  className="font-text capitalize text-white"
-                  style={{ width: 150 }}
-                  titleStyle={{
-                    color: isDark ? Colors.dark.Success200 : 'white',
-                    fontFamily: 'Inter_400Regular',
-                    textTransform: 'capitalize',
+                  style={{
+                    width: 150,
+                    backgroundColor: isDark
+                      ? Colors.dark.tint
+                      : Colors.light.tint,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                    alignItems: 'center',
                   }}
-                />
+                  activeOpacity={0.8}
+                >
+                  <Text
+                    style={{
+                      color: isDark ? Colors.dark.Success200 : 'white',
+                      fontFamily: 'Inter_400Regular',
+                      textTransform: 'capitalize',
+                      fontSize: 16,
+                    }}
+                  >
+                    Ver mais
+                  </Text>
+                </TouchableOpacity>
               </View>
             ) : (
               <Text
@@ -120,6 +135,22 @@ export default function ReportListWithButton() {
         )}
         renderItem={({ item }) => <CardWithButton data={item} />}
       />
+
+      {/* Botão Flutuante para Abrir Modal */}
+      <TouchableOpacity
+        onPress={() => setisOpenCreateReportModal(true)}
+        className="absolute bottom-6 right-6 w-14 h-14 rounded-full items-center justify-center"
+        style={{
+          backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 4,
+        }}
+      >
+        <Plus size={24} color="white" />
+      </TouchableOpacity>
     </View>
   );
 }

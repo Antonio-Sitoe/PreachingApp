@@ -7,7 +7,7 @@ import {
   type Control,
 } from 'react-hook-form';
 import type { TextInputProps } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
+import { TextInput } from 'react-native';
 
 interface ITextInputFormProps extends TextInputProps {
   rules: RegisterOptions;

@@ -1,17 +1,16 @@
-import Colors from '@/constants/Colors'
-import { View } from 'react-native'
-import { TextInput } from 'react-native-gesture-handler'
-import ButtonQtd from './ButtonQtd'
-import useTheme from '@/hooks/useTheme'
-import { Text } from '../Themed'
+import Colors from '@/constants/Colors';
+import { View, TextInput } from 'react-native';
+import ButtonQtd from './ButtonQtd';
+import useTheme from '@/hooks/useTheme';
+import { Text } from '../Themed';
 
 interface IFormInput {
-  title: string
-  value: string | number
-  change(Fun: any): void
-  inCrementValue(): void
-  decrementValue(): void
-  style?: any
+  title: string;
+  value: string | number;
+  change(Fun: any): void;
+  inCrementValue(): void;
+  decrementValue(): void;
+  style?: any;
 }
 
 export const FormInput = ({
@@ -22,7 +21,7 @@ export const FormInput = ({
   decrementValue,
   ...rest
 }: IFormInput) => {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
   return (
     <View className="flex-1 mt-1" {...rest}>
       <Text className="font-textIBM text-base ml-1 mb-1 dark:text-white">
@@ -49,5 +48,5 @@ export const FormInput = ({
         <ButtonQtd Increment={inCrementValue} decrement={decrementValue} />
       </View>
     </View>
-  )
-}
+  );
+};

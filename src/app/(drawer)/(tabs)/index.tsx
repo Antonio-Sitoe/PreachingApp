@@ -1,40 +1,29 @@
-import {
-  Clock3,
-  YoutubeIcon,
-  LibraryIcon,
-  Users2,
-  ListRestartIcon,
-} from 'lucide-react-native'
+import { Clock3, Users2 } from 'lucide-react-native';
 
-import Cards from '@/components/Cards'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import { useReportsData } from '@/contexts/ReportContext'
-import { StopWatch } from '@/components/StopWatch'
-import { AnimatedButton } from '@/components/ui/ButtonAnimated'
-import { Text, View, ScrollView } from 'react-native'
-import { useRouter } from 'expo-router'
+import Cards from '@/components/Cards';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
+import { useReportsData } from '@/contexts/ReportContext';
+import { StopWatch } from '@/components/StopWatch';
+import { AnimatedButton } from '@/components/ui/ButtonAnimated';
+import { Text, View, ScrollView } from 'react-native';
+import { useRouter } from 'expo-router';
+import { AddReportModal } from '@/components/reports/add-report-modal';
 
 interface IHoursAndMin {
-  hours: number
-  minutes: number
+  hours: number;
+  minutes: number;
 }
 
 export default function TabOneScreen() {
-  const { isDark } = useTheme()
-  const router = useRouter()
-  const { reports } = useReportsData()
+  const { isDark } = useTheme();
+  const router = useRouter();
+  const { reports, setisOpenCreateReportModal } = useReportsData();
 
   function handleAddReport(data: IHoursAndMin | undefined) {
+    setisOpenCreateReportModal(true);
     if (data) {
-      router.push({
-        pathname: '/modal',
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        params: { h: data.hours, m: data.minutes },
-      })
-    } else {
-      router.push('/modal')
+      router.setParams({ h: data.hours, m: data.minutes });
     }
   }
 
@@ -61,28 +50,12 @@ export default function TabOneScreen() {
               content={reports.time ? reports.time : '0'}
               title="Horas"
             />
-            <Cards Icon={YoutubeIcon} content={reports.videos} title="Videos" />
-          </View>
-          <View
-            style={{ flex: 1, width: 'auto', marginTop: 16, marginBottom: 16 }}
-          >
-            <Cards
-              Icon={LibraryIcon}
-              content={reports.publications}
-              title="Publicações"
-            />
-          </View>
-          <View style={{ flex: 1, flexDirection: 'row', gap: 16 }}>
             <Cards Icon={Users2} content={reports.students} title="ESTUDOS" />
-            <Cards
-              Icon={ListRestartIcon}
-              content={reports.returnVisits}
-              title="REVISITAS"
-            />
           </View>
         </View>
       </ScrollView>
       <AnimatedButton onPress={() => handleAddReport(undefined)} />
+      <AddReportModal />
     </>
-  )
+  );
 }

@@ -3,10 +3,7 @@ export interface ReportData {
   date: Date | string;
   hours: number;
   minutes: number;
-  publications: number;
-  returnVisits: number;
   students: number;
-  videos: number;
   time: string;
   day: number | string;
   month: string;

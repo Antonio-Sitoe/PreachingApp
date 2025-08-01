@@ -1,16 +1,15 @@
-import { View, Text } from 'react-native'
-import { Minus, Plus } from 'lucide-react-native'
-import Colors from '@/constants/Colors'
-import useTheme from '@/hooks/useTheme'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Minus, Plus } from 'lucide-react-native';
+import Colors from '@/constants/Colors';
+import useTheme from '@/hooks/useTheme';
 
 interface ButtonQtdProps {
-  Increment(): void
-  decrement(): void
+  Increment(): void;
+  decrement(): void;
 }
 
 export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
-  const { isDark } = useTheme()
+  const { isDark } = useTheme();
   return (
     <View
       style={{
@@ -35,5 +34,5 @@ export default function ButtonQtd({ Increment, decrement }: ButtonQtdProps) {
         </Text>
       </TouchableOpacity>
     </View>
-  )
+  );
 }

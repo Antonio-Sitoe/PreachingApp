@@ -12,6 +12,7 @@ import {
   type TabBarProps,
 } from 'react-native-tab-view';
 import { useTabBarIndex } from '@/contexts/ReportContext';
+import { AddReportModal } from '@/components/reports/add-report-modal';
 
 const renderTabBar = (
   props: TabBarProps<{ key: string; title: string }>,
@@ -58,15 +59,18 @@ export default function Report() {
   const { index, setIndex } = useTabBarIndex();
 
   return (
-    <TabView
-      renderTabBar={(props) => renderTabBar(props, isDark)}
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      onIndexChange={setIndex}
-      initialLayout={{ width: layout.width }}
-      style={{
-        backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
-      }}
-    />
+    <>
+      <TabView
+        renderTabBar={(props) => renderTabBar(props, isDark)}
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+        style={{
+          backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
+        }}
+      />
+      <AddReportModal />
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import { Select } from '@/components/ui/Select';
 import { useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native';
 import { Text, View } from '@/components/Themed';
 import { BackButton } from '@/components/ui/BackButton';
 import { DatePicker } from '@/components/ui/DatePicker';

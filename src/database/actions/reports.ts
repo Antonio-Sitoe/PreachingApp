@@ -3,8 +3,7 @@ import { db } from '../db';
 import { minutesToHoursAndMinutes } from '@/utils/dates';
 import { sorteByMonths, sorteByYears } from '@/utils/helper';
 import groupBy from 'group-by';
-
-import { type NewReport, reports } from '../schemas';
+import { type NewReport, reports } from '../schemas/reports';
 
 class ReportsActions {
   async create(newRecordData: NewReport) {
@@ -35,6 +34,9 @@ class ReportsActions {
         .insert(reports)
         .values({
           date: String(newRecordData.date),
+          year: newRecordData.year,
+          month: newRecordData.month,
+          day: newRecordData.day,
           hours: newRecordData.hours,
           minutes: newRecordData.minutes,
           students: newRecordData.students,
@@ -60,6 +62,9 @@ class ReportsActions {
           students: updateData.students,
           comments: updateData.comments,
           date: updateData.date ? String(updateData.date) : undefined,
+          year: updateData.year,
+          month: updateData.month,
+          day: updateData.day,
         })
         .where(eq(reports.id, id))
         .returning();

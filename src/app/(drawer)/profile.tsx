@@ -8,7 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Controller, useForm } from 'react-hook-form';
 import { Camera, ChevronLeft } from 'lucide-react-native';
 import { KeyboardAvoidingView, TouchableOpacity } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';

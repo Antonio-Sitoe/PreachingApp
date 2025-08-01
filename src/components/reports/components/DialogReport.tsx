@@ -1,16 +1,20 @@
 import type { IReport } from '@/database/actions';
-import { Text, View, Modal, ActivityIndicator } from 'react-native';
+import {
+  Text,
+  View,
+  Modal,
+  ActivityIndicator,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import dayjs from 'dayjs';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView } from 'react-native';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export const DialogReport = ({ visible, setVisible, reports }) => {
   const { isDark } = useTheme();
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   return (
     <Modal visible={visible} onDismiss={() => setVisible(false)}>
@@ -42,20 +46,18 @@ export const DialogReport = ({ visible, setVisible, reports }) => {
                       ? Colors.dark.Success200
                       : Colors.light.tint,
                     color: isDark ? '#252525' : 'white',
+                    padding: 4,
+                    paddingHorizontal: 8,
+                    marginBottom: 4,
+                    borderRadius: 8,
                   }}
-                  darkColor="black"
-                  className="p-1 px-2 mb-1 rounded-lg"
                 >
                   {date}
                 </Text>
                 <Text className="ml-2">
                   {`${item.hours >= 10 ? item.hours : `0${item.hours}`}:${
                     item.minutes >= 10 ? item.minutes : `0${item.minutes}`
-                  } horas, ${item.publications} publicações, ${
-                    item.videos
-                  } videos mostrados, ${item.returnVisits} revisitas, ${
-                    item.students
-                  } estudantes`}
+                  } horas, ${item.students} estudantes`}
                 </Text>
               </TouchableOpacity>
             </View>
