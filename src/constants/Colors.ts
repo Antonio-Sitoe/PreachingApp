@@ -33,7 +33,6 @@ export const navigationTheme = {
     card: '#fff',
     text: '#000',
     border: '#e5e7eb',
-    notification: '#6979F8',
   },
 };
 
@@ -45,6 +44,5 @@ export const navigationDarkTheme = {
     card: '#121214',
     text: '#fff',
     border: '#262626',
-    notification: '#328048',
   },
 };

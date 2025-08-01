@@ -25,7 +25,7 @@ interface ReportStore {
 
 export const useReportsData = create<ReportStore>((set, get) => ({
   reports: initialReportData,
-  reportTabBarIndex: 0,
+  reportTabBarIndex: 1,
   isOpenCreateReportModal: false,
   reportToShare: '',
   isLayoutList: false,

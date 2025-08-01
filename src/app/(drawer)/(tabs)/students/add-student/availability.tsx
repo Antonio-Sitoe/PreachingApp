@@ -15,7 +15,6 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import { ChevronDownIcon, Pen, Trash2 } from 'lucide-react-native';
 import { CheckBox } from '@/components/ui/CheckBox';
-import { bootAwareNotificationManager } from '@/lib/notifications/boot-aware-notification-manager';
 
 import {
   Select,
@@ -38,7 +37,6 @@ import {
   ActionsheetBackdrop,
 } from '@/components/ui/actionsheet';
 import { WeekDayEnum } from '@/@types/enums';
-import { notificationManager } from '@/lib/notifications/weekly-notification';
 
 const weekDays = [
   { label: 'Segunda-feira', value: WeekDayEnum.MONDAY },
@@ -160,26 +158,9 @@ export default function CreateStudent() {
     setIsSubmitting(true);
     try {
       if (editingAvailability) {
-        await bootAwareNotificationManager.updateNotification(
-          editingAvailability.id!,
-          {
-            ...newBlock,
-            name: studentName ?? '',
-            title: `📅 Visita para ${studentName}`,
-            body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
-              newBlock.hour
-            ).padStart(2, '0')}:${String(newBlock.minute).padStart(2, '0')}.`,
-          }
-        );
+        await availabilitiesAction.update(editingAvailability.id!, newBlock);
       } else {
-        await bootAwareNotificationManager.createWeeklyNotification({
-          ...newBlock,
-          name: studentName ?? '',
-          title: `📅 Visita para ${studentName}`,
-          body: `Lembrete: sua visita para ${studentName} está marcada para hoje às ${String(
-            newBlock.hour
-          ).padStart(2, '0')}:${String(newBlock.minute).padStart(2, '0')}.`,
-        });
+        await availabilitiesAction.create(newBlock);
       }
       await refetchAvailabilities();
       resetForm();
@@ -218,9 +199,7 @@ export default function CreateStudent() {
             setIsSubmitting(true);
             try {
               if (availability.id) {
-                await bootAwareNotificationManager.deleteNotification(
-                  availability.id
-                );
+                await availabilitiesAction.delete(availability.id);
               }
               await refetchAvailabilities();
             } catch (error) {
@@ -255,10 +234,6 @@ export default function CreateStudent() {
       studentId: studentId,
     });
   };
-
-  useEffect(() => {
-    notificationManager.requestPermissions();
-  }, []);
 
   return (
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">

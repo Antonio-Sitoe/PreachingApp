@@ -20,8 +20,6 @@ import {
   Inter_700Bold,
 } from '@expo-google-fonts/inter';
 
-import { bootAwareNotificationManager } from '@/lib/notifications/boot-aware-notification-manager';
-
 export { ErrorBoundary } from 'expo-router';
 
 export const unstable_settings = {
@@ -63,14 +61,6 @@ export default function RootLayoutNav() {
     if (loaded) {
       autoSignIn();
     }
-  }, [loaded]);
-
-  useEffect(() => {
-    if (!loaded) return;
-    bootAwareNotificationManager.setupNotificationListener();
-    return () => {
-      bootAwareNotificationManager.cleanup();
-    };
   }, [loaded]);
 
   useEffect(() => {

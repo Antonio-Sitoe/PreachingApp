@@ -1,7 +1,7 @@
 import '@/utils/localeConfig';
 import { Calendar as CustomCalendar } from 'react-native-calendars';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
-import { View, Text, Button } from 'react-native';
+import { Text, TouchableOpacity } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
@@ -14,6 +14,7 @@ import { initialReportData } from '@/utils/initialReportData';
 import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext';
 import { usePathname } from 'expo-router';
 import { DialogReport } from './components/DialogReport';
+import { View } from '../Themed';
 
 interface ValueProps {
   dateString?: string;
@@ -37,7 +38,7 @@ export const ListItem = ({ title, value, ...props }) => {
 };
 
 export default function ReportMonths() {
-  const { colorScheme, isDark } = useTheme();
+  const { isDark } = useTheme();
   const { user } = useUser();
   const { index } = useTabBarIndex();
   const [visible, setVisible] = useState(false);
@@ -67,18 +68,20 @@ export default function ReportMonths() {
 
   useEffect(() => {
     onMonthChange({ month: currentDates.month, year: currentDates.year });
-  }, [onMonthChange]);
+  }, []);
 
   useEffect(() => {
-    setTextToShare({
-      user: user.name,
-      data,
-      day: {
-        month: title.month,
-        year: title.year,
-      },
-    });
-  }, [data, setTextToShare, user.name, title]);
+    if (user?.name) {
+      setTextToShare({
+        user: user.name,
+        data,
+        day: {
+          month: title.month,
+          year: title.year,
+        },
+      });
+    }
+  }, []);
 
   return (
     <View
@@ -91,9 +94,19 @@ export default function ReportMonths() {
       <CustomCalendar
         renderArrow={(direction) => {
           if (direction === 'left') {
-            return <ChevronsLeft color={Colors[colorScheme].tint} size={30} />;
+            return (
+              <ChevronsLeft
+                color={isDark ? Colors.dark.tint : Colors.light.tint}
+                size={30}
+              />
+            );
           }
-          return <ChevronsRight color={Colors[colorScheme].tint} size={30} />;
+          return (
+            <ChevronsRight
+              color={isDark ? Colors.dark.tint : Colors.light.tint}
+              size={30}
+            />
+          );
         }}
         headerStyle={{
           backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
@@ -106,29 +119,35 @@ export default function ReportMonths() {
         dayComponent={() => null}
         onMonthChange={onMonthChange}
       />
-      <View style={{ flexDirection: 'row' }}>
-        <View className="grid grid-cols-1 divide-y divide-slate-300">
+      <View className="flex-col flex-1 justify-between pb-4">
+        <View className="grid grid-cols-1 divide-y bdivide-slate-300">
           <ListItem title="Total de Horas" value={data?.time} />
-          <ListItem title="Publicacoes" value={data?.publications} />
-          <ListItem title="Videos Mostrados" value={data?.videos} />
-          <ListItem title="Revisitas" value={data?.returnVisits} />
           <ListItem title="Estudos" value={data?.students} />
-          <ListItem title="Perfil" value={defineProfiletext(user.profile)} />
+          <ListItem title="Perfil" value={defineProfiletext(user?.profile)} />
         </View>
-        <Button
-          variant="outlined"
-          title="Editar Relatorio Mensal"
-          color={Colors[colorScheme].text}
-          titleStyle={{
-            textTransform: 'capitalize',
-            fontFamily: 'Inter_400Regular',
-          }}
+        <TouchableOpacity
           onPress={() => setVisible(true)}
           style={{
-            paddingVertical: 5,
+            paddingVertical: 12,
             marginHorizontal: 5,
+            borderWidth: 1,
+            borderColor: isDark ? Colors.dark.tint : Colors.light.tint,
+            borderRadius: 8,
+            alignItems: 'center',
+            backgroundColor: 'transparent',
           }}
-        />
+        >
+          <Text
+            style={{
+              color: isDark ? Colors.dark.text : Colors.light.text,
+              textTransform: 'capitalize',
+              fontFamily: 'Inter_400Regular',
+              fontSize: 14,
+            }}
+          >
+            Editar Relatório Mensal
+          </Text>
+        </TouchableOpacity>
       </View>
       {visible && (
         <DialogReport

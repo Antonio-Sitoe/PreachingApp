@@ -3,7 +3,6 @@ import useTheme from '@/hooks/useTheme';
 
 import { View, Share } from 'react-native';
 import { Link, useNavigation, usePathname, useRouter } from 'expo-router';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   BarChart2,
@@ -16,6 +15,7 @@ import {
 } from 'lucide-react-native';
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext';
 import { DrawerActions } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
 
 export function Header() {
   const top = useSafeAreaInsets().top;
