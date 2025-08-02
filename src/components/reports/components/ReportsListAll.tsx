@@ -5,12 +5,12 @@ import NoContent from '../../NoContent';
 
 import { FlashList } from '@shopify/flash-list';
 import { Text, View } from '../../Themed';
-import type { ReportData } from '@/@types/interfaces';
-import { usePathname } from 'expo-router';
-import { useTabBarIndex } from '@/contexts/ReportContext';
+import type { IReport } from '@/database/schemas';
 import { ActivityIndicator } from 'react-native';
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { reportsActions } from '@/database/actions';
+import { useReportsData } from '@/contexts/ReportContext';
+import { AnimatedButton } from '@/components/ui/ButtonAnimated';
 
 export interface Reports {
   date: string;
@@ -20,42 +20,32 @@ export interface Reports {
 
 export interface ReportDataProps {
   year: string;
-  reports: Array<[string, ReportData[]]>;
+  reports: Array<[string, IReport[]]>;
 }
 export type CardProps = ReportDataProps[];
 
 export default function ReportsListAll() {
-  const [data, setData] = useState<CardProps>([]);
-  const [isloadingReportData, setIsLoadingReportData] = useState(true);
-
   const { isDark } = useTheme();
-  const { index } = useTabBarIndex();
+  const { setisOpenCreateReportModal } = useReportsData();
+  const { data, isLoading, isRefetching } = useQuery({
+    queryKey: ['reports', 'all', 'grouped'],
+    queryFn: async () => {
+      const result = await reportsActions.getAllAndGroupByYearAndMonth();
+      return result;
+    },
+  });
 
-  const isFirstElement = index === 0;
-  const changePathname = usePathname() === '/report';
-  const isEnableToRender = isFirstElement && changePathname;
+  const allReports = data?.data || [];
 
-  useEffect(() => {
-    const getallreportDataAsync = async () => {
-      setIsLoadingReportData(true);
-      try {
-        const data = await reportsActions.getAll();
-        setData(data);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setIsLoadingReportData(false);
-      }
-    };
-    if (isEnableToRender) {
-      getallreportDataAsync();
-    }
-    return () => {
-      setIsLoadingReportData(true);
-    };
-  }, [isEnableToRender]);
+  if (isLoading || isRefetching) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
-  if (data.length === 0) {
+  if (!isLoading && allReports.length === 0) {
     return <NoContent text="Sem dados" />;
   }
 
@@ -66,38 +56,42 @@ export default function ReportsListAll() {
       }}
       className="flex-1"
     >
-      <FlashList
-        data={data}
-        estimatedItemSize={300}
-        contentContainerStyle={{
-          paddingBottom: 40,
-          paddingRight: 16,
-          paddingHorizontal: 16,
-          paddingTop: 16,
-        }}
-        keyExtractor={(item, i) => item.year + i}
-        ListFooterComponent={() => (
-          <View
-            style={{
-              backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
-            }}
-          >
-            {isloadingReportData ? (
-              <ActivityIndicator />
-            ) : (
+      {isLoading ? (
+        <View className="flex-1 justify-center items-center">
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <FlashList
+          data={allReports}
+          estimatedItemSize={300}
+          contentContainerStyle={{
+            paddingBottom: 40,
+            paddingRight: 16,
+            paddingHorizontal: 16,
+            paddingTop: 16,
+          }}
+          keyExtractor={(item: any, i) => item.year + i}
+          renderItem={({ item }: { item: any }) => (
+            <Card isDark={isDark} data={item.reports} year={item.year} />
+          )}
+          ListFooterComponent={() => (
+            <View
+              style={{
+                backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+              }}
+            >
               <Text
-                  className="mt-2 font-textIBM text-center"
-                  lightColor={Colors.light.tint}
-                >
-                  Sem mais dados por mostrar 😎
-                </Text>
-            )}
-          </View>
-        )}
-        renderItem={({ item }) => (
-          <Card isDark={isDark} data={item.reports} year={item.year} />
-        )}
-      />
+                className="mt-2 font-textIBM text-center"
+                lightColor={Colors.light.tint}
+              >
+                Sem mais dados por mostrar 😎
+              </Text>
+            </View>
+          )}
+        />
+      )}
+
+      <AnimatedButton onPress={() => setisOpenCreateReportModal(true)} />
     </View>
   );
 }

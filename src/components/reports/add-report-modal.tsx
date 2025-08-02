@@ -4,12 +4,11 @@ import dayjs from 'dayjs';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import Snackbar from 'react-native-snackbar';
-import { currentDates, monthNameToPortuguese } from '@/utils/dates';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { currentDates } from '@/utils/dates';
 import { useReportsData } from '@/contexts/ReportContext';
 import { FormInput } from '@/components/ui/FormInput';
 import { DatePicker } from '@/components/ui/DatePicker';
-import { View, TextInput, TouchableOpacity } from 'react-native';
+import { View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import {
   Modal,
   ModalBackdrop,
@@ -19,22 +18,42 @@ import {
   ModalFooter,
   ModalCloseButton,
 } from '@/components/ui/modal';
+import { type NewReport, reportsActions } from '@/database/actions';
+import { useQueryClient } from '@tanstack/react-query';
+import { Trash2 } from 'lucide-react-native';
+import { removeProperty } from '@/utils/helper';
 
 export function AddReportModal() {
-  const { id, h, m } = useLocalSearchParams<any>();
-  const router = useRouter();
+  const { isOpenCreateReportModal } = useReportsData();
+  const isOpen = isOpenCreateReportModal;
+  if (!isOpen) return null;
+  return <CreateAndEditReportModal isOpen={isOpen} />;
+}
+
+function CreateAndEditReportModal({ isOpen }: { isOpen: boolean }) {
   const { isDark } = useTheme();
+  const queryClient = useQueryClient();
+  const { setisOpenCreateReportModal, reports, reset } = useReportsData();
+
   const {
-    updateCurrentReports,
-    isOpenCreateReportModal,
-    setisOpenCreateReportModal,
-  } = useReportsData();
+    id,
+    hours: h,
+    minutes: m,
+    students: s,
+    comments: c,
+    date: d,
+  } = reports;
 
   const [hours, setHours] = useState<string | number>(h || '');
   const [minutes, setminutes] = useState<string | number>(m || '');
-  const [students, setstudents] = useState<string | number>('');
-  const [date, setDate] = useState(new Date());
-  const [comments, setComents] = useState('');
+  const [students, setstudents] = useState<string | number>(s || '');
+  const [date, setDate] = useState(() => {
+    if (d) {
+      return new Date(d);
+    }
+    return new Date();
+  });
+  const [comments, setComents] = useState(c || '');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<null | string>(null);
 
@@ -68,9 +87,25 @@ export function AddReportModal() {
         handleClose();
         return false;
       }
-      // TODO: Implementar criação/atualização do relatório
+
+      if (id) {
+        const updatedReport = await reportsActions.update(
+          id,
+          removeProperty(data, ['createdAt'])
+        );
+        console.log('updatedReport', updatedReport);
+      } else {
+        const createdReport = await reportsActions.create(data);
+        console.log('createdReport', createdReport);
+      }
       console.log('Dados do relatório:', data);
-      await updateCurrentReports(currentDates.month, currentDates.year);
+      ['reports', 'all', 'grouped', 'paginated', 'withButton'].forEach(
+        (item) => {
+          queryClient.invalidateQueries({
+            queryKey: [item],
+          });
+        }
+      );
       Snackbar.show({
         text: 'Relatório Adicionado com Sucesso',
         duration: Snackbar.LENGTH_LONG,
@@ -86,26 +121,26 @@ export function AddReportModal() {
   }
 
   function handleClose() {
+    reset();
     setisOpenCreateReportModal(false);
-    router.back();
   }
 
   function formateDataBeforeSend() {
-    const dateformated = dayjs(date).format('DD/MM/YYYY');
     const day = dayjs(date).get('date');
-    const month = monthNameToPortuguese(dayjs(date).get('month') + 1);
+    const month = dayjs(date).get('month') + 1; // Número do mês (1-12)
     const year = dayjs(date).get('y');
 
-    const data = {
-      date: dateformated,
+    const data: NewReport = {
+      date: String(dayjs(date)),
       day,
-      month,
+      month: month,
       year,
       comments,
       hours: Number(hours),
       minutes: Number(minutes),
       students: Number(students),
-      createdAt: date,
+      createdAt: String(new Date()),
+      updatedAt: String(new Date()),
     };
     const isQualified = simpleVerificationBeforeCreation(data);
     console.log('data to send', data);
@@ -122,8 +157,42 @@ export function AddReportModal() {
       return false;
     } else return true;
   }
+
+  async function handleDeleteReport() {
+    if (!id) return;
+    Alert.alert(
+      'Tem certeza que deseja deletar o relatório?',
+      'Esta ação é irreversível',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Deletar',
+          onPress: async () => {
+            await reportsActions.delete(id);
+            handleClose();
+            ['reports', 'all', 'grouped', 'paginated', 'withButton'].forEach(
+              (item) => {
+                queryClient.invalidateQueries({
+                  queryKey: [item],
+                });
+              }
+            );
+            Snackbar.show({
+              text: 'Relatório Deletado com Sucesso',
+              duration: Snackbar.LENGTH_LONG,
+              backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+            });
+          },
+        },
+      ]
+    );
+  }
+
   return (
-    <Modal isOpen={isOpenCreateReportModal} onClose={handleClose}>
+    <Modal isOpen={isOpen} onClose={handleClose}>
       <ModalBackdrop />
       <ModalContent size="md">
         <ModalHeader>
@@ -134,11 +203,9 @@ export function AddReportModal() {
         </ModalHeader>
 
         <ModalBody>
-          {/* DatePicker */}
           <DatePicker date={date} setDate={setDate} />
 
-          {/* Horas e Minutos */}
-          <View className="flex-row w-full mb-4">
+          <View className="flex-row w-full mb-2">
             <FormInput
               value={hours}
               change={handleChange(setHours)}
@@ -168,7 +235,7 @@ export function AddReportModal() {
           </View>
 
           {/* Comentários */}
-          <View className="w-full mb-6">
+          <View className="w-full mb-2">
             <Text className="text-base font-medium mb-2">Comentários</Text>
             <View
               className="w-full h-24 rounded-xl p-3"
@@ -199,10 +266,22 @@ export function AddReportModal() {
           </View>
         </ModalBody>
 
-        <ModalFooter>
+        <ModalFooter className="flex-row gap-2 justify-around">
+          {id && (
+            <TouchableOpacity
+              onPress={handleDeleteReport}
+              className="p-2 rounded-lg "
+              style={{
+                backgroundColor: 'red',
+              }}
+            >
+              <Trash2 color="white" size={24} />
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             onPress={handleClose}
-            className="flex-1 mr-2 py-3 px-4 rounded-lg"
+            className="flex-1 py-3 px-4 rounded-lg"
             style={{
               backgroundColor: '#FF647C',
             }}

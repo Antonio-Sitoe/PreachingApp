@@ -2,10 +2,9 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 
 import { View, Share } from 'react-native';
-import { Link, useNavigation, usePathname, useRouter } from 'expo-router';
+import { useNavigation, usePathname } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  BarChart2,
   Menu,
   Plus,
   RefreshCcw,
@@ -14,17 +13,18 @@ import {
   ListMinus,
 } from 'lucide-react-native';
 import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext';
+import { useLayoutPersistence } from '@/hooks/useLayoutPersistence';
 import { DrawerActions } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
 
 export function Header() {
   const top = useSafeAreaInsets().top;
   const navigation = useNavigation();
-  const { push } = useRouter();
+  const { setisOpenCreateReportModal } = useReportsData();
   const { isDark } = useTheme();
   const { index } = useTabBarIndex();
-  const { reportToShare, isLayoutList, handleChangeLayaltList } =
-    useReportsData();
+  const { reportToShare } = useReportsData();
+  const { isLayoutList, toggleLayout } = useLayoutPersistence();
   const isReportPath = usePathname().includes('/report');
   const isModalRoute = usePathname().includes('/modal');
   const isChart = usePathname().includes('/chart');
@@ -39,6 +39,10 @@ export function Header() {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  function handleAddReport() {
+    setisOpenCreateReportModal(true);
   }
 
   return (
@@ -64,10 +68,7 @@ export function Header() {
         </TouchableOpacity>
         <View className="flex-row gap-2 items-end">
           {index === 0 && isReportPath && (
-            <TouchableOpacity
-              className="px-2 py-1"
-              onPress={handleChangeLayaltList}
-            >
+            <TouchableOpacity className="px-2 py-1" onPress={toggleLayout}>
               {isLayoutList ? (
                 <LayoutList
                   color={isDark ? Colors.dark.text : Colors.light.tint}
@@ -94,19 +95,8 @@ export function Header() {
             </TouchableOpacity>
           )}
 
-          {index === 2 && isReportPath && !isChart && (
-            <Link href="/(report)/(tabs)/report/chart" asChild>
-              <TouchableOpacity className="py-1">
-                <BarChart2
-                  color={isDark ? Colors.dark.text : Colors.light.tint}
-                  size={28}
-                  strokeWidth={1.5}
-                />
-              </TouchableOpacity>
-            </Link>
-          )}
           {(isReportPath || isModalRoute) && !isChart && (
-            <TouchableOpacity className="py-1" onPress={() => push('/modal')}>
+            <TouchableOpacity className="py-1" onPress={handleAddReport}>
               <Plus
                 color={isDark ? Colors.dark.text : Colors.light.tint}
                 size={28}

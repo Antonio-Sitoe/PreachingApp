@@ -47,9 +47,11 @@ export const useReportsData = create<ReportStore>((set, get) => ({
   },
   handleChangeLayaltList() {
     const current = get().isLayoutList;
-    set({ isLayoutList: !current });
-    AsyncStorage.setItem('@LayoutList', String(!current));
+    const newValue = !current;
+    set({ isLayoutList: newValue });
+    AsyncStorage.setItem('@LayoutList', String(newValue));
   },
+
   set(data) {
     set((state) => ({ ...state, ...data }));
   },
