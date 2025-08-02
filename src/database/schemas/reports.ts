@@ -10,12 +10,14 @@ export const reports = sqliteTable('reports', {
   students: integer().notNull(),
   comments: text(),
   date: text().notNull(), //DD-MM-YYYY
-  year: text().notNull(),
-  month: text().notNull(),
-  day: text().notNull(),
+  year: integer().notNull(),
+  month: integer().notNull(),
+  day: integer().notNull(),
   createdAt: text().notNull(),
   updatedAt: text().notNull(),
 });
 
-export type IReport = typeof reports.$inferSelect;
+export type IReport = typeof reports.$inferSelect & {
+  time?: string;
+};
 export type NewReport = typeof reports.$inferInsert;

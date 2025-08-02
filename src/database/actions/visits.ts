@@ -2,6 +2,7 @@ import { desc, eq } from 'drizzle-orm';
 import { db } from '../db';
 import { type INewVisit, type IVisit, visits } from '../schemas';
 import { students } from '../schemas';
+import dayjs from 'dayjs';
 
 class VisitsActions {
   async create(data: Omit<INewVisit, 'id'>) {
@@ -15,7 +16,7 @@ class VisitsActions {
           biblicalTexts: data.biblicalTexts,
           result: data.result,
           dateAndHours: String(data.dateAndHours),
-          createdAt: new Date().toISOString(),
+          createdAt: String(dayjs()),
         })
         .returning();
 

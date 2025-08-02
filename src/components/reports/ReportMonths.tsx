@@ -1,20 +1,18 @@
 import '@/utils/localeConfig';
 import { Calendar as CustomCalendar } from 'react-native-calendars';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
-import { Text, TouchableOpacity } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
-import { type IReport, reportsActions } from '@/database/actions';
+import { reportsActions } from '@/database/actions';
 import { useEffect, useState } from 'react';
 import { useUser } from '@/contexts/UserContext';
-import { defineProfiletext } from '@/utils/helper';
 import { currentDates, monthNameToPortuguese } from '@/utils/dates';
 import { initialReportData } from '@/utils/initialReportData';
-import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext';
-import { usePathname } from 'expo-router';
-import { DialogReport } from './components/DialogReport';
-import { View } from '../Themed';
+import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext';
+import { View, Text } from '../Themed';
+import type { IReport } from '@/database/schemas';
+import { AnimatedButton } from '../ui/ButtonAnimated';
 
 interface ValueProps {
   dateString?: string;
@@ -37,57 +35,60 @@ export const ListItem = ({ title, value, ...props }) => {
   );
 };
 
+interface IReportData extends IReport {
+  isParticipated: boolean;
+  time: string;
+}
+
 export default function ReportMonths() {
   const { isDark } = useTheme();
   const { user } = useUser();
   const { index } = useTabBarIndex();
-  const [visible, setVisible] = useState(false);
-  const { isOpenCreateReportModal, setTextToShare } = useReportsData();
+  const _isMonths = index === 1;
+  const { setTextToShare, setisOpenCreateReportModal } = useReportsData();
 
-  const [data, setData] = useState(initialReportData as IReport);
-  const [reports, setReports] = useState<IReport[]>([]);
+  const [data, setData] = useState(initialReportData as unknown as IReportData);
   const [title, setTitle] = useState({
     month: monthNameToPortuguese(currentDates.month),
     year: currentDates.year,
   });
-  const _isFirstElement = index === 1;
-  const _changePathname = usePathname() === '/report';
-  const _isModalClose = isOpenCreateReportModal === false;
 
   const onMonthChange = async (value: ValueProps) => {
-    const month = monthNameToPortuguese(value.month);
+    const monthName = monthNameToPortuguese(value.month);
     const year = value.year;
-    setTitle({ month, year });
-    const { data, reports } = await reportsActions.getGlobalStates({
-      month,
+    setTitle({ month: monthName, year });
+    const { data } = await reportsActions.getGlobalStates({
+      month: monthName,
       year,
     });
-    setData(data as IReport);
-    setReports(reports as IReport[]);
+    setData(data as unknown as IReportData);
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial render
   useEffect(() => {
-    onMonthChange({ month: currentDates.month, year: currentDates.year });
-  }, []);
+    if (_isMonths) {
+      onMonthChange({ month: currentDates.month, year: currentDates.year });
+    }
+  }, [_isMonths]);
 
   useEffect(() => {
-    if (user?.name) {
+    if (user?.username) {
       setTextToShare({
-        user: user.name,
-        data,
+        user: user.username,
+        data: data as unknown as IReport,
         day: {
           month: title.month,
           year: title.year,
         },
       });
     }
-  }, []);
+  }, [user?.username, data, title.month, title.year, setTextToShare]);
 
   return (
     <View
       className="flex-1"
       style={{
-        backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+        backgroundColor: isDark ? Colors.dark.background : 'white',
         position: 'relative',
       }}
     >
@@ -109,7 +110,11 @@ export default function ReportMonths() {
           );
         }}
         headerStyle={{
-          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+          backgroundColor: isDark ? Colors.dark.background : 'white',
+        }}
+        style={{
+          height: 60,
+          paddingTop: 2,
         }}
         customHeaderTitle={
           <Text className="capitalize text-base font-subTitle">
@@ -118,44 +123,20 @@ export default function ReportMonths() {
         }
         dayComponent={() => null}
         onMonthChange={onMonthChange}
+        hideDayNames
       />
       <View className="flex-col flex-1 justify-between pb-4">
-        <View className="grid grid-cols-1 divide-y bdivide-slate-300">
+        <View className="grid grid-cols-1 divide-y divide-slate-300">
+          <ListItem
+            title="Participou no ministério"
+            value={data?.isParticipated ? 'Sim' : 'Não'}
+          />
           <ListItem title="Total de Horas" value={data?.time} />
           <ListItem title="Estudos" value={data?.students} />
-          <ListItem title="Perfil" value={defineProfiletext(user?.profile)} />
+          <ListItem title="Perfil" value={user?.profile} />
         </View>
-        <TouchableOpacity
-          onPress={() => setVisible(true)}
-          style={{
-            paddingVertical: 12,
-            marginHorizontal: 5,
-            borderWidth: 1,
-            borderColor: isDark ? Colors.dark.tint : Colors.light.tint,
-            borderRadius: 8,
-            alignItems: 'center',
-            backgroundColor: 'transparent',
-          }}
-        >
-          <Text
-            style={{
-              color: isDark ? Colors.dark.text : Colors.light.text,
-              textTransform: 'capitalize',
-              fontFamily: 'Inter_400Regular',
-              fontSize: 14,
-            }}
-          >
-            Editar Relatório Mensal
-          </Text>
-        </TouchableOpacity>
       </View>
-      {visible && (
-        <DialogReport
-          setVisible={setVisible}
-          visible={visible}
-          reports={reports}
-        />
-      )}
+      <AnimatedButton onPress={() => setisOpenCreateReportModal(true)} />
     </View>
   );
 }

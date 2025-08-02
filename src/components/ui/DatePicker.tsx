@@ -43,22 +43,14 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
     <TouchableOpacity
       activeOpacity={0.7}
       onPress={showDatepicker}
+      className="mt-[10px] mb-[10px] h-10 w-auto flex-row items-center rounded-lg px-2.5 gap-[10px]"
       style={{
-        marginTop: 13,
-        marginBottom: 13,
-        height: 47,
-        width: 'auto',
         backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
-        padding: 10,
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 10,
-        borderRadius: 8,
       }}
     >
       <IconIOS
         name="calendar-outline"
-        size={28}
+        size={20}
         color={Colors.light.ligtInputbG}
       />
       <Text

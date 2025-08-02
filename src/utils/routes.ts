@@ -2,7 +2,6 @@ import {
   BadgeDollarSign,
   BookOpenCheck,
   type LucideIcon,
-  MessageSquarePlus,
 } from 'lucide-react-native';
 
 import { IconIOS } from '@/assets/icons/Icon';
@@ -37,15 +36,6 @@ export const DRAWER_ROUTES: ROUTE_TYPE = [
       name: '',
     },
     route: '/userGuide/',
-  },
-  {
-    label: 'Ajuda e feedback',
-
-    icon: {
-      IconRoute: MessageSquarePlus,
-      name: '',
-    },
-    route: '/feedback',
   },
   {
     label: 'configurações',

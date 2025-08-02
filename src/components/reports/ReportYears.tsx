@@ -4,7 +4,6 @@ import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 
 import { View, Text } from '../Themed';
-import { usePathname } from 'expo-router';
 import { currentDates } from '@/utils/dates';
 import { TouchableOpacity } from 'react-native';
 import { initialReportData } from '@/utils/initialReportData';
@@ -12,12 +11,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { type IReport, reportsActions } from '@/database/actions';
 import { Calendar as CustomCalendar } from 'react-native-calendars';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react-native';
-import { useTabBarIndex, useReportsData } from '@/contexts/ReportContext';
+import { useReportsData, useTabBarIndex } from '@/contexts/ReportContext';
+import { AnimatedButton } from '../ui/ButtonAnimated';
 
 const ListItem = ({ title, value, ...props }) => {
   return (
     <View
-      lightColor="#F6F6F9"
+      lightColor="white"
       className="flex-row justify-between px-4 py-3"
       {...props}
     >
@@ -27,17 +27,17 @@ const ListItem = ({ title, value, ...props }) => {
   );
 };
 
+interface IReportData extends IReport {
+  time: string;
+}
+
 export default function ReportYears() {
-  const { colorScheme, isDark } = useTheme();
+  const { isDark } = useTheme();
   const { index } = useTabBarIndex();
-  const { isOpenCreateReportModal } = useReportsData();
-
-  const [data, setData] = useState(initialReportData as IReport);
+  const _isYears = index === 2;
+  const { setisOpenCreateReportModal } = useReportsData();
+  const [data, setData] = useState(initialReportData as IReportData);
   const [year, setYear] = useState(currentDates.year);
-
-  const _isFirstElement = index === 1;
-  const _changePathname = usePathname() === '/report';
-  const _isModalClose = isOpenCreateReportModal === false;
 
   function handleGotoNextYear() {
     setYear((year) => year + 1);
@@ -47,18 +47,21 @@ export default function ReportYears() {
   }
   const onChangeYear = useCallback(async ({ year }) => {
     const { data } = await reportsActions.getByYear(year);
-    setData(data as unknown as IReport);
+    setData(data as unknown as IReportData);
   }, []);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: initial render
   useEffect(() => {
-    onChangeYear({ year });
-  }, [year, onChangeYear]);
+    if (_isYears) {
+      onChangeYear({ year });
+    }
+  }, [_isYears]);
 
   return (
     <View
       className="flex-1"
       style={{
-        backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+        backgroundColor: isDark ? Colors.dark.background : 'white',
         position: 'relative',
       }}
     >
@@ -71,7 +74,10 @@ export default function ReportYears() {
                 activeOpacity={0.7}
                 className="w-11 h-8"
               >
-                <ChevronsLeft color={Colors[colorScheme].tint} size={30} />
+                <ChevronsLeft
+                  color={isDark ? Colors.dark.tint : Colors.light.tint}
+                  size={30}
+                />
               </TouchableOpacity>
             );
           }
@@ -81,34 +87,35 @@ export default function ReportYears() {
               activeOpacity={0.7}
               className="w-11 h-8"
             >
-              <ChevronsRight color={Colors[colorScheme].tint} size={30} />
+              <ChevronsRight
+                color={isDark ? Colors.dark.tint : Colors.light.tint}
+                size={30}
+              />
             </TouchableOpacity>
           );
-        }}
-        headerStyle={{
-          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
         }}
         customHeaderTitle={
           <Text className="capitalize text-base font-subTitle">{year}</Text>
         }
+        hideDayNames
+        style={{
+          height: 60,
+          paddingTop: 3,
+        }}
+        headerStyle={{
+          backgroundColor: isDark ? Colors.dark.background : 'white',
+        }}
         dayComponent={() => null}
       />
+
       <View
-        style={{
-          position: 'absolute',
-          top: 60,
-          width: '100%',
-          backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
-        }}
+        className="grid flex-1 grid-cols-1 divide-y divide-slate-300"
+        lightColor="white"
       >
-        <View className="grid grid-cols-1 divide-y divide-slate-300">
-          <ListItem title="Total de Horas" value={data?.time} />
-          <ListItem title="Publicacoes" value={data?.publications} />
-          <ListItem title="Videos Mostrados" value={data?.videos} />
-          <ListItem title="Revisitas" value={data?.returnVisits} />
-          <ListItem title="Estudos" value={data?.students} />
-        </View>
+        <ListItem title="Total de Horas" value={data?.time} />
+        <ListItem title="Estudos" value={data?.students} />
       </View>
+      <AnimatedButton onPress={() => setisOpenCreateReportModal(true)} />
     </View>
   );
 }

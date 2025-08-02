@@ -1,28 +1,25 @@
-import type { ReportData } from '@/@types/interfaces'
-import { minutesToHoursAndMinutes } from './dates'
+import type { IReport } from '@/database/schemas';
+import { minutesToHoursAndMinutes } from './dates';
+export interface IReportData extends IReport {
+  time: string;
+}
 
 export function calculeTotalNumbers(reportsFiltered) {
-  const data: ReportData = reportsFiltered.reduce(
+  const data: IReportData = reportsFiltered.reduce(
     (acc: any, state: any) => {
-      const oldState = state._raw
-      acc.hours += oldState.hours
-      acc.minutes += oldState.minutes
-      acc.videos += oldState.videos
-      acc.students += oldState.students
-      acc.returnVisits += oldState.returnVisits
-      acc.publications += oldState.publications
-      return acc
+      const oldState = state._raw || state;
+      acc.hours += oldState.hours || 0;
+      acc.minutes += oldState.minutes || 0;
+      acc.students += oldState.students || 0;
+      return acc;
     },
     {
       hours: 0,
       minutes: 0,
-      publications: 0,
-      returnVisits: 0,
       students: 0,
-      videos: 0,
       time: '',
-    },
-  )
-  data.time = minutesToHoursAndMinutes(data.hours, data.minutes)
-  return { data }
+    }
+  );
+  data.time = minutesToHoursAndMinutes(data.hours, data.minutes);
+  return { data };
 }

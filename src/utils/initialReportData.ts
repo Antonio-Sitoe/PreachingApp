@@ -1,11 +1,13 @@
-import type { ReportData } from '@/@types/interfaces';
 import dayjs from 'dayjs';
+import type { IReport } from '@/database/actions';
 
-export const initialReportData: ReportData = {
+export const initialReportData: IReport = {
+  id: '',
   comments: '',
-  date: new Date(),
+  date: '',
   hours: 0,
   minutes: 0,
+  updatedAt: '',
   students: 0,
   time: '0:00',
   day: dayjs().get('date'),

@@ -82,10 +82,6 @@ export default function RootLayoutNav() {
         {__DEV__ && <DrizzleStudio />}
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ headerShown: false, presentation: 'modal' }}
-          />
         </Stack>
       </QueryClientProvider>
     </GluestackUIProvider>

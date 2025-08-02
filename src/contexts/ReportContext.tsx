@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { initialReportData } from '@/utils/initialReportData';
-import { type IReport, reportsActions } from '@/database/actions';
+import type { IReport } from '@/database/actions';
 import { capitalizeString } from '@/utils/helper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,7 +12,6 @@ interface IShare {
 
 interface ReportStore {
   reports: IReport;
-  updateCurrentReports: (month: string, year: number) => Promise<void>;
   setReportTabBarIndex: (index: number) => void;
   reportTabBarIndex: number;
   isOpenCreateReportModal: boolean;
@@ -21,6 +20,8 @@ interface ReportStore {
   setTextToShare: (data: IShare) => void;
   isLayoutList: boolean;
   handleChangeLayaltList: () => void;
+  set: (data: Partial<ReportStore>) => void;
+  reset: () => void;
 }
 
 export const useReportsData = create<ReportStore>((set, get) => ({
@@ -29,10 +30,7 @@ export const useReportsData = create<ReportStore>((set, get) => ({
   isOpenCreateReportModal: false,
   reportToShare: '',
   isLayoutList: false,
-  async updateCurrentReports(month, year) {
-    const { data } = await reportsActions.getGlobalStates({ month, year });
-    set({ reports: { ...data } });
-  },
+
   setReportTabBarIndex(index) {
     set({ reportTabBarIndex: index });
   },
@@ -51,6 +49,18 @@ export const useReportsData = create<ReportStore>((set, get) => ({
     const current = get().isLayoutList;
     set({ isLayoutList: !current });
     AsyncStorage.setItem('@LayoutList', String(!current));
+  },
+  set(data) {
+    set((state) => ({ ...state, ...data }));
+  },
+  reset() {
+    set((state) => ({
+      ...state,
+      reports: initialReportData,
+      reportTabBarIndex: state.reportTabBarIndex,
+      isOpenCreateReportModal: false,
+      reportToShare: '',
+    }));
   },
 }));
 

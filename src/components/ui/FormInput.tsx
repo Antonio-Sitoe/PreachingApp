@@ -1,8 +1,8 @@
 import Colors from '@/constants/Colors';
-import { View, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
 import ButtonQtd from './ButtonQtd';
 import useTheme from '@/hooks/useTheme';
-import { Text } from '../Themed';
+import { Text, View } from '../Themed';
 
 interface IFormInput {
   title: string;
@@ -31,13 +31,19 @@ export const FormInput = ({
         className="bg-ligtInputbG w-full h-[47px] flex-row items-center justify-between pl-3 pr-1 py-3 rounded-xl"
         style={{
           backgroundColor: isDark
-            ? Colors.dark.background
+            ? Colors.dark.darkBgSecundary
+            : Colors.light.ligtInputbG,
+          borderWidth: 1,
+          borderStyle: 'solid',
+          borderColor: isDark
+            ? Colors.dark.darkBgSecundary
             : Colors.light.ligtInputbG,
         }}
       >
         <TextInput
           style={{
             color: isDark ? 'white' : 'black',
+            height: 40,
           }}
           value={`${value}`}
           keyboardType="numeric"
