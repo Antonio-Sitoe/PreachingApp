@@ -25,7 +25,10 @@ export default {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
-      "package": "com.antoniositoe533.preaching_app"
+      "package": "com.antoniositoe533.preaching_app",
+      permissions: [
+        "VIBRATE"
+      ]
     },
     web: {
       bundler: 'metro',
@@ -38,6 +41,14 @@ export default {
         {
           photosPermission: 'The app accesses your photos to let you share them with your friends.',
         },
+      ],
+      [
+        'expo-notifications',
+        {
+          icon: './assets/images/icon.png',
+          color: '#ffffff',
+          defaultChannel: 'monthly-reminders'
+        }
       ],
       'expo-build-properties',
       'expo-font',

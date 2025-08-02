@@ -6,14 +6,13 @@ import { Header } from '@/components/Header';
 
 import Colors from '@/constants/Colors';
 import Note from '@/assets/icons/Note.svg';
-import { NotificationProvider } from '@/contexts/notification-provider';
 
 export default function TabLayout() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
   return (
-    <NotificationProvider>
+    <>
       <StatusBar
         animated
         translucent
@@ -82,6 +81,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-    </NotificationProvider>
+    </>
   );
 }
