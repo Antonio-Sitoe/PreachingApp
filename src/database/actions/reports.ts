@@ -4,6 +4,7 @@ import { minutesToHoursAndMinutes } from '@/utils/dates';
 import { sorteByMonths, sorteByYears } from '@/utils/helper';
 import groupBy from 'group-by';
 import { type NewReport, reports } from '../schemas/reports';
+import dayjs from 'dayjs';
 
 class ReportsActions {
   async create(newRecordData: NewReport) {
@@ -41,7 +42,7 @@ class ReportsActions {
           minutes: newRecordData.minutes,
           students: newRecordData.students,
           comments: newRecordData.comments,
-          createdAt: String(newRecordData.createdAt),
+          createdAt: String(new Date()),
           updatedAt: String(new Date()),
         })
         .returning();
@@ -52,6 +53,7 @@ class ReportsActions {
       throw error;
     }
   }
+
   async update(id: string, updateData: Partial<NewReport>) {
     try {
       const updatedRecord = await db
@@ -65,6 +67,7 @@ class ReportsActions {
           year: updateData.year,
           month: updateData.month,
           day: updateData.day,
+          updatedAt: String(new Date()),
         })
         .where(eq(reports.id, id))
         .returning();
@@ -103,31 +106,35 @@ class ReportsActions {
     year,
     wantReports = false,
   }: {
-    month: string;
+    month: number;
     year: number;
     wantReports?: boolean;
   }) {
     const [result] = await db
       .select({
-        hours: sql<number>`COALESCE(SUM(${reports.hours}), 0)`,
-        minutes: sql<number>`COALESCE(SUM(${reports.minutes}), 0)`,
-        students: sql<number>`COALESCE(SUM(${reports.students}), 0)`,
+        hours: sql<number>`coalesce(SUM(${reports.hours}), 0)`,
+        minutes: sql<number>`coalesce(SUM(${reports.minutes}), 0)`,
+        students: sql<number>`coalesce(SUM(${reports.students}), 0)`,
+        count: sql<number>`count(*)`,
       })
       .from(reports)
-      .where(and(eq(reports.month, month), eq(reports.year, String(year))));
+      .where(and(eq(reports.month, month), eq(reports.year, year)));
+
+    const isParticipated = (result?.count ?? 0) > 0;
 
     const data = {
       hours: result.hours,
       minutes: result.minutes,
       students: result.students,
       time: minutesToHoursAndMinutes(result.hours, result.minutes),
+      isParticipated,
     };
 
     if (wantReports) {
       const reportsFiltered = await db
         .select()
         .from(reports)
-        .where(and(eq(reports.month, month), eq(reports.year, String(year))));
+        .where(and(eq(reports.month, month), eq(reports.year, year)));
 
       return { data, reports: reportsFiltered };
     }
@@ -143,7 +150,7 @@ class ReportsActions {
         students: sql<number>`COALESCE(SUM(${reports.students}), 0)`,
       })
       .from(reports)
-      .where(eq(reports.year, String(year)));
+      .where(eq(reports.year, year));
     const data = {
       hours: result.hours,
       minutes: result.minutes,
@@ -159,7 +166,11 @@ class ReportsActions {
   }
 
   async getAllAndGroupByYearAndMonth() {
-    const reportsFiltered = await db.select().from(reports);
+    const reportsFiltered = await db
+      .select()
+      .from(reports)
+      .orderBy(desc(reports.year), desc(reports.month), desc(reports.day));
+
     const transform_report_to_years = Object.entries(
       groupBy(reportsFiltered, 'year')
     );
@@ -177,14 +188,17 @@ class ReportsActions {
   }
 
   async getAllGroupByYear() {
-    const reportsFiltered = await db.select().from(reports);
+    const reportsFiltered = await db
+      .select()
+      .from(reports)
+      .orderBy(desc(reports.year), desc(reports.month), desc(reports.day));
 
     const transform_report_to_years = Object.entries(
       groupBy(reportsFiltered, 'year')
     );
     const data_sorted = sorteByYears(transform_report_to_years);
     const final_report_data = data_sorted.map((reportArray) => {
-      const arrayOfReports = reportArray[1] as Report[];
+      const arrayOfReports = reportArray[1] as any[];
       const reports = groupBy(arrayOfReports, 'month');
       return {
         year: reportArray[0],
@@ -204,7 +218,7 @@ class ReportsActions {
     const reportsData = await db
       .select()
       .from(reports)
-      .orderBy(desc(reports.createdAt))
+      .orderBy(desc(reports.year), desc(reports.month), desc(reports.day))
       .limit(take)
       .offset(skip);
 

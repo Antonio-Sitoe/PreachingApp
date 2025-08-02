@@ -58,7 +58,7 @@ export default function ReportMonths() {
     const year = value.year;
     setTitle({ month: monthName, year });
     const { data } = await reportsActions.getGlobalStates({
-      month: monthName,
+      month: value.month,
       year,
     });
     setData(data as unknown as IReportData);

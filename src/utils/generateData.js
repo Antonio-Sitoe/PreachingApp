@@ -1,4 +1,4 @@
-import { reportActions } from '@/database/actions'
+import { reportsActions } from '@/database/actions'
 import { monthNameToPortuguese } from './dates'
 import { studentsAction } from '@/database/actions'
 
@@ -13,6 +13,78 @@ function getRandomDate(year, month) {
   return randomDate
 }
 
+// Função para gerar dados fictícios de relatórios
+function generateFakeReportData(quantity = 50) {
+  const fakeReports = []
+
+  for (let i = 0; i < quantity; i++) {
+    // Gerar ano aleatório entre 2023 e 2024
+    const year = getRandomNumber(2023, 2024)
+    // Gerar mês aleatório (0-11)
+    const month = getRandomNumber(0, 11)
+
+    const randomDate = getRandomDate(year, month)
+    const day = randomDate.getDate()
+    const formattedDay = day < 10 ? `0${day}` : day
+    const formattedMonth = monthNameToPortuguese(month + 1)
+
+    // Gerar comentários aleatórios
+    const comments = [
+      'Pregação muito produtiva hoje',
+      'Várias pessoas interessadas',
+      'Bom dia de evangelização',
+      'Alguns estudantes fizeram perguntas interessantes',
+      'Distribuímos várias publicações',
+      'Fizemos visitas de retorno',
+      'Dia muito abençoado',
+      'Novos interessados encontrados',
+      'Estudantes muito receptivos',
+      'Pregação no centro da cidade'
+    ]
+
+    const randomComment = comments[getRandomNumber(0, comments.length - 1)]
+
+    const reportData = {
+      date: `${formattedDay}/${formattedMonth}/${year}`,
+      year,
+      month: formattedMonth,
+      day,
+      hours: getRandomNumber(1, 8), // 1-8 horas
+      minutes: getRandomNumber(0, 59), // 0-59 minutos
+      students: getRandomNumber(1, 15), // 1-15 estudantes
+      comments: randomComment,
+    }
+
+    fakeReports.push(reportData)
+  }
+
+  return fakeReports
+}
+
+// Função para inserção em massa usando createMany
+async function generateReportsBulk(quantity = 50) {
+  try {
+    console.log(`Gerando ${quantity} relatórios fictícios...`)
+
+    const fakeReports = generateFakeReportData(quantity)
+
+    console.log('Iniciando inserção em massa...')
+
+    for (const report of fakeReports) {
+      await reportsActions.create(report)
+    }
+
+    console.log('Resultado da inserção em massa:')
+    console.log(`Relatórios criados com sucesso: ${fakeReports.length}`)
+    console.log(`Relatórios que falharam: ${0}`)
+
+    return fakeReports.length
+  } catch (error) {
+    console.error('Erro na inserção em massa:', error)
+    throw error
+  }
+}
+
 const dataArray = []
 
 for (let year = 2023; year <= 2023; year++) {
@@ -20,17 +92,15 @@ for (let year = 2023; year <= 2023; year++) {
     for (let i = 0; i < 3; i++) {
       const randomDate = getRandomDate(year, month)
       const day = randomDate.getDate()
-      const formattedDay = day < 10 ? `0${day}` : day
-      const formattedMonth = monthNameToPortuguese(month + 1)
 
       const dataObject = {
         comments: '',
-        createdAt: randomDate.toISOString(),
-        date: `${formattedDay}/${formattedMonth}/${year}`,
+        createdAt: String(dayjs(randomDate)),
+        date: String(dayjs(randomDate)),
         day,
         hours: getRandomNumber(0, 23),
         minutes: getRandomNumber(0, 59),
-        month: formattedMonth,
+        month: month + 1,
         publications: getRandomNumber(0, 10),
         returnVisits: getRandomNumber(0, 5),
         students: getRandomNumber(0, 10),
@@ -47,7 +117,7 @@ let i = 0
 async function generateReports() {
   for await (const data of dataArray) {
     console.log('Criando...', data)
-    await reportActions.create(data)
+    await reportsActions.create(data)
     console.log('...Sucesso', i)
     i++
   }
@@ -137,4 +207,4 @@ async function generateMassData(quantity) {
   return massData
 }
 
-export { generateReports, generateMassData }
+export { generateReports, generateMassData, generateReportsBulk, generateFakeReportData }

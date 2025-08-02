@@ -1,5 +1,6 @@
-import type { ReportData } from '@/@types/interfaces';
+import type { IReport } from '@/database/actions';
 import { minutesToHoursAndMinutes } from './dates';
+import dayjs from 'dayjs';
 
 export function sorteByYears(arr: any) {
   const objetoOrdenado = [...arr].sort((a, b) => {
@@ -62,8 +63,15 @@ export function sorteByMonths(data) {
 
 export function sortByMonthAscending(monthsArray) {
   return monthsArray.sort((a, b) => {
-    const monthA = meses.indexOf(a.month.toLowerCase());
-    const monthB = meses.indexOf(b.month.toLowerCase());
+    // Se month é string (nome do mês), converte para número
+    const monthA =
+      typeof a.month === 'string'
+        ? meses.indexOf(a.month.toLowerCase()) + 1
+        : a.month;
+    const monthB =
+      typeof b.month === 'string'
+        ? meses.indexOf(b.month.toLowerCase()) + 1
+        : b.month;
 
     if (monthA < monthB) {
       return -1;
@@ -90,6 +98,18 @@ export function capitalizeString(inputString: string) {
   else return '';
 }
 
+export function monthNumberToName(monthNumber: number): string {
+  if (monthNumber >= 1 && monthNumber <= 12) {
+    return meses[monthNumber - 1];
+  }
+  return '';
+}
+
+export function monthNameToNumber(monthName: string): number {
+  const index = meses.indexOf(monthName.toLowerCase());
+  return index >= 0 ? index + 1 : 0;
+}
+
 export function sortByYearMonthDay(data: any) {
   return data.sort((a, b) => {
     // Ordena por ano em ordem decrescente
@@ -97,48 +117,46 @@ export function sortByYearMonthDay(data: any) {
       return b.year - a.year;
     }
 
-    // Ordena por mês em ordem decrescente (considerando o nome do mês)
-    const monthOrder = {
-      janeiro: 1,
-      fevereiro: 2,
-      março: 3,
-      abril: 4,
-      maio: 5,
-      junho: 6,
-      julho: 7,
-      agosto: 8,
-      setembro: 9,
-      outubro: 10,
-      novembro: 11,
-      dezembro: 12,
-    };
-    if (monthOrder[a.month] !== monthOrder[b.month]) {
-      return monthOrder[b.month] - monthOrder[a.month];
+    // Ordena por mês em ordem decrescente
+    // Se month é string (nome do mês), converte para número
+    const monthA =
+      typeof a.month === 'string'
+        ? meses.indexOf(a.month.toLowerCase()) + 1
+        : a.month;
+    const monthB =
+      typeof b.month === 'string'
+        ? meses.indexOf(b.month.toLowerCase()) + 1
+        : b.month;
+
+    if (monthA !== monthB) {
+      return monthB - monthA;
     }
 
     // Ordena por dia em ordem decrescente
     return b.day - a.day;
   });
 }
-export function group_list_into_chunks(reportsFiltered: ReportData[]) {
-  const data: ReportData = reportsFiltered.reduce(
+
+export function group_list_into_chunks(reportsFiltered: IReport[]) {
+  const data: IReport = reportsFiltered.reduce(
     (acc: any, state: any) => {
-      const oldState = state._raw;
-      acc.hours += oldState.hours;
-      acc.minutes += oldState.minutes;
-      acc.videos += oldState.videos;
-      acc.students += oldState.students;
-      acc.returnVisits += oldState.returnVisits;
-      acc.publications += oldState.publications;
+      const oldState = state._raw || state;
+      acc.hours += oldState.hours || 0;
+      acc.minutes += oldState.minutes || 0;
+      acc.students += oldState.students || 0;
+      // Mantém o comentário do último relatório ou concatena
+      if (oldState.comments) {
+        acc.comments = acc.comments
+          ? `${acc.comments}; ${oldState.comments}`
+          : oldState.comments;
+      }
       return acc;
     },
     {
       hours: 0,
       minutes: 0,
-      publications: 0,
-      returnVisits: 0,
       students: 0,
-      videos: 0,
+      comments: '',
       time: '',
     }
   );
@@ -150,19 +168,7 @@ export const best = {
     value: 0,
     month: '',
   },
-  publications: {
-    value: 0,
-    month: '',
-  },
-  returnVisits: {
-    value: 0,
-    month: '',
-  },
   students: {
-    value: 0,
-    month: '',
-  },
-  videos: {
     value: 0,
     month: '',
   },
@@ -176,21 +182,9 @@ export function bestMonthsStatics(data: any) {
       best.hours.value = Number(h);
       best.hours.month = iterator.month;
     }
-    if (iterator.reports.publications > best.publications.value) {
-      best.publications.value = iterator.reports.publications;
-      best.publications.month = iterator.month;
-    }
-    if (iterator.reports.returnVisits > best.returnVisits.value) {
-      best.returnVisits.value = iterator.reports.returnVisits;
-      best.returnVisits.month = iterator.month;
-    }
     if (iterator.reports.students > best.students.value) {
       best.students.value = iterator.reports.students;
       best.students.month = iterator.month;
-    }
-    if (iterator.reports.videos > best.videos.value) {
-      best.videos.value = iterator.reports.videos;
-      best.videos.month = iterator.month;
     }
   }
   return best;
@@ -206,4 +200,33 @@ export function cortarString(descricao, limite = 25) {
 
 export function cn(...inputs: any[]) {
   return inputs.filter(Boolean).join(' ');
+}
+
+export function removeProperty<T extends object, K extends keyof T>(
+  obj: T,
+  properties: K | K[]
+): Omit<T, K> {
+  let result = { ...obj } as Omit<T, K>;
+
+  if (Array.isArray(properties)) {
+    for (const property of properties) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [property]: _, ...rest } = result;
+      result = rest as Omit<T, K>;
+    }
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [properties]: _, ...rest } = result;
+    result = rest as Omit<T, K>;
+  }
+
+  return result as Omit<T, K>;
+}
+
+export function formatDate(date: string) {
+  const [day, month, year] = date.split('/');
+  const formattedDate = `${year}-${month}-${day}`;
+  return dayjs(formattedDate)
+    .locale('pt-br')
+    .format('dddd, D [de] MMMM [de] YYYY');
 }

@@ -11,7 +11,7 @@ export const initialReportData: IReport = {
   students: 0,
   time: '0:00',
   day: dayjs().get('date'),
-  month: '',
+  month: dayjs().get('month') + 1,
   year: dayjs().get('y'),
   createdAt: '',
 };

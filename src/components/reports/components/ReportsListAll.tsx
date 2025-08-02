@@ -27,7 +27,7 @@ export type CardProps = ReportDataProps[];
 export default function ReportsListAll() {
   const { isDark } = useTheme();
   const { setisOpenCreateReportModal } = useReportsData();
-  const { data, isLoading, isRefetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['reports', 'all', 'grouped'],
     queryFn: async () => {
       const result = await reportsActions.getAllAndGroupByYearAndMonth();
@@ -37,10 +37,12 @@ export default function ReportsListAll() {
 
   const allReports = data?.data || [];
 
-  if (isLoading || isRefetching) {
+  if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator />
+        <ActivityIndicator
+          color={isDark ? Colors.dark.text : Colors.light.tint}
+        />
       </View>
     );
   }
