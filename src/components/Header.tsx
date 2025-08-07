@@ -49,6 +49,7 @@ export function Header() {
       className="w-screen"
       style={{
         paddingTop: top,
+        elevation: 2,
         backgroundColor: isDark
           ? Colors.dark.darkBgSecundary
           : Colors.light.background,

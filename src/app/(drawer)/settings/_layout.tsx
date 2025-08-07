@@ -1,12 +1,12 @@
 import { Stack } from 'expo-router';
-import { Header } from '@/components/Header';
+import { HeaderSecondary } from '@/components/header-secondary';
 
 export default function SettingsLayout() {
   return (
     <Stack
       screenOptions={{
         header() {
-          return <Header />;
+          return <HeaderSecondary />;
         },
       }}
     />

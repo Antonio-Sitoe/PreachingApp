@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { ActivityIndicator, Alert, ScrollView } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
+import Snackbar from 'react-native-snackbar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import TouchableOpacity, { View, Text } from '@/components/Themed';
@@ -8,7 +9,6 @@ import {
   XCircle,
   Clock,
   Bell,
-  Calendar,
   CheckCircle,
 } from 'lucide-react-native';
 import { monthlyReportNotificationManager } from '@/services/notifications/monthly-report-notification-manager';
@@ -81,9 +81,25 @@ const StatusItem: React.FC<StatusItemProps> = ({
   };
 
   return (
-    <View className="flex-row items-center justify-between py-2 border-b border-gray-200">
-      <View className="flex-row items-center flex-1">
-        {icon && <View className="mr-2">{icon}</View>}
+    <View
+      className="flex-row items-center justify-between py-2 border-b border-gray-200"
+      lightColor={Colors.light.background}
+      darkColor={Colors.dark.darkBgSecundary}
+    >
+      <View
+        className="flex-row items-center flex-1"
+        lightColor={Colors.light.background}
+        darkColor={Colors.dark.darkBgSecundary}
+      >
+        {icon && (
+          <View
+            lightColor={Colors.light.background}
+            darkColor={Colors.dark.darkBgSecundary}
+            className="mr-2"
+          >
+            {icon}
+          </View>
+        )}
 
         <Text className="text-sm font-medium text-gray-700 flex-1">
           {label}
@@ -107,68 +123,46 @@ export const NotificationStatusCard: React.FC = () => {
   const [status, setStatus] = useState<NotificationStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [permissionStatus, setPermissionStatus] = useState<boolean | null>(
-    null
-  );
 
   const forceReschedule = async () => {
     try {
       setRefreshing(true);
       await monthlyReportNotificationManager.forceReschedule();
       await loadNotificationStatus();
-      Alert.alert('Sucesso', 'Notificações re-agendadas com sucesso!');
+      Snackbar.show({
+        text: 'Notificações re-agendadas com sucesso!',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+      });
     } catch (error) {
       console.error('Erro ao re-agendar:', error);
-      Alert.alert('Erro', 'Não foi possível re-agendar as notificações');
+      Snackbar.show({
+        text: 'Não foi possível re-agendar as notificações',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: Colors.light.Error,
+      });
     } finally {
       setRefreshing(false);
-    }
-  };
-
-  const requestPermissions = async () => {
-    try {
-      const result =
-        await monthlyReportNotificationManager.requestPermissions();
-      if (result === Notifications.PermissionStatus.GRANTED) {
-        await loadNotificationStatus();
-        setPermissionStatus(true);
-        Alert.alert('Sucesso', 'Permissões concedidas!');
-      } else {
-        Alert.alert(
-          'Permissão Negada',
-          'As notificações não funcionarão sem permissão'
-        );
-      }
-    } catch (error) {
-      console.error('Erro ao solicitar permissões:', error);
     }
   };
 
   const testNotification = async () => {
     try {
       await monthlyReportNotificationManager.testNotification();
-      Alert.alert(
-        'Notificação de Teste',
-        'Notificação de teste será enviada em 5 segundos'
-      );
+      Snackbar.show({
+        text: 'Notificação de teste será enviada em 5 segundos',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
+      });
     } catch (error) {
       console.error('Erro ao testar notificação:', error);
-      Alert.alert(
-        'Erro ao testar notificação',
-        'Não foi possível enviar notificação de teste'
-      );
+      Snackbar.show({
+        text: 'Não foi possível enviar notificação de teste',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: Colors.light.Error,
+      });
     }
   };
-
-  const checkPermissionStatus = useCallback(async () => {
-    try {
-      const status =
-        await monthlyReportNotificationManager.getPermissionStatus();
-      setPermissionStatus(status === Notifications.PermissionStatus.GRANTED);
-    } catch (error) {
-      console.error('Erro ao verificar permissões:', error);
-    }
-  }, []);
 
   const loadNotificationStatus = useCallback(async () => {
     try {
@@ -191,10 +185,11 @@ export const NotificationStatusCard: React.FC = () => {
       });
     } catch (error) {
       console.error('Erro ao carregar status:', error);
-      Alert.alert(
-        'Erro',
-        'Não foi possível carregar o status das notificações'
-      );
+      Snackbar.show({
+        text: 'Não foi possível carregar o status das notificações',
+        duration: Snackbar.LENGTH_LONG,
+        backgroundColor: Colors.light.Error,
+      });
     } finally {
       setLoading(false);
     }
@@ -204,78 +199,16 @@ export const NotificationStatusCard: React.FC = () => {
     loadNotificationStatus();
   }, [loadNotificationStatus]);
 
-  useEffect(() => {
-    checkPermissionStatus();
-  }, [checkPermissionStatus]);
-
-  console.log(status?.nextNotification);
-
   return (
     <ScrollView className="flex-1 p-4 mb-10">
-      <Card className="mb-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-        <CardHeader className="flex-row items-center gap-2">
-          <Calendar
-            className="mr-2"
-            size={24}
-            color={isDark ? Colors.dark.tint : Colors.light.tint}
-          />
-          <CardTitle
-            style={{ color: isDark ? Colors.dark.text : Colors.light.text }}
-          >
-            Sistema de Notificações Mensais
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Text className="text-gray-700 mb-3">
-            Configure e gerencie as notificações automáticas que são enviadas
-            todo dia 1º de cada mês.
-          </Text>
-
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center">
-              <Badge
-                className={
-                  permissionStatus
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-red-100 text-red-800'
-                }
-              >
-                <Text
-                  lightColor={Colors.light.text}
-                  darkColor={Colors.light.text}
-                  className="text-xs font-medium"
-                >
-                  {permissionStatus
-                    ? 'Permissões Concedidas'
-                    : 'Permissões Negadas'}
-                </Text>
-              </Badge>
-            </View>
-
-            {!permissionStatus && (
-              <TouchableOpacity
-                onPress={requestPermissions}
-                style={{
-                  borderColor: isDark ? Colors.dark.tint : Colors.light.tint,
-                }}
-                className="flex-row items-center px-3 gap-2 py-3 rounded-md border bg-blue-50 border-blue-300"
-                activeOpacity={0.7}
-              >
-                <Bell
-                  size={16}
-                  className="mr-2"
-                  color={isDark ? Colors.dark.tint : Colors.light.tint}
-                />
-                <Text className="text-blue-700 font-medium">
-                  Solicitar Permissões
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        </CardContent>
-      </Card>
-
-      <Card className="mb-4">
+      <Card
+        className="mb-4"
+        style={{
+          backgroundColor: isDark
+            ? Colors.dark.darkBgSecundary
+            : Colors.light.background,
+        }}
+      >
         <CardHeader className="flex-row items-center gap-2">
           <Bell
             className="mr-2"
@@ -340,7 +273,11 @@ export const NotificationStatusCard: React.FC = () => {
           )}
         </CardContent>
 
-        <View className="flex-row justify-between py-4 border-t border-gray-200">
+        <View
+          lightColor={Colors.light.background}
+          darkColor={Colors.dark.darkBgSecundary}
+          className="flex-row justify-between py-4 border-t border-gray-200"
+        >
           <TouchableOpacity
             onPress={loadNotificationStatus}
             disabled={loading}
@@ -367,7 +304,7 @@ export const NotificationStatusCard: React.FC = () => {
 
           <TouchableOpacity
             onPress={testNotification}
-            className="flex-1 py-3 rounded-md border border-gray-300 items-center justify-center"
+            className="flex-1 mr-2 py-3 rounded-md border border-gray-300 items-center justify-center"
             activeOpacity={0.7}
           >
             <Text className="font-text text-sm text-gray-800">Testar</Text>

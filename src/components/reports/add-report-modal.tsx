@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import Snackbar from 'react-native-snackbar';
-import { currentDates } from '@/utils/dates';
 import { useReportsData } from '@/contexts/ReportContext';
 import { FormInput } from '@/components/ui/FormInput';
 import { DatePicker } from '@/components/ui/DatePicker';

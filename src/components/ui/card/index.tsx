@@ -8,12 +8,16 @@ type ICardProps = ViewProps &
 
 const Card = React.forwardRef<React.ComponentRef<typeof View>, ICardProps>(
   function Card(
-    { className, size = 'md', variant = 'elevated', ...props },
+    { className, size = 'md', variant = 'elevated', style, ...props },
     ref
   ) {
     return (
       <View
         className={cardStyle({ size, variant, class: className })}
+        style={{
+          elevation: 2,
+          ...style,
+        }}
         {...props}
         ref={ref}
       />
@@ -63,7 +67,7 @@ const CardTitle = React.forwardRef<
 >(function CardTitle({ className, ...props }, ref) {
   return (
     <Text
-      className={['text-lg font-semibold text-gray-900', className]
+      className={['text-lg font-semibold font-title text-gray-900', className]
         .filter(Boolean)
         .join(' ')}
       {...props}

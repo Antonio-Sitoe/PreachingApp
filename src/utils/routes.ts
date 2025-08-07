@@ -38,7 +38,7 @@ export const DRAWER_ROUTES: ROUTE_TYPE = [
     route: '/userGuide/',
   },
   {
-    label: 'configurações',
+    label: 'Configurações',
     icon: {
       IconRoute: IconIOS,
       name: 'settings-outline',

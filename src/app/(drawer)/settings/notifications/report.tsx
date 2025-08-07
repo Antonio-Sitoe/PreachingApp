@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions, TouchableOpacity } from 'react-native';
 import { NotificationStatusCard } from '@/components/reports/notifications/NotificationStatusCard';
 import { NotificationSettingsCard } from '@/components/reports/notifications/NotificationSettingsCard';
 import { AnalyticsCard } from '@/components/reports/notifications/AnalyticsCard';
@@ -8,13 +8,7 @@ import useTheme from '@/hooks/useTheme';
 import { View, Text } from '@/components/Themed';
 import { BackButton } from '@/components/ui/BackButton';
 
-import {
-  TabView,
-  SceneMap,
-  TabBar,
-  type TabBarProps,
-} from 'react-native-tab-view';
-import { NotificationInformation } from '@/components/reports/notifications/NotificationInformation';
+import { TabView, SceneMap, type TabBarProps } from 'react-native-tab-view';
 
 const renderTabBar = (
   props: TabBarProps<{ key: string; title: string }>,
@@ -22,39 +16,64 @@ const renderTabBar = (
 ) => {
   return (
     <View className="px-3 pb-3">
-      <TabBar
-        {...props}
-        inactiveColor={Colors.dark.Success200}
-        indicatorStyle={{
-          backgroundColor: 'white',
-          marginBottom: 3,
-          paddingBottom: 3,
-          borderRadius: 8,
-          marginLeft: 3,
-          width: '30%',
-        }}
+      <View
+        className="rounded-lg pb-1"
         style={{
-          borderRadius: 6,
-          paddingBottom: 3,
           backgroundColor: isDark ? Colors.dark.background : Colors.light.tint,
           borderColor: isDark ? Colors.dark.tint : '',
           borderWidth: isDark ? 2 : 0,
         }}
-      />
+      >
+        <View className="flex-row rounded-lg">
+          {props.navigationState.routes.map((route, index) => {
+            const isFocused = props.navigationState.index === index;
+            return (
+              <TouchableOpacity
+                key={route.key}
+                onPress={() => props.jumpTo(route.key)}
+                className="flex-1 items-center justify-center py-2"
+                style={{
+                  minHeight: 40,
+                }}
+              >
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: 1,
+                    left: 3,
+                    right: 3,
+                    height: 2,
+                    backgroundColor: isFocused ? 'white' : 'transparent',
+                    borderRadius: 8,
+                  }}
+                />
+                <Text
+                  className="text-center"
+                  style={{
+                    fontSize: 12,
+                    fontWeight: '500',
+                    color: isFocused ? 'white' : Colors.dark.Success200,
+                  }}
+                >
+                  {route.title}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+      </View>
     </View>
   );
 };
 const renderScene = SceneMap({
-  status: NotificationStatusCard,
   settings: NotificationSettingsCard,
+  status: NotificationStatusCard,
   analytics: AnalyticsCard,
-  information: NotificationInformation,
 });
 const routes = [
-  { key: 'status', title: 'Estado' },
   { key: 'settings', title: 'Configurações' },
-  { key: 'analytics', title: 'Outras Notificações' },
-  { key: 'information', title: 'Informações' },
+  { key: 'status', title: 'Estado' },
+  { key: 'analytics', title: 'Estatísticas' },
 ];
 
 export default function MonthlyReportsSettingsScreen() {
@@ -72,8 +91,8 @@ export default function MonthlyReportsSettingsScreen() {
         <BackButton />
         <Text
           className="text-2xl font-bold"
-          lightColor={Colors.light.tint}
-          darkColor={Colors.dark.tint}
+          lightColor={Colors.light.text}
+          darkColor={Colors.dark.text}
         >
           Notificações
         </Text>
@@ -85,9 +104,6 @@ export default function MonthlyReportsSettingsScreen() {
         renderScene={renderScene}
         onIndexChange={setIndex}
         initialLayout={{ width: layout.width }}
-        style={{
-          backgroundColor: isDark ? Colors.dark.darkBgSecundary : 'white',
-        }}
       />
     </View>
   );
