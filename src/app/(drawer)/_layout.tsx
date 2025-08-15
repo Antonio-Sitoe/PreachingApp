@@ -4,6 +4,8 @@ import { StatusBar } from 'expo-status-bar';
 import { CustomDrawerContent } from '@/components/DrawerMenu';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import { NotificationProvider } from '@/contexts/notification-provider';
@@ -12,27 +14,29 @@ export default function RootLayout() {
   const { isDark } = useTheme();
 
   return (
-    <NotificationProvider>
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <StatusBar animated translucent style="auto" />
-        <Drawer
-          initialRouteName="(tabs)"
-          drawerContent={(props) => <CustomDrawerContent {...props} />}
-          screenOptions={() => ({
-            headerShown: false,
-            headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
-            headerStyle: {
-              height: 85,
-              borderBottomRightRadius: isDark ? 0 : 10,
-              borderBottomLeftRadius: isDark ? 0 : 10,
-              backgroundColor: isDark
-                ? Colors.dark.darkBgSecundary
-                : Colors.light.background,
-            },
-            title: '',
-          })}
-        />
-      </GestureHandlerRootView>
-    </NotificationProvider>
+    <ActionSheetProvider>
+      <NotificationProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <StatusBar animated translucent style="auto" />
+          <Drawer
+            initialRouteName="(tabs)"
+            drawerContent={(props) => <CustomDrawerContent {...props} />}
+            screenOptions={() => ({
+              headerShown: false,
+              headerTintColor: isDark ? Colors.dark.text : Colors.light.text,
+              headerStyle: {
+                height: 85,
+                borderBottomRightRadius: isDark ? 0 : 10,
+                borderBottomLeftRadius: isDark ? 0 : 10,
+                backgroundColor: isDark
+                  ? Colors.dark.darkBgSecundary
+                  : Colors.light.background,
+              },
+              title: '',
+            })}
+          />
+        </GestureHandlerRootView>
+      </NotificationProvider>
+    </ActionSheetProvider>
   );
 }

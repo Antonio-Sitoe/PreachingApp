@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 import useTheme from '@/hooks/useTheme';
 import { EditableTitle } from './editable-title';
-import { EmojiPicker } from '@/components/notes/EmojiPicker';
+import EmojiPicker, { type EmojiType } from 'rn-emoji-keyboard';
 import dayjs from 'dayjs';
 
 function formatDate(date: Date) {
@@ -24,19 +24,18 @@ export function EditorHeaderTitles({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { isDark } = useTheme();
 
-  const handleEmojiSelect = (selectedEmoji: string) => {
-    onEmojiChange?.(selectedEmoji);
+  const handleEmojiSelect = (emojiObject: EmojiType) => {
+    onEmojiChange?.(emojiObject.emoji);
     setShowEmojiPicker(false);
   };
 
   return (
     <View
-      className={`flex-row justify-between items-center px-4 py-3 border-b ${
+      className={`px-4 flex-col py-3 border-b ${
         isDark ? 'bg-black border-gray-700' : 'bg-white border-gray-200'
       }`}
     >
-      <View className="flex-row items-center flex-1">
-        {/* Botão de Emoji */}
+      <View className="flex-row items-center w-full">
         <TouchableOpacity
           onPress={() => setShowEmojiPicker(true)}
           className={`mr-3 w-10 h-10 rounded-lg justify-center items-center ${
@@ -46,7 +45,6 @@ export function EditorHeaderTitles({
           <Text className="text-2xl">{emoji}</Text>
         </TouchableOpacity>
 
-        {/* Título Editável */}
         <EditableTitle
           initialValue={title}
           onValueChange={setTitle}
@@ -56,7 +54,7 @@ export function EditorHeaderTitles({
         />
       </View>
 
-      <View className="flex-row items-center flex-1">
+      <View className="flex-row items-center w-full mt-2">
         {lastSaved && (
           <Text
             className={`text-xs font-medium mt-0.5 ${
@@ -68,12 +66,10 @@ export function EditorHeaderTitles({
         )}
       </View>
 
-      {/* EmojiPicker Modal */}
       <EmojiPicker
-        visible={showEmojiPicker}
+        onEmojiSelected={handleEmojiSelect}
+        open={showEmojiPicker}
         onClose={() => setShowEmojiPicker(false)}
-        onSelectEmoji={handleEmojiSelect}
-        currentEmoji={emoji}
       />
     </View>
   );
