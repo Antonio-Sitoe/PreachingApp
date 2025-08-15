@@ -4,13 +4,14 @@ import useTheme from '@/hooks/useTheme';
 import { EditableTitle } from './editable-title';
 import EmojiPicker, { type EmojiType } from 'rn-emoji-keyboard';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useEditorStore } from './store';
 
 export function EditorHeaderTitles() {
-  const [emoji, setEmoji] = useState('📝');
-  const [title, setTitle] = useState('Título');
   const backgroundColor = useThemeColor({}, 'background');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { isDark } = useTheme();
+
+  const { title, emoji, lastSaved, setTitle, setEmoji } = useEditorStore();
 
   const handleEmojiSelect = (emojiObject: EmojiType) => {
     setEmoji(emojiObject.emoji);
@@ -37,6 +38,17 @@ export function EditorHeaderTitles() {
           placeholder="Toque para editar..."
         />
       </View>
+
+      {/* Last saved info */}
+      {lastSaved && (
+        <View className="flex-row items-center mt-2">
+          <Text
+            className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-600'}`}
+          >
+            💾 Salvo em {lastSaved.toLocaleString('pt-BR')}
+          </Text>
+        </View>
+      )}
 
       <EmojiPicker
         onEmojiSelected={handleEmojiSelect}

@@ -3,31 +3,33 @@ import { cn } from '@/lib/utils';
 import Feather from '@expo/vector-icons/build/Feather';
 import { useRouter } from 'expo-router';
 import { TouchableOpacity, useColorScheme, View } from 'react-native';
+import { useEditorStore } from './store';
+import { AppleIcon } from 'lucide-react-native';
 
 export function EditorHeader() {
   const colorScheme = useColorScheme();
   const { back } = useRouter();
+  const { backgroundColor, setOptionsBottomSheetOpen } = useEditorStore();
 
   return (
     <View
-      className={`h-[120px] justify-center items-center relative overflow-hidden ${
-        colorScheme === 'dark' ? 'bg-[#1D3D47]' : 'bg-[#A1CEDC]'
-      }`}
+      className="h-[120px] justify-center items-center relative overflow-hidden"
+      style={{
+        backgroundColor: backgroundColor,
+      }}
     >
-      <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center">
-        <IconSymbol
+      <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-start">
+        <AppleIcon
           size={180}
           color={colorScheme === 'dark' ? '#ffffff' : '#000000'}
-          name="house.fill"
           style={{ position: 'absolute' }}
         />
       </View>
       <View
-        className={`absolute top-0 left-0 right-0 bottom-0 ${
-          colorScheme === 'dark'
-            ? 'bg-[rgba(29,61,71,0.8)]'
-            : 'bg-[rgba(161,206,220,0.8)]'
-        }`}
+        className="absolute top-0 left-0 right-0 bottom-0"
+        style={{
+          backgroundColor: `${backgroundColor}CC`, // Adding CC for 80% opacity
+        }}
       />
 
       <View className="absolute top-3 left-0 right-0 flex-row justify-between items-start pt-3 px-5">
@@ -52,7 +54,7 @@ export function EditorHeader() {
               ? 'bg-[rgba(255,255,255,0.2)]'
               : 'bg-[#252525]'
           }`}
-          onPress={() => {}}
+          onPress={() => setOptionsBottomSheetOpen(true)}
         >
           <Feather size={22} color={'#ffffff'} name="more-horizontal" />
         </TouchableOpacity>

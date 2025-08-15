@@ -1,6 +1,6 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { EditorHeader } from '@/components/notes/editors/editor-header';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {
   RichEditor,
@@ -10,6 +10,8 @@ import {
 import useTheme from '@/hooks/useTheme';
 import { EditorHeaderTitles } from './editor-header-titles';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { OptionsBottomSheet } from './options-bottom-sheet';
+import { useEditorStore } from './store';
 
 export function NotesEditor() {
   const { isDark } = useTheme();
@@ -17,15 +19,23 @@ export function NotesEditor() {
   const tintColor = useThemeColor({}, 'tint');
   const backgroundColor = useThemeColor({}, 'background');
 
-  const [content, setContent] = useState(``);
+  const {
+    content,
+    setContent: setContentStore,
+    setLastSaved,
+  } = useEditorStore();
   const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const richTextRef = useRef<RichEditor>(null);
 
-  const autoSaveContent = useCallback((content: string) => {
-    if (content) {
-      console.log('💾 Auto-salvo:', content.substring(0, 50) + '...');
-    }
-  }, []);
+  const autoSaveContent = useCallback(
+    (content: string) => {
+      if (content) {
+        setLastSaved(new Date());
+        console.log('💾 Auto-salvo:', content.substring(0, 50) + '...');
+      }
+    },
+    [setLastSaved]
+  );
 
   useEffect(() => {
     if (autoSaveTimeoutRef.current) {
@@ -53,7 +63,7 @@ export function NotesEditor() {
           ref={richTextRef}
           initialContentHTML={content}
           onChange={(text: string) => {
-            setContent(text);
+            setContentStore(text);
           }}
           style={styles.editor}
           placeholder="Comece a escrever..."
@@ -163,6 +173,8 @@ export function NotesEditor() {
           backgroundColor: isDark ? '#333' : '#e0e0e0',
         }}
       />
+
+      <OptionsBottomSheet />
     </SafeAreaView>
   );
 }
