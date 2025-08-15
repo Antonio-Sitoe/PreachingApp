@@ -7,6 +7,7 @@ interface EditorState {
   content: string;
   emoji: string;
   backgroundColor: string;
+  iconName: string | null;
 
   // UI state
   isOptionsBottomSheetOpen: boolean;
@@ -18,6 +19,7 @@ interface EditorState {
   setContent: (content: string) => void;
   setEmoji: (emoji: string) => void;
   setBackgroundColor: (color: string) => void;
+  setIconName: (iconName: string | null) => void;
   setOptionsBottomSheetOpen: (open: boolean) => void;
   setLastSaved: (date: Date) => void;
   resetEditor: () => void;
@@ -38,12 +40,39 @@ export const NOTE_COLORS = [
   { name: 'Sky', color: '#85C1E9', darkColor: '#6A9ABA' },
 ];
 
+// Available icons for notes
+export const NOTE_ICONS = [
+  'BookOpen',
+  'FileText',
+  'PenTool',
+  'Lightbulb',
+  'Target',
+  'Heart',
+  'Star',
+  'Coffee',
+  'Music',
+  'Camera',
+  'Map',
+  'Bookmark',
+  'Calendar',
+  'Clock',
+  'Globe',
+  'Home',
+  'Briefcase',
+  'ShoppingCart',
+  'Gamepad2',
+  'Rocket',
+] as const;
+
+export type IconName = (typeof NOTE_ICONS)[number];
+
 const initialState = {
   noteId: null,
-  title: '📝 Editors',
+  title: 'Editors',
   content: '',
   emoji: '📝',
   backgroundColor: NOTE_COLORS[0].color,
+  iconName: null,
   isOptionsBottomSheetOpen: false,
   lastSaved: null,
 };
@@ -56,6 +85,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   setContent: (content) => set({ content }),
   setEmoji: (emoji) => set({ emoji }),
   setBackgroundColor: (color) => set({ backgroundColor: color }),
+  setIconName: (iconName) => set({ iconName }),
   setOptionsBottomSheetOpen: (open) => set({ isOptionsBottomSheetOpen: open }),
   setLastSaved: (date) => set({ lastSaved: date }),
 
