@@ -22,6 +22,7 @@
   "dependencies": {
     "@expo-google-fonts/inter": "^0.4.1",
     "@expo/html-elements": "^0.4.2",
+    "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/vector-icons": "^14.1.0",
     "@gluestack-ui/actionsheet": "^0.2.53",
     "@gluestack-ui/icon": "^0.1.27",
@@ -58,6 +59,7 @@
     "expo-image-picker": "~16.1.4",
     "expo-linear-gradient": "~14.1.5",
     "expo-linking": "~7.1.7",
+    "expo-notifications": "~0.31.4",
     "expo-router": "~5.1.4",
     "expo-splash-screen": "~0.30.10",
     "expo-sqlite": "~15.2.14",
@@ -74,9 +76,11 @@
     "react-native": "0.79.5",
     "react-native-calendars": "^1.1313.0",
     "react-native-css-interop": "^0.1.22",
+    "react-native-draggable-flatlist": "^4.0.3",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-get-random-values": "^1.11.0",
     "react-native-pager-view": "6.7.1",
+    "react-native-pell-rich-editor": "^1.10.0",
     "react-native-reanimated": "~3.17.4",
     "react-native-responsive-fontsize": "^0.5.1",
     "react-native-safe-area-context": "5.4.0",
@@ -86,13 +90,12 @@
     "react-native-tab-view": "^4.1.2",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.20.0",
+    "react-native-webview": "13.13.5",
     "tailwind-merge": "^3.3.1",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^11.1.0",
     "zod": "^4.0.5",
-    "zustand": "^5.0.6",
-    "expo-notifications": "~0.31.4",
-    "expo-device": "~7.1.4"
+    "zustand": "^5.0.6"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",
