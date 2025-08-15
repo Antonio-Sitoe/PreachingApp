@@ -27,7 +27,6 @@ export function Header() {
   const isReportPath = usePathname().includes('/report');
   const isModalRoute = usePathname().includes('/modal');
   const isChart = usePathname().includes('/chart');
-  const isNotesPath = usePathname() === '/notes/edit';
 
   async function handleShareReport() {
     try {
@@ -43,10 +42,6 @@ export function Header() {
 
   function handleAddReport() {
     setisOpenCreateReportModal(true);
-  }
-
-  if (isNotesPath) {
-    return null;
   }
 
   return (

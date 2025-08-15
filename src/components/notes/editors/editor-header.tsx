@@ -18,7 +18,7 @@ export function EditorHeader() {
         <IconSymbol
           size={180}
           color={colorScheme === 'dark' ? '#ffffff' : '#000000'}
-          name="chevron.left.forwardslash.chevron.right"
+          name="house.fill"
           style={{ position: 'absolute' }}
         />
       </View>
@@ -48,7 +48,9 @@ export function EditorHeader() {
 
         <TouchableOpacity
           className={`w-11 h-11 rounded-full justify-center items-center shadow-lg ${
-            colorScheme === 'dark' ? 'bg-[rgba(214,24,24,0.2)]' : 'bg-[#252525]'
+            colorScheme === 'dark'
+              ? 'bg-[rgba(255,255,255,0.2)]'
+              : 'bg-[#252525]'
           }`}
           onPress={() => {}}
         >

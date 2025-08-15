@@ -16,16 +16,13 @@ export function NotesEditor() {
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
   const backgroundColor = useThemeColor({}, 'background');
-  const borderColor = isDark ? '#333' : '#e0e0e0';
 
   const [content, setContent] = useState(``);
-  const [lastSaved, setLastSaved] = useState<Date | null>(null);
   const autoSaveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const richTextRef = useRef<RichEditor>(null);
 
   const autoSaveContent = useCallback((content: string) => {
     if (content) {
-      setLastSaved(new Date());
       console.log('💾 Auto-salvo:', content.substring(0, 50) + '...');
     }
   }, []);
@@ -49,7 +46,7 @@ export function NotesEditor() {
   return (
     <SafeAreaView style={[styles.mainContainer, { backgroundColor }]}>
       <EditorHeader />
-      <EditorHeaderTitles lastSaved={lastSaved ?? new Date()} />
+      <EditorHeaderTitles />
 
       <View style={styles.editorContainer}>
         <RichEditor
@@ -63,6 +60,7 @@ export function NotesEditor() {
           editorStyle={{
             backgroundColor,
             color: textColor,
+
             cssText: `
               body { 
                 background-color: ${backgroundColor}; 
@@ -70,7 +68,7 @@ export function NotesEditor() {
                 font-family: monospace; 
                 font-size: 16px; 
                 line-height: 1.5; 
-                padding: 16px;
+                padding: 0px 16px;
                 margin: 0;
                 min-height: 100vh;
               }
@@ -89,14 +87,27 @@ export function NotesEditor() {
           actions.setUnderline,
           actions.heading1,
           actions.heading2,
+          actions.heading3,
+          actions.heading4,
+          actions.insertLine,
+          actions.removeFormat,
+          actions.alignLeft,
+          actions.alignCenter,
+          actions.alignRight,
+          actions.alignFull,
           actions.insertBulletsList,
           actions.insertOrderedList,
+          actions.checkboxList,
           actions.insertLink,
-          actions.keyboard,
           actions.setStrikethrough,
-          actions.blockquote,
+          actions.indent,
+          actions.outdent,
+          actions.undo,
+          actions.redo,
           actions.code,
-          actions.removeFormat,
+          actions.line,
+          actions.blockquote,
+          actions.keyboard,
         ]}
         iconMap={{
           [actions.heading1]: ({ tintColor }: { tintColor: string }) => (
@@ -113,10 +124,32 @@ export function NotesEditor() {
               H2
             </Text>
           ),
+          [actions.heading3]: ({ tintColor }: { tintColor: string }) => (
+            <Text
+              style={[{ color: tintColor, fontSize: 14, fontWeight: 'bold' }]}
+            >
+              H3
+            </Text>
+          ),
+          [actions.heading4]: ({ tintColor }: { tintColor: string }) => (
+            <Text
+              style={[{ color: tintColor, fontSize: 14, fontWeight: 'bold' }]}
+            >
+              H4
+            </Text>
+          ),
         }}
         style={[
           styles.richToolbar,
-          { backgroundColor, borderTopColor: borderColor, borderWidth: 1 },
+          {
+            backgroundColor: isDark ? '#333' : '#e0e0e0',
+            borderTopColor: 'transparent',
+            borderWidth: 0,
+            maxWidth: '100%',
+            borderRadius: 10,
+            marginHorizontal: 24,
+            marginBottom: 24,
+          },
         ]}
         flatContainerStyle={{
           paddingHorizontal: 12,
@@ -146,7 +179,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   richToolbar: {
-    borderTopWidth: 1,
+    borderTopWidth: 0,
     paddingVertical: 8,
     paddingHorizontal: 8,
   },

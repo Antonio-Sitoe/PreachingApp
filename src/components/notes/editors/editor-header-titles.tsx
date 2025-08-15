@@ -3,19 +3,12 @@ import { useState } from 'react';
 import useTheme from '@/hooks/useTheme';
 import { EditableTitle } from './editable-title';
 import EmojiPicker, { type EmojiType } from 'rn-emoji-keyboard';
-import dayjs from 'dayjs';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
-function formatDate(date: Date) {
-  return dayjs(date).format('DD/MM/YYYY [às] HH:mm');
-}
-
-interface EditorHeaderTitlesProps {
-  lastSaved: Date;
-}
-
-export function EditorHeaderTitles({ lastSaved }: EditorHeaderTitlesProps) {
+export function EditorHeaderTitles() {
   const [emoji, setEmoji] = useState('📝');
   const [title, setTitle] = useState('Título');
+  const backgroundColor = useThemeColor({}, 'background');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { isDark } = useTheme();
 
@@ -25,11 +18,7 @@ export function EditorHeaderTitles({ lastSaved }: EditorHeaderTitlesProps) {
   };
 
   return (
-    <View
-      className={`px-4 flex-col py-3 border-b ${
-        isDark ? 'bg-black border-gray-700' : 'bg-white border-gray-200'
-      }`}
-    >
+    <View className={`px-4 flex-col py-3`} style={{ backgroundColor }}>
       <View className="flex-row items-center w-full">
         <TouchableOpacity
           onPress={() => setShowEmojiPicker(true)}
@@ -47,18 +36,6 @@ export function EditorHeaderTitles({ lastSaved }: EditorHeaderTitlesProps) {
           type="title"
           placeholder="Toque para editar..."
         />
-      </View>
-
-      <View className="flex-row items-center w-full mt-2">
-        {lastSaved && (
-          <Text
-            className={`text-xs font-medium mt-0.5 ${
-              isDark ? 'text-gray-400' : 'text-gray-500'
-            }`}
-          >
-            💾 Salvo em {formatDate(lastSaved)}
-          </Text>
-        )}
       </View>
 
       <EmojiPicker
