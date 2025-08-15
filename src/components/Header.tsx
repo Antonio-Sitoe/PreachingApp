@@ -27,7 +27,7 @@ export function Header() {
   const isReportPath = usePathname().includes('/report');
   const isModalRoute = usePathname().includes('/modal');
   const isChart = usePathname().includes('/chart');
-  const isNotesPath = usePathname().includes('/notes');
+  const isNotesPath = usePathname() === '/notes/edit';
 
   async function handleShareReport() {
     try {

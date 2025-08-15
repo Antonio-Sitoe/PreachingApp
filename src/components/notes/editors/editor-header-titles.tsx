@@ -11,21 +11,16 @@ function formatDate(date: Date) {
 
 interface EditorHeaderTitlesProps {
   lastSaved: Date;
-  emoji?: string;
-  onEmojiChange?: (emoji: string) => void;
 }
 
-export function EditorHeaderTitles({
-  lastSaved,
-  emoji = '📝',
-  onEmojiChange,
-}: EditorHeaderTitlesProps) {
-  const [title, setTitle] = useState('📝 Editors');
+export function EditorHeaderTitles({ lastSaved }: EditorHeaderTitlesProps) {
+  const [emoji, setEmoji] = useState('📝');
+  const [title, setTitle] = useState('Título');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { isDark } = useTheme();
 
   const handleEmojiSelect = (emojiObject: EmojiType) => {
-    onEmojiChange?.(emojiObject.emoji);
+    setEmoji(emojiObject.emoji);
     setShowEmojiPicker(false);
   };
 
@@ -38,11 +33,11 @@ export function EditorHeaderTitles({
       <View className="flex-row items-center w-full">
         <TouchableOpacity
           onPress={() => setShowEmojiPicker(true)}
-          className={`mr-3 w-10 h-10 rounded-lg justify-center items-center ${
+          className={`mr-3 w-14 h-14 rounded-lg justify-center items-center ${
             isDark ? 'bg-gray-800' : 'bg-gray-100'
           }`}
         >
-          <Text className="text-2xl">{emoji}</Text>
+          <Text className="text-4xl">{emoji}</Text>
         </TouchableOpacity>
 
         <EditableTitle
@@ -58,7 +53,7 @@ export function EditorHeaderTitles({
         {lastSaved && (
           <Text
             className={`text-xs font-medium mt-0.5 ${
-              isDark ? 'text-blue-400' : 'text-blue-600'
+              isDark ? 'text-gray-400' : 'text-gray-500'
             }`}
           >
             💾 Salvo em {formatDate(lastSaved)}

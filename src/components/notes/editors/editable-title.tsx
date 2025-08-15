@@ -2,6 +2,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { Text as ThemedText } from '@/components/Themed';
+import { cortarString } from '@/utils/helper';
 
 interface EditableTitleProps {
   initialValue: string;
@@ -101,7 +102,7 @@ export function EditableTitle({
         type={type}
         style={[styles.text, textStyle, !value && styles.placeholder]}
       >
-        {value || placeholder}
+        {cortarString(value || placeholder, 60)}
       </ThemedText>
     </TouchableOpacity>
   );
