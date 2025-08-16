@@ -14,7 +14,16 @@ import Colors from '@/constants/Colors';
 import { Text } from '@/components/Themed';
 import useTheme from '@/hooks/useTheme';
 import { useState, useMemo } from 'react';
-import { Grid, List, Plus, Search, Mic } from 'lucide-react-native';
+import {
+  Grid,
+  List,
+  Search,
+  Mic,
+  Trash2,
+  X,
+  CheckCircle2,
+  Circle,
+} from 'lucide-react-native';
 import { AnimatedButton } from '@/components/ui/ButtonAnimated';
 
 interface Note {
@@ -136,6 +145,8 @@ export default function NotesHome() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterTag>('all');
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const {
     data: allNotes = generateFakeData(),
@@ -198,110 +209,190 @@ export default function NotesHome() {
   }
 
   function openNote(note: { id: string }) {
+    if (isSelecting) {
+      toggleSelect(note.id);
+      return;
+    }
     router.push({
       pathname: '/note',
       params: { id: note.id },
     });
   }
 
-  const renderGridItem = (item: Note) => (
-    <Pressable
-      key={item.id}
-      onPress={() => openNote(item)}
-      className="mb-4 rounded-2xl p-4"
-      style={{
-        backgroundColor: item.colorHex,
-        minHeight: 180,
-        width: '47%',
-        marginHorizontal: '1%',
-      }}
-    >
-      <View className="flex-row items-start justify-between mb-3">
-        <Text className="text-2xl">{item.emoji ?? '📝'}</Text>
-        <View className="w-6 h-6 rounded-full bg-white/20" />
-      </View>
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      if (next.size === 0) setIsSelecting(false);
+      return next;
+    });
+  }
 
-      <View className="flex-1 justify-between">
-        <View>
+  function startSelection(id: string) {
+    setIsSelecting(true);
+    setSelectedIds(new Set([id]));
+  }
+
+  function cancelSelection() {
+    setIsSelecting(false);
+    setSelectedIds(new Set());
+  }
+
+  async function deleteSelected() {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    // Use native alert to confirm
+    // Using dynamic import from react-native to avoid extra import churn
+    const { Alert } = await import('react-native');
+    Alert.alert('Apagar anotações', `Apagar ${ids.length} anotação(ões)?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Apagar',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await Promise.all(
+              ids.map((id) => notesActions.deleteNote(id, true))
+            );
+          } finally {
+            setSelectedIds(new Set());
+            setIsSelecting(false);
+            await queryClient.invalidateQueries({ queryKey: ['notes'] });
+          }
+        },
+      },
+    ]);
+  }
+
+  const renderGridItem = (item: Note) => {
+    const selected = selectedIds.has(item.id);
+    return (
+      <Pressable
+        key={item.id}
+        onPress={() => (isSelecting ? toggleSelect(item.id) : openNote(item))}
+        onLongPress={() => startSelection(item.id)}
+        delayLongPress={300}
+        className="mb-4 rounded-2xl p-4"
+        style={{
+          backgroundColor: item.colorHex,
+          minHeight: 180,
+          width: '47%',
+          marginHorizontal: '1%',
+        }}
+      >
+        <View className="flex-row items-start justify-between mb-3">
+          <Text className="text-2xl">{item.emoji ?? '📝'}</Text>
+          {isSelecting ? (
+            selected ? (
+              <CheckCircle2 size={20} color="#ffffff" />
+            ) : (
+              <Circle size={20} color="#ffffff" />
+            )
+          ) : (
+            <View className="w-6 h-6 rounded-full bg-white/20" />
+          )}
+        </View>
+
+        <View className="flex-1 justify-between">
+          <View>
+            <Text
+              className="text-white font-bold text-lg mb-2 leading-5"
+              numberOfLines={2}
+            >
+              {item.title}
+            </Text>
+            <Text className="text-white/90 text-sm leading-4" numberOfLines={3}>
+              {item.aiSummary ?? 'Sem resumo disponível'}
+            </Text>
+          </View>
+
+          <View className="mt-4 flex-row items-center justify-between">
+            <Text className="text-white/70 text-xs font-medium">
+              {new Date(item.updatedAt).toLocaleDateString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit',
+              })}
+            </Text>
+            <View className="px-2 py-1 rounded-lg bg-white/20">
+              <Text className="text-white/90 text-xs font-medium capitalize">
+                {item.aiCategory}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </Pressable>
+    );
+  };
+
+  const renderListItem = ({ item }: { item: Note }) => {
+    const selected = selectedIds.has(item.id);
+    return (
+      <Pressable
+        onPress={() => (isSelecting ? toggleSelect(item.id) : openNote(item))}
+        onLongPress={() => startSelection(item.id)}
+        delayLongPress={300}
+        className="mb-3 w-full rounded-xl p-4 flex-row items-center shadow relative"
+        style={{ backgroundColor: isDark ? '#1c1c1e' : '#fff' }}
+      >
+        <View
+          className="w-12 h-12 rounded-xl items-center justify-center mr-3"
+          style={{ backgroundColor: item.colorHex }}
+        >
+          <Text className="text-xl">{item.emoji ?? '📝'}</Text>
+        </View>
+
+        <View className="flex-1">
           <Text
-            className="text-white font-bold text-lg mb-2 leading-5"
-            numberOfLines={2}
+            className={`font-semibold text-base mb-1 ${
+              isDark ? 'text-white' : 'text-gray-900'
+            }`}
           >
             {item.title}
           </Text>
-          <Text className="text-white/90 text-sm leading-4" numberOfLines={3}>
+          <Text
+            className={`text-sm mb-1 ${
+              isDark ? 'text-gray-400' : 'text-gray-600'
+            }`}
+            numberOfLines={2}
+          >
             {item.aiSummary ?? 'Sem resumo disponível'}
           </Text>
-        </View>
-
-        <View className="mt-4 flex-row items-center justify-between">
-          <Text className="text-white/70 text-xs font-medium">
-            {new Date(item.updatedAt).toLocaleDateString('pt-BR', {
-              day: '2-digit',
-              month: '2-digit',
-              year: '2-digit',
-            })}
-          </Text>
-          <View className="px-2 py-1 rounded-lg bg-white/20">
-            <Text className="text-white/90 text-xs font-medium capitalize">
-              {item.aiCategory}
-            </Text>
-          </View>
-        </View>
-      </View>
-    </Pressable>
-  );
-
-  const renderListItem = ({ item }: { item: Note }) => (
-    <Pressable
-      onPress={() => openNote(item)}
-      className="mb-3 w-full rounded-xl p-4 flex-row items-center shadow"
-      style={{ backgroundColor: isDark ? '#1c1c1e' : '#fff' }}
-    >
-      <View
-        className="w-12 h-12 rounded-xl items-center justify-center mr-3"
-        style={{ backgroundColor: item.colorHex }}
-      >
-        <Text className="text-xl">{item.emoji ?? '📝'}</Text>
-      </View>
-
-      <View className="flex-1">
-        <Text
-          className={`font-semibold text-base mb-1 ${
-            isDark ? 'text-white' : 'text-gray-900'
-          }`}
-        >
-          {item.title}
-        </Text>
-        <Text
-          className={`text-sm mb-1 ${
-            isDark ? 'text-gray-400' : 'text-gray-600'
-          }`}
-          numberOfLines={2}
-        >
-          {item.aiSummary ?? 'Sem resumo disponível'}
-        </Text>
-        <View className="flex-row items-center justify-between">
-          <Text
-            className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}
-          >
-            {new Date(item.updatedAt).toLocaleDateString('pt-BR')}
-          </Text>
-          <View
-            className="px-2 py-1 rounded-full"
-            style={{ backgroundColor: item.colorHex + '20' }}
-          >
+          <View className="flex-row items-center justify-between">
             <Text
-              className="text-xs capitalize"
-              style={{ color: item.colorHex }}
+              className={`text-xs ${
+                isDark ? 'text-gray-500' : 'text-gray-400'
+              }`}
             >
-              {item.aiCategory}
+              {new Date(item.updatedAt).toLocaleDateString('pt-BR')}
             </Text>
+            <View
+              className="px-2 py-1 rounded-full"
+              style={{ backgroundColor: item.colorHex + '20' }}
+            >
+              <Text
+                className="text-xs capitalize"
+                style={{ color: item.colorHex }}
+              >
+                {item.aiCategory}
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
-    </Pressable>
-  );
+
+        <View className="absolute top-2 right-2">
+          {isSelecting ? (
+            selected ? (
+              <CheckCircle2 size={20} color={isDark ? '#fff' : '#111'} />
+            ) : (
+              <Circle size={20} color={isDark ? '#fff' : '#111'} />
+            )
+          ) : null}
+        </View>
+      </Pressable>
+    );
+  };
 
   return (
     <View className="flex-1 px-4 pt-5" lightColor="#F6F6F9">
@@ -309,6 +400,24 @@ export default function NotesHome() {
         <Text className="font-title text-2xl">Tirar Anotações</Text>
 
         <View className="flex-row items-center gap-2">
+          {isSelecting && (
+            <>
+              <TouchableOpacity
+                onPress={deleteSelected}
+                className="p-2 rounded-lg"
+                style={{ backgroundColor: isDark ? '#3f1d1d' : '#fee2e2' }}
+              >
+                <Trash2 size={20} color={isDark ? '#ff6b6b' : '#dc2626'} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={cancelSelection}
+                className="p-2 rounded-lg"
+                style={{ backgroundColor: isDark ? '#2c2c2e' : '#f2f2f7' }}
+              >
+                <X size={20} color={isDark ? '#fff' : '#000'} />
+              </TouchableOpacity>
+            </>
+          )}
           <TouchableOpacity
             onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
             className="p-2 rounded-lg"
@@ -464,6 +573,7 @@ export default function NotesHome() {
           keyExtractor={(item) => item.id}
           estimatedItemSize={100}
           numColumns={1}
+          extraData={{ isSelecting, selectedIdsSize: selectedIds.size }}
           refreshControl={
             <RefreshControl
               refreshing={isLoading}

@@ -1,8 +1,13 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 import Feather from '@expo/vector-icons/build/Feather';
 import { useRouter } from 'expo-router';
-import { TouchableOpacity, useColorScheme, View } from 'react-native';
+import {
+  TouchableOpacity,
+  useColorScheme,
+  View,
+  Text,
+  ScrollView,
+} from 'react-native';
 import { useEditorStore } from './store';
 import {
   AppleIcon,
@@ -55,7 +60,7 @@ const IconComponents = {
 export function EditorHeader() {
   const colorScheme = useColorScheme();
   const { back } = useRouter();
-  const { backgroundColor, iconName, setOptionsBottomSheetOpen } =
+  const { backgroundColor, iconName, tags, setOptionsBottomSheetOpen } =
     useEditorStore();
 
   return (
@@ -86,6 +91,41 @@ export function EditorHeader() {
           backgroundColor: `${backgroundColor}CC`, // Adding CC for 80% opacity
         }}
       />
+
+      {/* Tags over header background */}
+      {tags && tags.length > 0 && (
+        <View className="absolute bottom-3 left-0 right-0 px-5">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {tags.slice(0, 3).map((tag) => (
+              <View
+                key={tag}
+                className="mr-2 px-3 py-1 rounded-full"
+                style={{ backgroundColor: 'rgba(255,255,255,0.25)' }}
+              >
+                <Text
+                  className="text-xs font-medium"
+                  style={{ color: '#ffffff' }}
+                >
+                  {tag}
+                </Text>
+              </View>
+            ))}
+            {tags.length > 3 && (
+              <View
+                className="px-3 py-1 rounded-full"
+                style={{ backgroundColor: 'rgba(255,255,255,0.25)' }}
+              >
+                <Text
+                  className="text-xs font-medium"
+                  style={{ color: '#ffffff' }}
+                >
+                  +{tags.length - 3}
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      )}
 
       <View className="absolute top-3 left-0 right-0 flex-row justify-between items-start pt-3 px-5">
         <TouchableOpacity

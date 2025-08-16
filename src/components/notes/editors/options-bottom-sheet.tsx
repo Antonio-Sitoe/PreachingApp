@@ -96,6 +96,8 @@ export function OptionsBottomSheet() {
     iconName,
     title,
     content,
+    tags,
+    setTags,
     setOptionsBottomSheetOpen,
     setBackgroundColor,
     setIconName,
@@ -104,7 +106,7 @@ export function OptionsBottomSheet() {
   // Tags state
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [newTagText, setNewTagText] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>(tags);
 
   // Available tags (could be from a global store or API)
   const [availableTags, setAvailableTags] = useState([
@@ -178,6 +180,8 @@ export function OptionsBottomSheet() {
   const handleCloseTagsModal = () => {
     setIsTagsModalOpen(false);
     setNewTagText('');
+    // Persist to global store on close
+    setTags(selectedTags);
   };
 
   const handleToggleTag = (tag: string) => {
@@ -187,9 +191,10 @@ export function OptionsBottomSheet() {
   };
 
   const handleAddNewTag = () => {
-    if (newTagText.trim() && !availableTags.includes(newTagText.trim())) {
-      setAvailableTags((prev) => [...prev, newTagText.trim()]);
-      setSelectedTags((prev) => [...prev, newTagText.trim()]);
+    const value = newTagText.trim();
+    if (value && !availableTags.includes(value)) {
+      setAvailableTags((prev) => [...prev, value]);
+      setSelectedTags((prev) => [...prev, value]);
       setNewTagText('');
     }
   };

@@ -8,6 +8,7 @@ interface EditorState {
   emoji: string;
   backgroundColor: string;
   iconName: string | null;
+  tags: string[];
 
   // UI state
   isOptionsBottomSheetOpen: boolean;
@@ -22,6 +23,9 @@ interface EditorState {
   setIconName: (iconName: string | null) => void;
   setOptionsBottomSheetOpen: (open: boolean) => void;
   setLastSaved: (date: Date) => void;
+  setTags: (tags: string[]) => void;
+  addTag: (tag: string) => void;
+  removeTag: (tag: string) => void;
   resetEditor: () => void;
 }
 
@@ -73,6 +77,7 @@ const initialState = {
   emoji: '📝',
   backgroundColor: NOTE_COLORS[0].color,
   iconName: null,
+  tags: [],
   isOptionsBottomSheetOpen: false,
   lastSaved: null,
 };
@@ -88,6 +93,13 @@ export const useEditorStore = create<EditorState>((set) => ({
   setIconName: (iconName) => set({ iconName }),
   setOptionsBottomSheetOpen: (open) => set({ isOptionsBottomSheetOpen: open }),
   setLastSaved: (date) => set({ lastSaved: date }),
+  setTags: (tags) => set({ tags }),
+  addTag: (tag) =>
+    set((state) =>
+      state.tags.includes(tag) ? state : { tags: [...state.tags, tag] }
+    ),
+  removeTag: (tag) =>
+    set((state) => ({ tags: state.tags.filter((t) => t !== tag) })),
 
   resetEditor: () => set(initialState),
 }));
