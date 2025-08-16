@@ -159,6 +159,7 @@ export function NotesEditor() {
             borderRadius: 10,
             marginHorizontal: 24,
             marginBottom: 24,
+            paddingRight: 20,
           },
         ]}
         flatContainerStyle={{

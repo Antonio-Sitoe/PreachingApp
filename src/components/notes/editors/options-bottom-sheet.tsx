@@ -6,13 +6,25 @@ import {
   ActionsheetDragIndicatorWrapper,
 } from '@/components/ui/actionsheet';
 import {
+  Modal,
+  ModalBackdrop,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+} from '@/components/ui/modal';
+
+import {
   View,
   Text,
   TouchableOpacity,
   ScrollView,
   Share,
   Alert,
+  TextInput,
 } from 'react-native';
+import { useState } from 'react';
 import { useColorScheme } from 'nativewind';
 import {
   useEditorStore,
@@ -46,6 +58,8 @@ import {
   Rocket,
   Share2,
   Trash2,
+  Tag,
+  Plus,
 } from 'lucide-react-native';
 
 // Icon component mapping
@@ -86,6 +100,21 @@ export function OptionsBottomSheet() {
     setBackgroundColor,
     setIconName,
   } = useEditorStore();
+
+  // Tags state
+  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
+  const [newTagText, setNewTagText] = useState('');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+
+  // Available tags (could be from a global store or API)
+  const [availableTags, setAvailableTags] = useState([
+    'Trabalho',
+    'Pessoal',
+    'Estudo',
+    'Ideia',
+    'Importante',
+    'Urgente',
+  ]);
 
   const handleColorSelect = (color: string) => {
     setBackgroundColor(color);
@@ -141,252 +170,469 @@ export function OptionsBottomSheet() {
     );
   };
 
+  // Tags functions
+  const handleOpenTagsModal = () => {
+    setIsTagsModalOpen(true);
+  };
+
+  const handleCloseTagsModal = () => {
+    setIsTagsModalOpen(false);
+    setNewTagText('');
+  };
+
+  const handleToggleTag = (tag: string) => {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  };
+
+  const handleAddNewTag = () => {
+    if (newTagText.trim() && !availableTags.includes(newTagText.trim())) {
+      setAvailableTags((prev) => [...prev, newTagText.trim()]);
+      setSelectedTags((prev) => [...prev, newTagText.trim()]);
+      setNewTagText('');
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setSelectedTags((prev) => prev.filter((tag) => tag !== tagToRemove));
+  };
+
   return (
-    <Actionsheet
-      isOpen={isOptionsBottomSheetOpen}
-      onClose={() => setOptionsBottomSheetOpen(false)}
-    >
-      <ActionsheetBackdrop />
-      <ActionsheetContent className={isDark ? 'bg-gray-900' : 'bg-white'}>
-        <ActionsheetDragIndicatorWrapper>
-          <ActionsheetDragIndicator />
-        </ActionsheetDragIndicatorWrapper>
+    <>
+      <Actionsheet
+        isOpen={isOptionsBottomSheetOpen}
+        onClose={() => setOptionsBottomSheetOpen(false)}
+      >
+        <ActionsheetBackdrop />
+        <ActionsheetContent className={isDark ? 'bg-gray-900' : 'bg-white'}>
+          <ActionsheetDragIndicatorWrapper>
+            <ActionsheetDragIndicator />
+          </ActionsheetDragIndicatorWrapper>
 
-        <View className="w-full p-6">
-          {/* Header */}
-          <View className="flex-row items-center mb-6">
-            <Palette
-              size={24}
-              color={isDark ? '#ffffff' : '#000000'}
-              className="mr-3"
-            />
-            <Text
-              className={`text-xl font-semibold ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              Opções da Anotação
-            </Text>
-          </View>
-
-          {/* Colors Section */}
-          <View className="mb-6">
-            <Text
-              className={`text-lg font-medium mb-4 ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              Cores de Fundo
-            </Text>
-
-            <View className="flex-row flex-wrap gap-3">
-              {NOTE_COLORS.map((colorOption) => {
-                const isSelected =
-                  backgroundColor ===
-                  (isDark ? colorOption.darkColor : colorOption.color);
-                const displayColor = isDark
-                  ? colorOption.darkColor
-                  : colorOption.color;
-
-                return (
-                  <TouchableOpacity
-                    key={colorOption.name}
-                    onPress={() => handleColorSelect(displayColor)}
-                    className="items-center"
-                  >
-                    <View
-                      className="w-12 h-12 rounded-full border-2 items-center justify-center mb-1"
-                      style={{
-                        backgroundColor: displayColor,
-                        borderColor: isSelected
-                          ? isDark
-                            ? '#ffffff'
-                            : '#000000'
-                          : 'transparent',
-                      }}
-                    >
-                      {isSelected && (
-                        <Check
-                          size={20}
-                          color={isSelected ? '#ffffff' : 'transparent'}
-                        />
-                      )}
-                    </View>
-                    <Text
-                      className={`text-xs ${
-                        isDark ? 'text-gray-300' : 'text-gray-600'
-                      }`}
-                    >
-                      {colorOption.name}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          </View>
-
-          {/* Icons Section */}
-          <View className="mb-6">
-            <Text
-              className={`text-lg font-medium mb-4 ${
-                isDark ? 'text-white' : 'text-gray-900'
-              }`}
-            >
-              Ícones
-            </Text>
-
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                paddingHorizontal: 4,
-                gap: 12,
-              }}
-            >
-              {/* Remove Icon Button */}
-              <TouchableOpacity
-                onPress={handleRemoveIcon}
-                className="items-center"
+          <View className="w-full p-6">
+            {/* Header */}
+            <View className="flex-row items-center mb-6">
+              <Palette
+                size={24}
+                color={isDark ? '#ffffff' : '#000000'}
+                className="mr-3"
+              />
+              <Text
+                className={`text-xl font-semibold ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
               >
-                <View
-                  className="w-12 h-12 rounded-full border-2 items-center justify-center mb-1"
-                  style={{
-                    backgroundColor:
-                      iconName === null
-                        ? isDark
-                          ? '#374151'
-                          : '#f3f4f6'
-                        : 'transparent',
-                    borderColor:
-                      iconName === null
-                        ? isDark
-                          ? '#ffffff'
-                          : '#000000'
-                        : isDark
-                        ? '#4b5563'
-                        : '#d1d5db',
-                  }}
-                >
-                  <X size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
-                </View>
-                <Text
-                  className={`text-xs ${
-                    isDark ? 'text-gray-300' : 'text-gray-600'
-                  }`}
-                >
-                  Remover
-                </Text>
-              </TouchableOpacity>
+                Opções da Anotação
+              </Text>
+            </View>
 
-              {/* Icon Options */}
-              {NOTE_ICONS.map((iconOption) => {
-                const IconComponent = IconComponents[iconOption];
-                const isSelected = iconName === iconOption;
+            {/* Colors Section */}
+            <View className="mb-6">
+              <Text
+                className={`text-lg font-medium mb-4 ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                Cores de Fundo
+              </Text>
 
-                return (
-                  <TouchableOpacity
-                    key={iconOption}
-                    onPress={() => handleIconSelect(iconOption)}
-                    className="items-center"
-                  >
-                    <View
-                      className="w-12 h-12 rounded-full border-2 items-center justify-center mb-1"
-                      style={{
-                        backgroundColor: isSelected
+              <View className="flex-row flex-wrap gap-3">
+                {NOTE_COLORS.map((colorOption) => {
+                  const isSelected =
+                    backgroundColor ===
+                    (isDark ? colorOption.darkColor : colorOption.color);
+                  const displayColor = isDark
+                    ? colorOption.darkColor
+                    : colorOption.color;
+
+                  return (
+                    <TouchableOpacity
+                      key={colorOption.name}
+                      onPress={() => handleColorSelect(displayColor)}
+                      className="items-center"
+                    >
+                      <View
+                        className="w-12 h-12 rounded-full border-2 items-center justify-center mb-1"
+                        style={{
+                          backgroundColor: displayColor,
+                          borderColor: isSelected
+                            ? isDark
+                              ? '#ffffff'
+                              : '#000000'
+                            : 'transparent',
+                        }}
+                      >
+                        {isSelected && (
+                          <Check
+                            size={20}
+                            color={isSelected ? '#ffffff' : 'transparent'}
+                          />
+                        )}
+                      </View>
+                      <Text
+                        className={`text-xs ${
+                          isDark ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {colorOption.name}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Icons Section */}
+            <View className="mb-6">
+              <Text
+                className={`text-lg font-medium mb-4 ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                Ícones
+              </Text>
+
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingHorizontal: 4,
+                  gap: 12,
+                }}
+              >
+                {/* Remove Icon Button */}
+                <TouchableOpacity
+                  onPress={handleRemoveIcon}
+                  className="items-center"
+                >
+                  <View
+                    className="w-12 h-12 rounded-full border-2 items-center justify-center mb-1"
+                    style={{
+                      backgroundColor:
+                        iconName === null
                           ? isDark
                             ? '#374151'
                             : '#f3f4f6'
                           : 'transparent',
-                        borderColor: isSelected
+                      borderColor:
+                        iconName === null
                           ? isDark
                             ? '#ffffff'
                             : '#000000'
                           : isDark
                           ? '#4b5563'
                           : '#d1d5db',
-                      }}
-                    >
-                      <IconComponent
-                        size={20}
-                        color={isDark ? '#ffffff' : '#000000'}
-                      />
-                    </View>
-                    <Text
-                      className={`text-xs ${
-                        isDark ? 'text-gray-300' : 'text-gray-600'
-                      }`}
-                    >
-                      {iconOption}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-          </View>
+                    }}
+                  >
+                    <X size={20} color={isDark ? '#9ca3af' : '#6b7280'} />
+                  </View>
+                  <Text
+                    className={`text-xs ${
+                      isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}
+                  >
+                    Remover
+                  </Text>
+                </TouchableOpacity>
 
-          {/* Action Buttons */}
-          <View
-            className="border-t pt-6"
-            style={{
-              borderTopColor: isDark ? '#374151' : '#e5e7eb',
-            }}
-          >
+                {/* Icon Options */}
+                {NOTE_ICONS.map((iconOption) => {
+                  const IconComponent = IconComponents[iconOption];
+                  const isSelected = iconName === iconOption;
+
+                  return (
+                    <TouchableOpacity
+                      key={iconOption}
+                      onPress={() => handleIconSelect(iconOption)}
+                      className="items-center"
+                    >
+                      <View
+                        className="w-12 h-12 rounded-full border-2 items-center justify-center mb-1"
+                        style={{
+                          backgroundColor: isSelected
+                            ? isDark
+                              ? '#374151'
+                              : '#f3f4f6'
+                            : 'transparent',
+                          borderColor: isSelected
+                            ? isDark
+                              ? '#ffffff'
+                              : '#000000'
+                            : isDark
+                            ? '#4b5563'
+                            : '#d1d5db',
+                        }}
+                      >
+                        <IconComponent
+                          size={20}
+                          color={isDark ? '#ffffff' : '#000000'}
+                        />
+                      </View>
+                      <Text
+                        className={`text-xs ${
+                          isDark ? 'text-gray-300' : 'text-gray-600'
+                        }`}
+                      >
+                        {iconOption}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            {/* Action Buttons */}
+            <View
+              className="border-t pt-6"
+              style={{
+                borderTopColor: isDark ? '#374151' : '#e5e7eb',
+              }}
+            >
+              <Text
+                className={`text-lg font-medium mb-4 ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                Ações
+              </Text>
+
+              <View className="flex-row justify-start gap-6">
+                {/* Tags Button */}
+                <TouchableOpacity
+                  onPress={handleOpenTagsModal}
+                  className="items-center"
+                >
+                  <View
+                    className="w-16 h-16 rounded-2xl items-center justify-center mb-2 relative"
+                    style={{
+                      backgroundColor: isDark ? '#374151' : '#f3f4f6',
+                    }}
+                  >
+                    <Tag size={24} color={isDark ? '#ffffff' : '#000000'} />
+                    {selectedTags.length > 0 && (
+                      <View
+                        className="absolute -top-1 -right-1 w-5 h-5 rounded-full items-center justify-center"
+                        style={{
+                          backgroundColor: isDark ? '#22c55e' : '#16a34a',
+                        }}
+                      >
+                        <Text className="text-white text-xs font-bold">
+                          {selectedTags.length}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text
+                    className={`text-sm font-medium ${
+                      isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}
+                  >
+                    Etiquetas
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Share Button */}
+                <TouchableOpacity
+                  onPress={handleShareAsText}
+                  className="items-center"
+                >
+                  <View
+                    className="w-16 h-16 rounded-2xl items-center justify-center mb-2"
+                    style={{
+                      backgroundColor: isDark ? '#374151' : '#f3f4f6',
+                    }}
+                  >
+                    <Share2 size={24} color={isDark ? '#ffffff' : '#000000'} />
+                  </View>
+                  <Text
+                    className={`text-sm font-medium ${
+                      isDark ? 'text-gray-300' : 'text-gray-600'
+                    }`}
+                  >
+                    Partilhar
+                  </Text>
+                </TouchableOpacity>
+
+                {/* Delete Button */}
+                <TouchableOpacity
+                  onPress={handleDeleteNote}
+                  className="items-center"
+                >
+                  <View
+                    className="w-16 h-16 rounded-2xl items-center justify-center mb-2"
+                    style={{
+                      backgroundColor: isDark ? '#7f1d1d' : '#fef2f2',
+                    }}
+                  >
+                    <Trash2 size={24} color={isDark ? '#ff6b6b' : '#dc2626'} />
+                  </View>
+                  <Text
+                    className={`text-sm font-medium ${
+                      isDark ? 'text-red-400' : 'text-red-600'
+                    }`}
+                  >
+                    Eliminar
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </ActionsheetContent>
+      </Actionsheet>
+
+      {/* Tags Modal */}
+      <Modal isOpen={isTagsModalOpen} onClose={handleCloseTagsModal}>
+        <ModalBackdrop />
+        <ModalContent className={isDark ? 'bg-gray-900' : 'bg-white'}>
+          <ModalHeader>
             <Text
-              className={`text-lg font-medium mb-4 ${
+              className={`text-xl font-semibold ${
                 isDark ? 'text-white' : 'text-gray-900'
               }`}
             >
-              Ações
+              Gerenciar Etiquetas
             </Text>
+            <ModalCloseButton onPress={handleCloseTagsModal}>
+              <X size={20} color={isDark ? '#ffffff' : '#000000'} />
+            </ModalCloseButton>
+          </ModalHeader>
 
-            <View className="flex-row justify-start gap-6">
-              {/* Share Button */}
-              <TouchableOpacity
-                onPress={handleShareAsText}
-                className="items-center"
-              >
-                <View
-                  className="w-16 h-16 rounded-2xl items-center justify-center mb-2"
-                  style={{
-                    backgroundColor: isDark ? '#374151' : '#f3f4f6',
-                  }}
-                >
-                  <Share2 size={24} color={isDark ? '#ffffff' : '#000000'} />
-                </View>
+          <ModalBody>
+            {/* Selected Tags */}
+            {selectedTags.length > 0 && (
+              <View className="mb-4">
                 <Text
-                  className={`text-sm font-medium ${
+                  className={`text-sm font-medium mb-2 ${
                     isDark ? 'text-gray-300' : 'text-gray-600'
                   }`}
                 >
-                  Partilhar
+                  Etiquetas Selecionadas
                 </Text>
-              </TouchableOpacity>
+                <View className="flex-row flex-wrap gap-2">
+                  {selectedTags.map((tag) => (
+                    <View
+                      key={tag}
+                      className="flex-row items-center px-3 py-1 rounded-full"
+                      style={{
+                        backgroundColor: isDark ? '#16a34a' : '#dcfce7',
+                      }}
+                    >
+                      <Text
+                        className={`text-sm font-medium mr-1 ${
+                          isDark ? 'text-white' : 'text-green-700'
+                        }`}
+                      >
+                        {tag}
+                      </Text>
+                      <TouchableOpacity onPress={() => handleRemoveTag(tag)}>
+                        <X size={14} color={isDark ? '#ffffff' : '#15803d'} />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
 
-              {/* Delete Button */}
-              <TouchableOpacity
-                onPress={handleDeleteNote}
-                className="items-center"
+            {/* Add New Tag */}
+            <View className="mb-4">
+              <Text
+                className={`text-sm font-medium mb-2 ${
+                  isDark ? 'text-gray-300' : 'text-gray-600'
+                }`}
               >
-                <View
-                  className="w-16 h-16 rounded-2xl items-center justify-center mb-2"
+                Adicionar Nova Etiqueta
+              </Text>
+              <View className="flex-row gap-2">
+                <TextInput
+                  className="flex-1 px-3 py-2 rounded-lg border"
                   style={{
-                    backgroundColor: isDark ? '#7f1d1d' : '#fef2f2',
+                    backgroundColor: isDark ? '#374151' : '#f9fafb',
+                    borderColor: isDark ? '#4b5563' : '#d1d5db',
+                    color: isDark ? '#ffffff' : '#111827',
+                  }}
+                  placeholder="Nome da etiqueta"
+                  placeholderTextColor={isDark ? '#9ca3af' : '#6b7280'}
+                  value={newTagText}
+                  onChangeText={setNewTagText}
+                />
+                <TouchableOpacity
+                  onPress={handleAddNewTag}
+                  className="px-4 py-3 rounded-lg items-center justify-center"
+                  style={{
+                    backgroundColor: isDark ? '#16a34a' : '#22c55e',
                   }}
                 >
-                  <Trash2 size={24} color={isDark ? '#ff6b6b' : '#dc2626'} />
-                </View>
-                <Text
-                  className={`text-sm font-medium ${
-                    isDark ? 'text-red-400' : 'text-red-600'
-                  }`}
-                >
-                  Eliminar
-                </Text>
-              </TouchableOpacity>
+                  <Plus size={16} color="#ffffff" />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </View>
-      </ActionsheetContent>
-    </Actionsheet>
+
+            {/* Available Tags */}
+            <View>
+              <Text
+                className={`text-sm font-medium mb-2 ${
+                  isDark ? 'text-gray-300' : 'text-gray-600'
+                }`}
+              >
+                Etiquetas Disponíveis
+              </Text>
+              <View className="flex-row flex-wrap gap-2">
+                {availableTags.map((tag) => {
+                  const isSelected = selectedTags.includes(tag);
+                  return (
+                    <TouchableOpacity
+                      key={tag}
+                      onPress={() => handleToggleTag(tag)}
+                      className="px-3 py-2 rounded-full border"
+                      style={{
+                        backgroundColor: isSelected
+                          ? isDark
+                            ? '#16a34a'
+                            : '#dcfce7'
+                          : 'transparent',
+                        borderColor: isDark ? '#374151' : '#d1d5db',
+                      }}
+                    >
+                      <Text
+                        className={`text-sm font-medium ${
+                          isSelected
+                            ? isDark
+                              ? 'text-white'
+                              : 'text-green-700'
+                            : isDark
+                            ? 'text-gray-300'
+                            : 'text-gray-600'
+                        }`}
+                      >
+                        {tag}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+          </ModalBody>
+
+          <ModalFooter>
+            <TouchableOpacity
+              onPress={handleCloseTagsModal}
+              className="flex-1 py-3 rounded-lg items-center justify-center"
+              style={{
+                backgroundColor: isDark ? '#374151' : '#f3f4f6',
+              }}
+            >
+              <Text
+                className={`font-medium ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                Concluído
+              </Text>
+            </TouchableOpacity>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
