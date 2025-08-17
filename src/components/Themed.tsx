@@ -14,11 +14,7 @@ import {
 import { useColorScheme } from 'nativewind';
 import Colors from '@/constants/Colors';
 import { forwardRef } from 'react';
-import {
-  StyleSheet,
-  Text as RNText,
-  type TextProps as RNTextProps,
-} from 'react-native';
+import { Text as RNText, type TextProps as RNTextProps } from 'react-native';
 
 type ThemeProps = {
   lightColor?: string;
@@ -51,61 +47,12 @@ export type ThemedTextProps = RNTextProps & {
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
 };
 
-export function Text({
-  style,
-  lightColor,
-  darkColor,
-  type = 'default',
-  ...rest
-}: ThemedTextProps) {
+export function Text(props: TextProps) {
+  const { style, lightColor, darkColor, ...otherProps } = props;
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
-  return (
-    <RNText
-      style={[
-        { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
-        style,
-      ]}
-      {...rest}
-    />
-  );
+  return <RNText style={[{ color }, style]} {...otherProps} />;
 }
-
-const styles = StyleSheet.create({
-  default: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontFamily: 'Inter_400Regular',
-  },
-  defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
-    fontFamily: 'Inter_600SemiBold',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
-    fontFamily: 'Inter_700Bold',
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    fontFamily: 'Inter_700Bold',
-  },
-  link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
-    fontFamily: 'Inter_400Regular',
-  },
-});
 
 export function View(props: ViewProps) {
   const { style, lightColor, darkColor, ...otherProps } = props;
