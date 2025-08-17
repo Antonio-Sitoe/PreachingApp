@@ -46,8 +46,6 @@ class NotesActions {
     const result = res[0];
     if (!result) return null;
 
-    console.log('result', result.tags);
-
     return {
       ...result.notes,
       tags: result.tags ? JSON.parse(result.tags)?.filter(Boolean) : [],

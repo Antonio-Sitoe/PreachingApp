@@ -19,7 +19,6 @@ export function NotesEditor() {
     if (id) {
       notesActions.getById(id).then((note) => {
         if (note) {
-          console.log('note', note);
           store.set({
             id: note.id,
             title: note.title,
