@@ -2,12 +2,12 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'Preaching App',
+    name: 'Preaching Assistant',
     slug: 'preachingApp',
     version: '1.0.2',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
-    scheme: 'preachingapp',
+    scheme: 'preachingApp',
     userInterfaceStyle: 'light',
     newArchEnabled: true,
     splash: {
@@ -16,19 +16,13 @@ export default {
       backgroundColor: '#ffffff',
     },
     assetBundlePatterns: ['**/*'],
-    ios: {
-      supportsTablet: true,
-      bundleIdentifier: 'com.antoniositoe533.preachingApp.dev',
-    },
+
     android: {
       adaptiveIcon: {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
-      "package": "com.antoniositoe533.preaching_app",
-      permissions: [
-        "VIBRATE"
-      ]
+      package: 'com.antoniositoe533.preachingApp.dev',
     },
     web: {
       bundler: 'metro',
