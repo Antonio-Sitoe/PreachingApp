@@ -1,5 +1,4 @@
-import { Pressable } from 'react-native';
-import { View, Text } from '@/components/Themed';
+import { Pressable, View, Text } from 'react-native';
 import { CheckCircle2, Circle } from 'lucide-react-native';
 import useTheme from '@/hooks/useTheme';
 import type { Note } from '@/database/schemas';
@@ -69,7 +68,7 @@ export function ListCard({
             {note.title || 'Sem título'}
           </Text>
           <Text
-            className={`font-text text-sm leading-5 ${
+            className={`font-text text-base leading-5 ${
               isDark ? 'text-gray-300' : 'text-gray-600'
             }`}
             numberOfLines={2}
@@ -88,7 +87,7 @@ export function ListCard({
 
         <View className="flex-row items-center justify-between">
           <Text
-            className={`font-text text-[10px] ${
+            className={`font-text text-sm ${
               isDark ? 'text-gray-500' : 'text-gray-400'
             }`}
           >
@@ -107,7 +106,7 @@ export function ListCard({
               style={{ backgroundColor: note.colorHex }}
             />
             <Text
-              className="font-text text-xs font-medium"
+              className="font-text text-sm font-medium"
               style={{ color: note.colorHex }}
             >
               {new Date(note.createdAt).toLocaleDateString('pt-BR', {
