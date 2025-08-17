@@ -1,0 +1,31 @@
+export const VARIANT_COLORS = [
+  { name: 'Default', label: 'Padrão', color: '#A1CEDC', darkColor: '#1D3D47' },
+  { name: 'Coral', label: 'Coral', color: '#FF6B6B', darkColor: '#CC4040' },
+  {
+    name: 'Turquoise',
+    label: 'Turquesa',
+    color: '#4ECDC4',
+    darkColor: '#3BA39B',
+  },
+  { name: 'Blue', label: 'Azul', color: '#45B7D1', darkColor: '#3692A8' },
+  { name: 'Mint', label: 'Menta', color: '#96CEB4', darkColor: '#77A591' },
+  { name: 'Yellow', label: 'Amarelo', color: '#FFEAA7', darkColor: '#CCB885' },
+  { name: 'Purple', label: 'Roxo', color: '#DDA0DD', darkColor: '#B080B0' },
+  {
+    name: 'Teal',
+    label: 'Verde-azulado',
+    color: '#98D8C8',
+    darkColor: '#79ADA0',
+  },
+  { name: 'Peach', label: 'Pêssego', color: '#F7DC6F', darkColor: '#C4B059' },
+  {
+    name: 'Lavender',
+    label: 'Lavanda',
+    color: '#BB8FCE',
+    darkColor: '#9570A5',
+  },
+  { name: 'Sky', label: 'Céu', color: '#85C1E9', darkColor: '#6A9ABA' },
+  { name: 'Green', label: 'Verde', color: '#328048', darkColor: '#1F4D2B' },
+  { name: 'Gray', label: 'Cinza', color: '#687076', darkColor: '#9BA1A6' },
+  { name: 'Violet', label: 'Violeta', color: '#6979F8', darkColor: '#5A6AE5' },
+];

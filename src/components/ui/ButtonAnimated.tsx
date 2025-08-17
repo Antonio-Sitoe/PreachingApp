@@ -4,6 +4,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import {
+  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   type TouchableOpacityProps,
@@ -12,6 +13,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
+import { useState, useCallback } from 'react';
 
 const styles = StyleSheet.create({
   button: {
@@ -25,10 +27,15 @@ const styles = StyleSheet.create({
 
 const ButtonAnimated = Animated.createAnimatedComponent(TouchableOpacity);
 
-export function AnimatedButton({ onPress }: TouchableOpacityProps) {
+export function AnimatedButton({
+  onPress,
+  isLoading,
+}: TouchableOpacityProps & { isLoading?: boolean }) {
   const { isDark } = useTheme();
+  const [isPressed, setIsPressed] = useState(false);
   const positionY = useSharedValue(0);
   const positionX = useSharedValue(0);
+
   const myCarButtonStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -37,6 +44,19 @@ export function AnimatedButton({ onPress }: TouchableOpacityProps) {
       ],
     };
   });
+
+  const handlePress = useCallback(
+    (event: any) => {
+      if (isPressed || isLoading || !onPress) return;
+
+      setIsPressed(true);
+      onPress(event);
+
+      // Reset do estado após um delay para permitir a ação ser processada
+      setTimeout(() => setIsPressed(false), 500);
+    },
+    [onPress, isPressed, isLoading]
+  );
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -64,15 +84,20 @@ export function AnimatedButton({ onPress }: TouchableOpacityProps) {
         ]}
       >
         <ButtonAnimated
-          onPress={onPress}
+          onPress={handlePress}
           style={[
             styles.button,
             {
               backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
             },
           ]}
+          disabled={isLoading || isPressed}
         >
-          <Ionicons color="white" name="add" size={32} />
+          {isLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Ionicons color="white" name="add" size={32} />
+          )}
         </ButtonAnimated>
       </Animated.View>
     </GestureDetector>

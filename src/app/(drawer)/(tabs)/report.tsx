@@ -48,7 +48,7 @@ const renderScene = SceneMap({
   years: ReportYears,
 });
 const routes = [
-  { key: 'list', title: 'Relatórios' },
+  { key: 'list', title: 'RELATÓRIOS' },
   { key: 'months', title: 'MÊS' },
   { key: 'years', title: 'ANOS' },
 ];

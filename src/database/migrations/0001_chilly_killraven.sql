@@ -1,1 +1,0 @@
-ALTER TABLE `student_availabilities` ADD `systemId` text DEFAULT '' NOT NULL;
