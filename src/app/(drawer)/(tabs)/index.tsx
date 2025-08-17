@@ -28,7 +28,13 @@ export default function TabOneScreen() {
   }
 
   return (
-    <>
+    <View
+      className="flex-1"
+      style={{
+        flex: 1,
+        backgroundColor: isDark ? Colors.dark.background : '#F6F6F9',
+      }}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{
@@ -56,6 +62,6 @@ export default function TabOneScreen() {
       </ScrollView>
       <AnimatedButton onPress={() => handleAddReport(undefined)} />
       <AddReportModal />
-    </>
+    </View>
   );
 }
