@@ -1,15 +1,21 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import type {
+  ViewStyle,
+  TextStyle,
+  NativeSyntheticEvent,
+  TextInputKeyPressEventData,
+} from 'react-native';
 import { Text as ThemedText } from '@/components/Themed';
 import { cortarString } from '@/utils/helper';
 
 interface EditableTitleProps {
   initialValue: string;
   onValueChange?: (value: string) => void;
-  style?: any;
-  textStyle?: any;
-  inputStyle?: any;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+  inputStyle?: TextStyle;
   placeholder?: string;
   multiline?: boolean;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
@@ -52,16 +58,18 @@ export function EditableTitle({
   const handleConfirm = () => {
     if (isEditing) {
       const newValue = tempValue.trim();
-      setValue(newValue || initialValue);
+      setValue(newValue);
       setIsEditing(false);
 
-      if (onValueChange && newValue && newValue !== value) {
+      if (onValueChange && newValue !== value) {
         onValueChange(newValue);
       }
     }
   };
 
-  const handleKeyPress = (event: any) => {
+  const handleKeyPress = (
+    event: NativeSyntheticEvent<TextInputKeyPressEventData>
+  ) => {
     if (event.nativeEvent.key === 'Enter' && !multiline) {
       handleConfirm();
     }
@@ -77,7 +85,7 @@ export function EditableTitle({
           onBlur={handleConfirm}
           onKeyPress={handleKeyPress}
           placeholder={placeholder}
-          placeholderTextColor={textColor + '80'} // 50% opacity
+          placeholderTextColor={textColor + '70'} // 50% opacity
           multiline={multiline}
           style={[
             styles.input,
@@ -100,9 +108,9 @@ export function EditableTitle({
     <TouchableOpacity onPress={handlePress} style={[styles.container, style]}>
       <ThemedText
         type={type}
-        style={[styles.text, textStyle, !value && styles.placeholder]}
+        style={[styles.text, textStyle, !value.trim() && styles.placeholder]}
       >
-        {cortarString(value || placeholder, 60)}
+        {value.trim() ? cortarString(value, 60) : placeholder}
       </ThemedText>
     </TouchableOpacity>
   );
@@ -110,6 +118,7 @@ export function EditableTitle({
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     minHeight: 32,
     justifyContent: 'center',
   },
@@ -121,15 +130,14 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 6,
-    fontSize: 32,
+    fontSize: 20,
     fontWeight: '600',
-    minHeight: 32,
+    minHeight: 20,
     textAlignVertical: 'center',
     borderWidth: 0,
   },
   placeholder: {
-    opacity: 0.6,
-    fontStyle: 'italic',
-    fontSize: 18,
+    opacity: 0.2,
+    fontSize: 20,
   },
 });

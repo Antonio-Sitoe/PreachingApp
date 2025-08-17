@@ -54,7 +54,7 @@ export default function StudentsHome() {
     <View className="flex-1 px-4" style={{ flex: 1 }} lightColor="#F6F6F9">
       <View className="my-3 mt-6 flex items-center" lightColor="transparent">
         <Text
-          className="font-subTitleIBM text-base"
+          className="font-titleIBM text-base"
           lightColor={Colors.light.tint}
         >
           MORADORES, INTERESSADOS E ESTUDANTES

@@ -1,4 +1,3 @@
-import React from 'react';
 import Feather from '@expo/vector-icons/build/Feather';
 import { useRouter } from 'expo-router';
 import {
@@ -9,59 +8,12 @@ import {
   ScrollView,
 } from 'react-native';
 import { useEditorStore } from './store';
-import {
-  AppleIcon,
-  BookOpen,
-  FileText,
-  PenTool,
-  Lightbulb,
-  Target,
-  Heart,
-  Star,
-  Coffee,
-  Music,
-  Camera,
-  Map as MapIcon,
-  Bookmark,
-  Calendar,
-  Clock,
-  Globe,
-  Home,
-  Briefcase,
-  ShoppingCart,
-  Gamepad2,
-  Rocket,
-} from 'lucide-react-native';
-
-// Icon component mapping
-const IconComponents = {
-  BookOpen,
-  FileText,
-  PenTool,
-  Lightbulb,
-  Target,
-  Heart,
-  Star,
-  Coffee,
-  Music,
-  Camera,
-  Map: MapIcon,
-  Bookmark,
-  Calendar,
-  Clock,
-  Globe,
-  Home,
-  Briefcase,
-  ShoppingCart,
-  Gamepad2,
-  Rocket,
-};
+import { Icon } from '@/components/ui/Icon';
 
 export function EditorHeader() {
   const colorScheme = useColorScheme();
   const { back } = useRouter();
-  const { backgroundColor, iconName, tags, setOptionsBottomSheetOpen } =
-    useEditorStore();
+  const { colorHex: backgroundColor, tags, set, coverIcon } = useEditorStore();
 
   return (
     <View
@@ -71,29 +23,23 @@ export function EditorHeader() {
       }}
     >
       <View className="absolute top-0 left-0 right-0 bottom-0 justify-center items-center">
-        {iconName && IconComponents[iconName] ? (
-          React.createElement(IconComponents[iconName], {
-            size: 100,
-            color: colorScheme === 'dark' ? '#ffffff' : '#000000',
-            style: { position: 'absolute' },
-          })
-        ) : (
-          <AppleIcon
+        {coverIcon && (
+          <Icon
+            name={coverIcon}
             size={100}
             color={colorScheme === 'dark' ? '#ffffff' : '#000000'}
-            style={{ position: 'absolute' }}
+            absoluteFill
           />
         )}
       </View>
       <View
         className="absolute top-0 left-0 right-0 bottom-0"
         style={{
-          backgroundColor: `${backgroundColor}CC`, // Adding CC for 80% opacity
+          backgroundColor: `${backgroundColor}CC`,
         }}
       />
 
-      {/* Tags over header background */}
-      {tags && tags.length > 0 && (
+      {tags && Array.isArray(tags) && tags.length > 0 && (
         <View className="absolute bottom-3 left-0 right-0 px-5">
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {tags.slice(0, 3).map((tag) => (
@@ -145,9 +91,14 @@ export function EditorHeader() {
           style={{
             backgroundColor: `rgba(0,0,0,0.2)`,
           }}
-          onPress={() => setOptionsBottomSheetOpen(true)}
+          onPress={() => set({ isOptionsBottomSheetOpen: true })}
         >
-          <Feather size={22} color={'#ffffff'} name="more-horizontal" />
+          <Feather
+            size={22}
+            color={'#ffffff'}
+            name="more-horizontal"
+            className="text-white"
+          />
         </TouchableOpacity>
       </View>
     </View>

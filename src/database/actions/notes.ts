@@ -148,6 +148,18 @@ class NotesActions {
     return { count: result[0].count };
   }
 
+  async getTagsByNoteId(noteId: string): Promise<string[]> {
+    const result = await db
+      .select({ name: tags.name })
+      .from(noteTags)
+      .leftJoin(tags, eq(noteTags.tagId, tags.id))
+      .where(eq(noteTags.noteId, noteId));
+
+    return result
+      .map((r) => r.name)
+      .filter((name): name is string => name !== null);
+  }
+
   async addTag(noteId: string, tagName: string) {
     const normalized = normalizeTagName(tagName);
     const now = getNowIso();
