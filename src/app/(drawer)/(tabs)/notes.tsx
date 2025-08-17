@@ -1,4 +1,6 @@
 import { View } from '@/components/Themed';
+import Logo from '@/assets/images/illo.svg';
+import LogoDark from '@/assets/images/darkill.svg';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { notesActions } from '@/database/actions';
 import { useRouter } from 'expo-router';
@@ -210,7 +212,7 @@ export default function NotesHome() {
   return (
     <View className="flex-1 px-4 pt-5" lightColor="#F6F6F9">
       <View className="mb-4 flex-row items-center justify-between mx-4">
-        <Text className="font-title text-3xl font-bold">Anotações</Text>
+        <Text className="font-titleIBM text-xl font-bold">Anotações</Text>
 
         <View className="flex-row items-center gap-2">
           {isSelecting && (
@@ -301,7 +303,7 @@ export default function NotesHome() {
         >
           {filteredNotes.length === 0 ? (
             <View className="flex-1 items-center justify-center py-20">
-              <Text className="opacity-60 text-center text-6xl mb-4">📝</Text>
+              {isDark ? <LogoDark /> : <Logo />}
               <Text className="font-title text-xl font-bold opacity-60 text-center mb-2">
                 {searchQuery || activeFilter !== 'all'
                   ? 'Nenhuma anotação encontrada'
@@ -338,7 +340,7 @@ export default function NotesHome() {
           renderItem={renderListItem}
           ListEmptyComponent={
             <View className="flex-1 items-center justify-center py-20">
-              <Text className="opacity-60 text-center text-6xl mb-4">📝</Text>
+              {isDark ? <LogoDark /> : <Logo />}
               <Text className="font-title text-xl font-bold opacity-60 text-center mb-2">
                 {searchQuery || activeFilter !== 'all'
                   ? 'Nenhuma anotação encontrada'

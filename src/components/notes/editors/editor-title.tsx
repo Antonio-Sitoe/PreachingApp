@@ -1,12 +1,11 @@
 import { View, Text, TouchableOpacity } from 'react-native';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import useTheme from '@/hooks/useTheme';
 import { EditableTitle } from './editable-title';
 import EmojiPicker, { type EmojiType } from 'rn-emoji-keyboard';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEditorStore } from './store';
 import { notesActions } from '@/database/actions';
-import debounce from 'lodash.debounce';
 
 export function EditorTitle() {
   const backgroundColor = useThemeColor({}, 'background');
@@ -33,14 +32,12 @@ export function EditorTitle() {
     [id, set]
   );
 
-  const debouncedSave = useMemo(() => debounce(autoSave, 1500), [autoSave]);
-
   const handleTitleChange = useCallback(
     (newTitle: string) => {
       set({ title: newTitle });
-      debouncedSave({ title: newTitle });
+      autoSave({ title: newTitle });
     },
-    [set, debouncedSave]
+    [set, autoSave]
   );
 
   const handleEmojiSelect = useCallback(
@@ -48,13 +45,13 @@ export function EditorTitle() {
       const newEmoji = emojiObject.emoji;
       set({ emoji: newEmoji });
       setShowEmojiPicker(false);
-      debouncedSave({ emoji: newEmoji });
+      autoSave({ emoji: newEmoji });
     },
-    [set, debouncedSave]
+    [set, autoSave]
   );
 
   return (
-    <View className={`px-4 flex-col py-3`} style={{ backgroundColor }}>
+    <View className={`px-4 flex-col py-4`} style={{ backgroundColor }}>
       <View className="flex-row items-center w-full">
         <TouchableOpacity
           onPress={() => setShowEmojiPicker(true)}
@@ -74,7 +71,7 @@ export function EditorTitle() {
       </View>
 
       {(lastSaved || isSaving) && (
-        <View className="flex-row items-center mt-2">
+        <View className="flex-row items-center mt-3">
           <View className="flex-row items-center">
             <View
               className="w-2 h-2 rounded-full mr-2"

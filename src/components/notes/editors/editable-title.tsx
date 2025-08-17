@@ -29,7 +29,6 @@ export function EditableTitle({
   inputStyle,
   placeholder = 'Toque para editar...',
   multiline = false,
-  type = 'title',
 }: EditableTitleProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(initialValue);
