@@ -107,7 +107,7 @@ export function EditableTitle({
   return (
     <TouchableOpacity onPress={handlePress} style={[styles.container, style]}>
       <ThemedText
-        type={type}
+        className="font-title"
         style={[styles.text, textStyle, !value.trim() && styles.placeholder]}
       >
         {value.trim() ? cortarString(value, 60) : placeholder}
@@ -123,6 +123,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   text: {
+    fontSize: 20,
+    fontFamily: 'Inter_600SemiBold',
     paddingVertical: 4,
     paddingHorizontal: 8,
   },

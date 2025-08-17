@@ -1,5 +1,4 @@
-import { Pressable } from 'react-native';
-import { View, Text } from '@/components/Themed';
+import { Pressable, View, Text } from 'react-native';
 import { CheckCircle2, Circle } from 'lucide-react-native';
 import type { Note } from '@/database/schemas';
 import { Icon } from '@/components/ui/Icon';

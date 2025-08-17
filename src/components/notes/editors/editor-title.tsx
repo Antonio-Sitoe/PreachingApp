@@ -83,7 +83,7 @@ export function EditorTitle() {
               }}
             />
             <Text
-              className={`text-xs ${
+              className={`text-sm ${
                 isDark ? 'text-gray-400' : 'text-gray-600'
               }`}
             >
