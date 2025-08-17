@@ -59,7 +59,7 @@ export function Icon({
           },
           style,
         ]}
-        className={cn('justify-center items-center', className)}
+        className={cn('justify-center items-center', className || '')}
       >
         {iconElement}
       </View>
@@ -80,7 +80,7 @@ export function BackgroundIcon({
   size = 100,
   color = '#000000',
   strokeWidth = 1,
-  className,
+  className = '',
   style,
   opacity = 0.1,
   backgroundColor,
@@ -108,10 +108,8 @@ export function BackgroundIcon({
   );
 }
 
-// Component for icon lists/grids
 export interface IconGridProps {
   icons: IconName[];
-  onIconPress?: (iconName: IconName) => void;
   selectedIcon?: IconName | null;
   iconSize?: number;
   itemSize?: number;
@@ -120,11 +118,10 @@ export interface IconGridProps {
 
 export function IconGrid({
   icons,
-  onIconPress,
   selectedIcon,
   iconSize = 24,
   itemSize = 48,
-  className,
+  className = '',
 }: IconGridProps) {
   return (
     <View
@@ -133,7 +130,7 @@ export function IconGrid({
         flexWrap: 'wrap',
         gap: 8,
       }}
-      className={cn('flex-row flex-wrap gap-2', className)}
+      className={cn('flex-row flex-wrap gap-2', className || '')}
     >
       {icons.map((iconName) => {
         const isSelected = selectedIcon === iconName;

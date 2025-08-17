@@ -13,7 +13,6 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
-import { useState, useCallback } from 'react';
 
 const styles = StyleSheet.create({
   button: {
@@ -32,10 +31,8 @@ export function AnimatedButton({
   isLoading,
 }: TouchableOpacityProps & { isLoading?: boolean }) {
   const { isDark } = useTheme();
-  const [isPressed, setIsPressed] = useState(false);
   const positionY = useSharedValue(0);
   const positionX = useSharedValue(0);
-
   const myCarButtonStyle = useAnimatedStyle(() => {
     return {
       transform: [
@@ -44,19 +41,6 @@ export function AnimatedButton({
       ],
     };
   });
-
-  const handlePress = useCallback(
-    (event: any) => {
-      if (isPressed || isLoading || !onPress) return;
-
-      setIsPressed(true);
-      onPress(event);
-
-      // Reset do estado após um delay para permitir a ação ser processada
-      setTimeout(() => setIsPressed(false), 500);
-    },
-    [onPress, isPressed, isLoading]
-  );
 
   const panGesture = Gesture.Pan()
     .onStart(() => {
@@ -84,14 +68,14 @@ export function AnimatedButton({
         ]}
       >
         <ButtonAnimated
-          onPress={handlePress}
+          onPress={onPress}
           style={[
             styles.button,
             {
               backgroundColor: isDark ? Colors.dark.tint : Colors.light.tint,
             },
           ]}
-          disabled={isLoading || isPressed}
+          disabled={isLoading}
         >
           {isLoading ? (
             <ActivityIndicator color="white" />
