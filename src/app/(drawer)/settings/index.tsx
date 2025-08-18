@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import Colors from '@/constants/Colors';
 import useTheme from '@/hooks/useTheme';
 import { BackButton } from '@/components/ui/BackButton';
+import { version } from '../../../../package.json';
 
 interface SettingItemProps {
   title: string;
@@ -187,7 +188,7 @@ export default function Settings() {
             <CardContent className="p-0">
               <SettingItem
                 title="Versão do Aplicativo"
-                subtitle="1.0.0"
+                subtitle={version}
                 icon={
                   <SettingsIcon
                     size={20}

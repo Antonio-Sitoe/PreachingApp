@@ -1,10 +1,11 @@
 import 'dotenv/config';
+import { version } from './package.json';
 
 export default {
   expo: {
     name: 'Preaching Assistant',
     slug: 'preachingApp',
-    version: '1.0.2',
+    version: version,
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     scheme: 'preachingApp',
@@ -22,7 +23,7 @@ export default {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
-      package: 'com.antoniositoe533.preachingApp.dev',
+      package: 'com.antoniositoe533.preachingApp',
     },
     web: {
       bundler: 'metro',
