@@ -7,12 +7,12 @@ export default {
     slug: 'preachingApp',
     version: version,
     orientation: 'portrait',
-    icon: './assets/images/icon.png',
+    icon: './src/assets/images/icon.png',
     scheme: 'preachingApp',
     userInterfaceStyle: 'light',
     newArchEnabled: true,
     splash: {
-      image: './assets/images/splash.png',
+      image: './src/assets/images/splash.png',
       resizeMode: 'contain',
       backgroundColor: '#ffffff',
     },
@@ -20,7 +20,7 @@ export default {
 
     android: {
       adaptiveIcon: {
-        foregroundImage: './assets/images/adaptive-icon.png',
+        foregroundImage: './src/assets/images/adaptive-icon.png',
         backgroundColor: '#ffffff',
       },
       package: 'com.antoniositoe533.preachingApp',
@@ -28,7 +28,7 @@ export default {
     web: {
       bundler: 'metro',
       output: 'static',
-      favicon: './assets/images/favicon.png',
+      favicon: './src/assets/images/favicon.png',
     },
     plugins: [
       [
@@ -40,7 +40,7 @@ export default {
       [
         'expo-notifications',
         {
-          icon: './assets/images/icon.png',
+          icon: './src/assets/images/icon.png',
           color: '#ffffff',
           defaultChannel: 'monthly-reminders'
         }

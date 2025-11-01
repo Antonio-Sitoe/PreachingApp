@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 599.78 599.78">
+  <defs>
+    <style>
+      .cls-1 {
+        letter-spacing: 0em;
+      }
+
+      .cls-2 {
+        fill: #fff;
+        font-family: Nunito-SemiBold, Nunito;
+        font-size: 40px;
+        font-weight: 600;
+      }
+
+      .cls-3 {
+        letter-spacing: 0em;
+      }
+
+      .cls-4 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-5 {
+        letter-spacing: 0em;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="599.78" y1="299.89" x2="0" y2="299.89" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e8d9c5"/>
+      <stop offset=".29" stop-color="#d3a185"/>
+      <stop offset=".55" stop-color="#ce9276"/>
+      <stop offset="1" stop-color="#c47a5d"/>
+    </linearGradient>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-4" width="599.78" height="599.78" rx="62.6" ry="62.6"/>
+      <text class="cls-2" transform="translate(42.04 532.36)"><tspan class="cls-1" x="0" y="0">Pr</tspan><tspan x="39.92" y="0">eaching </tspan><tspan class="cls-5" x="191.92" y="0">A</tspan><tspan x="221" y="0">ssi</tspan><tspan class="cls-3" x="269.24" y="0">s</tspan><tspan x="288.32" y="0">tant</tspan></text>
+    </g>
+  </g>
+</svg>
