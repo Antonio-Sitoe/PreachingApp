@@ -1,18 +1,12 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { useToastStore, type ToastAction } from '@/hooks/use-toast';
+import { cn } from '@/utils/cn';
 import * as React from 'react';
 import { Pressable, View, type ViewProps } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { create } from 'zustand';
-
-type ToastAction = {
-  label: string;
-  onPress: () => void;
-  icon?: AppIconName;
-};
 
 type ToastProps = ViewProps & {
   message: string;
@@ -45,35 +39,6 @@ function Toast({ message, action, className, ...props }: ToastProps) {
       ) : null}
     </View>
   );
-}
-
-type ToastOptions = {
-  message: string;
-  action?: ToastAction;
-
-  duration?: number;
-};
-
-type ToastState = {
-  current: (ToastOptions & { id: number }) | null;
-  show: (options: ToastOptions) => void;
-  hide: () => void;
-};
-
-let nextId = 0;
-
-const useToastStore = create<ToastState>((set) => ({
-  current: null,
-  show: (options) => set({ current: { ...options, id: ++nextId } }),
-  hide: () => set({ current: null }),
-}));
-
-function showToast(options: ToastOptions) {
-  useToastStore.getState().show(options);
-}
-
-function hideToast() {
-  useToastStore.getState().hide();
 }
 
 type ToastHostProps = {
@@ -129,5 +94,7 @@ function ToastHost({ bottomOffset }: ToastHostProps) {
   );
 }
 
-export { hideToast, showToast, Toast, ToastHost };
-export type { ToastAction, ToastOptions, ToastProps };
+export { hideToast, showToast } from '@/hooks/use-toast';
+export { Toast, ToastHost };
+export type { ToastAction, ToastOptions } from '@/hooks/use-toast';
+export type { ToastProps };
