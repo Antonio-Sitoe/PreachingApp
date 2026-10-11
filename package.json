@@ -1,0 +1,95 @@
+{
+  "name": "preaching-assistant",
+  "main": "expo-router/entry",
+  "version": "1.0.4",
+  "scripts": {
+    "dev": "expo start -c",
+    "android": "npx expo run android",
+    "delivery": "npx expo run:android --variant release",
+    "ios": "expo start -c --ios",
+    "web": "expo start -c --web",
+    "clean": "rm -rf .expo node_modules",
+    "db:generate": "drizzle-kit generate",
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@expo/ui": "~57.0.22",
+    "@gorhom/bottom-sheet": "^5.2.14",
+    "@react-native-community/datetimepicker": "9.1.0",
+    "@rn-primitives/checkbox": "^1.5.2",
+    "@rn-primitives/portal": "~1.5.3",
+    "@rn-primitives/select": "^1.5.2",
+    "@rn-primitives/slot": "^1.5.2",
+    "@shopify/flash-list": "2.0.2",
+    "@tanstack/react-query": "^5.104.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "dayjs": "^1.11.23",
+    "dotenv": "^18.0.7",
+    "drizzle-orm": "^0.45.4",
+    "expo": "~57.0.27",
+    "expo-constants": "~57.0.21",
+    "expo-drizzle-studio-plugin": "^0.2.1",
+    "expo-font": "~57.0.4",
+    "expo-image-picker": "~57.0.20",
+    "expo-linking": "~57.0.12",
+    "expo-notifications": "~57.0.22",
+    "expo-router": "~57.0.25",
+    "expo-splash-screen": "~57.0.9",
+    "expo-sqlite": "~57.0.4",
+    "expo-status-bar": "~57.0.1",
+    "expo-system-ui": "~57.0.4",
+    "lucide-react-native": "^1.21.0",
+    "nativewind": "^4.2.6",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "react-native": "0.86.3",
+    "react-native-gesture-handler": "~2.32.0",
+    "react-native-get-random-values": "~1.11.0",
+    "react-native-mmkv": "^4.3.2",
+    "react-native-nitro-modules": "^0.37.1",
+    "react-native-pell-rich-editor": "^1.10.0",
+    "react-native-reanimated": "4.5.1",
+    "react-native-safe-area-context": "~5.7.0",
+    "react-native-screens": "~4.26.0",
+    "react-native-snackbar": "^3.0.1",
+    "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.0",
+    "react-native-webview": "13.16.1",
+    "react-native-worklets": "0.10.1",
+    "rn-emoji-keyboard": "^1.7.0",
+    "tailwind-merge": "^3.5.0",
+    "tailwindcss": "^3.4.14",
+    "tailwindcss-animate": "^1.0.7",
+    "uuid": "^14.0.3",
+    "zod": "^4.6.5",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@types/react": "~19.2.10",
+    "babel-plugin-inline-import": "^3.0.0",
+    "drizzle-kit": "^0.31.11",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "react-native-svg-transformer": "^1.5.3",
+    "typescript": "~6.0.3"
+  },
+  "overrides": {
+    "xcode": {
+      "uuid": "^11.1.1"
+    },
+    "@esbuild-kit/core-utils": {
+      "esbuild": "^0.25.12"
+    },
+    "tailwindcss": {
+      "postcss-selector-parser": "^7.1.6"
+    },
+    "postcss-nested": {
+      "postcss-selector-parser": "^7.1.6"
+    }
+  },
+  "private": true
+}
