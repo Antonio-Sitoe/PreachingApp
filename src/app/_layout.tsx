@@ -5,8 +5,8 @@ import '@/app/global.css';
 import { DrizzleStudio } from '@/components/drizzle-studio';
 import { ToastHost } from '@/components/ui/toast';
 import { FONTS } from '@/lib/fonts';
-import { NotificationProvider } from '@/lib/notification-provider';
-import { OnboardingProvider, useOnboarding } from '@/lib/onboarding';
+import { NotificationProvider } from '@/contexts/notification-provider';
+import { OnboardingProvider, useOnboarding } from '@/contexts/onboarding';
 import { NAV_THEME } from '@/lib/theme';
 import { db } from '@/database/db';
 import migrations from '@/database/migrations/migrations';
@@ -88,10 +88,7 @@ function RootNavigator({ colorScheme }: { colorScheme: 'light' | 'dark' | undefi
           <Stack.Screen name="welcome" options={{ headerShown: false }} />
         </Stack.Protected>
         <Stack.Protected guard={completed}>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="note/[id]" options={{ headerShown: false }} />
-          <Stack.Screen name="notifications" options={{ headerShown: false }} />
-          <Stack.Screen name="report" options={{ title: 'Relatório' }} />
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack.Protected>
         {/* A conta abre-se tanto na primeira abertura como depois, a partir do app. */}
         <Stack.Screen name="auth" options={{ headerShown: false }} />
