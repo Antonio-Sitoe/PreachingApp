@@ -1,45 +1,71 @@
-import { NOTE_COLORS } from '@/components/notes/colors';
-import type { CoverIconName } from '@/components/notes/cover-icons';
+import { emptyParagraph, type Block, type InlineStyle } from '@/components/notes/body';
+import { DEFAULT_NOTE_COLOR } from '@/components/notes/colors';
+import type { LinkableStudent } from '@/database/actions';
 import type { Note } from '@/database/schemas';
 import { create } from 'zustand';
+
+export type PickerMode =
+  | { kind: 'link' }
+
+  | { kind: 'mention'; blockId: string | null; at: number | null };
 
 type EditorValues = {
   id: string;
   title: string;
-  content: string;
-  emoji: string;
-  colorHex: string;
-  coverIcon: CoverIconName | null;
-  contentHtml: string;
-  isArchived: number;
-  orderIndex: number;
-  deletedAt: string | null;
+  body: string;
+  blocks: Block[];
+  tagId: string | null;
+  color: string;
+  studentId: string | null;
+
+  student: LinkableStudent | null;
+  createdAt: string | null;
+  updatedAt: string | null;
   syncStatus: Note['syncStatus'];
   remoteId: string | null;
-  tags: string[];
-  isOptionsBottomSheetOpen: boolean;
-  lastSaved: Date | null;
+  focusedId: string | null;
+
+  selection: { start: number; end: number };
+
+  typingStyles: Partial<Record<InlineStyle, boolean>>;
+
+  pendingCursor: { id: string; position: number } | null;
+  isDetailsOpen: boolean;
+  isInsertOpen: boolean;
+
+  isTagsOpen: boolean;
+  picker: PickerMode | null;
+  confirmDelete: boolean;
+
+  isDirty: boolean;
   isSaving: boolean;
 };
 
-const initialState: EditorValues = {
+const initialState = (): EditorValues => ({
   id: '',
   title: '',
-  content: '',
-  emoji: '📝',
-  colorHex: NOTE_COLORS[0].color,
-  coverIcon: null,
-  contentHtml: '',
-  isArchived: 0,
-  orderIndex: 0,
-  deletedAt: null,
+  body: '',
+  blocks: [emptyParagraph()],
+  tagId: null,
+  color: DEFAULT_NOTE_COLOR,
+  studentId: null,
+  student: null,
+  createdAt: null,
+  updatedAt: null,
   syncStatus: 'pending',
   remoteId: null,
-  tags: [],
-  isOptionsBottomSheetOpen: false,
-  lastSaved: null,
+  focusedId: null,
+  selection: { start: 0, end: 0 },
+  typingStyles: {},
+  pendingCursor: null,
+  isDetailsOpen: false,
+  isInsertOpen: false,
+  isTagsOpen: false,
+  picker: null,
+  confirmDelete: false,
+  isDirty: false,
   isSaving: false,
-};
+});
 
 type EditorState = EditorValues & {
   set: (values: Partial<EditorValues>) => void;
@@ -47,7 +73,7 @@ type EditorState = EditorValues & {
 };
 
 export const useEditorStore = create<EditorState>((set) => ({
-  ...initialState,
+  ...initialState(),
   set: (values) => set(values),
-  resetEditor: () => set(initialState),
+  resetEditor: () => set(initialState()),
 }));

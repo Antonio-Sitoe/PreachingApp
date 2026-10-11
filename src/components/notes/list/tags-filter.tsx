@@ -1,6 +1,27 @@
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
-import { Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView } from 'react-native';
+
+function TagChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+      onPress={onPress}
+      className={cn(
+        'h-9 justify-center rounded-full border px-3.5',
+        active ? 'border-primary bg-secondary' : 'border-border bg-card active:bg-secondary'
+      )}>
+      <Text
+        className={cn(
+          'text-[13px] leading-[18px]',
+          active ? 'font-display-semibold text-primary-strong' : 'font-display-medium text-foreground'
+        )}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 type TagFilter = {
   id: string;
@@ -17,29 +38,25 @@ function TagsFilter({ tags, activeFilter, onFilterChange }: TagsFilterProps) {
   const filters = [{ id: 'all', name: 'Todas' }, ...tags];
 
   return (
+    // Uma só linha que desliza para o lado. O -mx-4 leva-a até às bordas do ecrã.
     <ScrollView
       horizontal
+      role="group"
+      aria-label="Filtrar por etiqueta"
       showsHorizontalScrollIndicator={false}
-      contentContainerClassName="gap-2 px-4"
-      className="mb-3 max-h-11">
-      {filters.map((filter) => {
-        const active = activeFilter === filter.id;
-        return (
-          <Pressable
-            key={filter.id}
-            accessibilityRole="button"
-            accessibilityState={{ selected: active }}
-            onPress={() => onFilterChange(filter.id)}
-            className={cn('rounded-full px-4 py-2', active ? 'bg-primary' : 'bg-muted')}>
-            <Text variant="labelM" className={active ? 'text-primary-foreground' : 'text-foreground'}>
-              {filter.name}
-            </Text>
-          </Pressable>
-        );
-      })}
-      <View className="w-2" />
+      keyboardShouldPersistTaps="handled"
+      className="-mx-4 grow-0"
+      contentContainerClassName="gap-2 px-4">
+      {filters.map((filter) => (
+        <TagChip
+          key={filter.id}
+          label={filter.name}
+          active={activeFilter === filter.id}
+          onPress={() => onFilterChange(filter.id)}
+        />
+      ))}
     </ScrollView>
   );
 }
 
-export { TagsFilter };
+export { TagChip, TagsFilter };

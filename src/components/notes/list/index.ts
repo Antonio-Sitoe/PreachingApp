@@ -1,3 +1,2 @@
-export { GridCard } from './grid-card';
 export { ListCard } from './list-card';
-export { TagsFilter } from './tags-filter';
+export { TagChip, TagsFilter } from './tags-filter';

@@ -155,6 +155,7 @@ export default function NotesScreen() {
     notesQuery.isLoading && notes.length === 0 ? null : (
       <View className="pb-10 pt-16">
         <EmptyState
+          className="bg-transparent"
           icon="notes"
           title={filtered ? 'Nenhuma nota encontrada' : 'Ainda não há notas'}
           description={

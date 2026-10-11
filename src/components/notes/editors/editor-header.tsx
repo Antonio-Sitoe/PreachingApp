@@ -41,7 +41,6 @@ function DetailRow({
   );
 }
 
-/** Voltar, estado da gravação e detalhes. Fica fixo por cima do texto. */
 function EditorTopBar() {
   const router = useRouter();
   const busy = useEditorStore((state) => state.isSaving || state.isDirty);
@@ -72,7 +71,6 @@ function EditorTopBar() {
   );
 }
 
-/** Título, datas, etiqueta e estudante. Rola com o texto. */
 function EditorHeader({ autoFocusTitle }: { autoFocusTitle: boolean }) {
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme ?? 'light'];

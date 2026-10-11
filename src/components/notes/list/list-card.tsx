@@ -1,63 +1,97 @@
+import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
+import { NOTE_INK, NOTE_INK_MUTED } from '@/components/notes/colors';
 import { formatNoteDay } from '@/components/notes/format';
-import { previewText } from '@/components/notes/text';
-import { THEME } from '@/lib/theme';
-import type { Note } from '@/database/schemas';
-import { Check } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
+import type { NoteListItem } from '@/database/actions';
+import { useMemo, useRef } from 'react';
 import { Pressable, View } from 'react-native';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import ReanimatedSwipeable, {
+  type SwipeableMethods,
+} from 'react-native-gesture-handler/ReanimatedSwipeable';
 
 type ListCardProps = {
-  note: Note;
-  isSelecting: boolean;
-  isSelected: boolean;
+  note: NoteListItem;
   onPress: () => void;
-  onLongPress: () => void;
+
+  onDelete: (close: () => void) => void;
+
+  onOpen: (close: () => void) => void;
 };
 
-function ListCard({ note, isSelecting, isSelected, onPress, onLongPress }: ListCardProps) {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme ?? 'light'];
+function ListCard({ note, onPress, onDelete, onOpen }: ListCardProps) {
+  const swipeable = useRef<SwipeableMethods>(null);
+  const open = useRef(false);
+  const day = formatNoteDay(note.createdAt);
+  const meta = note.tagName ? `${note.tagName} · ${day}` : day;
+  const title = note.title.trim() || 'Sem título';
+
+  const close = () => swipeable.current?.close();
+
+  const deleteRef = useRef(onDelete);
+  deleteRef.current = onDelete;
+  const deleteTap = useMemo(
+    () =>
+      Gesture.Tap()
+        .runOnJS(true)
+        .onEnd((_event, success) => {
+          if (success) deleteRef.current(() => swipeable.current?.close());
+        }),
+    []
+  );
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ selected: isSelected }}
-      onPress={onPress}
-      onLongPress={onLongPress}
-      delayLongPress={300}
-      className="mb-3 w-full flex-row items-center rounded-lg bg-card p-4 active:bg-secondary">
-      <View
-        className="mr-4 size-14 items-center justify-center rounded-lg"
-        style={{ backgroundColor: note.colorHex }}>
-        <Text className="text-2xl">{note.emoji || '📝'}</Text>
-      </View>
+    <ReanimatedSwipeable
+      ref={swipeable}
+      friction={2}
+      rightThreshold={40}
+      overshootRight={false}
+      requireExternalGestureToFail={deleteTap}
+      containerStyle={{ marginBottom: 12 }}
+      onSwipeableWillOpen={() => {
+        open.current = true;
+        onOpen(close);
+      }}
+      onSwipeableWillClose={() => {
+        open.current = false;
+      }}
+      renderRightActions={() => (
+        <GestureDetector gesture={deleteTap}>
+          <View
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel={`Apagar ${title}`}
+            onAccessibilityTap={() => onDelete(close)}
+            className="ml-2 w-[88px] items-center justify-center gap-1 rounded-lg bg-destructive">
+            <AppIcon name="trash" size={20} className="text-destructive-foreground" />
+            <Text variant="labelS" className="text-destructive-foreground">
+              Apagar
+            </Text>
+          </View>
+        </GestureDetector>
+      )}>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={`${title}. ${meta}`}
+        accessibilityActions={[{ name: 'delete', label: 'Apagar nota' }]}
+        onAccessibilityAction={({ nativeEvent }) => {
+          if (nativeEvent.actionName === 'delete') onDelete(close);
+        }}
+        onPress={() => {
 
-      <View className="flex-1 pr-2">
-        <Text variant="titleM" numberOfLines={1}>
-          {note.title || 'Sem título'}
+          if (open.current) close();
+          else onPress();
+        }}
+        className="gap-2.5 rounded-lg border border-border p-4 active:opacity-80"
+        style={{ backgroundColor: note.color }}>
+        <Text variant="titleM" numberOfLines={2} style={{ color: NOTE_INK }}>
+          {title}
         </Text>
-        <Text variant="bodyS" className="mt-1 text-muted-foreground" numberOfLines={2}>
-          {previewText(note.contentHtml, 100)}
+        <Text variant="bodyS" style={{ color: NOTE_INK_MUTED }}>
+          {meta}
         </Text>
-        <Text variant="labelS" className="mt-2 text-subtle">
-          {formatNoteDay(note.updatedAt)}
-        </Text>
-      </View>
-
-      {isSelecting ? (
-        <View
-          className="size-6 items-center justify-center rounded-full border"
-          style={{
-            backgroundColor: isSelected ? theme.foreground : 'transparent',
-            borderColor: theme.foreground,
-          }}>
-          {isSelected ? <Check size={14} color={theme.background} /> : null}
-        </View>
-      ) : (
-        <View className="size-2 rounded-full" style={{ backgroundColor: note.colorHex }} />
-      )}
-    </Pressable>
+      </Pressable>
+    </ReanimatedSwipeable>
   );
 }
 
