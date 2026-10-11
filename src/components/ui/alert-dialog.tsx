@@ -14,29 +14,18 @@ const TONES = {
 
 type AlertDialogProps = {
   open: boolean;
-  /** Chamado no botão de voltar do Android. Sem ele, o diálogo só fecha pelos botões. */
+
   onClose?: () => void;
   icon: AppIconName;
   tone?: keyof typeof TONES;
   title: string;
   description?: string;
-  /** Os botões, de cima para baixo: primeiro o principal. */
+
   children: React.ReactNode;
-  /** Variáveis de tema para o conteúdo, por exemplo `LIGHT_THEME_VARS` nos ecrãs sempre claros. */
+
   themeVars?: Record<string, string>;
 };
 
-/**
- * Diálogo de aviso ao centro do ecrã (canvas, artboards "Entrar, credenciais erradas",
- * "Código incorrecto" e "O código expirou"). Fundo escurecido a 60%, cartão com
- * ícone num círculo de 56 px, título em Título M, texto e botões.
- *
- * @example
- * <AlertDialog open={erro} icon="alert" tone="destructive" title="Email ou senha incorrectos"
- *   description="Confirma os dados e tenta de novo.">
- *   <Button onPress={fechar}><Text>Tentar de novo</Text></Button>
- * </AlertDialog>
- */
 function AlertDialog({
   open,
   onClose,

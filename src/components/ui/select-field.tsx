@@ -24,18 +24,11 @@ type SelectFieldProps<Value extends string> = {
   value: Value;
   options: readonly SelectOption<Value>[];
   onChange: (value: Value) => void;
-  /** Título da folha com as opções. Por omissão, o rótulo do campo. */
+
   sheetTitle?: string;
   containerClassName?: string;
 };
 
-/**
- * Campo de escolha (canvas, artboard "Configuração inicial 1 de 2": "Língua").
- * Parece um campo de texto com uma seta; ao tocar abre o bottom sheet com as opções.
- *
- * @example
- * <SelectField label="Língua" value={lingua} options={LANGUAGE_OPTIONS} onChange={setLingua} />
- */
 function SelectField<Value extends string>({
   label,
   value,

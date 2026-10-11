@@ -4,28 +4,17 @@ import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
-/** Largura máxima do conteúdo. Em tablets o ecrã fica centrado em vez de esticar. */
 export const CONTENT_MAX_WIDTH = 640;
 
 type ScreenProps = {
   children: React.ReactNode;
-  /**
-   * Botão flutuante, alinhado ao canto do conteúdo (não à borda de um tablet).
-   * Passa o `Fab` sem `floating`: o ecrã trata da posição.
-   */
+
   fab?: React.ReactElement<React.ComponentProps<typeof Fab>>;
-  /**
-   * Áreas seguras. Num ecrã com header do Stack usa `['left', 'right']`,
-   * porque o header já trata do topo.
-   */
+
   edges?: readonly Edge[];
   contentClassName?: string;
 };
 
-/**
- * Ecrã com scroll que se adapta ao tamanho do dispositivo:
- * telemóvel estreito, paisagem (recortes laterais) e tablet (coluna centrada).
- */
 function Screen({
   children,
   fab,

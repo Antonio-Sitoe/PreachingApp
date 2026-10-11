@@ -4,13 +4,6 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Platform, Pressable } from 'react-native';
 
-/**
- * Botão só com ícone. Precisa sempre de `accessibilityLabel`, porque não tem texto.
- *
- * - `outline`: círculo de 44 px com contorno, como o "visto" do cartão de pessoa.
- * - `ghost`: 44 px sem fundo, para cabeçalhos (voltar, fechar).
- * - `fab`: botão de 58 px com sombra. Para o botão flutuante usa o `Fab` de '@/components/ui/fab'.
- */
 const iconButtonVariants = cva(
   cn(
     'shrink-0 items-center justify-center rounded-full',
@@ -57,9 +50,9 @@ type IconButtonProps = Omit<React.ComponentProps<typeof Pressable>, 'children'> 
   React.RefAttributes<typeof Pressable> &
   VariantProps<typeof iconButtonVariants> & {
     icon: AppIconName;
-    /** Obrigatório: o que o botão faz, para leitores de ecrã. */
+
     accessibilityLabel: string;
-    /** Classe do ícone, para mudar a cor. */
+
     iconClassName?: string;
   };
 

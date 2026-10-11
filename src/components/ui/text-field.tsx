@@ -10,7 +10,6 @@ type FieldLabelProps = {
   nativeID?: string;
 };
 
-/** Rótulo de um campo de formulário: Red Hat Display Medium 14/19. */
 function FieldLabel({ children, nativeID }: FieldLabelProps) {
   return (
     <Text nativeID={nativeID} className="font-display-medium text-[14px] leading-[19px]">
@@ -24,7 +23,6 @@ type FieldErrorProps = {
   nativeID?: string;
 };
 
-/** Mensagem de erro de um campo: ícone de alerta e texto a perigo (canvas, "Criar conta, campos com erro"). */
 function FieldError({ children, nativeID }: FieldErrorProps) {
   return (
     <View className="flex-row gap-1.5" role="alert">
@@ -38,22 +36,14 @@ function FieldError({ children, nativeID }: FieldErrorProps) {
 
 type TextFieldProps = TextInputProps & {
   label: string;
-  /** Mensagem de erro por baixo do campo. Também pinta a borda a perigo. */
+
   error?: string;
-  /** Elemento dentro do campo, encostado à direita (44 × 44), por exemplo o botão de mostrar a senha. */
+
   right?: React.ReactNode;
-  /** Classe do contentor (rótulo + campo). */
+
   containerClassName?: string;
 };
 
-/**
- * Campo de texto com rótulo (canvas, artboards "Configuração inicial 1 de 2" e "Criar conta").
- * 52 px de altura, borda de 1 px, cantos de 10 px, texto em Corpo M.
- * Com erro: borda de 1,5 px a perigo e a mensagem por baixo.
- *
- * @example
- * <TextField label="Como preferes ser chamado?" value={nome} onChangeText={setNome} />
- */
 function TextField({
   label,
   error,
@@ -102,17 +92,11 @@ function TextField({
 }
 
 type PasswordFieldProps = Omit<TextFieldProps, 'right' | 'secureTextEntry'> & {
-  /** Textos do botão do olho para leitores de ecrã. */
+
   showLabel?: string;
   hideLabel?: string;
 };
 
-/**
- * Campo de senha com o botão do olho para a mostrar ou esconder (canvas, artboard "Entrar").
- *
- * @example
- * <PasswordField label="Senha" value={senha} onChangeText={setSenha} placeholder="A tua senha" />
- */
 function PasswordField({
   showLabel = 'Mostrar senha',
   hideLabel = 'Esconder senha',

@@ -10,7 +10,6 @@ type TabBarItem<Key extends string = string> = {
   icon: AppIconName;
 };
 
-/** Os quatro separadores do app, pela ordem do canvas. */
 const MAIN_TABS = [
   { key: 'today', label: 'Hoje', icon: 'today' },
   { key: 'people', label: 'Pessoas', icon: 'people' },
@@ -24,29 +23,11 @@ type TabBarProps<Key extends string> = {
   items?: readonly TabBarItem<Key>[];
   activeKey: Key;
   onChange: (key: Key) => void;
-  /**
-   * Espaço por baixo dos separadores. Por omissão usa a área segura do
-   * telemóvel (barra de gestos), com um mínimo de 12 px.
-   */
+
   bottomInset?: number;
   className?: string;
 };
 
-/**
- * Barra de navegação (canvas, artboard "Barra de navegação, folha inferior, estado vazio e aviso").
- * Separador activo: cor da marca e Sen SemiBold. Os outros: texto secundário.
- *
- * Para a usar com o expo-router, passa-a em `tabBar` no `<Tabs>`:
- *
- * @example
- * <Tabs tabBar={({ state, navigation }) => (
- *   <TabBar
- *     activeKey={state.routes[state.index].name}
- *     onChange={(key) => navigation.navigate(key)}
- *     items={[{ key: 'index', label: 'Hoje', icon: 'today' }, ...]}
- *   />
- * )} />
- */
 function TabBar<Key extends string = MainTabKey>({
   items = MAIN_TABS as unknown as readonly TabBarItem<Key>[],
   activeKey,

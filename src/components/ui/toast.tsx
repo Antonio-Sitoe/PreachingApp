@@ -19,11 +19,6 @@ type ToastProps = ViewProps & {
   action?: ToastAction;
 };
 
-/**
- * Aviso (canvas, artboard "Barra de navegação, folha inferior, estado vazio e aviso").
- * Fundo escuro nos dois temas, mensagem em Corpo M e uma acção opcional ("Desfazer").
- * Este é só o desenho; para o mostrar por cima do ecrã usa `showToast`.
- */
 function Toast({ message, action, className, ...props }: ToastProps) {
   return (
     <View
@@ -58,7 +53,7 @@ function Toast({ message, action, className, ...props }: ToastProps) {
 type ToastOptions = {
   message: string;
   action?: ToastAction;
-  /** Tempo no ecrã em milissegundos. Por omissão 5000. */
+
   duration?: number;
 };
 
@@ -76,15 +71,6 @@ const useToastStore = create<ToastState>((set) => ({
   hide: () => set({ current: null }),
 }));
 
-/**
- * Mostra um aviso por cima do ecrã. Um aviso novo substitui o anterior.
- *
- * @example
- * showToast({
- *   message: 'Visita marcada como feita',
- *   action: { label: 'Desfazer', icon: 'undo', onPress: desfazer },
- * });
- */
 function showToast(options: ToastOptions) {
   useToastStore.getState().show(options);
 }
@@ -94,17 +80,15 @@ function hideToast() {
 }
 
 type ToastHostProps = {
-  /** Distância ao fundo do ecrã, para o aviso ficar por cima da barra de navegação. */
+
   bottomOffset?: number;
 };
 
-/** Ponto onde os avisos aparecem. Fica uma vez no layout raiz, depois do `<Stack />`. */
 function ToastHost({ bottomOffset }: ToastHostProps) {
   const current = useToastStore((state) => state.current);
   const hide = useToastStore((state) => state.hide);
   const insets = useSafeAreaInsets();
   const onTabs = useSegments()[0] === '(tabs)';
-  // Nas abas o aviso fica por cima da barra (~80 px). Fora delas, só a margem.
 
   React.useEffect(() => {
     if (!current) return;

@@ -1,99 +1,72 @@
+import { AlertDialog } from '@/components/ui/alert-dialog';
+import { AppIcon } from '@/components/ui/app-icon';
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { Fab } from '@/components/ui/fab';
-import { AlertDialog } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { CONTENT_MAX_WIDTH } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
-import { NOTE_COLORS } from '@/components/notes/colors';
-import { asCoverIcon } from '@/components/notes/cover-icons';
-import { GridCard, ListCard, TagsFilter } from '@/components/notes/list';
-import { useEditorStore } from '@/components/notes/editors/store';
+import { DEFAULT_NOTE_COLOR } from '@/components/notes/colors';
+import { ListCard, TagsFilter } from '@/components/notes/list';
+import { useTags } from '@/components/notes/tags';
+import { CONTENT_MAX_WIDTH } from '@/components/ui/screen';
 import { notesActions } from '@/database/actions';
-import type { Note } from '@/database/schemas';
+import type { NoteListItem } from '@/database/actions';
 import { THEME } from '@/lib/theme';
 import { FlashList } from '@shopify/flash-list';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { LayoutGrid, List, Search, Trash, X } from 'lucide-react-native';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useRef, useState } from 'react';
-import { Pressable, RefreshControl, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { RefreshControl, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-type ViewMode = 'grid' | 'list';
+const PAGE_SIZE = 20;
 
 export default function NotesScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme ?? 'light'];
-  const [viewMode, setViewMode] = useState<ViewMode>('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [isSelecting, setIsSelecting] = useState(false);
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-  const [confirmDelete, setConfirmDelete] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const navigating = useRef(false);
+  // Só um cartão aberto de cada vez.
+  const openCard = useRef<{ id: string; close: () => void } | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<{ note: NoteListItem; close: () => void } | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
-  const { data: tags = [], refetch: refetchTags } = useQuery({
-    queryKey: ['tags'],
-    queryFn: () => notesActions.getTags(),
+  const tags = useTags();
+  // Se a etiqueta do filtro foi apagada, volta a "Todas".
+  const tagId = tags.some((item) => item.id === activeFilter) ? activeFilter : undefined;
+  const search = searchQuery.trim() || undefined;
+
+  const notesQuery = useInfiniteQuery({
+    queryKey: ['notes', tagId ?? 'all', search ?? ''],
+    queryFn: ({ pageParam }) => notesActions.getPage(pageParam, PAGE_SIZE, tagId, search),
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, _pages, page) => (page + 1 < lastPage.totalPage ? page + 1 : undefined),
+    placeholderData: keepPreviousData,
   });
 
-  const {
-    data: filteredNotes = [],
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ['notes', activeFilter, searchQuery],
-    queryFn: () =>
-      notesActions.getAllNotesWithFilters(
-        activeFilter !== 'all' ? activeFilter : undefined,
-        searchQuery.trim() || undefined
-      ),
-  });
+  const notes = notesQuery.data?.pages.flatMap((page) => page.data) ?? [];
+  const filtered = search !== undefined || tagId !== undefined;
 
+  // Voltar do editor desbloqueia a navegação. A lista é actualizada pelo editor ao sair.
   useFocusEffect(
     useCallback(() => {
-      refetch();
-      refetchTags();
       navigating.current = false;
-    }, [refetch, refetchTags])
+    }, [])
   );
 
   async function onRefresh() {
     setRefreshing(true);
     try {
-      await refetch();
+      await notesQuery.refetch();
     } finally {
       setRefreshing(false);
     }
-  }
-
-  const filtered = searchQuery.trim().length > 0 || activeFilter !== 'all';
-
-  function openEditor(note: Note) {
-    useEditorStore.getState().resetEditor();
-    useEditorStore.getState().set({
-      id: note.id,
-      emoji: note.emoji || '📝',
-      title: note.title,
-      content: note.contentHtml,
-      contentHtml: note.contentHtml,
-      colorHex: note.colorHex,
-      coverIcon: asCoverIcon(note.coverIcon),
-      isArchived: note.isArchived,
-      orderIndex: note.orderIndex,
-      deletedAt: note.deletedAt,
-      syncStatus: note.syncStatus,
-      remoteId: note.remoteId,
-      tags: [],
-      isOptionsBottomSheetOpen: false,
-    });
-    router.push({ pathname: '/note/[id]', params: { id: note.id } });
   }
 
   async function handleCreate() {
@@ -104,17 +77,14 @@ export default function NotesScreen() {
     try {
       const note = await notesActions.createNote({
         title: '',
-        emoji: '📝',
-        colorHex: NOTE_COLORS[0].color,
-        coverIcon: null,
-        contentHtml: '',
-        isArchived: 0,
+        body: '',
+        tagId: tagId ?? null,
+        color: DEFAULT_NOTE_COLOR,
+        studentId: null,
         remoteId: null,
       });
-
       if (!note) throw new Error('empty');
-      await queryClient.invalidateQueries({ queryKey: ['notes'] });
-      openEditor(note);
+      router.push({ pathname: '/note/[id]', params: { id: note.id } });
     } catch {
       navigating.current = false;
       showToast({ message: 'Não foi possível criar a nota.' });
@@ -123,191 +93,148 @@ export default function NotesScreen() {
     }
   }
 
-  function openNote(note: Note) {
-    if (navigating.current) return;
-    if (isSelecting) {
-      toggleSelect(note.id);
-      return;
-    }
-    navigating.current = true;
-    openEditor(note);
+  function cardOpened(id: string, close: () => void) {
+    if (openCard.current && openCard.current.id !== id) openCard.current.close();
+    openCard.current = { id, close };
   }
 
-  function toggleSelect(id: string) {
-    setSelectedIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      if (next.size === 0) setIsSelecting(false);
-      return next;
-    });
+  function cancelDelete() {
+    pendingDelete?.close();
+    setPendingDelete(null);
   }
 
-  function startSelection(id: string) {
-    setIsSelecting(true);
-    setSelectedIds(new Set([id]));
-  }
-
-  function cancelSelection() {
-    setIsSelecting(false);
-    setSelectedIds(new Set());
-  }
-
-  async function deleteSelected() {
-    const ids = [...selectedIds];
-    setConfirmDelete(false);
+  async function confirmDelete() {
+    if (!pendingDelete || deleting) return;
+    setDeleting(true);
     try {
-      await Promise.all(ids.map((id) => notesActions.deleteNote(id, true)));
-      cancelSelection();
+      await notesActions.deleteNote(pendingDelete.note.id);
+      openCard.current = null;
+      setPendingDelete(null);
       await queryClient.invalidateQueries({ queryKey: ['notes'] });
     } catch {
-      showToast({ message: 'Não foi possível apagar as notas.' });
+      showToast({ message: 'Não foi possível apagar a nota.' });
+      cancelDelete();
+    } finally {
+      setDeleting(false);
     }
   }
 
-  const refreshControl = (
-    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} colors={[theme.primary]} />
+  function openNote(note: NoteListItem) {
+    if (navigating.current) return;
+    navigating.current = true;
+    router.push({ pathname: '/note/[id]', params: { id: note.id } });
+  }
+
+  const header = (
+    <View className="gap-5 pb-5 pt-5">
+      <View className="relative justify-center">
+        <View className="absolute left-4 z-10" pointerEvents="none">
+          <AppIcon name="search" size={20} className="text-subtle" />
+        </View>
+        <TextInput
+          accessibilityLabel="Procurar nas notas"
+          className="h-[52px] rounded-lg border border-border bg-card pl-[46px] pr-4 font-sans text-[14px] text-foreground"
+          placeholder="Procurar"
+          placeholderTextColor={theme.subtle}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          autoCorrect={false}
+          returnKeyType="search"
+          clearButtonMode="while-editing"
+        />
+      </View>
+      <TagsFilter
+        tags={tags}
+        activeFilter={tagId ?? 'all'}
+        onFilterChange={setActiveFilter}
+      />
+    </View>
   );
 
   const empty =
-    isLoading && filteredNotes.length === 0 ? (
-      <View className="flex-1" />
-    ) : (
-      <View className="px-4 py-8">
+    notesQuery.isLoading && notes.length === 0 ? null : (
+      <View className="pb-10 pt-16">
         <EmptyState
           icon="notes"
           title={filtered ? 'Nenhuma nota encontrada' : 'Ainda não há notas'}
           description={
             filtered
               ? 'Tenta ajustar a pesquisa ou os filtros.'
-              : 'Escreve o que conversaram para te lembrares na próxima visita.'
+              : 'Guarda aqui ideias para a pregação, pontos de um discurso ou o que quiseres lembrar.'
           }
+          actionLabel={filtered ? undefined : 'Nova nota'}
+          onActionPress={filtered ? undefined : handleCreate}
         />
       </View>
     );
 
+  const showFab = notes.length > 0 || filtered;
+
   return (
     <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1 }} className="bg-background">
+      <View className="border-b border-border bg-card px-2 pb-2 pt-2">
+        <Text variant="titleL" className="py-[9px] text-center">
+          Notas
+        </Text>
+      </View>
+
       <View className="w-full flex-1 self-center" style={{ maxWidth: CONTENT_MAX_WIDTH }}>
-        <View className="mb-3 flex-row items-center justify-between px-4 pt-2">
-          <Text variant="titleXl">Notas</Text>
-          <View className="flex-row items-center gap-2">
-            {isSelecting ? (
-              <>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Apagar notas escolhidas"
-                  onPress={() => setConfirmDelete(true)}
-                  className="size-11 items-center justify-center rounded-full bg-destructive-soft">
-                  <Trash size={20} color={theme.destructive} />
-                </Pressable>
-                <Pressable
-                  accessibilityRole="button"
-                  accessibilityLabel="Cancelar seleção"
-                  onPress={cancelSelection}
-                  className="size-11 items-center justify-center rounded-full bg-muted">
-                  <X size={20} color={theme.foreground} />
-                </Pressable>
-              </>
-            ) : null}
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={viewMode === 'grid' ? 'Ver em lista' : 'Ver em grelha'}
-              onPress={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-              className="size-11 items-center justify-center rounded-full bg-muted">
-              {viewMode === 'grid' ? (
-                <List size={20} color={theme.foreground} />
-              ) : (
-                <LayoutGrid size={20} color={theme.foreground} />
-              )}
-            </Pressable>
+        <FlashList
+          style={{ flex: 1 }}
+          data={notes}
+          keyExtractor={(item) => item.id}
+          keyboardShouldPersistTaps="handled"
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.primary}
+              colors={[theme.primary]}
+            />
+          }
+          onEndReached={() => {
+            if (notesQuery.hasNextPage && !notesQuery.isFetchingNextPage) void notesQuery.fetchNextPage();
+          }}
+          ListHeaderComponent={header}
+          onScrollBeginDrag={() => {
+            openCard.current?.close();
+            openCard.current = null;
+          }}
+          renderItem={({ item }) => (
+            // A key obriga a montar de novo quando o FlashList recicla a célula, para não herdar um cartão aberto.
+            <ListCard
+              key={item.id}
+              note={item}
+              onPress={() => openNote(item)}
+              onOpen={(close) => cardOpened(item.id, close)}
+              onDelete={(close) => setPendingDelete({ note: item, close })}
+            />
+          )}
+          ListEmptyComponent={empty}
+          contentContainerStyle={{ paddingBottom: 112, paddingHorizontal: 16 }}
+          showsVerticalScrollIndicator={false}
+        />
+      </View>
+
+      {showFab ? (
+        <View pointerEvents="box-none" style={StyleSheet.absoluteFill} className="items-center">
+          <View pointerEvents="box-none" className="w-full max-w-[640px] flex-1">
+            <Fab floating accessibilityLabel="Nova nota" onPress={handleCreate} disabled={isCreating} />
           </View>
         </View>
-
-        <View className="mx-4 mb-3 h-12 flex-row items-center rounded-lg bg-muted px-4">
-          <Search size={20} color={theme.subtle} />
-          <TextInput
-            accessibilityLabel="Pesquisar notas"
-            className="ml-3 flex-1 font-sans text-[14px] text-foreground"
-            placeholder="Pesquisar notas"
-            placeholderTextColor={theme.subtle}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            autoCorrect={false}
-          />
-        </View>
-
-        <TagsFilter tags={tags} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-
-        {viewMode === 'grid' ? (
-          <ScrollView
-            className="flex-1"
-            refreshControl={refreshControl}
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            contentContainerClassName="px-4 pb-28">
-            {filteredNotes.length === 0 ? (
-              empty
-            ) : (
-              <View className="flex-row flex-wrap justify-between">
-                {filteredNotes.map((note) => (
-                  <GridCard
-                    key={note.id}
-                    note={note}
-                    isSelecting={isSelecting}
-                    isSelected={selectedIds.has(note.id)}
-                    onPress={() => openNote(note)}
-                    onLongPress={() => startSelection(note.id)}
-                  />
-                ))}
-              </View>
-            )}
-          </ScrollView>
-        ) : (
-          <FlashList
-            style={{ flex: 1 }}
-            data={filteredNotes}
-            keyExtractor={(item) => item.id}
-            extraData={{ isSelecting, selectedSize: selectedIds.size }}
-            refreshControl={refreshControl}
-            renderItem={({ item }) => (
-              <ListCard
-                note={item}
-                isSelecting={isSelecting}
-                isSelected={selectedIds.has(item.id)}
-                onPress={() => openNote(item)}
-                onLongPress={() => startSelection(item.id)}
-              />
-            )}
-            ListEmptyComponent={empty}
-            contentContainerStyle={{ paddingBottom: 112, paddingHorizontal: 16, flexGrow: 1 }}
-            showsVerticalScrollIndicator={false}
-          />
-        )}
-      </View>
-
-      <View pointerEvents="box-none" style={StyleSheet.absoluteFill} className="items-center">
-        <View pointerEvents="box-none" className="w-full max-w-[640px] flex-1">
-          <Fab
-            floating
-            accessibilityLabel="Nova nota"
-            onPress={handleCreate}
-            disabled={isCreating}
-          />
-        </View>
-      </View>
+      ) : null}
 
       <AlertDialog
-        open={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        icon="alert"
+        open={pendingDelete !== null}
+        onClose={cancelDelete}
+        icon="trash"
         tone="destructive"
-        title="Apagar notas"
-        description={`Apagar ${selectedIds.size} ${selectedIds.size === 1 ? 'nota' : 'notas'}?`}>
-        <Button variant="destructive" onPress={deleteSelected}>
-          <Text>Apagar</Text>
+        title="Apagar esta nota?"
+        description={`"${pendingDelete?.note.title.trim() || 'Sem título'}" é apagada deste telemóvel. Não dá para desfazer.`}>
+        <Button variant="destructive" onPress={confirmDelete} disabled={deleting}>
+          <Text>Apagar nota</Text>
         </Button>
-        <Button variant="neutral" onPress={() => setConfirmDelete(false)}>
+        <Button variant="ghost" onPress={cancelDelete} disabled={deleting}>
           <Text>Cancelar</Text>
         </Button>
       </AlertDialog>

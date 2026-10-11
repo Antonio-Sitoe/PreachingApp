@@ -7,18 +7,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type ScreenHeaderProps = ViewProps & {
   title: string;
-  /** Com esta função aparece o botão de voltar. */
+
   onBack?: () => void;
   backLabel?: string;
-  /** Conteúdo à direita do título, por exemplo o `StepPill`. Ocupa 44 px. */
+
   right?: React.ReactNode;
 };
 
-/**
- * Cabeçalho dos ecrãs do canvas: voltar à esquerda, título centrado em Título L,
- * espaço de 44 px à direita e uma linha por baixo. Trata da área segura do topo.
- * Usa-se nos ecrãs que escondem o header do Stack (`headerShown: false`).
- */
 function ScreenHeader({
   title,
   onBack,
@@ -67,7 +62,6 @@ type StepPillProps = {
   total: number;
 };
 
-/** Marcador de passo ("1/2") para o lado direito do cabeçalho. */
 function StepPill({ step, total }: StepPillProps) {
   return (
     <View

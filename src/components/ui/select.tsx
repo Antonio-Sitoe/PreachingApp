@@ -189,10 +189,6 @@ function SelectSeparator({
   );
 }
 
-/**
- * @platform Web only
- * Returns null on native platforms
- */
 function SelectScrollUpButton({
   className,
   ...props
@@ -209,10 +205,6 @@ function SelectScrollUpButton({
   );
 }
 
-/**
- * @platform Web only
- * Returns null on native platforms
- */
 function SelectScrollDownButton({
   className,
   ...props
@@ -228,8 +220,6 @@ function SelectScrollDownButton({
     </SelectPrimitive.ScrollDownButton>
   );
 }
-
-
 
 export {
   Select,

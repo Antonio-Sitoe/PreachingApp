@@ -17,14 +17,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type BottomSheetPanelProps = ViewProps & {
   title?: string;
-  /** Espaço por baixo do conteúdo. Por omissão, a área segura com um mínimo de 24 px. */
+
   bottomInset?: number;
 };
 
-/**
- * O painel da folha inferior, sem o fundo escuro nem a animação.
- * Cantos de cima a 24 px, pega de 36 × 4 px, título em Título L.
- */
 function BottomSheetPanel({
   title,
   bottomInset,
@@ -50,22 +46,12 @@ function BottomSheetPanel({
 
 type BottomSheetProps = Omit<BottomSheetPanelProps, 'bottomInset'> & {
   open: boolean;
-  /** Chamado ao tocar fora da folha ou no botão de voltar do Android. */
+
   onClose: () => void;
-  /** Texto do fundo escuro para leitores de ecrã. */
+
   closeLabel?: string;
 };
 
-/**
- * Folha inferior (canvas, artboard "Barra de navegação, folha inferior, estado vazio e aviso").
- *
- * @example
- * <BottomSheet open={aberta} onClose={fechar} title="O que aconteceu?">
- *   <SheetOption icon="check" tone="success" title="Visita feita"
- *     description="Regista o que conversaram" onPress={registar} />
- *   <Button variant="ghost" onPress={fechar}><Text>Cancelar</Text></Button>
- * </BottomSheet>
- */
 function BottomSheet({
   open,
   onClose,
@@ -114,12 +100,11 @@ const OPTION_TONES = {
 type SheetOptionProps = Omit<React.ComponentProps<typeof Pressable>, 'children'> & {
   icon: AppIconName;
   title: string;
-  /** Uma linha que explica o que acontece. */
+
   description?: string;
   tone?: keyof typeof OPTION_TONES;
 };
 
-/** Linha de opção dentro da folha: ícone num círculo, título, explicação e seta. */
 function SheetOption({
   icon,
   title,

@@ -8,7 +8,6 @@ type RadioProps = {
   className?: string;
 };
 
-/** Círculo de escolha única, 20 px. Só o desenho: o toque é do componente pai. */
 function Radio({ selected, className }: RadioProps) {
   return (
     <View
@@ -29,11 +28,6 @@ type OptionCardProps = Omit<React.ComponentProps<typeof Pressable>, 'children'> 
   selected: boolean;
 };
 
-/**
- * Cartão de escolha única (canvas, artboard "Configuração inicial 1 de 2":
- * "Como participas no ministério?"). Escolhido: contorno da marca e fundo suave.
- * Põe os cartões dentro de uma View com `role="radiogroup"`.
- */
 function OptionCard({ icon, title, description, selected, className, ...props }: OptionCardProps) {
   return (
     <Pressable

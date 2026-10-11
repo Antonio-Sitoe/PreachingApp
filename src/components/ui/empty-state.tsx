@@ -8,19 +8,11 @@ type EmptyStateProps = ViewProps & {
   icon: AppIconName;
   title: string;
   description?: string;
-  /** Texto do botão. Só aparece com `onActionPress`. */
+
   actionLabel?: string;
   onActionPress?: () => void;
 };
 
-/**
- * Estado vazio (canvas, artboard "Barra de navegação, folha inferior, estado vazio e aviso").
- *
- * @example
- * <EmptyState icon="people" title="Ainda não há pessoas"
- *   description="Regista a primeira pessoa que estás a acompanhar."
- *   actionLabel="Novo contacto" onActionPress={novo} />
- */
 function EmptyState({
   icon,
   title,

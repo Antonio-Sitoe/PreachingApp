@@ -8,10 +8,6 @@ type PasswordRulesProps = {
   rules: Rules;
 };
 
-/**
- * Lista das regras da senha (canvas, artboard "Criar conta").
- * Regra cumprida: visto verde. Por cumprir: ponto cinzento e texto secundário.
- */
 function PasswordRules({ rules }: PasswordRulesProps) {
   return (
     <View role="list" aria-label="Regras da senha" className="gap-2.5">

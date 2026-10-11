@@ -12,38 +12,24 @@ type Tone = 'default' | 'warning';
 type PersonCardProps = {
   name: string;
   stage: Stage;
-  /** Linha por baixo do nome: "Lição 14 · levar a brochura", "Última visita há 16 dias". */
+
   detail?: string;
-  /** `warning` para avisos na linha de detalhe: "Fora do ritmo há 2 dias". */
+
   detailTone?: Tone;
-  /** Texto à direita do nome: a hora ("10:00") ou o atraso ("há 2 dias"). */
+
   meta?: string;
-  /** `warning` quando a visita está em atraso. */
+
   metaTone?: Tone;
-  /** Toque no cartão: abrir a ficha da pessoa. */
+
   onPress?: () => void;
-  /** Com esta função o cartão mostra o botão do visto (marcar como feita ou adiar). */
+
   onActionPress?: () => void;
   actionLabel?: string;
-  /** Sem `onActionPress`, mostra a seta de "abrir". Por omissão segue `onPress`. */
+
   showChevron?: boolean;
   className?: string;
 };
 
-/**
- * Cartão de pessoa (canvas, artboard "Cartão de pessoa"). Três usos:
- *
- * @example Visita de hoje
- * <PersonCard name="Celeste Nhantumbo" stage="regular" meta="10:00"
- *   detail="Lição 14 · levar a brochura" onPress={abrir} onActionPress={marcar} />
- *
- * @example Em atraso
- * <PersonCard name="Helena Macuácua" stage="revisit" meta="há 2 dias" metaTone="warning"
- *   detail="Ficou de ler Salmo 37:29" onPress={abrir} onActionPress={marcar} />
- *
- * @example Na lista de pessoas
- * <PersonCard name="Ernesto Sitoe" stage="revisit" detail="Última visita há 16 dias" onPress={abrir} />
- */
 function PersonCard({
   name,
   stage,

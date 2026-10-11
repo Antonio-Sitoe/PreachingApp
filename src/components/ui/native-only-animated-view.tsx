@@ -4,10 +4,6 @@ import Animated from 'react-native-reanimated';
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
-/**
- * Envolve vistas animadas que só devem animar no telemóvel.
- * Na web devolve os filhos sem animação.
- */
 function NativeOnlyAnimatedView(
   props:
     | (React.ComponentProps<typeof Animated.View> &

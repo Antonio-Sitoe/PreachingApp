@@ -6,27 +6,18 @@ import { Platform, Pressable, TextInput, View } from 'react-native';
 type CodeInputProps = {
   value: string;
   onChange: (value: string) => void;
-  /** Chamado quando todos os dígitos estão escritos. */
+
   onComplete?: (value: string) => void;
-  /** Número de dígitos. Por omissão 4. */
+
   length?: number;
-  /** Pinta as caixas a perigo (código errado). */
+
   error?: boolean;
   disabled?: boolean;
   autoFocus?: boolean;
-  /** Nome do campo para leitores de ecrã. */
+
   label?: string;
 };
 
-/**
- * Código de confirmação em caixas (canvas, artboard "Confirmar email").
- * Caixas de 60 × 60 com cantos de 6 px e dígitos em Sen 36; a caixa onde se
- * vai escrever tem a borda da marca. Por baixo há um único campo invisível,
- * por isso colar o código e o preenchimento automático do telemóvel funcionam.
- *
- * @example
- * <CodeInput value={codigo} onChange={setCodigo} onComplete={confirmar} />
- */
 function CodeInput({
   value,
   onChange,

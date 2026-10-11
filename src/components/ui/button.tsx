@@ -3,17 +3,6 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Platform, Pressable } from 'react-native';
 
-/**
- * Botão do Design 2.0 (canvas, artboard "Etiquetas, botões e avatar").
- *
- * - `default`: acção principal, fundo da marca ("Registar visita").
- * - `outline`: acção secundária, contorno da marca ("Direcções").
- * - `ghost`: acção discreta, só texto ("Cancelar").
- * - `destructive`: acção que remove, contorno a perigo ("Remover pessoa").
- * - `neutral`: alternativa sem destaque, fundo cinzento claro ("Já tenho conta", "Cancelar").
- *
- * O texto vai num `<Text>` filho, que recebe a letra e a cor do botão.
- */
 const buttonVariants = cva(
   cn(
     'group shrink-0 flex-row items-center justify-center gap-2 rounded-lg',
@@ -44,7 +33,7 @@ const buttonVariants = cva(
           'bg-[#D9D9D9]/30 active:bg-[#D9D9D9]/50',
           Platform.select({ web: 'hover:bg-[#D9D9D9]/50' })
         ),
-        // Nomes do react-native-reusables, mantidos por compatibilidade.
+
         secondary: cn(
           'bg-secondary active:bg-secondary/80',
           Platform.select({ web: 'hover:bg-secondary/80' })
@@ -54,7 +43,7 @@ const buttonVariants = cva(
       size: {
         default: 'min-h-[52px] px-5 py-3',
         sm: 'min-h-11 px-3 py-2',
-        // Nomes do react-native-reusables, mantidos por compatibilidade.
+
         lg: 'min-h-[52px] px-5 py-3',
         icon: 'size-11',
       },

@@ -4,23 +4,6 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Platform, Text as RNText, type Role } from 'react-native';
 
-/**
- * Escala tipográfica do Design 2.0 (canvas, artboard "Tipografia").
- * Títulos e rótulos pequenos em Red Hat Display, texto em Sen.
- *
- * | variant  | canvas     | letra                       |
- * | -------- | ---------- | --------------------------- |
- * | display  | Destaque   | Red Hat Display Bold 45/48  |
- * | titleXl  | Título XL  | Red Hat Display Bold 25/32  |
- * | titleL   | Título L   | Red Hat Display Bold 20/26  |
- * | titleM   | Título M   | Red Hat Display SemiBold 17/22 |
- * | titleS   | Título S   | Red Hat Display Medium 15/20 |
- * | bodyM    | Corpo M    | Sen 14/20 (por omissão)     |
- * | bodyS    | Corpo S    | Sen 12/16                   |
- * | labelM   | Rótulo M   | Sen SemiBold 13.5/16        |
- * | labelS   | Rótulo S   | Red Hat Display Medium 12/16 |
- * | button   | Botão      | Red Hat Display SemiBold 16/20 |
- */
 const textVariants = cva(
   cn(
     'text-foreground',
@@ -42,8 +25,6 @@ const textVariants = cva(
         labelS: 'font-display-medium text-label-s',
         button: 'font-display-semibold text-button',
 
-        // Nomes do react-native-reusables, para os componentes instalados com o CLI
-        // continuarem a funcionar. No código novo usa os nomes de cima.
         default: 'font-sans text-body-m',
         h1: 'font-display text-title-xl',
         h2: 'font-display text-title-l',
@@ -88,7 +69,6 @@ const ARIA_LEVEL: Partial<Record<TextVariant, string>> = {
   h4: '4',
 };
 
-/** Classes de texto que um componente pai (por exemplo o Button) impõe aos filhos. */
 const TextClassContext = React.createContext<string | undefined>(undefined);
 
 type TextProps = React.ComponentProps<typeof RNText> &

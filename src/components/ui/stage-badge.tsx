@@ -6,14 +6,10 @@ import { View, type ViewProps } from 'react-native';
 
 type StageBadgeProps = ViewProps & {
   stage: Stage;
-  /** Texto a mostrar em vez do rótulo por omissão (por exemplo já traduzido). */
+
   label?: string;
 };
 
-/**
- * Etiqueta de etapa (canvas, artboard "Etiquetas, botões e avatar").
- * A pausa leva o ícone de pausa antes do texto.
- */
 function StageBadge({ stage, label, className, ...props }: StageBadgeProps) {
   const config = STAGES[stage];
   return (

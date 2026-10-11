@@ -3,15 +3,6 @@ import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { View, type ViewProps } from 'react-native';
 
-/**
- * Avatar com iniciais (canvas, artboard "Etiquetas, botões e avatar").
- * O app não usa fotografia de pessoas: mostra sempre as iniciais.
- *
- * - `md` 40 px: listas e cartões.
- * - `lg` 64 px: cabeçalhos.
- * - `xl` 72 px: ficha da pessoa.
- * - `tone="brand"`: fundo da marca, para o próprio utilizador (menu Mais).
- */
 const avatarVariants = cva('shrink-0 items-center justify-center rounded-full', {
   variants: {
     size: {
@@ -48,7 +39,6 @@ const avatarTextVariants = cva('', {
   },
 });
 
-/** "Celeste Nhantumbo" → "CN"; "Daniel" → "D". */
 function getInitials(name: string) {
   const words = name.trim().split(/\s+/).filter(Boolean);
   if (words.length === 0) return '';
@@ -59,9 +49,9 @@ function getInitials(name: string) {
 
 type AvatarProps = ViewProps &
   VariantProps<typeof avatarVariants> & {
-    /** Nome completo; as iniciais são calculadas a partir dele. */
+
     name: string;
-    /** Iniciais a mostrar em vez das calculadas. */
+
     initials?: string;
   };
 

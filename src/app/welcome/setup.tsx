@@ -17,11 +17,8 @@ import * as React from 'react';
 export default function SetupScreen() {
   const [profile, setProfile] = React.useState<SetupProfile>(DEFAULT_SETUP_PROFILE);
   const [saving, setSaving] = React.useState(false);
-  // Fica verdadeiro quando a pessoa mexe no formulário, para a leitura da base
-  // de dados não passar por cima do que ela já escreveu.
   const touched = React.useRef(false);
 
-  // Se a pessoa voltar atrás do passo 2, encontra o que já tinha escolhido.
   React.useEffect(() => {
     let cancelled = false;
     usersActions
@@ -61,7 +58,7 @@ export default function SetupScreen() {
           <Text>Seguinte</Text>
         </Button>
       }>
-      <Text variant="titleXl">Vamos preparar o app para ti</Text>
+      <Text variant="titleL">Vamos preparar o app para ti</Text>
 
       <TextField
         label="Como preferes ser chamado?"
