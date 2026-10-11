@@ -11,9 +11,6 @@ export default {
     scheme: 'preachingApp',
     userInterfaceStyle: 'automatic',
     assetBundlePatterns: ['**/*'],
-    ios: {
-      bundleIdentifier: 'com.antoniositoe533.preachingApp',
-    },
     android: {
       package: 'com.antoniositoe533.preachingApp',
       permissions: ['POST_NOTIFICATIONS', 'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION'],
@@ -21,11 +18,6 @@ export default {
         foregroundImage: './src/assets/images/adaptive-icon.png',
         backgroundColor: '#5D6CB2',
       },
-    },
-    web: {
-      bundler: 'metro',
-      output: 'single',
-      favicon: './src/assets/images/favicon.png',
     },
     plugins: [
       'expo-router',
@@ -36,9 +28,6 @@ export default {
           imageWidth: 192,
           resizeMode: 'contain',
           backgroundColor: '#5D6CB2',
-          ios: {
-            imageWidth: 282,
-          },
         },
       ],
       'expo-status-bar',

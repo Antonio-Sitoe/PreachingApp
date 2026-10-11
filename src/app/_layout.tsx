@@ -10,7 +10,6 @@ import { OnboardingProvider, useOnboarding } from '@/lib/onboarding';
 import { NAV_THEME } from '@/lib/theme';
 import { db } from '@/database/db';
 import migrations from '@/database/migrations/migrations';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'expo-router/react-navigation';
 import { PortalHost } from '@rn-primitives/portal';
@@ -57,18 +56,16 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
-        <BottomSheetModalProvider>
-          <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
-            <OnboardingProvider>
-              <NotificationProvider>
-                {__DEV__ && <DrizzleStudio />}
-                <RootNavigator colorScheme={colorScheme} />
-                <ToastHost />
-                <PortalHost />
-              </NotificationProvider>
-            </OnboardingProvider>
-          </ThemeProvider>
-        </BottomSheetModalProvider>
+        <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
+          <OnboardingProvider>
+            <NotificationProvider>
+              {__DEV__ && <DrizzleStudio />}
+              <RootNavigator colorScheme={colorScheme} />
+              <ToastHost />
+              <PortalHost />
+            </NotificationProvider>
+          </OnboardingProvider>
+        </ThemeProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>
   );
