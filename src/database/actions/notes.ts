@@ -1,40 +1,53 @@
-import { and, count, desc, eq, inArray, isNull, like, or } from 'drizzle-orm';
+import { normalizeSearch, plainBody } from '@/components/notes/body';
+import type { Stage } from '@/constants/stages';
+import { and, asc, count, desc, eq, isNull, sql } from 'drizzle-orm';
 import { db } from '../db';
-import { type NewNote, type Note, type Tag, noteTags, notes, tags } from '../schemas/notes';
+import { type NewNote, type Note, notes } from '../schemas/notes';
+import { tags } from '../schemas/tags';
+import { students } from '../schemas/students';
 
-export type NoteWithTags = Note & { tags: string[] };
+export type NoteInput = Pick<NewNote, 'title' | 'body' | 'tagId' | 'color' | 'studentId' | 'remoteId'>;
 
-export type NoteInput = Pick<
-  NewNote,
-  'title' | 'emoji' | 'colorHex' | 'coverIcon' | 'contentHtml' | 'isArchived' | 'remoteId'
-> & { orderIndex?: number };
+/** Nota da lista, já com o nome da etiqueta. */
+export type NoteListItem = Note & { tagName: string | null };
+
+export type NotePage = {
+  data: NoteListItem[];
+  totalPage: number;
+};
+
+export type LinkableStudent = {
+  id: string;
+  name: string;
+  stage: Stage;
+};
 
 function nowIso() {
   return new Date().toISOString();
 }
 
-function normalizeTagName(name: string) {
-  return name.trim().toLowerCase();
+function searchTextFor(title: string, body: string) {
+  return normalizeSearch(`${title} ${plainBody(body)}`);
 }
 
-async function getById(id: string): Promise<NoteWithTags | null> {
+async function getById(id: string): Promise<Note | null> {
   const note = (await db.select().from(notes).where(eq(notes.id, id)).limit(1))[0];
-  if (!note) return null;
-  return { ...note, tags: await getTagsByNoteId(id) };
+  return note ?? null;
 }
 
 async function createNote(data: NoteInput) {
   const now = nowIso();
+  const title = data.title ?? '';
+  const body = data.body ?? '';
   const result = await db
     .insert(notes)
     .values({
-      title: data.title,
-      emoji: data.emoji,
-      colorHex: data.colorHex,
-      coverIcon: data.coverIcon,
-      contentHtml: data.contentHtml,
-      isArchived: data.isArchived ?? 0,
-      orderIndex: data.orderIndex ?? 0,
+      title,
+      body,
+      searchText: searchTextFor(title, body),
+      tagId: data.tagId ?? null,
+      color: data.color ?? '#E3E7F8',
+      studentId: data.studentId ?? null,
       createdAt: now,
       updatedAt: now,
       deletedAt: null,
@@ -45,169 +58,90 @@ async function createNote(data: NoteInput) {
   return result[0];
 }
 
-async function updateNote(id: string, data: Partial<Omit<NewNote, 'id' | 'createdAt'>>) {
+async function updateNote(id: string, data: Partial<NoteInput>) {
+  let searchText: string | undefined;
+  if (data.title !== undefined || data.body !== undefined) {
+    const current = await getById(id);
+    searchText = searchTextFor(data.title ?? current?.title ?? '', data.body ?? current?.body ?? '');
+  }
+
   const result = await db
     .update(notes)
-    .set({ ...data, updatedAt: nowIso(), syncStatus: 'pending' })
+    .set({ ...data, ...(searchText !== undefined ? { searchText } : {}), updatedAt: nowIso(), syncStatus: 'pending' })
     .where(eq(notes.id, id))
     .returning();
   return result[0];
 }
 
-async function deleteNote(id: string, soft = true) {
-  if (soft) {
-    const result = await db
-      .update(notes)
-      .set({ deletedAt: nowIso(), syncStatus: 'pending' })
-      .where(eq(notes.id, id))
-      .returning();
-    return result[0];
-  }
-
-  await db.delete(noteTags).where(eq(noteTags.noteId, id));
-  const result = await db.delete(notes).where(eq(notes.id, id)).returning();
-  return result[0];
-}
-
-async function reorderNotes(order: Array<{ id: string; orderIndex: number }>) {
-  const now = nowIso();
-  return Promise.all(
-    order.map(({ id, orderIndex }) =>
-      db
-        .update(notes)
-        .set({ orderIndex, updatedAt: now, syncStatus: 'pending' })
-        .where(eq(notes.id, id))
-    )
-  );
-}
-
-async function createTag(name: string) {
+async function deleteNote(id: string) {
   const result = await db
-    .insert(tags)
-    .values({ name: normalizeTagName(name), createdAt: nowIso() })
+    .update(notes)
+    .set({ deletedAt: nowIso(), syncStatus: 'pending' })
+    .where(eq(notes.id, id))
     .returning();
   return result[0];
 }
 
-async function getTags() {
-  return db.select().from(tags);
+/** Apaga de vez uma nota sem título nem texto, para não ficarem notas vazias na lista. */
+async function deleteIfEmpty(id: string) {
+  const note = await getById(id);
+  if (!note || note.title.trim() !== '' || plainBody(note.body) !== '') return false;
+  await db.delete(notes).where(eq(notes.id, id));
+  return true;
 }
 
-async function getCountTagsByNoteId(noteId: string) {
-  const result = await db.select({ count: count() }).from(noteTags).where(eq(noteTags.noteId, noteId));
-  return { count: result[0]?.count ?? 0 };
+function escapeLike(term: string) {
+  return term.replace(/[\\%_]/g, (char) => `\\${char}`);
 }
 
-async function getTagsByNoteId(noteId: string): Promise<string[]> {
-  const result = await db
-    .select({ name: tags.name })
-    .from(noteTags)
-    .leftJoin(tags, eq(noteTags.tagId, tags.id))
-    .where(eq(noteTags.noteId, noteId));
-
-  return result.map((row) => row.name).filter((name): name is string => name !== null);
-}
-
-async function findTag(name: string): Promise<Tag | undefined> {
-  return (await db.select().from(tags).where(eq(tags.name, normalizeTagName(name))).limit(1))[0];
-}
-
-async function addTag(noteId: string, tagName: string) {
-  const normalized = normalizeTagName(tagName);
-  let tagRow = await findTag(normalized);
-
-  if (!tagRow) {
-    const created = await db.insert(tags).values({ name: normalized, createdAt: nowIso() }).returning();
-    tagRow = created[0];
-  }
-
-  const existing = await db
-    .select()
-    .from(noteTags)
-    .where(and(eq(noteTags.noteId, noteId), eq(noteTags.tagId, tagRow.id)));
-
-  if (existing.length === 0) {
-    await db.insert(noteTags).values({ noteId, tagId: tagRow.id });
-  }
-
-  await db
-    .update(notes)
-    .set({ updatedAt: nowIso(), syncStatus: 'pending' })
-    .where(eq(notes.id, noteId));
-
-  return tagRow;
-}
-
-async function removeTag(noteId: string, tagName: string) {
-  const tagRow = await findTag(tagName);
-  if (!tagRow) return;
-
-  await db.delete(noteTags).where(and(eq(noteTags.noteId, noteId), eq(noteTags.tagId, tagRow.id)));
-  await db
-    .update(notes)
-    .set({ updatedAt: nowIso(), syncStatus: 'pending' })
-    .where(eq(notes.id, noteId));
-}
-
-async function search(query: string) {
-  const term = `%${query.trim()}%`;
-  const titleOrBody = or(like(notes.title, term), like(notes.contentHtml, term));
-  const baseMatches = await db
-    .select()
-    .from(notes)
-    .where(and(isNull(notes.deletedAt), titleOrBody))
-    .orderBy(desc(notes.updatedAt));
-
-  const matchingTags = await db.select().from(tags).where(like(tags.name, term));
-  if (matchingTags.length === 0) return baseMatches;
-
-  const joinRows = await db
-    .select()
-    .from(noteTags)
-    .where(
-      inArray(
-        noteTags.tagId,
-        matchingTags.map((tag) => tag.id)
-      )
-    );
-
-  const merged = new Map(baseMatches.map((note) => [note.id, note]));
-  const missingIds = [...new Set(joinRows.map((row) => row.noteId))].filter((id) => !merged.has(id));
-
-  if (missingIds.length > 0) {
-    const extras = await db
-      .select()
-      .from(notes)
-      .where(and(isNull(notes.deletedAt), inArray(notes.id, missingIds)));
-    for (const note of extras) merged.set(note.id, note);
-  }
-
-  return [...merged.values()].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-}
-
-async function getAllNotesWithFilters(tagId?: string, searchQuery?: string): Promise<Note[]> {
+async function getPage(page: number, limit: number, tagId?: string, search?: string): Promise<NotePage> {
   const filters = [isNull(notes.deletedAt)];
-  const term = searchQuery?.trim();
+  if (tagId) filters.push(eq(notes.tagId, tagId));
 
+  const term = search ? normalizeSearch(search) : '';
   if (term) {
-    const match = or(like(notes.title, `%${term}%`), like(notes.contentHtml, `%${term}%`));
-    if (match) filters.push(match);
+    filters.push(sql`${notes.searchText} LIKE ${`%${escapeLike(term)}%`} ESCAPE '\\'`);
   }
 
   const where = and(...filters);
-  if (!where) return [];
+  const [{ total }] = await db.select({ total: count() }).from(notes).where(where);
+  const rows = await db
+    .select({ note: notes, tagName: tags.name })
+    .from(notes)
+    .leftJoin(tags, eq(notes.tagId, tags.id))
+    .where(where)
+    .orderBy(desc(notes.updatedAt))
+    .limit(limit)
+    .offset(page * limit);
 
-  if (tagId?.trim()) {
-    const rows = await db
-      .select({ note: notes })
-      .from(notes)
-      .innerJoin(noteTags, eq(notes.id, noteTags.noteId))
-      .where(and(eq(noteTags.tagId, tagId.trim()), where))
-      .orderBy(desc(notes.updatedAt));
-    return rows.map((row) => row.note);
-  }
+  return {
+    data: rows.map((row) => ({ ...row.note, tagName: row.tagName })),
+    totalPage: Math.ceil((total ?? 0) / limit),
+  };
+}
 
-  return db.select().from(notes).where(where).orderBy(desc(notes.updatedAt));
+async function listByStudent(studentId: string) {
+  return db
+    .select()
+    .from(notes)
+    .where(and(eq(notes.studentId, studentId), isNull(notes.deletedAt)))
+    .orderBy(desc(notes.updatedAt));
+}
+
+const linkableColumns = { id: students.id, name: students.displayName, stage: students.stage };
+
+/** Pessoas que se podem ligar a uma nota ou mencionar no texto. */
+async function listLinkableStudents(): Promise<LinkableStudent[]> {
+  return db
+    .select(linkableColumns)
+    .from(students)
+    .where(isNull(students.deletedAt))
+    .orderBy(asc(students.displayName));
+}
+
+async function getLinkedStudent(id: string): Promise<LinkableStudent | null> {
+  const row = (await db.select(linkableColumns).from(students).where(eq(students.id, id)).limit(1))[0];
+  return row ?? null;
 }
 
 export const notesActions = {
@@ -215,13 +149,9 @@ export const notesActions = {
   createNote,
   updateNote,
   deleteNote,
-  reorderNotes,
-  createTag,
-  getTags,
-  getCountTagsByNoteId,
-  getTagsByNoteId,
-  addTag,
-  removeTag,
-  search,
-  getAllNotesWithFilters,
+  deleteIfEmpty,
+  getPage,
+  listByStudent,
+  listLinkableStudents,
+  getLinkedStudent,
 };
