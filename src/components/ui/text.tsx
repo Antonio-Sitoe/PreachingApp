@@ -2,48 +2,40 @@ import { cn } from '@/lib/utils';
 import { Slot } from '@rn-primitives/slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
-import { Platform, Text as RNText, type Role } from 'react-native';
+import { Text as RNText, type Role } from 'react-native';
 
-const textVariants = cva(
-  cn(
-    'text-foreground',
-    Platform.select({
-      web: 'select-text',
-    })
-  ),
-  {
-    variants: {
-      variant: {
-        display: 'font-display text-display',
-        titleXl: 'font-display text-title-xl',
-        titleL: 'font-display text-title-l',
-        titleM: 'font-display-semibold text-title-m',
-        titleS: 'font-display-medium text-title-s',
-        bodyM: 'font-sans text-body-m',
-        bodyS: 'font-sans text-body-s',
-        labelM: 'font-sans-semibold text-label-m',
-        labelS: 'font-display-medium text-label-s',
-        button: 'font-display-semibold text-button',
+const textVariants = cva('text-foreground', {
+  variants: {
+    variant: {
+      display: 'font-display text-display',
+      titleXl: 'font-display text-title-xl',
+      titleL: 'font-display text-title-l',
+      titleM: 'font-display-semibold text-title-m',
+      titleS: 'font-display-medium text-title-s',
+      bodyM: 'font-sans text-body-m',
+      bodyS: 'font-sans text-body-s',
+      labelM: 'font-sans-semibold text-label-m',
+      labelS: 'font-display-medium text-label-s',
+      button: 'font-display-semibold text-button',
 
-        default: 'font-sans text-body-m',
-        h1: 'font-display text-title-xl',
-        h2: 'font-display text-title-l',
-        h3: 'font-display-semibold text-title-m',
-        h4: 'font-display-medium text-title-s',
-        p: 'font-sans text-body-m',
-        blockquote: 'border-l-2 border-border pl-3 font-sans text-body-m',
-        code: 'rounded bg-muted px-1 py-0.5 font-mono text-body-s',
-        lead: 'font-sans text-body-m text-muted-foreground',
-        large: 'font-display-semibold text-title-m',
-        small: 'font-sans-semibold text-label-m',
-        muted: 'font-sans text-body-s text-muted-foreground',
-      },
+      default: 'font-sans text-body-m',
+      h1: 'font-display text-title-xl',
+      h2: 'font-display text-title-l',
+      h3: 'font-display-semibold text-title-m',
+      h4: 'font-display-medium text-title-s',
+      p: 'font-sans text-body-m',
+      blockquote: 'border-l-2 border-border pl-3 font-sans text-body-m',
+      code: 'rounded bg-muted px-1 py-0.5 font-mono text-body-s',
+      lead: 'font-sans text-body-m text-muted-foreground',
+      large: 'font-display-semibold text-title-m',
+      small: 'font-sans-semibold text-label-m',
+      muted: 'font-sans text-body-s text-muted-foreground',
     },
-    defaultVariants: {
-      variant: 'bodyM',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'bodyM',
+  },
+});
 
 type TextVariantProps = VariantProps<typeof textVariants>;
 

@@ -49,7 +49,6 @@ function getInitials(name: string) {
 
 type AvatarProps = ViewProps &
   VariantProps<typeof avatarVariants> & {
-
     name: string;
 
     initials?: string;

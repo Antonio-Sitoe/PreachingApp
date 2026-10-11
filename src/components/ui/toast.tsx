@@ -2,7 +2,7 @@ import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Platform, Pressable, View, type ViewProps } from 'react-native';
+import { Pressable, View, type ViewProps } from 'react-native';
 import Animated, { FadeInDown, FadeOutDown } from 'react-native-reanimated';
 import { useSegments } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -34,10 +34,7 @@ function Toast({ message, action, className, ...props }: ToastProps) {
         <Pressable
           role="button"
           onPress={action.onPress}
-          className={cn(
-            'h-11 flex-row items-center gap-1.5 rounded-md px-3 active:opacity-70',
-            Platform.select({ web: 'outline-none focus-visible:opacity-70' })
-          )}>
+          className={'h-11 flex-row items-center gap-1.5 rounded-md px-3 active:opacity-70'}>
           {action.icon ? (
             <AppIcon name={action.icon} size={18} className="text-toast-action" />
           ) : null}
@@ -80,7 +77,6 @@ function hideToast() {
 }
 
 type ToastHostProps = {
-
   bottomOffset?: number;
 };
 

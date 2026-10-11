@@ -5,7 +5,7 @@ import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import type { Stage } from '@/constants/stages';
 import { cn } from '@/lib/utils';
-import { Platform, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 type Tone = 'default' | 'warning';
 
@@ -48,11 +48,7 @@ function PersonCard({
   return (
     <View className={cn('flex-row items-center rounded-lg bg-card py-3.5 pl-4 pr-3', className)}>
       <Pressable
-        className={cn(
-          'flex-1 flex-row items-center gap-3',
-          onPress && 'active:opacity-70',
-          Platform.select({ web: 'outline-none focus-visible:opacity-70' })
-        )}
+        className={cn('flex-1 flex-row items-center gap-3', onPress && 'active:opacity-70')}
         role={onPress ? 'button' : undefined}
         disabled={!onPress}
         onPress={onPress}>

@@ -1,7 +1,7 @@
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Platform, Pressable, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 
 type CodeInputProps = {
   value: string;
@@ -70,13 +70,10 @@ function CodeInput({
         keyboardType="number-pad"
         inputMode="numeric"
         textContentType="oneTimeCode"
-        autoComplete={Platform.OS === 'android' ? 'sms-otp' : 'one-time-code'}
+        autoComplete="sms-otp"
         maxLength={length}
         caretHidden
-        className={cn(
-          'absolute inset-0 text-transparent opacity-0',
-          Platform.select({ web: 'outline-none' })
-        )}
+        className={'absolute inset-0 text-transparent opacity-0'}
       />
     </Pressable>
   );

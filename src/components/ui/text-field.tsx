@@ -3,7 +3,7 @@ import { Text } from '@/components/ui/text';
 import { THEME } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 import * as React from 'react';
-import { Platform, Pressable, TextInput, View, type TextInputProps } from 'react-native';
+import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
 type FieldLabelProps = {
   children: React.ReactNode;
@@ -71,7 +71,6 @@ function TextField({
             right && 'pr-[52px]',
             focused && 'border-primary',
             error && 'border-[1.5px] border-destructive',
-            Platform.select({ web: 'outline-none' }),
             className
           )}
           onFocus={(event) => {
@@ -92,7 +91,6 @@ function TextField({
 }
 
 type PasswordFieldProps = Omit<TextFieldProps, 'right' | 'secureTextEntry'> & {
-
   showLabel?: string;
   hideLabel?: string;
 };
@@ -114,10 +112,7 @@ function PasswordField({
           role="button"
           accessibilityLabel={visible ? hideLabel : showLabel}
           onPress={() => setVisible((current) => !current)}
-          className={cn(
-            'size-11 items-center justify-center rounded-full active:bg-secondary',
-            Platform.select({ web: 'outline-none focus-visible:bg-secondary' })
-          )}>
+          className={'size-11 items-center justify-center rounded-full active:bg-secondary'}>
           <AppIcon name={visible ? 'eye-off' : 'eye'} size={20} className="text-subtle" />
         </Pressable>
       }

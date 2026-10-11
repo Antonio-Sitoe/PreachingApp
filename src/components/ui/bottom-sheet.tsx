@@ -1,19 +1,27 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { SHADOWS } from '@/lib/theme';
+import { SHADOWS, THEME } from '@/lib/theme';
 import { cn } from '@/lib/utils';
-import * as React from 'react';
 import {
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  Pressable,
-  StyleSheet,
-  View,
-  type ViewProps,
-} from 'react-native';
-import Animated, { FadeIn, SlideInDown } from 'react-native-reanimated';
+  Host,
+  ModalBottomSheet,
+  RNHostView,
+  type ModalBottomSheetRef,
+} from '@expo/ui/jetpack-compose';
+import { useColorScheme, useUnstableNativeVariable } from 'nativewind';
+import * as React from 'react';
+import { Pressable, useWindowDimensions, View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+/** O título e o conteúdo da folha, com o espaçamento do Design 2.0. */
+function SheetContent({ title, className, children, ...props }: ViewProps & { title?: string }) {
+  return (
+    <View className={cn('gap-4 px-5', className)} {...props}>
+      {title ? <Text variant="titleL">{title}</Text> : null}
+      {children}
+    </View>
+  );
+}
 
 type BottomSheetPanelProps = ViewProps & {
   title?: string;
@@ -21,6 +29,7 @@ type BottomSheetPanelProps = ViewProps & {
   bottomInset?: number;
 };
 
+/** A folha desenhada em React Native, sem a parte nativa. Só para pré-visualizar no catálogo. */
 function BottomSheetPanel({
   title,
   bottomInset,
@@ -34,58 +43,106 @@ function BottomSheetPanel({
 
   return (
     <View
-      className={cn('gap-4 rounded-t-sheet bg-card px-5 pt-3', className)}
+      className={cn('gap-4 rounded-t-sheet bg-card pt-3', className)}
       style={[{ paddingBottom, boxShadow: SHADOWS.sheet }, style]}
       {...props}>
       <View className="h-1 w-9 self-center rounded-full bg-border" />
-      {title ? <Text variant="titleL">{title}</Text> : null}
-      {children}
+      <SheetContent title={title}>{children}</SheetContent>
     </View>
   );
 }
 
-type BottomSheetProps = Omit<BottomSheetPanelProps, 'bottomInset'> & {
+/** As variáveis do NativeWind vêm em canais ("255 255 255"). O Compose quer uma cor. */
+function useCardColor() {
+  const { colorScheme } = useColorScheme();
+  const channels: unknown = useUnstableNativeVariable('--card');
+  if (typeof channels === 'string' && channels.trim()) {
+    return `rgb(${channels.trim().split(/\s+/).join(', ')})`;
+  }
+  return THEME[colorScheme ?? 'light'].card;
+}
+
+type BottomSheetProps = ViewProps & {
+  title?: string;
+
   open: boolean;
 
   onClose: () => void;
-
-  closeLabel?: string;
 };
 
-function BottomSheet({
-  open,
-  onClose,
-  closeLabel = 'Fechar',
-  children,
-  ...props
-}: BottomSheetProps) {
+/**
+ * Folha inferior nativa (ModalBottomSheet do Material 3, via @expo/ui).
+ * O Compose trata da animação, do gesto, do fundo escuro, da barra de navegação e do teclado.
+ * A folha ajusta-se ao conteúdo: listas compridas vão dentro de um ScrollView com maxHeight.
+ */
+function BottomSheet({ open, onClose, title, className, children, ...props }: BottomSheetProps) {
+  const { width } = useWindowDimensions();
+  const { colorScheme } = useColorScheme();
+  const containerColor = useCardColor();
+  const sheetRef = React.useRef<ModalBottomSheetRef>(null);
+  // A folha continua montada enquanto anima a saída.
+  const [mounted, setMounted] = React.useState(open);
+  // Muda quando a folha volta a abrir a meio da saída, para montar uma nova.
+  const [instance, setInstance] = React.useState(0);
+  const openRef = React.useRef(open);
+  openRef.current = open;
+  const closing = React.useRef(false);
+
+  React.useEffect(() => {
+    if (open) {
+      if (closing.current) {
+        closing.current = false;
+        setInstance((value) => value + 1);
+      }
+      setMounted(true);
+      return;
+    }
+    const sheet = sheetRef.current;
+    if (!sheet) {
+      setMounted(false);
+      return;
+    }
+    // Fechada pelo ecrã (botão Cancelar, escolher uma opção): anima a saída antes de desmontar.
+    closing.current = true;
+    sheet
+      .hide()
+      .catch(() => {})
+      .finally(() => {
+        if (openRef.current) return;
+        closing.current = false;
+        setMounted(false);
+      });
+  }, [open]);
+
+  // Fechada pela pessoa (arrastar para baixo, tocar fora, botão de voltar).
+  function handleDismiss() {
+    setMounted(false);
+    onClose();
+  }
+
+  if (!mounted) return null;
+
   return (
-    <Modal
-      visible={open}
-      transparent
-      statusBarTranslucent
-      animationType="none"
-      onRequestClose={onClose}>
-      <View className="flex-1 justify-end">
-        <Animated.View entering={FadeIn.duration(180)} style={StyleSheet.absoluteFill}>
-          <Pressable
-            style={[StyleSheet.absoluteFill, { backgroundColor: SHADOWS.backdrop }]}
-            accessibilityLabel={closeLabel}
-            role="button"
-            onPress={onClose}
-          />
-        </Animated.View>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-          style={{ width: '100%', maxWidth: 640, alignSelf: 'center' }}>
-          <Animated.View entering={SlideInDown.duration(240)}>
-            <BottomSheetPanel aria-modal {...props}>
+    <Host
+      key={instance}
+      style={{ position: 'absolute', width }}
+      pointerEvents="none"
+      colorScheme={colorScheme}>
+      <ModalBottomSheet
+        ref={sheetRef}
+        onDismissRequest={handleDismiss}
+        skipPartiallyExpanded
+        containerColor={containerColor}
+        scrimColor={SHADOWS.backdrop}>
+        <RNHostView matchContents>
+          <View style={{ width }}>
+            <SheetContent aria-modal title={title} className={cn('pb-6', className)} {...props}>
               {children}
-            </BottomSheetPanel>
-          </Animated.View>
-        </KeyboardAvoidingView>
-      </View>
-    </Modal>
+            </SheetContent>
+          </View>
+        </RNHostView>
+      </ModalBottomSheet>
+    </Host>
   );
 }
 
@@ -119,9 +176,6 @@ function SheetOption({
       role="button"
       className={cn(
         'flex-row items-center gap-3 rounded-lg border border-border px-4 py-3.5 active:bg-secondary',
-        Platform.select({
-          web: 'outline-none transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring',
-        }),
         className
       )}
       {...props}>

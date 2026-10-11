@@ -33,7 +33,6 @@ export default function Screen() {
         contentContainerClassName="w-full max-w-[640px] grow items-center justify-center gap-8 self-center p-4">
         <Image source={LOGO[colorScheme ?? 'light']} style={IMAGE_STYLE} resizeMode="contain" />
         <View className="gap-2 p-4">
-          <Text className="ios:text-foreground font-mono text-sm text-muted-foreground">
             1. Edit <Text variant="code">src/app/(tabs)/index.tsx</Text> to get started.
           </Text>
           <Text className="ios:text-foreground font-mono text-sm text-muted-foreground">

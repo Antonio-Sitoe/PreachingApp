@@ -1,7 +1,7 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
-import { Platform, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type TabBarItem<Key extends string = string> = {
@@ -52,10 +52,7 @@ function TabBar<Key extends string = MainTabKey>({
             aria-selected={active}
             accessibilityLabel={item.label}
             onPress={() => onChange(item.key)}
-            className={cn(
-              'min-h-11 flex-1 items-center gap-2 active:opacity-70',
-              Platform.select({ web: 'outline-none focus-visible:opacity-70' })
-            )}>
+            className={'min-h-11 flex-1 items-center gap-2 active:opacity-70'}>
             <AppIcon
               name={item.icon}
               strokeWidth={item.icon === 'more' ? 2.5 : 2}

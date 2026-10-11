@@ -2,37 +2,20 @@ import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { SHADOWS } from '@/lib/theme';
 import { cn } from '@/lib/utils';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Platform, Pressable } from 'react-native';
+import { Pressable } from 'react-native';
 
-const iconButtonVariants = cva(
-  cn(
-    'shrink-0 items-center justify-center rounded-full',
-    Platform.select({
-      web: 'outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
-    })
-  ),
-  {
-    variants: {
-      variant: {
-        outline: cn(
-          'size-11 border-[1.5px] border-border bg-transparent active:bg-secondary',
-          Platform.select({ web: 'hover:bg-secondary' })
-        ),
-        ghost: cn(
-          'size-11 bg-transparent active:bg-secondary',
-          Platform.select({ web: 'hover:bg-secondary' })
-        ),
-        fab: cn(
-          'size-[58px] bg-primary active:bg-primary/90',
-          Platform.select({ web: 'hover:bg-primary/90' })
-        ),
-      },
+const iconButtonVariants = cva('shrink-0 items-center justify-center rounded-full', {
+  variants: {
+    variant: {
+      outline: 'size-11 border-[1.5px] border-border bg-transparent active:bg-secondary',
+      ghost: 'size-11 bg-transparent active:bg-secondary',
+      fab: 'size-[58px] bg-primary active:bg-primary/90',
     },
-    defaultVariants: {
-      variant: 'outline',
-    },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'outline',
+  },
+});
 
 const ICON_CLASS = {
   outline: 'text-primary',

@@ -1,7 +1,7 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/lib/utils';
-import { Platform, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 type RadioProps = {
   selected: boolean;
@@ -38,9 +38,6 @@ function OptionCard({ icon, title, description, selected, className, ...props }:
         selected
           ? 'border-[1.5px] border-primary bg-secondary'
           : 'border-border bg-card active:bg-secondary',
-        Platform.select({
-          web: 'outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring',
-        }),
         className
       )}
       {...props}>
