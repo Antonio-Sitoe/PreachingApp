@@ -3,7 +3,7 @@ import { Radio } from '@/components/ui/option-card';
 import { FieldLabel } from '@/components/ui/text-field';
 import { Text } from '@/components/ui/text';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 

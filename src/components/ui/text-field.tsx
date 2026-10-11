@@ -1,7 +1,7 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { THEME } from '@/lib/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import * as React from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 

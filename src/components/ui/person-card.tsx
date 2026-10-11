@@ -4,7 +4,7 @@ import { IconButton } from '@/components/ui/icon-button';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import type { Stage } from '@/constants/stages';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { Pressable, View } from 'react-native';
 
 type Tone = 'default' | 'warning';

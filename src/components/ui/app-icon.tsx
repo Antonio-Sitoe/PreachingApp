@@ -1,5 +1,5 @@
 import { TextClassContext } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { cssInterop } from 'nativewind';
 import * as React from 'react';
 import Svg, { Path, type SvgProps } from 'react-native-svg';

@@ -1,6 +1,6 @@
 import { Icon } from '@/components/ui/icon';
 import { TextClassContext } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import * as SelectPrimitive from '@rn-primitives/select';
 import { Check, ChevronDown } from 'lucide-react-native';
 import * as React from 'react';

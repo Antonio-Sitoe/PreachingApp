@@ -1,7 +1,7 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { STAGES, type Stage } from '@/constants/stages';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { View, type ViewProps } from 'react-native';
 
 type StageBadgeProps = ViewProps & {

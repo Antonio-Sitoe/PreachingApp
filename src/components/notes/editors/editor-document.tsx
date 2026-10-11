@@ -11,7 +11,7 @@ import {
 import { EditorToolbar } from '@/components/notes/editors/editor-toolbar';
 import { useEditorStore } from '@/components/notes/editors/store';
 import { THEME } from '@/lib/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useRef, type ReactNode } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View, type TextStyle } from 'react-native';

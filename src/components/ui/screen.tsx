@@ -1,5 +1,5 @@
 import { Fab } from '@/components/ui/fab';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import * as React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';

@@ -1,7 +1,7 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import type { PermissionStatus } from '@/lib/permissions';
+import type { PermissionStatus } from '@/utils/permissions';
 import { View } from 'react-native';
 
 type PermissionRowProps = {
@@ -9,16 +9,10 @@ type PermissionRowProps = {
   title: string;
   description: string;
   status: PermissionStatus;
-  /** Pedir a permissão ao telemóvel. */
   onRequest: () => void;
-  /** Abrir as definições do telemóvel, quando a pessoa recusou de vez. */
   onOpenSettings: () => void;
 };
 
-/**
- * Linha de permissão (canvas, artboard "Configuração inicial 2 de 2").
- * À direita mostra "Permitido", o botão "Permitir" ou, se a pessoa recusou de vez, "Definições".
- */
 function PermissionRow({
   icon,
   title,

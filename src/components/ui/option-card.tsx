@@ -1,6 +1,6 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { Pressable, View } from 'react-native';
 
 type RadioProps = {

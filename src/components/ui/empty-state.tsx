@@ -1,7 +1,7 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { View, type ViewProps } from 'react-native';
 
 type EmptyStateProps = ViewProps & {

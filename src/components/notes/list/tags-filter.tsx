@@ -1,5 +1,5 @@
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { Pressable, ScrollView } from 'react-native';
 
 function TagChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {

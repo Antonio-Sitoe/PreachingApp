@@ -9,7 +9,7 @@ import {
   toggleInline,
 } from '@/components/notes/editors/commands';
 import { useEditorStore } from '@/components/notes/editors/store';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

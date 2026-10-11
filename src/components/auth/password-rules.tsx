@@ -1,7 +1,7 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { PASSWORD_RULE_LABELS, type PasswordRules as Rules } from '@/lib/auth-validation';
-import { cn } from '@/lib/utils';
+import { PASSWORD_RULE_LABELS, type PasswordRules as Rules } from '@/utils/auth/validation';
+import { cn } from '@/utils/cn';
 import { View } from 'react-native';
 
 type PasswordRulesProps = {

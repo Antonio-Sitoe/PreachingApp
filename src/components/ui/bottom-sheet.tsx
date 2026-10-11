@@ -1,7 +1,7 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { SHADOWS, THEME } from '@/lib/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import {
   Host,
   ModalBottomSheet,

@@ -1,4 +1,4 @@
-import { useOnboarding } from '@/lib/onboarding';
+import { useOnboarding } from '@/contexts/onboarding';
 import { LIGHT_THEME_VARS } from '@/lib/theme';
 import { Redirect, router } from 'expo-router';
 import * as React from 'react';
@@ -18,13 +18,10 @@ function useAuthFlow() {
   }, [completed]);
 
   return {
-
     redirect: finished ? <Redirect href="/" /> : null,
     finish,
     leave,
-
     onboarding: !completed,
-
     themeVars: completed ? undefined : LIGHT_THEME_VARS,
   };
 }

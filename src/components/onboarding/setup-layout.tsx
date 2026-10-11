@@ -1,5 +1,5 @@
 import { ScreenHeader, StepPill } from '@/components/ui/screen-header';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { ScrollView, View } from 'react-native';
@@ -34,12 +34,7 @@ function SetupLayout({
   footerClassName,
 }: SetupLayoutProps) {
   const insets = useSafeAreaInsets();
-  // Com edge-to-edge o Android não encolhe a janela, e o teclado tapa o botão.
-  // A barra de navegação é translúcida, por isso a altura inclui essa faixa.
-  const keyboard = useAnimatedKeyboard({
-    isStatusBarTranslucentAndroid: true,
-    isNavigationBarTranslucentAndroid: true,
-  });
+  const keyboard = useAnimatedKeyboard();
   const keyboardStyle = useAnimatedStyle(() => ({
     paddingBottom: keyboard.height.value,
   }));
@@ -67,7 +62,7 @@ function SetupLayout({
         </ScrollView>
         {footer ? (
           <View
-            className={cn('w-full max-w-[640px] self-center pt-3', footerClassName)}
+            className={cn('w-full max-w-[640px] self-center px-4 pt-3 mb-6', footerClassName)}
             style={{
               paddingBottom: Math.max(insets.bottom, 32),
               paddingLeft: Math.max(insets.left, 16),

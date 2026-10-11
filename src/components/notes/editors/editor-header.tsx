@@ -9,7 +9,7 @@ import { useEditorStore } from '@/components/notes/editors/store';
 import { useTags } from '@/components/notes/tags';
 import { STAGES } from '@/constants/stages';
 import { THEME } from '@/lib/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import type { ReactNode } from 'react';

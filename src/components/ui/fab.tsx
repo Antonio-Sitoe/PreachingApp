@@ -1,6 +1,6 @@
 import type { AppIconName } from '@/components/ui/app-icon';
 import { IconButton, type IconButtonProps } from '@/components/ui/icon-button';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { StyleSheet, View } from 'react-native';
 
 type FabProps = Omit<IconButtonProps, 'variant' | 'icon'> & {

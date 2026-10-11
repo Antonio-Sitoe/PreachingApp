@@ -1,6 +1,6 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { SHADOWS } from '@/lib/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { Pressable } from 'react-native';
 

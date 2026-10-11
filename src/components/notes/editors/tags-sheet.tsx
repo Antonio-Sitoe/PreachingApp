@@ -7,7 +7,7 @@ import { useEditorStore } from '@/components/notes/editors/store';
 import { TAGS_QUERY_KEY, useTags } from '@/components/notes/tags';
 import { TAG_NAME_MAX, TagError, tagsActions, type Tag } from '@/database/actions';
 import { THEME } from '@/lib/theme';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { useQueryClient } from '@tanstack/react-query';
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';

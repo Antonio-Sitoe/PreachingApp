@@ -1,5 +1,5 @@
 import { useOnboarding } from '@/contexts/onboarding';
-import { monthlyReportNotificationManager } from '@/notifications/monthly-report';
+import { monthlyReportNotificationManager } from '@/utils/notifications/monthly-report';
 import { useCallback, useEffect } from 'react';
 import { AppState } from 'react-native';
 

@@ -2,7 +2,7 @@ import { Text } from '@/components/ui/text';
 import { NOTE_COLORS } from '@/components/notes/colors';
 import { useSaveNote } from '@/components/notes/editors/save';
 import { useEditorStore } from '@/components/notes/editors/store';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { Pressable, ScrollView, View } from 'react-native';
 
 function ColorsPalette() {

@@ -6,7 +6,7 @@ import { Text } from '@/components/ui/text';
 import { insertMention, linkStudent } from '@/components/notes/editors/commands';
 import { useEditorStore } from '@/components/notes/editors/store';
 import { notesActions, type LinkableStudent } from '@/database/actions';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, useWindowDimensions, View } from 'react-native';
 
