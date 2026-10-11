@@ -1,12 +1,12 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/cn';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
 
 type SettingsSectionProps = {
   title: string;
-  /** Nota por baixo do cartão. */
+
   hint?: string;
   children: ReactNode;
 };
@@ -29,12 +29,12 @@ function SettingsSection({ title, hint, children }: SettingsSectionProps) {
 
 type SettingsRowProps = {
   title: string;
-  /** Valor à direita, antes da seta. */
+
   value?: string;
   onPress?: () => void;
-  /** Interruptor ou outro controlo. Quando existe, a linha não leva seta. */
+
   trailing?: ReactNode;
-  /** Mostra a seta mesmo sem acção, para linhas que ainda não abrem ecrã. */
+
   chevron?: boolean;
   first?: boolean;
 };

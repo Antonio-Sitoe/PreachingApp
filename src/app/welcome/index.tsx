@@ -5,7 +5,7 @@ import { THEME } from '@/lib/theme';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { vars } from 'nativewind';
-import { Platform, Pressable, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 
@@ -29,7 +29,6 @@ export default function WelcomeScreen() {
         {
           backgroundColor: THEME.light.background,
           experimental_backgroundImage: WASH,
-          ...(Platform.OS === 'web' ? { backgroundImage: WASH } : null),
         },
       ]}>
       <StatusBar style="dark" />

@@ -6,7 +6,7 @@ import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
 import { reportDateLabel, shiftDate } from '@/components/reports/format';
 import { Stepper } from '@/components/reports/stepper';
-import { useReportForm } from '@/components/reports/store';
+import { useReportForm } from '@/hooks/use-report-form';
 import { reportsActions } from '@/database/actions';
 import { THEME } from '@/lib/theme';
 import { useQueryClient } from '@tanstack/react-query';

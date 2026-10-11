@@ -2,14 +2,14 @@ import { PermissionRow } from '@/components/onboarding/permission-row';
 import { SetupLayout } from '@/components/onboarding/setup-layout';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { useOnboarding } from '@/lib/onboarding';
+import { useOnboarding } from '@/contexts/onboarding';
 import {
   checkPermission,
   openAppSettings,
   requestPermission,
   type PermissionKind,
   type PermissionStatus,
-} from '@/lib/permissions';
+} from '@/utils/permissions';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { AppState, View } from 'react-native';

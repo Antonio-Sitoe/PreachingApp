@@ -3,7 +3,7 @@ import { IconButton } from '@/components/ui/icon-button';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
 import { monthHeading, monthShareText } from '@/components/reports/format';
-import { PUBLISHER_TYPE_INFO } from '@/lib/setup-profile';
+import { PUBLISHER_TYPE_INFO } from '@/utils/profile/setup';
 import { reportsActions, usersActions } from '@/database/actions';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
