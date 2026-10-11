@@ -12,7 +12,8 @@
     "db:generate": "drizzle-kit generate",
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/ui": "~57.0.22",
@@ -72,6 +73,7 @@
     "@types/react": "~19.2.10",
     "babel-plugin-inline-import": "^3.0.0",
     "drizzle-kit": "^0.31.11",
+    "patch-package": "^8.0.1",
     "prettier": "^3.8.3",
     "prettier-plugin-tailwindcss": "^0.8.1",
     "react-native-svg-transformer": "^1.5.3",
