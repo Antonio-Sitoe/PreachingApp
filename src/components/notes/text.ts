@@ -1,4 +1,3 @@
-/** Texto visível de uma nota, sem as marcas HTML do editor. */
 export function plainText(html: string) {
   return html
     .replace(/<[^>]*>/g, ' ')
