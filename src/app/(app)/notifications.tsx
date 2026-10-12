@@ -17,19 +17,26 @@ import {
   type NotificationPreferences,
   type RhythmDays,
 } from '@/utils/notifications/preferences';
-import { openAppSettings } from '@/utils/permissions';
+import {
+  checkPermission,
+  openAppSettings,
+  requestPermission,
+  type PermissionStatus,
+} from '@/utils/permissions';
 import { getNotificationPreferences, setNotificationPreferences } from '@/utils/storage';
-import { monthlyReportNotificationManager } from '@/utils/notifications/monthly-report';
+import { syncAllNotifications } from '@/utils/notifications/scheduler';
 import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { PermissionStatus } from 'expo-notifications';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { Pressable, ScrollView, View } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { AppState, Pressable, ScrollView, View } from 'react-native';
 
 type TimeTarget = 'daily' | 'monthly';
 type RhythmTarget = 'revisit' | 'study';
 
 type Sheet = { kind: 'lead' } | { kind: 'rhythm'; target: RhythmTarget } | { kind: 'title' } | null;
+
+const EXACT_ALARM_HINT =
+  'Sem esta permissão o Android pode atrasar os lembretes alguns minutos ou mais. Ativa em Alarmes e lembretes.';
 
 const RHYTHM_HINT =
   'Quando alguém passa deste intervalo sem visita, aparece nos alertas do Hoje. Cada estudante pode ter o seu próprio ritmo.';
@@ -43,6 +50,20 @@ export default function NotificationsScreen() {
   const [sheet, setSheet] = useState<Sheet>(null);
   const [titleDraft, setTitleDraft] = useState(prefs.monthly.title);
   const [timePicker, setTimePicker] = useState<{ target: TimeTarget; date: Date } | null>(null);
+  const [exactAlarm, setExactAlarm] = useState<PermissionStatus>('granted');
+
+  // Relê ao voltar de "Alarmes e lembretes"; o NotificationProvider volta a agendar.
+  const refreshExactAlarm = useCallback(async () => {
+    setExactAlarm(await checkPermission('exactAlarm'));
+  }, []);
+
+  useEffect(() => {
+    refreshExactAlarm();
+    const subscription = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refreshExactAlarm();
+    });
+    return () => subscription.remove();
+  }, [refreshExactAlarm]);
 
   function persist(next: NotificationPreferences) {
     setNotificationPreferences(next);
@@ -52,13 +73,13 @@ export default function NotificationsScreen() {
   async function saveMonthly(patch: Partial<MonthlyReminderConfig>) {
     const current = getNotificationPreferences();
     persist({ ...current, monthly: { ...current.monthly, ...patch } });
-    await monthlyReportNotificationManager.initializeOnAppLaunch();
+    await syncAllNotifications();
   }
 
   async function setMonthlyEnabled(enabled: boolean) {
     if (enabled) {
-      const status = await monthlyReportNotificationManager.requestPermissions();
-      if (status !== PermissionStatus.GRANTED) {
+      const status = await requestPermission('notifications');
+      if (status !== 'granted') {
         showToast({
           message: 'Para lembrar o relatório, permite as notificações nas definições do telemóvel.',
           action: { label: 'Definições', onPress: () => openAppSettings() },
@@ -131,6 +152,19 @@ export default function NotificationsScreen() {
         className="flex-1"
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="w-full max-w-[640px] gap-4 self-center px-4 pb-8 pt-4">
+        {exactAlarm !== 'granted' ? (
+          <SettingsSection title="Lembretes à hora certa" hint={EXACT_ALARM_HINT}>
+            <SettingsRow
+              first
+              title="Alarmes e lembretes"
+              value="Desligado"
+              onPress={() => {
+                void requestPermission('exactAlarm');
+              }}
+            />
+          </SettingsSection>
+        ) : null}
+
         <SettingsSection title="Notificação do dia">
           <SettingsRow
             first

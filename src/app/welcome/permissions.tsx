@@ -28,14 +28,16 @@ export default function PermissionsScreen() {
   const [statuses, setStatuses] = React.useState<Statuses>({
     notifications: 'denied',
     location: 'denied',
+    exactAlarm: 'denied',
   });
 
   // Lê o estado ao abrir e sempre que a pessoa volta das definições do telemóvel.
   // Uma permissão já marcada como recusada de vez só deixa de o estar se for concedida.
   const refresh = React.useCallback(async () => {
-    const [notifications, location] = await Promise.all([
+    const [notifications, location, exactAlarm] = await Promise.all([
       checkPermission('notifications'),
       checkPermission('location'),
+      checkPermission('exactAlarm'),
     ]);
     setStatuses((current) => ({
       notifications:
@@ -43,6 +45,7 @@ export default function PermissionsScreen() {
           ? 'blocked'
           : notifications,
       location: current.location === 'blocked' && location === 'denied' ? 'blocked' : location,
+      exactAlarm,
     }));
   }, []);
 
@@ -80,9 +83,10 @@ export default function PermissionsScreen() {
         </>
       }>
       <View className="gap-2">
-        <Text variant="titleL">Duas permissões que ajudam</Text>
+        <Text variant="titleL">Permissões que ajudam</Text>
         <Text className="text-muted-foreground">
-          Permite as duas para continuar. Podes mudar isto mais tarde em Mais, Definições.
+          Permite notificações e localização para continuar. Podes mudar isto mais tarde em Mais,
+          Definições.
         </Text>
       </View>
 
@@ -102,6 +106,14 @@ export default function PermissionsScreen() {
           status={statuses.location}
           onRequest={() => request('location')}
           onOpenSettings={openAppSettings}
+        />
+        <PermissionRow
+          icon="clock"
+          title="Lembretes à hora certa"
+          description="Opcional. Sem isto o Android pode atrasar os lembretes alguns minutos."
+          status={statuses.exactAlarm}
+          onRequest={() => request('exactAlarm')}
+          onOpenSettings={() => request('exactAlarm')}
         />
       </View>
     </SetupLayout>
