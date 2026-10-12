@@ -1,6 +1,0 @@
-{
-  "name": "editor-v3",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Editor de notas em blocos com Jetpack Compose e Compose Rich Editor (Android)."
-}

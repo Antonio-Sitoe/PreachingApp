@@ -9,7 +9,6 @@ export default function AppLayout() {
         headerShadowVisible: false,
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="note/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="notifications" options={{ headerShown: false }} />
       <Stack.Screen name="report" options={{ title: 'Relatório' }} />
     </Stack>

@@ -1,6 +1,0 @@
-{
-  "name": "editor-cascade",
-  "version": "0.1.0",
-  "private": true,
-  "description": "Exemplo do Cascade Editor (linreal, editor em blocos com Compose) para comparar com o editor v3 (Android)."
-}

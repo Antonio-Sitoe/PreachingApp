@@ -1,8 +1,0 @@
-{
-  "name": "editor-v3",
-  "platforms": ["android"],
-  "coreFeatures": ["compose"],
-  "android": {
-    "modules": ["expo.modules.editorv3.EditorV3Module"]
-  }
-}

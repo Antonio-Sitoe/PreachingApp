@@ -5,7 +5,6 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { Fab } from '@/components/ui/fab';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
-import { DEFAULT_NOTE_COLOR } from '@/components/notes/colors';
 import { ListCard, TagsFilter } from '@/components/notes/list';
 import { useTags } from '@/components/notes/tags';
 import { CONTENT_MAX_WIDTH } from '@/components/ui/screen';
@@ -14,24 +13,20 @@ import type { NoteListItem } from '@/database/actions';
 import { THEME } from '@/lib/theme';
 import { FlashList } from '@shopify/flash-list';
 import { keepPreviousData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
-import { useFocusEffect, useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';
-import { useCallback, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { RefreshControl, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PAGE_SIZE = 20;
 
 export default function NotesScreen() {
-  const router = useRouter();
   const queryClient = useQueryClient();
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme ?? 'light'];
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState('all');
-  const [isCreating, setIsCreating] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const navigating = useRef(false);
   // Só um cartão aberto de cada vez.
   const openCard = useRef<{ id: string; close: () => void } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<{ note: NoteListItem; close: () => void } | null>(null);
@@ -53,13 +48,6 @@ export default function NotesScreen() {
   const notes = notesQuery.data?.pages.flatMap((page) => page.data) ?? [];
   const filtered = search !== undefined || tagId !== undefined;
 
-  // Voltar do editor desbloqueia a navegação. A lista é actualizada pelo editor ao sair.
-  useFocusEffect(
-    useCallback(() => {
-      navigating.current = false;
-    }, [])
-  );
-
   async function onRefresh() {
     setRefreshing(true);
     try {
@@ -69,28 +57,13 @@ export default function NotesScreen() {
     }
   }
 
-  async function handleCreate() {
-    if (navigating.current || isCreating) return;
-    navigating.current = true;
-    setIsCreating(true);
+  // O editor de notas foi removido; até haver um novo, a lista não abre nem cria notas.
+  function editorUnavailable() {
+    showToast({ message: 'O editor de notas ainda não está disponível.' });
+  }
 
-    try {
-      const note = await notesActions.createNote({
-        title: '',
-        body: '',
-        tagId: tagId ?? null,
-        color: DEFAULT_NOTE_COLOR,
-        studentId: null,
-        remoteId: null,
-      });
-      if (!note) throw new Error('empty');
-      router.push({ pathname: '/note/[id]', params: { id: note.id } });
-    } catch {
-      navigating.current = false;
-      showToast({ message: 'Não foi possível criar a nota.' });
-    } finally {
-      setIsCreating(false);
-    }
+  function handleCreate() {
+    editorUnavailable();
   }
 
   function cardOpened(id: string, close: () => void) {
@@ -119,10 +92,8 @@ export default function NotesScreen() {
     }
   }
 
-  function openNote(note: NoteListItem) {
-    if (navigating.current) return;
-    navigating.current = true;
-    router.push({ pathname: '/note/[id]', params: { id: note.id } });
+  function openNote(_note: NoteListItem) {
+    editorUnavailable();
   }
 
   const header = (
@@ -220,7 +191,7 @@ export default function NotesScreen() {
       {showFab ? (
         <View pointerEvents="box-none" style={StyleSheet.absoluteFill} className="items-center">
           <View pointerEvents="box-none" className="w-full max-w-[640px] flex-1">
-            <Fab floating accessibilityLabel="Nova nota" onPress={handleCreate} disabled={isCreating} />
+            <Fab floating accessibilityLabel="Nova nota" onPress={handleCreate} />
           </View>
         </View>
       ) : null}
