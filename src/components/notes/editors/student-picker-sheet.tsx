@@ -3,7 +3,7 @@ import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
-import { insertMention, linkStudent } from '@/components/notes/editors/commands';
+import { linkStudent } from '@/components/notes/editors/commands';
 import { useEditorStore } from '@/components/notes/editors/store';
 import { notesActions, type LinkableStudent } from '@/database/actions';
 import { cn } from '@/utils/cn';
@@ -38,28 +38,20 @@ function StudentPickerSheet() {
   const set = useEditorStore((state) => state.set);
   const students = useStudents(picker !== null);
   const { height } = useWindowDimensions();
-  const linking = picker?.kind === 'link';
 
   function close() {
     set({ picker: null });
   }
 
   function choose(student: LinkableStudent) {
-    if (!picker) return;
-    if (picker.kind === 'link') linkStudent(studentId === student.id ? null : student);
-    else insertMention(student, picker);
+    linkStudent(studentId === student.id ? null : student);
     close();
   }
 
   return (
-    <BottomSheet
-      open={picker !== null}
-      onClose={close}
-      title={linking ? 'Sobre alguém' : 'Mencionar estudante'}>
+    <BottomSheet open={picker !== null} onClose={close} title="Sobre alguém">
       <Text variant="bodyS" className="text-muted-foreground">
-        {linking
-          ? 'A nota aparece na ficha do estudante.'
-          : 'A menção liga o texto à ficha de alguém.'}
+        A nota aparece na ficha do estudante.
       </Text>
 
       {students && students.length === 0 ? (
@@ -72,7 +64,7 @@ function StudentPickerSheet() {
       ) : (
         <ScrollView style={{ maxHeight: height * 0.45 }} contentContainerClassName="gap-2">
           {(students ?? []).map((student) => {
-            const selected = linking && student.id === studentId;
+            const selected = student.id === studentId;
             return (
               <Pressable
                 key={student.id}
@@ -96,7 +88,7 @@ function StudentPickerSheet() {
         </ScrollView>
       )}
 
-      {linking && studentId ? (
+      {studentId ? (
         <Button
           variant="destructive"
           onPress={() => {
@@ -113,4 +105,4 @@ function StudentPickerSheet() {
   );
 }
 
-export { StudentPickerSheet };
+export { StudentPickerSheet, useStudents };

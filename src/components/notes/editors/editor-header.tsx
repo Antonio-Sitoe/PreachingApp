@@ -1,9 +1,8 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { getInitials } from '@/components/ui/avatar';
 import { Text } from '@/components/ui/text';
-import { isTextBlock } from '@/components/notes/body';
 import { formatNoteStamp } from '@/components/notes/format';
-import { focusEnd } from '@/components/notes/editors/commands';
+import { focusStart } from '@/components/notes/editors/commands';
 import { useSaveNote } from '@/components/notes/editors/save';
 import { useEditorStore } from '@/components/notes/editors/store';
 import { useTags } from '@/components/notes/tags';
@@ -83,12 +82,6 @@ function EditorHeader({ autoFocusTitle }: { autoFocusTitle: boolean }) {
   const updatedAt = useEditorStore((state) => state.updatedAt);
   const set = useEditorStore((state) => state.set);
 
-  function goToBody() {
-    const first = useEditorStore.getState().blocks[0];
-    if (isTextBlock(first)) set({ focusedId: first.id, pendingCursor: { id: first.id, position: 0 } });
-    else focusEnd();
-  }
-
   return (
     <View>
       <View className="px-5 pt-2">
@@ -100,7 +93,7 @@ function EditorHeader({ autoFocusTitle }: { autoFocusTitle: boolean }) {
             set({ title: clean });
             save({ title: clean });
           }}
-          onSubmitEditing={goToBody}
+          onSubmitEditing={focusStart}
           submitBehavior="submit"
           autoFocus={autoFocusTitle}
           placeholder="Título"

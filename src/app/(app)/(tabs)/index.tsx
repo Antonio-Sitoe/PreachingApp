@@ -42,6 +42,16 @@ export default function Screen() {
         <Button variant="outline" className="w-full" onPress={reset}>
           <Text>Reset</Text>
         </Button>
+        <Link href="/editor-v3" asChild>
+          <Button className="w-full">
+            <Text>Editor v3</Text>
+          </Button>
+        </Link>
+        <Link href="/editor-cascade" asChild>
+          <Button variant="secondary" className="w-full">
+            <Text>Editor Cascade</Text>
+          </Button>
+        </Link>
         <View className="w-full flex-row flex-wrap justify-center gap-2">
           <Link href="https://reactnativereusables.com" asChild>
             <Button>

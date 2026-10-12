@@ -49,6 +49,17 @@ export default {
         },
       ],
       '@react-native-community/datetimepicker',
+      [
+        'expo-build-properties',
+        {
+          android: {
+            // Kotlin 2.4 para os editores nativos (modules/) poderem usar libs Compose recentes;
+            // o cascade-editor pede pelo menos 2.3 e minSdk 26.
+            kotlinVersion: '2.4.21',
+            minSdkVersion: 26,
+          },
+        },
+      ],
     ],
     experiments: {
       typedRoutes: true,

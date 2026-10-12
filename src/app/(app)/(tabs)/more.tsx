@@ -60,6 +60,10 @@ export default function MoreScreen() {
           <SettingsRow title="Contagens anónimas" value="Desligadas" chevron />
         </SettingsSection>
 
+        <SettingsSection title="Experimentar">
+          <SettingsRow first title="Notas 10tap" chevron onPress={() => router.push('/tentap-notes')} />
+        </SettingsSection>
+
         <Pressable
           accessibilityRole="button"
           onPress={() => router.push('/auth/sign-in')}

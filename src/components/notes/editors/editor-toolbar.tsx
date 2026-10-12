@@ -1,27 +1,25 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { isTextBlock } from '@/components/notes/body';
-import {
-  insertBlock,
-  isInlineActive,
-  openMentionPicker,
-  setBlockType,
-  toggleInline,
-} from '@/components/notes/editors/commands';
+import { format, startMention, type FormatStyle } from '@/components/notes/editors/commands';
 import { useEditorStore } from '@/components/notes/editors/store';
 import { cn } from '@/utils/cn';
 import type { ReactNode } from 'react';
 import { Pressable, View } from 'react-native';
+import type { OnChangeStateEvent } from 'react-native-enriched-html';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+type StyleKey = Exclude<keyof OnChangeStateEvent, 'alignment'>;
 
 function ToolButton({
   label,
   active = false,
+  disabled = false,
   onPress,
   children,
 }: {
   label: string;
   active?: boolean;
+  disabled?: boolean;
   onPress: () => void;
   children: ReactNode;
 }) {
@@ -29,11 +27,13 @@ function ToolButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
-      accessibilityState={{ selected: active }}
+      accessibilityState={{ selected: active, disabled }}
+      disabled={disabled}
       onPress={onPress}
       className={cn(
         'size-11 items-center justify-center rounded-lg active:bg-secondary',
-        active ? 'bg-secondary' : 'bg-transparent'
+        active ? 'bg-secondary' : 'bg-transparent',
+        disabled && 'opacity-40'
       )}>
       {children}
     </Pressable>
@@ -47,14 +47,14 @@ function ToolIcon({ name, active }: { name: AppIconName; active: boolean }) {
 function EditorToolbar() {
   const insets = useSafeAreaInsets();
   const set = useEditorStore((state) => state.set);
-  const block = useEditorStore((state) => state.blocks.find((item) => item.id === state.focusedId) ?? null);
+  const styleState = useEditorStore((state) => state.styleState);
 
-  useEditorStore((state) => state.selection);
-  useEditorStore((state) => state.typingStyles);
+  const active = (key: StyleKey) => styleState?.[key].isActive ?? false;
+  const blocked = (key: StyleKey) => styleState?.[key].isBlocking ?? false;
 
-  const type = isTextBlock(block) ? block.type : null;
-  const bold = isInlineActive(block, 'bold');
-  const italic = isInlineActive(block, 'italic');
+  function styleButton(key: StyleKey, style: FormatStyle) {
+    return { active: active(key), disabled: blocked(key), onPress: () => format(style) };
+  }
 
   return (
     <View
@@ -62,37 +62,41 @@ function EditorToolbar() {
       aria-label="Formatar"
       className="flex-row items-center justify-between border-t border-border bg-card px-3 pt-1.5"
       style={{ paddingBottom: Math.max(insets.bottom, 12) }}>
-      <ToolButton label="Inserir bloco" onPress={() => set({ isInsertOpen: true })}>
+      <ToolButton label="Inserir" onPress={() => set({ isInsertOpen: true })}>
         <View className="size-8 items-center justify-center rounded-full bg-primary">
           <AppIcon name="plus" size={18} strokeWidth={2.4} className="text-primary-foreground" />
         </View>
       </ToolButton>
-      <ToolButton label="Título" active={type === 'heading'} onPress={() => setBlockType('heading')}>
-        <ToolIcon name="heading" active={type === 'heading'} />
+      <ToolButton label="Título" {...styleButton('h2', 'heading')}>
+        <ToolIcon name="heading" active={active('h2')} />
       </ToolButton>
-      <ToolButton label="Negrito" active={bold} onPress={() => toggleInline('bold')}>
-        <Text className={cn('font-display text-[18px] leading-5', bold ? 'text-primary-strong' : 'text-muted-foreground')}>
+      <ToolButton label="Negrito" {...styleButton('bold', 'bold')}>
+        <Text
+          className={cn(
+            'font-display text-[18px] leading-5',
+            active('bold') ? 'text-primary-strong' : 'text-muted-foreground'
+          )}>
           B
         </Text>
       </ToolButton>
-      <ToolButton label="Itálico" active={italic} onPress={() => toggleInline('italic')}>
+      <ToolButton label="Itálico" {...styleButton('italic', 'italic')}>
         <Text
-          className={cn('text-[18px] leading-5', italic ? 'text-primary-strong' : 'text-muted-foreground')}
+          className={cn('text-[18px] leading-5', active('italic') ? 'text-primary-strong' : 'text-muted-foreground')}
           style={{ fontStyle: 'italic', fontWeight: '600', fontFamily: 'serif' }}>
           I
         </Text>
       </ToolButton>
-      <ToolButton label="Lista" active={type === 'bullet'} onPress={() => setBlockType('bullet')}>
-        <ToolIcon name="bullet-list" active={type === 'bullet'} />
+      <ToolButton label="Lista" {...styleButton('unorderedList', 'bullet')}>
+        <ToolIcon name="bullet-list" active={active('unorderedList')} />
       </ToolButton>
-      <ToolButton label="Lista de tarefas" active={type === 'task'} onPress={() => setBlockType('task')}>
-        <ToolIcon name="task-list" active={type === 'task'} />
+      <ToolButton label="Lista de tarefas" {...styleButton('checkboxList', 'task')}>
+        <ToolIcon name="task-list" active={active('checkboxList')} />
       </ToolButton>
-      <ToolButton label="Texto bíblico" active={block?.type === 'scripture'} onPress={() => insertBlock('scripture')}>
-        <ToolIcon name="scripture" active={block?.type === 'scripture'} />
+      <ToolButton label="Texto bíblico" {...styleButton('blockQuote', 'quote')}>
+        <ToolIcon name="scripture" active={active('blockQuote')} />
       </ToolButton>
-      <ToolButton label="Mencionar estudante" onPress={openMentionPicker}>
-        <ToolIcon name="mention" active={false} />
+      <ToolButton label="Mencionar estudante" disabled={blocked('mention')} onPress={startMention}>
+        <ToolIcon name="mention" active={active('mention')} />
       </ToolButton>
     </View>
   );

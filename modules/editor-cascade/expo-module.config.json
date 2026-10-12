@@ -1,0 +1,8 @@
+{
+  "name": "editor-cascade",
+  "platforms": ["android"],
+  "coreFeatures": ["compose"],
+  "android": {
+    "modules": ["expo.modules.editorcascade.EditorCascadeModule"]
+  }
+}

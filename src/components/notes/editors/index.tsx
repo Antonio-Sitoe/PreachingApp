@@ -2,7 +2,7 @@ import { AlertDialog } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
-import { parseBody } from '@/components/notes/body';
+import { isHtmlBody, toEditorHtml } from '@/components/notes/body';
 import { DetailsSheet } from '@/components/notes/editors/details-sheet';
 import { EditorDocument } from '@/components/notes/editors/editor-document';
 import { EditorHeader, EditorTopBar } from '@/components/notes/editors/editor-header';
@@ -46,8 +46,8 @@ function NotesEditor() {
       useEditorStore.getState().set({
         id: note.id,
         title: note.title,
-        body: note.body,
-        blocks: parseBody(note.body),
+        body: toEditorHtml(note.body),
+        awaitingNativeHtml: !isHtmlBody(note.body),
         tagId: note.tagId,
         color: note.color,
         studentId: note.studentId,

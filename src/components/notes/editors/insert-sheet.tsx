@@ -2,30 +2,32 @@ import { type AppIconName } from '@/components/ui/app-icon';
 import { BottomSheet, SheetOption } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { insertBlock } from '@/components/notes/editors/commands';
+import { format, startMention, type FormatStyle } from '@/components/notes/editors/commands';
 import { useEditorStore } from '@/components/notes/editors/store';
 import { View } from 'react-native';
 
-type InsertType = 'heading' | 'bullet' | 'task' | 'scripture' | 'mention' | 'divider';
+type InsertType = Exclude<FormatStyle, 'bold' | 'italic'> | 'mention';
 
 const INSERTS: { type: InsertType; icon: AppIconName; title: string; description: string }[] = [
   { type: 'heading', icon: 'heading', title: 'Título', description: 'Separa a nota em partes' },
   { type: 'bullet', icon: 'bullet-list', title: 'Lista', description: 'Pontos soltos, um por linha' },
+  { type: 'ordered', icon: 'ordered-list', title: 'Lista numerada', description: 'Passos ou pontos por ordem' },
   { type: 'task', icon: 'task-list', title: 'Lista de tarefas', description: 'Itens que podes marcar como feitos' },
   {
-    type: 'scripture',
+    type: 'quote',
     icon: 'scripture',
     title: 'Texto bíblico',
-    description: 'A referência em destaque, com o teu comentário',
+    description: 'Uma citação em destaque, com o teu comentário',
   },
+  { type: 'code', icon: 'code', title: 'Código', description: 'Texto à parte, sem formatação' },
   { type: 'mention', icon: 'mention', title: 'Mencionar estudante', description: 'Liga a nota à ficha de alguém' },
-  { type: 'divider', icon: 'divider', title: 'Separador', description: 'Uma linha entre dois assuntos' },
 ];
 
 const SHORTCUTS = [
   ['#', 'título'],
   ['-', 'lista'],
   ['[]', 'tarefa'],
+  ['>', 'citação'],
   ['@', 'estudante'],
 ] as const;
 
@@ -34,13 +36,9 @@ function InsertSheet() {
   const set = useEditorStore((state) => state.set);
 
   function insert(type: InsertType) {
-    if (type === 'mention') {
-      const { focusedId } = useEditorStore.getState();
-      set({ isInsertOpen: false, picker: { kind: 'mention', blockId: focusedId, at: null } });
-      return;
-    }
     set({ isInsertOpen: false });
-    insertBlock(type);
+    if (type === 'mention') startMention();
+    else format(type);
   }
 
   return (
