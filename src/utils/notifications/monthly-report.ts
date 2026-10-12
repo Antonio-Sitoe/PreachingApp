@@ -1,17 +1,7 @@
 import type { MonthlyReminderConfig } from '@/utils/notifications/preferences';
-import { getNotificationPreferences, setNotificationPreferences } from '@/utils/storage';
 import * as Notifications from 'expo-notifications';
 
 const CHANNEL_ID = 'monthly-reminders';
-
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
 
 /** O dia 1 deste mês, à hora pedida, se ainda não passou; senão, o dia 1 do mês seguinte. */
 export function nextTwelveMonthlyDates(hour: number, minute: number, now = new Date()): Date[] {
@@ -24,24 +14,13 @@ export function nextTwelveMonthlyDates(hour: number, minute: number, now = new D
 }
 
 class MonthlyNotificationManager {
-  async initializeOnAppLaunch(): Promise<void> {
-    try {
-      const permissionStatus = await this.getPermissionStatus();
-      if (permissionStatus !== Notifications.PermissionStatus.GRANTED) return;
+  /** Apaga e volta a criar os lembretes. Quem chama já verificou a permissão. */
+  async sync(monthly: MonthlyReminderConfig): Promise<void> {
+    await this.cancelAllMonthlyNotifications();
+    if (!monthly.enabled) return;
 
-      const { monthly } = getNotificationPreferences();
-      await this.cancelAllMonthlyNotifications();
-      if (!monthly.enabled) return;
-
-      await this.prepareChannel(monthly);
-      await this.scheduleNext12Months(monthly);
-      setNotificationPreferences({
-        ...getNotificationPreferences(),
-        lastSync: new Date().toISOString(),
-      });
-    } catch (error) {
-      console.error('Erro ao inicializar notificações mensais:', error);
-    }
+    await this.prepareChannel(monthly);
+    await this.scheduleNext12Months(monthly);
   }
 
   async cancelAllMonthlyNotifications(): Promise<void> {
@@ -53,16 +32,6 @@ class MonthlyNotificationManager {
     for (const notification of monthly) {
       await Notifications.cancelScheduledNotificationAsync(notification.identifier);
     }
-  }
-
-  async getPermissionStatus(): Promise<Notifications.PermissionStatus> {
-    const { status } = await Notifications.getPermissionsAsync();
-    return status;
-  }
-
-  async requestPermissions(): Promise<Notifications.PermissionStatus> {
-    const { status } = await Notifications.requestPermissionsAsync();
-    return status;
   }
 
   private async prepareChannel(config: MonthlyReminderConfig): Promise<void> {

@@ -1,18 +1,16 @@
 import { useOnboarding } from '@/contexts/onboarding';
-import { monthlyReportNotificationManager } from '@/utils/notifications/monthly-report';
+import { syncAllNotifications } from '@/utils/notifications/scheduler';
 import { useCallback, useEffect } from 'react';
 import { AppState } from 'react-native';
 
 /**
- * Volta a agendar o lembrete do relatório ao abrir a app, ao regressar ao primeiro plano
- * e quando a configuração inicial acaba (a permissão acaba de ser dada).
+ * Volta a agendar todas as notificações ao abrir a app, ao regressar ao primeiro plano
+ * (por exemplo, depois de mexer em "Alarmes e lembretes") e quando a configuração inicial acaba.
  */
 function NotificationProvider({ children }: { children: React.ReactNode }) {
   const { completed } = useOnboarding();
 
-  const sync = useCallback(() => {
-    return monthlyReportNotificationManager.initializeOnAppLaunch();
-  }, []);
+  const sync = useCallback(() => syncAllNotifications(), []);
 
   useEffect(() => {
     if (!completed) return;

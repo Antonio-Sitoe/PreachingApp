@@ -1,7 +1,8 @@
 import * as Notifications from 'expo-notifications';
 import { Linking, PermissionsAndroid, type Permission } from 'react-native';
+import { canScheduleExactAlarms, openExactAlarmSettings } from '../../../modules/exact-alarm';
 
-export type PermissionKind = 'notifications' | 'location';
+export type PermissionKind = 'notifications' | 'location' | 'exactAlarm';
 
 export type PermissionStatus = 'granted' | 'denied' | 'blocked' | 'unavailable';
 
@@ -39,12 +40,27 @@ async function requestLocation(): Promise<PermissionStatus> {
   return 'denied';
 }
 
+async function checkExactAlarm(): Promise<PermissionStatus> {
+  return canScheduleExactAlarms() ? 'granted' : 'denied';
+}
+
+/** Não há diálogo: abre "Alarmes e lembretes" e o estado só muda quando a pessoa volta. */
+async function requestExactAlarm(): Promise<PermissionStatus> {
+  if (canScheduleExactAlarms()) return 'granted';
+  openExactAlarmSettings();
+  return 'denied';
+}
+
 export async function checkPermission(kind: PermissionKind): Promise<PermissionStatus> {
-  return kind === 'notifications' ? checkNotifications() : checkLocation();
+  if (kind === 'notifications') return checkNotifications();
+  if (kind === 'exactAlarm') return checkExactAlarm();
+  return checkLocation();
 }
 
 export async function requestPermission(kind: PermissionKind): Promise<PermissionStatus> {
-  return kind === 'notifications' ? requestNotifications() : requestLocation();
+  if (kind === 'notifications') return requestNotifications();
+  if (kind === 'exactAlarm') return requestExactAlarm();
+  return requestLocation();
 }
 
 export function openAppSettings(): Promise<void> {

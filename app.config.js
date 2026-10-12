@@ -13,7 +13,12 @@ export default {
     assetBundlePatterns: ['**/*'],
     android: {
       package: 'com.antoniositoe533.preachingApp',
-      permissions: ['POST_NOTIFICATIONS', 'ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION'],
+      permissions: [
+        'POST_NOTIFICATIONS',
+        'SCHEDULE_EXACT_ALARM',
+        'ACCESS_COARSE_LOCATION',
+        'ACCESS_FINE_LOCATION',
+      ],
       adaptiveIcon: {
         foregroundImage: './src/assets/images/adaptive-icon.png',
         backgroundColor: '#5D6CB2',
