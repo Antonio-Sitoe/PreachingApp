@@ -22,7 +22,6 @@ function allowsForward(status: PermissionStatus) {
   return status === 'granted';
 }
 
-/** Configuração inicial, passo 2 de 2 (canvas, artboard "Configuração inicial 2 de 2"). */
 export default function PermissionsScreen() {
   const { complete } = useOnboarding();
   const [statuses, setStatuses] = React.useState<Statuses>({
@@ -31,8 +30,6 @@ export default function PermissionsScreen() {
     exactAlarm: 'denied',
   });
 
-  // Lê o estado ao abrir e sempre que a pessoa volta das definições do telemóvel.
-  // Uma permissão já marcada como recusada de vez só deixa de o estar se for concedida.
   const refresh = React.useCallback(async () => {
     const [notifications, location, exactAlarm] = await Promise.all([
       checkPermission('notifications'),

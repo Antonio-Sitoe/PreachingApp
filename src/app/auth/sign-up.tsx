@@ -17,7 +17,6 @@ import * as React from 'react';
 
 type Errors = { email?: string; password?: string; repeat?: string };
 
-/** Criar conta (canvas, artboards "Criar conta" e "Criar conta, campos com erro"). */
 export default function SignUpScreen() {
   const { leave } = useAuthFlow();
   const [email, setEmail] = React.useState('');
@@ -128,7 +127,6 @@ export default function SignUpScreen() {
         onSubmitEditing={submit}
       />
 
-      {/* Como no canvas: com erros à vista, a lista de regras dá lugar às mensagens. */}
       {hasErrors ? null : <PasswordRules rules={checkPasswordRules(password, repeat)} />}
     </SetupLayout>
   );

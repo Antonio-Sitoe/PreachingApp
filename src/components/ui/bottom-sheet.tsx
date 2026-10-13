@@ -13,7 +13,6 @@ import * as React from 'react';
 import { Pressable, useWindowDimensions, View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/** O título e o conteúdo da folha, com o espaçamento do Design 2.0. */
 function SheetContent({ title, className, children, ...props }: ViewProps & { title?: string }) {
   return (
     <View className={cn('gap-4 px-5', className)} {...props}>
@@ -29,7 +28,6 @@ type BottomSheetPanelProps = ViewProps & {
   bottomInset?: number;
 };
 
-/** A folha desenhada em React Native, sem a parte nativa. Só para pré-visualizar no catálogo. */
 function BottomSheetPanel({
   title,
   bottomInset,
@@ -52,7 +50,6 @@ function BottomSheetPanel({
   );
 }
 
-/** As variáveis do NativeWind vêm em canais ("255 255 255"). O Compose quer uma cor. */
 function useCardColor() {
   const { colorScheme } = useColorScheme();
   const channels: unknown = useUnstableNativeVariable('--card');
@@ -70,19 +67,12 @@ type BottomSheetProps = ViewProps & {
   onClose: () => void;
 };
 
-/**
- * Folha inferior nativa (ModalBottomSheet do Material 3, via @expo/ui).
- * O Compose trata da animação, do gesto, do fundo escuro, da barra de navegação e do teclado.
- * A folha ajusta-se ao conteúdo: listas compridas vão dentro de um ScrollView com maxHeight.
- */
 function BottomSheet({ open, onClose, title, className, children, ...props }: BottomSheetProps) {
   const { width } = useWindowDimensions();
   const { colorScheme } = useColorScheme();
   const containerColor = useCardColor();
   const sheetRef = React.useRef<ModalBottomSheetRef>(null);
-  // A folha continua montada enquanto anima a saída.
   const [mounted, setMounted] = React.useState(open);
-  // Muda quando a folha volta a abrir a meio da saída, para montar uma nova.
   const [instance, setInstance] = React.useState(0);
   const openRef = React.useRef(open);
   openRef.current = open;
@@ -102,7 +92,6 @@ function BottomSheet({ open, onClose, title, className, children, ...props }: Bo
       setMounted(false);
       return;
     }
-    // Fechada pelo ecrã (botão Cancelar, escolher uma opção): anima a saída antes de desmontar.
     closing.current = true;
     sheet
       .hide()
@@ -114,7 +103,6 @@ function BottomSheet({ open, onClose, title, className, children, ...props }: Bo
       });
   }, [open]);
 
-  // Fechada pela pessoa (arrastar para baixo, tocar fora, botão de voltar).
   function handleDismiss() {
     setMounted(false);
     onClose();

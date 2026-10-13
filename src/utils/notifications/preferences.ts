@@ -1,5 +1,3 @@
-/** Preferências do ecrã Notificações. Só o relatório mensal chega a ser agendado. */
-
 export const LEAD_MINUTES = [15, 30, 60, 120] as const;
 export const RHYTHM_DAYS = [7, 14, 30] as const;
 
@@ -100,7 +98,6 @@ function rhythmOf(value: unknown, fallback: RhythmDays): RhythmDays {
   return RHYTHM_DAYS.includes(value as RhythmDays) ? (value as RhythmDays) : fallback;
 }
 
-/** Junta o que está guardado com os valores iniciais, ignorando campos estragados. */
 export function mergeNotificationPreferences(
   raw: string | undefined | null
 ): NotificationPreferences {

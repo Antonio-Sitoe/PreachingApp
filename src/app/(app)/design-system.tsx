@@ -19,11 +19,6 @@ import * as React from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-/**
- * Montra dos componentes, igual à página "Componentes" do canvas do Design 2.0.
- * Serve para rever a base no telemóvel, em claro e escuro. Não faz parte do app final.
- */
-
 const COLORS: { name: string; token: ThemeColor }[] = [
   { name: 'fundo/app', token: 'background' },
   { name: 'fundo/superfície', token: 'card' },

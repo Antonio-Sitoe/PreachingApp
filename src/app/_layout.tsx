@@ -22,7 +22,6 @@ import { useColorScheme } from 'nativewind';
 import { useEffect } from 'react';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
@@ -90,7 +89,6 @@ function RootNavigator({ colorScheme }: { colorScheme: 'light' | 'dark' | undefi
         <Stack.Protected guard={completed}>
           <Stack.Screen name="(app)" options={{ headerShown: false }} />
         </Stack.Protected>
-        {/* A conta abre-se tanto na primeira abertura como depois, a partir do app. */}
         <Stack.Screen name="auth" options={{ headerShown: false }} />
       </Stack>
     </>
@@ -101,9 +99,7 @@ function OnboardingRedirect() {
   const { completed } = useOnboarding();
   const pathname = usePathname();
 
-  // A primeira abertura tem vários ecrãs: /welcome, /welcome/setup, /welcome/permissions...
   const onWelcome = pathname === '/welcome' || pathname.startsWith('/welcome/');
-  // Os ecrãs de conta (/auth/...) abrem-se antes e depois da primeira abertura.
   const onAuth = pathname.startsWith('/auth/');
 
   if (!completed && !onWelcome && !onAuth) {

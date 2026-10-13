@@ -1,12 +1,6 @@
 import { DarkTheme, DefaultTheme, type Theme } from 'expo-router/react-navigation';
 import { vars } from 'nativewind';
 
-/**
- * Tokens do Design 2.0 em hexadecimal, para quando é preciso a cor em JavaScript
- * (navegação, barra de estado, propriedades que não aceitam className).
- * Na interface usa as classes do Tailwind (`bg-primary`, `text-muted-foreground`).
- * Os mesmos valores vivem em src/app/global.css: muda os dois ao mesmo tempo.
- */
 export const THEME = {
   light: {
     background: '#FAFAFA',
@@ -110,10 +104,6 @@ function toChannels(hex: string) {
   return `${(value >> 16) & 255} ${(value >> 8) & 255} ${value & 255}`;
 }
 
-/**
- * As variáveis do tema claro, para pôr no `style` de uma View e forçar o tema
- * claro nesse ramo, mesmo com o telemóvel em escuro. Usado na configuração inicial.
- */
 export const LIGHT_THEME_VARS = vars(
   Object.fromEntries(
     Object.entries(THEME.light)
@@ -125,14 +115,12 @@ export const LIGHT_THEME_VARS = vars(
   )
 );
 
-/** Paleta e gradientes do kit da marca. Só para material da marca, não para a interface. */
 export const BRAND = {
   purple: '#6775B8',
   purpleDark: '#4A5385',
   terracotta: '#C47A5D',
   sand: '#E8D9C5',
   white: '#FFFFFF',
-  /** Fundo do ecrã de abertura e do ícone da app. */
   splash: '#5D6CB2',
   gradients: {
     purple: { colors: ['#495082', '#636EAD', '#6975B8'], locations: [0, 0.64, 1] },
@@ -143,11 +131,9 @@ export const BRAND = {
   },
 } as const;
 
-/** Sombras do canvas (para a propriedade `boxShadow`) e o fundo das folhas. */
 export const SHADOWS = {
   fab: '0 6px 16px rgba(16, 18, 28, 0.2)',
   sheet: '0 -4px 24px rgba(16, 18, 28, 0.08)',
-  /** Fundo escuro por trás da folha inferior. */
   backdrop: 'rgba(16, 18, 28, 0.4)',
 } as const;
 

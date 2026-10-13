@@ -14,14 +14,6 @@ Notifications.setNotificationHandler({
 
 let running: Promise<void> = Promise.resolve();
 
-/**
- * Reconstrói todas as notificações agendadas a partir das preferências e da base de dados.
- *
- * Chamar ao abrir a app, ao voltar ao primeiro plano e depois de mudar algo que gera lembretes.
- * O Android apaga os alarmes exatos quando a pessoa retira essa permissão, e os que já estavam
- * agendados não passam a exatos quando ela a dá, por isso é sempre tudo refeito.
- * As chamadas correm em fila para não se cruzarem a cancelar e a criar.
- */
 export function syncAllNotifications(): Promise<void> {
   running = running.then(runSync, runSync);
   return running;

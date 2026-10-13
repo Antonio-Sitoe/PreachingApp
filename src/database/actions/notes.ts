@@ -8,7 +8,6 @@ import { students } from '../schemas/students';
 
 export type NoteInput = Pick<NewNote, 'title' | 'body' | 'tagId' | 'color' | 'studentId' | 'remoteId'>;
 
-/** Nota da lista, já com o nome da etiqueta. */
 export type NoteListItem = Note & { tagName: string | null };
 
 export type NotePage = {
@@ -82,7 +81,6 @@ async function deleteNote(id: string) {
   return result[0];
 }
 
-/** Apaga de vez uma nota sem título nem texto, para não ficarem notas vazias na lista. */
 async function deleteIfEmpty(id: string) {
   const note = await getById(id);
   if (!note || note.title.trim() !== '' || plainBody(note.body) !== '') return false;
@@ -130,7 +128,6 @@ async function listByStudent(studentId: string) {
 
 const linkableColumns = { id: students.id, name: students.displayName, stage: students.stage };
 
-/** Pessoas que se podem ligar a uma nota ou mencionar no texto. */
 async function listLinkableStudents(): Promise<LinkableStudent[]> {
   return db
     .select(linkableColumns)

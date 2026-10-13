@@ -1,11 +1,5 @@
-/**
- * Validação dos formulários de conta, com as mensagens do canvas
- * (artboards "Criar conta" e "Criar conta, campos com erro").
- */
-
 export const PASSWORD_MIN_LENGTH = 8;
 
-/** Devolve a mensagem de erro do email, ou `undefined` se estiver bem. */
 export function validateEmail(value: string): string | undefined {
   const email = value.trim();
   if (!email) return 'Escreve o teu email.';
@@ -28,7 +22,6 @@ export type PasswordRules = {
   match: boolean;
 };
 
-/** As cinco regras da senha, para a lista de verificação do ecrã "Criar conta". */
 export function checkPasswordRules(password: string, repeat: string): PasswordRules {
   return {
     length: password.length >= PASSWORD_MIN_LENGTH,
@@ -47,16 +40,11 @@ export const PASSWORD_RULE_LABELS: { key: keyof PasswordRules; label: string }[]
   { key: 'match', label: 'As duas senhas iguais' },
 ];
 
-/** "a", "a e b", "a, b e c". */
 function joinList(items: string[]): string {
   if (items.length <= 1) return items.join('');
   return `${items.slice(0, -1).join(', ')} e ${items[items.length - 1]}`;
 }
 
-/**
- * Diz o que falta à senha, numa frase:
- * "Faltam 1 carácter, uma maiúscula, um número e um carácter especial."
- */
 export function validateNewPassword(password: string): string | undefined {
   if (!password) return 'Escolhe uma senha.';
   const missing: string[] = [];

@@ -35,7 +35,6 @@ export function setNotificationPreferences(preferences: NotificationPreferences)
   getStorage().set(NOTIFICATION_PREFERENCES, JSON.stringify(preferences));
 }
 
-/** Verdadeiro quando a lista de relatórios está agrupada por mês. */
 export function isReportListGrouped(): boolean {
   return getStorage().getBoolean(REPORT_LIST_GROUPED) === true;
 }

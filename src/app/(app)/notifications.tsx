@@ -52,7 +52,6 @@ export default function NotificationsScreen() {
   const [timePicker, setTimePicker] = useState<{ target: TimeTarget; date: Date } | null>(null);
   const [exactAlarm, setExactAlarm] = useState<PermissionStatus>('granted');
 
-  // Relê ao voltar de "Alarmes e lembretes"; o NotificationProvider volta a agendar.
   const refreshExactAlarm = useCallback(async () => {
     setExactAlarm(await checkPermission('exactAlarm'));
   }, []);

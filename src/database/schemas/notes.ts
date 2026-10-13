@@ -10,7 +10,6 @@ export const notes = sqliteTable('notes', {
     .$defaultFn(() => uuid()),
   title: text('title').notNull().default(''),
   body: text('body').notNull().default(''),
-  /** Título e texto sem marcas, em minúsculas e sem acentos. Só serve a pesquisa. */
   searchText: text('search_text').notNull().default(''),
   tagId: text('tag_id').references(() => tags.id, { onDelete: 'set null' }),
   color: text('color').notNull().default('#E3E7F8'),

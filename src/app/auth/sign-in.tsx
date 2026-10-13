@@ -13,7 +13,6 @@ import { View } from 'react-native';
 
 const NETWORK_MESSAGE = 'Não foi possível ligar. Vê a tua internet e tenta de novo.';
 
-/** Entrar (canvas, artboards "Entrar" e "Entrar, credenciais erradas"). */
 export default function SignInScreen() {
   const { redirect, finish, leave, onboarding, themeVars } = useAuthFlow();
   const [email, setEmail] = React.useState('');
@@ -59,7 +58,6 @@ export default function SignInScreen() {
     }
   };
 
-  // Sem conta: na primeira abertura segue para a configuração; depois, volta ao app.
   const continueWithoutAccount = () => {
     if (onboarding) router.replace('/welcome/setup');
     else leave();

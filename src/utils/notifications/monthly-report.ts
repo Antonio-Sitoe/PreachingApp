@@ -3,7 +3,6 @@ import * as Notifications from 'expo-notifications';
 
 const CHANNEL_ID = 'monthly-reminders';
 
-/** O dia 1 deste mês, à hora pedida, se ainda não passou; senão, o dia 1 do mês seguinte. */
 export function nextTwelveMonthlyDates(hour: number, minute: number, now = new Date()): Date[] {
   const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1, hour, minute, 0, 0);
   const startOffset = thisMonth.getTime() > now.getTime() ? 0 : 1;
@@ -14,7 +13,6 @@ export function nextTwelveMonthlyDates(hour: number, minute: number, now = new D
 }
 
 class MonthlyNotificationManager {
-  /** Apaga e volta a criar os lembretes. Quem chama já verificou a permissão. */
   async sync(monthly: MonthlyReminderConfig): Promise<void> {
     await this.cancelAllMonthlyNotifications();
     if (!monthly.enabled) return;
@@ -38,7 +36,6 @@ class MonthlyNotificationManager {
     try {
       await Notifications.deleteNotificationChannelAsync(CHANNEL_ID);
     } catch {
-      // O canal ainda não existe na primeira vez.
     }
 
     await Notifications.setNotificationChannelAsync(CHANNEL_ID, {

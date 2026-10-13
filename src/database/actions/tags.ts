@@ -3,7 +3,6 @@ import { db } from '../db';
 import { notes } from '../schemas/notes';
 import { TAG_NAME_MAX, type Tag, tags } from '../schemas/tags';
 
-/** Erro que a interface mostra tal como está. */
 export class TagError extends Error {}
 
 function nowIso() {
@@ -51,10 +50,7 @@ async function renameTag(id: string, name: string): Promise<Tag> {
   return result[0];
 }
 
-/** Apaga a etiqueta. As notas que a tinham ficam sem etiqueta. */
 async function deleteTag(id: string) {
-  // O SQLite do telemóvel não aplica as chaves estrangeiras, por isso a nota é limpa aqui.
-  // A sessão do expo-sqlite é síncrona: a transacção também tem de ser.
   db.transaction((tx) => {
     tx.update(notes).set({ tagId: null, syncStatus: 'pending' }).where(eq(notes.tagId, id)).run();
     tx.delete(tags).where(eq(tags.id, id)).run();

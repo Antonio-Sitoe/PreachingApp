@@ -38,7 +38,6 @@ function TagsFilter({ tags, activeFilter, onFilterChange }: TagsFilterProps) {
   const filters = [{ id: 'all', name: 'Todas' }, ...tags];
 
   return (
-    // Uma só linha que desliza para o lado. O -mx-4 leva-a até às bordas do ecrã.
     <ScrollView
       horizontal
       role="group"

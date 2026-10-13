@@ -10,7 +10,6 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { View } from 'react-native';
 
-/** Recuperar senha (canvas, artboard "Recuperar senha"). */
 export default function ForgotPasswordScreen() {
   const { leave } = useAuthFlow();
   const [email, setEmail] = React.useState('');

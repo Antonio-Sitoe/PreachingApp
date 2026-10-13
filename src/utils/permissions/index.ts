@@ -44,7 +44,6 @@ async function checkExactAlarm(): Promise<PermissionStatus> {
   return canScheduleExactAlarms() ? 'granted' : 'denied';
 }
 
-/** Não há diálogo: abre "Alarmes e lembretes" e o estado só muda quando a pessoa volta. */
 async function requestExactAlarm(): Promise<PermissionStatus> {
   if (canScheduleExactAlarms()) return 'granted';
   openExactAlarmSettings();

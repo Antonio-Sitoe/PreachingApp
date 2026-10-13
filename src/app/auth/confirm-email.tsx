@@ -18,10 +18,6 @@ import { View } from 'react-native';
 
 const NETWORK_MESSAGE = 'Não foi possível ligar. Vê a tua internet e tenta de novo.';
 
-/**
- * Confirmar email (canvas, artboards "Confirmar email", "Código incorrecto" e "O código expirou").
- * Serve dois percursos, pelo parâmetro `flow`: criar conta (`sign-up`) e recuperar a senha (`reset`).
- */
 export default function ConfirmEmailScreen() {
   const params = useLocalSearchParams<{ email?: string; flow?: string }>();
   const email = params.email ?? '';
@@ -37,7 +33,6 @@ export default function ConfirmEmailScreen() {
     try {
       await confirmCode(email, value, flow);
       if (flow === 'reset') {
-        // POR FAZER: falta o ecrã para escolher a senha nova (não está no canvas).
         showToast({ message: 'Código certo. Escolher a senha nova ainda não está disponível.' });
         router.dismissTo('/auth/sign-in');
       } else {

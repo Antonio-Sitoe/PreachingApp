@@ -2,7 +2,6 @@ import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { v4 as uuid } from 'uuid';
 import { SYNC_STATUSES } from './users';
 
-/** Um dia de ministério. `date` é `AAAA-MM-DD`; horas do mesmo dia somam-se. */
 export const reports = sqliteTable(
   'reports',
   {

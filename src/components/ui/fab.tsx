@@ -16,7 +16,6 @@ function Fab({ icon = 'plus', floating = false, containerClassName, ...props }: 
 
   if (!floating) return button;
 
-  // Uma camada do tamanho do ecrã que deixa passar os toques, para pôr o botão no canto.
   return (
     <View style={[StyleSheet.absoluteFill, { pointerEvents: 'box-none' }]}>
       <View

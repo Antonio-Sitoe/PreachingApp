@@ -10,7 +10,6 @@ import { View } from 'react-native';
 
 const NOT_AVAILABLE = 'Restaurar cópias ainda não está disponível nesta versão.';
 
-/** Restaurar cópia no primeiro arranque (canvas, artboard "Restaurar cópia no primeiro arranque"). */
 export default function RestoreScreen() {
   const [backup, setBackup] = React.useState<BackupSummary | null>(null);
 
@@ -21,7 +20,6 @@ export default function RestoreScreen() {
   };
 
   const restore = () => {
-    // POR FAZER: importar a cópia para a base de dados e chamar complete() do useOnboarding.
     showToast({ message: NOT_AVAILABLE });
   };
 

@@ -4,114 +4,107 @@
 
 @layer base {
   :root {
-    /* Fundos */
-    --background: 250 250 250; /* fundo/app #FAFAFA */
-    --card: 255 255 255; /* fundo/superfície #FFFFFF */
+    --background: 250 250 250;
+    --card: 255 255 255;
     --popover: 255 255 255;
-    --secondary: 242 245 255; /* fundo/suave #F2F5FF */
+    --secondary: 242 245 255;
     --accent: 242 245 255;
-    --muted: 241 242 245; /* fundo/neutro #F1F2F5 */
+    --muted: 241 242 245;
 
-    /* Marca */
-    --primary: 93 108 178; /* marca/primária #5D6CB2 */
-    --primary-foreground: 255 255 255; /* sobre a marca */
-    --primary-strong: 74 83 133; /* marca/forte #4A5385 */
+    --primary: 93 108 178;
+    --primary-foreground: 255 255 255;
+    --primary-strong: 74 83 133;
     --ring: 93 108 178;
 
-    /* Texto */
-    --foreground: 30 30 30; /* texto/principal #1E1E1E */
+    --foreground: 30 30 30;
     --card-foreground: 30 30 30;
     --popover-foreground: 30 30 30;
     --secondary-foreground: 74 83 133;
     --accent-foreground: 74 83 133;
-    --muted-foreground: 72 76 82; /* texto/secundário #484C52 */
-    --subtle: 107 112 128; /* texto/suave #6B7080 */
+    --muted-foreground: 72 76 82;
+    --subtle: 107 112 128;
 
-    /* Bordas */
-    --border: 228 228 228; /* borda #E4E4E4 */
+    --border: 228 228 228;
     --input: 228 228 228;
 
-    /* Estados */
-    --warning: 180 83 9; /* estado/atraso #B45309 */
-    --warning-soft: 255 244 224; /* #FFF4E0 */
-    --success: 23 112 74; /* estado/sucesso #17704A */
-    --success-soft: 230 246 238; /* #E6F6EE */
-    --destructive: 199 37 107; /* estado/perigo #C7256B */
+    --warning: 180 83 9;
+    --warning-soft: 255 244 224;
+    --success: 23 112 74;
+    --success-soft: 230 246 238;
+    --destructive: 199 37 107;
     --destructive-foreground: 255 255 255;
-    --destructive-soft: 255 229 240; /* #FFE5F0 */
+    --destructive-soft: 255 229 240;
 
-    /* Etapas da pessoa */
-    --stage-contact: 91 98 112; /* etapa/contacto #5B6270 */
-    --stage-contact-soft: 238 240 243; /* #EEF0F3 */
-    --stage-revisit: 47 111 176; /* etapa/revisita #2F6FB0 */
-    --stage-revisit-soft: 230 241 251; /* #E6F1FB */
-    --stage-started: 90 79 179; /* etapa/estudo iniciado #5A4FB3 */
-    --stage-started-soft: 238 236 251; /* #EEECFB */
-    --stage-regular: 74 83 133; /* etapa/estudo regular #4A5385 */
-    --stage-regular-soft: 227 231 248; /* #E3E7F8 */
-    --stage-publisher: 23 112 74; /* etapa/publicador #17704A */
-    --stage-publisher-soft: 230 246 238; /* #E6F6EE */
-    --stage-baptized: 122 84 0; /* etapa/batizado #7A5400 */
-    --stage-baptized-soft: 251 241 214; /* #FBF1D6 */
-    --stage-paused: 91 98 112; /* etapa/pausa #5B6270 */
-    --stage-paused-soft: 241 242 245; /* #F1F2F5 */
+    --stage-contact: 91 98 112;
+    --stage-contact-soft: 238 240 243;
+    --stage-revisit: 47 111 176;
+    --stage-revisit-soft: 230 241 251;
+    --stage-started: 90 79 179;
+    --stage-started-soft: 238 236 251;
+    --stage-regular: 74 83 133;
+    --stage-regular-soft: 227 231 248;
+    --stage-publisher: 23 112 74;
+    --stage-publisher-soft: 230 246 238;
+    --stage-baptized: 122 84 0;
+    --stage-baptized-soft: 251 241 214;
+    --stage-paused: 91 98 112;
+    --stage-paused-soft: 241 242 245;
 
-    /* Aviso (toast) */
-    --toast: 30 34 51; /* aviso/fundo #1E2233 */
+    --toast: 30 34 51;
     --toast-foreground: 255 255 255;
-    --toast-action: 197 204 240; /* #C5CCF0 */
+    --toast-action: 197 204 240;
 
-    --radius: 0.625rem; /* 10 px */
+    --radius: 0.625rem;
   }
 
   .dark:root {
-    --background: 16 18 28; /* #10121C */
-    --card: 27 30 45; /* #1B1E2D */
+    --background: 16 18 28;
+    --card: 27 30 45;
     --popover: 27 30 45;
-    --secondary: 37 42 64; /* #252A40 */
+    --secondary: 37 42 64;
     --accent: 37 42 64;
-    --muted: 38 42 58; /* #262A3A */
+    --muted: 38 42 58;
 
-    --primary: 142 155 219; /* #8E9BDB */
-    --primary-foreground: 16 18 28; /* #10121C */
-    --primary-strong: 197 204 240; /* #C5CCF0 */
+    --primary: 142 155 219;
+    --primary-foreground: 16 18 28;
+    --primary-strong: 197 204 240;
     --ring: 142 155 219;
 
-    --foreground: 242 243 247; /* #F2F3F7 */
+    --foreground: 242 243 247;
     --card-foreground: 242 243 247;
     --popover-foreground: 242 243 247;
     --secondary-foreground: 197 204 240;
     --accent-foreground: 197 204 240;
-    --muted-foreground: 185 189 202; /* #B9BDCA */
-    --subtle: 147 153 172; /* #9399AC */
+    --muted-foreground: 185 189 202;
+    --subtle: 147 153 172;
 
-    --border: 46 51 72; /* #2E3348 */
+    --border: 46 51 72;
     --input: 46 51 72;
 
-    --warning: 255 192 105; /* #FFC069 */
-    --warning-soft: 58 46 20; /* #3A2E14 */
-    --success: 111 211 165; /* #6FD3A5 */
-    --success-soft: 23 51 39; /* #173327 */
-    --destructive: 255 141 184; /* #FF8DB8 */
+    --warning: 255 192 105;
+    --warning-soft: 58 46 20;
+    --success: 111 211 165;
+    --success-soft: 23 51 39;
+    --destructive: 255 141 184;
     --destructive-foreground: 16 18 28;
-    --destructive-soft: 58 31 44; /* #3A1F2C */
+    --destructive-soft: 58 31 44;
 
-    --stage-contact: 195 200 212; /* #C3C8D4 */
-    --stage-contact-soft: 42 46 60; /* #2A2E3C */
-    --stage-revisit: 140 192 242; /* #8CC0F2 */
-    --stage-revisit-soft: 27 44 64; /* #1B2C40 */
-    --stage-started: 181 173 245; /* #B5ADF5 */
-    --stage-started-soft: 39 36 74; /* #27244A */
-    --stage-regular: 197 204 240; /* #C5CCF0 */
-    --stage-regular-soft: 42 48 82; /* #2A3052 */
-    --stage-publisher: 111 211 165; /* #6FD3A5 */
-    --stage-publisher-soft: 23 51 39; /* #173327 */
-    --stage-baptized: 242 203 107; /* #F2CB6B */
-    --stage-baptized-soft: 58 48 19; /* #3A3013 */
-    --stage-paused: 169 174 187; /* #A9AEBB */
-    --stage-paused-soft: 38 42 58; /* #262A3A */
+    --stage-contact: 195 200 212;
+    --stage-contact-soft: 42 46 60;
+    --stage-revisit: 140 192 242;
+    --stage-revisit-soft: 27 44 64;
+    --stage-started: 181 173 245;
+    --stage-started-soft: 39 36 74;
+    --stage-regular: 197 204 240;
+    --stage-regular-soft: 42 48 82;
+    --stage-publisher: 111 211 165;
+    --stage-publisher-soft: 23 51 39;
+    --stage-baptized: 242 203 107;
+    --stage-baptized-soft: 58 48 19;
+    --stage-paused: 169 174 187;
+    --stage-paused-soft: 38 42 58;
 
-    --toast: 46 51 72; /* #2E3348 */
+    --toast: 46 51 72;
     --toast-foreground: 255 255 255;
     --toast-action: 197 204 240;
   }
