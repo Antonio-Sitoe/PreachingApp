@@ -18,8 +18,6 @@ export class AuthError extends Error {
 
 export type CodeFlow = 'sign-up' | 'reset';
 
-export const AUTH_AVAILABLE = false;
-
 export const UNAVAILABLE_MESSAGE = 'A conta ainda não está disponível nesta versão.';
 
 const DEV_PASSWORD = 'Caminho#2026';

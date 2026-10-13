@@ -8,7 +8,6 @@ import {
   type User,
 } from '@/database/actions';
 
-
 export type SetupProfile = {
   name: string;
   language: Language;
@@ -31,11 +30,6 @@ export function toSetupProfile(user: User): SetupProfile {
     monthlyHourGoal: user.monthlyHourGoal,
   };
 }
-
-export const LANGUAGE_OPTIONS: { value: Language; label: string }[] = [
-  { value: 'pt', label: 'Português' },
-  { value: 'en', label: 'English' },
-];
 
 export const PUBLISHER_TYPE_INFO: Record<PublisherType, { label: string; icon: AppIconName }> = {
   publisher: { label: 'Publicador', icon: 'user' },
