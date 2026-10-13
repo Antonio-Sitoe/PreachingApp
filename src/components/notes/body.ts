@@ -1,6 +1,11 @@
-// O corpo das notas é o HTML do EnrichedTextInput. Notas antigas ainda podem estar no
-// formato de texto anterior (`# título`, `- [ ] tarefa`, `:::scripture`...) e são
-// convertidas para HTML quando abertas no editor.
+import {
+  isDocumentBody,
+  parseDocument,
+  referenceUrl,
+  stripMarkdown,
+  type NoteBlock,
+  type NoteDocument,
+} from '@/components/notes/document';
 
 type InlineStyle = 'bold' | 'italic';
 
@@ -14,9 +19,7 @@ type LegacyBlock =
   | { type: 'scripture'; reference: string; comment: string }
   | { type: 'divider' };
 
-export const STUDENT_ID_ATTRIBUTE = 'data-student-id';
-
-export function isHtmlBody(body: string) {
+function isHtmlBody(body: string) {
   return body.trimStart().startsWith('<html>');
 }
 
@@ -158,11 +161,11 @@ function parseLegacyBody(body: string): LegacyBlock[] {
   return blocks;
 }
 
-function escapeHtml(text: string) {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+function escapeMarkdown(text: string) {
+  return text.replace(/([\\*_~`\[\]<>])/g, '\\$1');
 }
 
-function inlineHtml(text: string, marks: Mark[]) {
+function marksToMarkdown(text: string, marks: Mark[]) {
   const mentions = marks.filter((mark): mark is Extract<Mark, { type: 'mention' }> => mark.type === 'mention');
   const cuts = new Set([0, text.length]);
   for (const mark of marks) {
@@ -177,85 +180,120 @@ function inlineHtml(text: string, marks: Mark[]) {
     const end = points[index + 1];
     if (end <= start) continue;
 
-    let html: string;
+    let piece: string;
     const mention = mentions.find((mark) => mark.start <= start && start < mark.end);
     if (mention) {
-      // A menção sai inteira no primeiro pedaço; os restantes já estão dentro dela.
       if (mention.start !== start) continue;
-      const label = escapeHtml(text.slice(mention.start, mention.end));
-      html = `<mention text="${label}" indicator="@" ${STUDENT_ID_ATTRIBUTE}="${escapeHtml(mention.studentId)}">${label}</mention>`;
+      const label = escapeMarkdown(text.slice(mention.start, mention.end));
+      piece = `[${label}](${referenceUrl('student', mention.studentId)})`;
     } else {
-      html = escapeHtml(text.slice(start, end));
+      piece = escapeMarkdown(text.slice(start, end));
     }
-    if (covers(marks, 'italic', start)) html = `<i>${html}</i>`;
-    if (covers(marks, 'bold', start)) html = `<b>${html}</b>`;
-    out += html;
+    if (covers(marks, 'italic', start)) piece = `*${piece}*`;
+    if (covers(marks, 'bold', start)) piece = `**${piece}**`;
+    out += piece;
   }
   return out;
 }
 
-/** Converte uma nota no formato antigo para o HTML do editor. */
-export function legacyToHtml(body: string) {
-  const lines: string[] = [];
-  let list: 'bullet' | 'task' | null = null;
-
-  function closeList() {
-    if (list) lines.push('</ul>');
-    list = null;
-  }
-
-  function openList(kind: 'bullet' | 'task') {
-    if (list === kind) return;
-    closeList();
-    lines.push(kind === 'task' ? '<ul data-type="checkbox">' : '<ul>');
-    list = kind;
-  }
-
-  for (const block of parseLegacyBody(body)) {
+function legacyToBlocks(body: string): NoteBlock[] {
+  return parseLegacyBody(body).flatMap((block): NoteBlock[] => {
     switch (block.type) {
-      case 'bullet':
-        openList('bullet');
-        lines.push(`<li>${inlineHtml(block.text, block.marks)}</li>`);
-        break;
-      case 'task':
-        openList('task');
-        lines.push(`<li${block.done ? ' checked' : ''}>${inlineHtml(block.text, block.marks)}</li>`);
-        break;
       case 'heading':
-        closeList();
-        lines.push(`<h2>${inlineHtml(block.text, block.marks)}</h2>`);
-        break;
+        return [{ type: 'heading1', markdown: marksToMarkdown(block.text, block.marks) }];
+      case 'bullet':
+        return [{ type: 'bullet', markdown: marksToMarkdown(block.text, block.marks) }];
+      case 'task':
+        return [{ type: 'checklist', markdown: marksToMarkdown(block.text, block.marks), checked: block.done }];
       case 'paragraph':
-        closeList();
-        lines.push(block.text === '' ? '<br>' : `<p>${inlineHtml(block.text, block.marks)}</p>`);
-        break;
+        return [{ type: 'paragraph', markdown: marksToMarkdown(block.text, block.marks) }];
       case 'divider':
-        closeList();
-        lines.push('<br>');
-        break;
-      case 'scripture': {
-        closeList();
-        const paragraphs = [
-          ...(block.reference ? [`<p><b>${escapeHtml(block.reference)}</b></p>`] : []),
+        return [{ type: 'divider', markdown: '' }];
+      case 'scripture':
+        return [
+          ...(block.reference ? [{ type: 'quote' as const, markdown: `**${escapeMarkdown(block.reference)}**` }] : []),
           ...block.comment
             .split('\n')
             .filter((line) => line.trim() !== '')
-            .map((line) => `<p>${escapeHtml(line)}</p>`),
+            .map((line) => ({ type: 'quote' as const, markdown: escapeMarkdown(line) })),
         ];
-        if (paragraphs.length > 0) lines.push('<blockquote>', ...paragraphs, '</blockquote>');
-        break;
-      }
     }
-  }
-  closeList();
-
-  return `<html>\n${lines.length > 0 ? lines.join('\n') : '<br>'}\n</html>`;
+  });
 }
 
-/** O valor inicial do editor: HTML tal como está, ou a nota antiga convertida. */
-export function toEditorHtml(body: string) {
+function inlineHtmlToMarkdown(html: string) {
+  return decodeEntities(
+    html
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/<mention\b[^>]*data-student-id="([^"]*)"[^>]*>(.*?)<\/mention>/gis, (_, id: string, label: string) => {
+        const text = decodeEntities(label.replace(/<[^>]*>/g, ''));
+        return `[${escapeMarkdown(text)}](${referenceUrl('student', decodeEntities(id))})`;
+      })
+      .replace(/<a\b[^>]*href="([^"]*)"[^>]*>(.*?)<\/a>/gis, (_, href: string, label: string) => `[${label}](${href})`)
+      .replace(/<\/?(b|strong)>/gi, '**')
+      .replace(/<\/?(i|em)>/gi, '*')
+      .replace(/<\/?(s|del|strike)>/gi, '~~')
+      .replace(/<code>(.*?)<\/code>/gis, '`$1`')
+      .replace(/<(?!\/?u>)[^>]*>/g, '')
+  ).trim();
+}
+
+function htmlToBlocks(html: string): NoteBlock[] {
+  const blocks: NoteBlock[] = [];
+  const lists: ('bullet' | 'checklist')[] = [];
+  let quote = 0;
+  const token = /<(\/?)(h[1-6]|p|li|ul|ol|blockquote|codeblock)\b([^>]*)>|<br\s*\/?>/gi;
+  let match: RegExpExecArray | null;
+  let open: { tag: string; attrs: string; start: number } | null = null;
+
+  while ((match = token.exec(html))) {
+    const [whole, closing, rawTag = '', attrs = ''] = match;
+    const tag = rawTag.toLowerCase();
+    if (!tag) continue;
+
+    if (tag === 'ul' || tag === 'ol') {
+      if (closing) lists.pop();
+      else lists.push(/data-type="checkbox"/i.test(attrs) ? 'checklist' : 'bullet');
+      continue;
+    }
+    if (tag === 'blockquote') {
+      quote += closing ? -1 : 1;
+      continue;
+    }
+    if (!closing) {
+      open = { tag, attrs, start: match.index + whole.length };
+      continue;
+    }
+    if (!open || open.tag !== tag) continue;
+
+    const inner = html.slice(open.start, match.index);
+    if (tag === 'codeblock') {
+      blocks.push({ type: 'code', markdown: decodeEntities(inner.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>/g, '')) });
+    } else if (tag === 'li') {
+      const kind = lists.at(-1) ?? 'bullet';
+      blocks.push(
+        kind === 'checklist'
+          ? { type: 'checklist', markdown: inlineHtmlToMarkdown(inner), checked: /\bchecked\b/i.test(open.attrs) }
+          : { type: 'bullet', markdown: inlineHtmlToMarkdown(inner) }
+      );
+    } else if (tag.startsWith('h')) {
+      const level = Math.min(3, Number(tag[1]));
+      blocks.push({ type: `heading${level}` as NoteBlock['type'], markdown: inlineHtmlToMarkdown(inner) });
+    } else {
+      blocks.push({ type: quote > 0 ? 'quote' : 'paragraph', markdown: inlineHtmlToMarkdown(inner) });
+    }
+    open = null;
+  }
+
+  return blocks;
+}
+
+export function toEditorDocument(body: string): string {
   if (body.trim() === '') return '';
-  return isHtmlBody(body) ? body : legacyToHtml(body);
+  if (isDocumentBody(body)) return body;
+  const blocks = isHtmlBody(body) ? htmlToBlocks(body) : legacyToBlocks(body);
+  const document: NoteDocument = { version: 2, blocks };
+  return JSON.stringify(document);
 }
 
 const NAMED_ENTITIES: Record<string, string> = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
@@ -271,21 +309,23 @@ function decodeEntities(text: string) {
   });
 }
 
-/** Só o texto da nota, para pesquisa e para saber se está vazia. */
 export function plainBody(body: string) {
-  const text = isHtmlBody(body)
-    ? decodeEntities(
-        body
-          .replace(/<br\s*\/?>|<\/(p|h[1-6]|li|blockquote|codeblock|ul|ol)>/gi, ' ')
-          .replace(/<[^>]*>/g, '')
-      )
-    : parseLegacyBody(body)
-        .flatMap((block) => {
-          if (block.type === 'divider') return [];
-          if (block.type === 'scripture') return [block.reference, block.comment];
-          return [block.text];
-        })
-        .join(' ');
+  const document = parseDocument(body);
+  const text = document
+    ? document.blocks.map((block) => (block.type === 'code' ? block.markdown : stripMarkdown(block.markdown))).join(' ')
+    : isHtmlBody(body)
+      ? decodeEntities(
+          body
+            .replace(/<br\s*\/?>|<\/(p|h[1-6]|li|blockquote|codeblock|ul|ol)>/gi, ' ')
+            .replace(/<[^>]*>/g, '')
+        )
+      : parseLegacyBody(body)
+          .flatMap((block) => {
+            if (block.type === 'divider') return [];
+            if (block.type === 'scripture') return [block.reference, block.comment];
+            return [block.text];
+          })
+          .join(' ');
 
   return text.replace(/\s+/g, ' ').trim();
 }
