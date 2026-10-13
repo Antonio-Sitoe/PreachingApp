@@ -7,6 +7,10 @@ import { createMMKV, type MMKV } from 'react-native-mmkv';
 const ONBOARDING_COMPLETED = 'onboarding.completed';
 const NOTIFICATION_PREFERENCES = 'notifications.preferences';
 const REPORT_LIST_GROUPED = 'reports.listGrouped';
+const THEME_PREFERENCE = 'appearance.theme';
+
+export const THEME_PREFERENCES = ['light', 'dark', 'system'] as const;
+export type ThemePreference = (typeof THEME_PREFERENCES)[number];
 
 let storage: MMKV | null = null;
 
@@ -41,4 +45,13 @@ export function isReportListGrouped(): boolean {
 
 export function setReportListGrouped(value: boolean): void {
   getStorage().set(REPORT_LIST_GROUPED, value);
+}
+
+export function getThemePreference(): ThemePreference {
+  const value = getStorage().getString(THEME_PREFERENCE);
+  return THEME_PREFERENCES.find((preference) => preference === value) ?? 'system';
+}
+
+export function setThemePreference(value: ThemePreference): void {
+  getStorage().set(THEME_PREFERENCE, value);
 }

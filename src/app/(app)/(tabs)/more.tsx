@@ -29,7 +29,11 @@ export default function MoreScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="w-full max-w-[640px] gap-5 self-center px-4 pb-8 pt-5">
-        <View className="flex-row items-center gap-3.5 rounded-lg border border-border bg-card py-3 pl-4 pr-3">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${name}, ${publisher}, ver perfil`}
+          onPress={() => router.push('/profile')}
+          className="flex-row items-center gap-3.5 rounded-lg border border-border bg-card py-3 pl-4 pr-3 active:bg-secondary">
           <View className="size-12 items-center justify-center rounded-full bg-primary">
             <Text className="font-display text-[20px] leading-none text-primary-foreground">
               {initial}
@@ -42,7 +46,7 @@ export default function MoreScreen() {
             </Text>
           </View>
           <AppIcon name="chevron-right" size={18} className="text-subtle" />
-        </View>
+        </Pressable>
 
         <View className="flex-row gap-2">
           <MenuTile icon="notes" label="Relatórios" onPress={() => router.push('/report')} />

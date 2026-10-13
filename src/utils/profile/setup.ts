@@ -83,3 +83,33 @@ export function findPublisherTypeOption(
     ofType[0]
   );
 }
+
+function profileDescription(publisherType: PublisherType): string {
+  const goals = MONTHLY_HOUR_GOALS[publisherType];
+  if (goals.length === 0) return 'Relatório sem horas: participei e número de estudos';
+  if (goals.length === 1) return `Horas com meta do ano: ${goals[0] * 12} h`;
+  return 'Horas com meta do mês';
+}
+
+export const PROFILE_TYPE_OPTIONS: PublisherTypeOption[] = PUBLISHER_TYPES.map((type) => {
+  const monthlyHourGoal = defaultMonthlyHourGoal(type);
+  const goals = MONTHLY_HOUR_GOALS[type];
+  return {
+    ...toOption(type, monthlyHourGoal),
+    key: type,
+    goalLabel:
+      goals.length === 0
+        ? 'Sem horas'
+        : goals.length === 1
+          ? `${goals[0] * 12} h por ano`
+          : 'Meta mensal',
+    description: profileDescription(type),
+  };
+});
+
+export function findProfileTypeOption(publisherType: PublisherType): PublisherTypeOption {
+  return (
+    PROFILE_TYPE_OPTIONS.find((option) => option.publisherType === publisherType) ??
+    PROFILE_TYPE_OPTIONS[0]
+  );
+}

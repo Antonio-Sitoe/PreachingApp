@@ -18,7 +18,8 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
 import { Redirect, SplashScreen, Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'nativewind';
+import { colorScheme as nativeColorScheme, useColorScheme } from 'nativewind';
+import { getThemePreference } from '@/utils/storage';
 import { useEffect } from 'react';
 
 export {
@@ -26,6 +27,7 @@ export {
 } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
+nativeColorScheme.set(getThemePreference());
 
 const queryClient = new QueryClient();
 

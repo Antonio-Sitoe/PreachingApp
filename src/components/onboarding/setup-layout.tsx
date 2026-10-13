@@ -15,6 +15,7 @@ type SetupLayoutProps = {
   children: React.ReactNode;
   contentClassName?: string;
   footerClassName?: string;
+  className?: string;
 };
 
 function goBack() {
@@ -32,6 +33,7 @@ function SetupLayout({
   children,
   contentClassName,
   footerClassName,
+  className,
 }: SetupLayoutProps) {
   const insets = useSafeAreaInsets();
   const keyboard = useAnimatedKeyboard();
@@ -40,7 +42,7 @@ function SetupLayout({
   }));
 
   return (
-    <View className="flex-1 bg-card">
+    <View className={cn('flex-1 bg-card', className)}>
       <Animated.View style={[{ flex: 1 }, keyboardStyle]}>
         <ScreenHeader
           title={title}
