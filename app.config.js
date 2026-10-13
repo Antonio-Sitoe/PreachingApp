@@ -1,6 +1,9 @@
 import 'dotenv/config';
 import { version } from './package.json';
 
+// Kotlin do editor de notas (modules/notes): >= 2.3; 2.3.20 é o último com o pika-compiler do Expo.
+const KOTLIN_VERSION = '2.3.20';
+
 export default {
   expo: {
     name: 'Preaching Assistant',
@@ -54,6 +57,8 @@ export default {
         },
       ],
       '@react-native-community/datetimepicker',
+      ['expo-build-properties', { android: { kotlinVersion: KOTLIN_VERSION } }],
+      ['./modules/notes/app.plugin.js', { kotlinVersion: KOTLIN_VERSION }],
     ],
     experiments: {
       typedRoutes: true,

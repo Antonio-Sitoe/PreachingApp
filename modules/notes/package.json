@@ -1,0 +1,6 @@
+{
+  "name": "notes",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Editor de notas em blocos, estilo Notion, com Jetpack Compose e Compose Rich Editor (Android)."
+}
