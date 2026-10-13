@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "c61f43f8-b70e-4bd0-8e31-11fce06b9b0a",
+  "id": "d8df9fd0-665a-4d93-9279-14286fa19b02",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "users": {
@@ -213,6 +213,60 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
+    "tags": {
+      "name": "tags",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "sync_status": {
+          "name": "sync_status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'pending'"
+        }
+      },
+      "indexes": {
+        "tags_name_unique": {
+          "name": "tags_name_unique",
+          "columns": [
+            "name"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
     "notes": {
       "name": "notes",
       "columns": {
@@ -247,8 +301,8 @@
           "autoincrement": false,
           "default": "''"
         },
-        "tag": {
-          "name": "tag",
+        "tag_id": {
+          "name": "tag_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false,
@@ -308,6 +362,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "notes_tag_id_tags_id_fk": {
+          "name": "notes_tag_id_tags_id_fk",
+          "tableFrom": "notes",
+          "tableTo": "tags",
+          "columnsFrom": [
+            "tag_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "notes_student_id_students_id_fk": {
           "name": "notes_student_id_students_id_fk",
           "tableFrom": "notes",
