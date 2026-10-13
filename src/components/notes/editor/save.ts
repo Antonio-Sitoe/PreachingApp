@@ -19,7 +19,7 @@ function flushNoteSave(): Promise<void> {
     .then(() => notesActions.updateNote(noteId, patch))
     .then(() => {
       if (useEditorStore.getState().id !== noteId) return;
-      useEditorStore.getState().set({ isSaving: false });
+      useEditorStore.getState().set({ isSaving: false, updatedAt: new Date().toISOString() });
     })
     .catch(() => {
       if (useEditorStore.getState().id !== noteId) return;

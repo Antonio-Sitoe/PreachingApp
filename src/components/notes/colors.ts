@@ -9,7 +9,6 @@ export const NOTE_COLORS = [
   { name: 'purple', label: 'Cor roxa', color: '#F0E5FF' },
   { name: 'red', label: 'Cor vermelho', color: '#FFE5E5' },
   { name: 'brown', label: 'Cor marrom', color: '#F5E5D0' },
-  { name: 'black', label: 'Cor preto', color: '#1E1E1E' },
   { name: 'white', label: 'Cor branco', color: '#FFFFFF' },
 ] as const;
 

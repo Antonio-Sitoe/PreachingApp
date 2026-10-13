@@ -8,6 +8,10 @@ export type NotesEditorViewRef = {
   getTitle: () => Promise<string | null>;
 };
 
+type Event<T> = (event: NativeSyntheticEvent<T>) => void;
+
+export type NoteMetaField = 'tagId' | 'color' | 'studentId';
+
 type NotesEditorViewProps = ViewProps & {
   ref?: Ref<NotesEditorViewRef>;
   documentId: string;
@@ -15,18 +19,27 @@ type NotesEditorViewProps = ViewProps & {
   initialTitle: string;
   editable?: boolean;
   placeholder?: string;
-  students?: string;
-  tags?: string;
-  foregroundColor?: string;
-  mutedColor?: string;
-  primaryColor?: string;
-  surfaceColor?: string;
-  cardColor?: string;
-  dividerColor?: string;
-  destructiveColor?: string;
-  onDocumentChange?: (event: NativeSyntheticEvent<{ document: string }>) => void;
-  onTitleChange?: (event: NativeSyntheticEvent<{ title: string }>) => void;
-  onReference?: (event: NativeSyntheticEvent<{ kind: 'student' | 'tag'; id: string }>) => void;
+  theme: string;
+  icons: string;
+  noteColors: string;
+  students: string;
+  tags: string;
+  tagId: string | null;
+  color: string | null;
+  studentId: string | null;
+  stamp: string;
+  saveStatus: 'saving' | 'saved';
+  tagNameMax: number;
+  tagsFeedback: string;
+  onDocumentChange?: Event<{ document: string }>;
+  onTitleChange?: Event<{ title: string }>;
+  onReference?: Event<{ kind: 'student' | 'tag'; id: string }>;
+  onBack?: Event<object>;
+  onMetaChange?: Event<{ field: NoteMetaField; value: string | null }>;
+  onDeleteNote?: Event<object>;
+  onTagCreate?: Event<{ requestId: string; name: string }>;
+  onTagRename?: Event<{ requestId: string; id: string; name: string }>;
+  onTagDelete?: Event<{ id: string }>;
 };
 
 const NativeNotesEditorView =

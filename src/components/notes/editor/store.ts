@@ -6,10 +6,8 @@ type EditorValues = {
   tagId: string | null;
   color: string;
   studentId: string | null;
-
-  isDetailsOpen: boolean;
-  isTagsOpen: boolean;
-
+  createdAt: string | null;
+  updatedAt: string | null;
   isDirty: boolean;
   isSaving: boolean;
 };
@@ -19,8 +17,8 @@ const initialState = (): EditorValues => ({
   tagId: null,
   color: DEFAULT_NOTE_COLOR,
   studentId: null,
-  isDetailsOpen: false,
-  isTagsOpen: false,
+  createdAt: null,
+  updatedAt: null,
   isDirty: false,
   isSaving: false,
 });
