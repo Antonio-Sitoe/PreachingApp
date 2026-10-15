@@ -1,0 +1,28 @@
+export function minutesToHoursAndMinutes(hour: number, minutes: number) {
+  const hours = Math.floor(minutes / 60) + hour
+  let remainingMinutes: number | string = minutes % 60
+
+  if (remainingMinutes < 10) {
+    remainingMinutes = `0${remainingMinutes}`
+  }
+  return `${hours}:${remainingMinutes}`
+}
+
+const MONTHS: Record<number, string> = {
+  1: 'janeiro',
+  2: 'fevereiro',
+  3: 'março',
+  4: 'abril',
+  5: 'maio',
+  6: 'junho',
+  7: 'julho',
+  8: 'agosto',
+  9: 'setembro',
+  10: 'outubro',
+  11: 'novembro',
+  12: 'dezembro',
+};
+
+export function monthNameToPortuguese(month: number) {
+  return MONTHS[month] ?? String(month);
+}

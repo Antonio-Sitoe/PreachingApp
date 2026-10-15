@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 250 250 250;
+    --card: 255 255 255;
+    --popover: 255 255 255;
+    --secondary: 242 245 255;
+    --accent: 242 245 255;
+    --muted: 241 242 245;
+
+    --primary: 93 108 178;
+    --primary-foreground: 255 255 255;
+    --primary-strong: 74 83 133;
+    --ring: 93 108 178;
+
+    --foreground: 30 30 30;
+    --card-foreground: 30 30 30;
+    --popover-foreground: 30 30 30;
+    --secondary-foreground: 74 83 133;
+    --accent-foreground: 74 83 133;
+    --muted-foreground: 72 76 82;
+    --subtle: 107 112 128;
+
+    --border: 228 228 228;
+    --input: 228 228 228;
+
+    --warning: 180 83 9;
+    --warning-soft: 255 244 224;
+    --success: 23 112 74;
+    --success-soft: 230 246 238;
+    --destructive: 199 37 107;
+    --destructive-foreground: 255 255 255;
+    --destructive-soft: 255 229 240;
+
+    --stage-contact: 91 98 112;
+    --stage-contact-soft: 238 240 243;
+    --stage-revisit: 47 111 176;
+    --stage-revisit-soft: 230 241 251;
+    --stage-started: 90 79 179;
+    --stage-started-soft: 238 236 251;
+    --stage-regular: 74 83 133;
+    --stage-regular-soft: 227 231 248;
+    --stage-publisher: 23 112 74;
+    --stage-publisher-soft: 230 246 238;
+    --stage-baptized: 122 84 0;
+    --stage-baptized-soft: 251 241 214;
+    --stage-paused: 91 98 112;
+    --stage-paused-soft: 241 242 245;
+
+    --toast: 30 34 51;
+    --toast-foreground: 255 255 255;
+    --toast-action: 197 204 240;
+
+    --radius: 0.625rem;
+  }
+
+  .dark:root {
+    --background: 16 18 28;
+    --card: 27 30 45;
+    --popover: 27 30 45;
+    --secondary: 37 42 64;
+    --accent: 37 42 64;
+    --muted: 38 42 58;
+
+    --primary: 142 155 219;
+    --primary-foreground: 16 18 28;
+    --primary-strong: 197 204 240;
+    --ring: 142 155 219;
+
+    --foreground: 242 243 247;
+    --card-foreground: 242 243 247;
+    --popover-foreground: 242 243 247;
+    --secondary-foreground: 197 204 240;
+    --accent-foreground: 197 204 240;
+    --muted-foreground: 185 189 202;
+    --subtle: 147 153 172;
+
+    --border: 46 51 72;
+    --input: 46 51 72;
+
+    --warning: 255 192 105;
+    --warning-soft: 58 46 20;
+    --success: 111 211 165;
+    --success-soft: 23 51 39;
+    --destructive: 255 141 184;
+    --destructive-foreground: 16 18 28;
+    --destructive-soft: 58 31 44;
+
+    --stage-contact: 195 200 212;
+    --stage-contact-soft: 42 46 60;
+    --stage-revisit: 140 192 242;
+    --stage-revisit-soft: 27 44 64;
+    --stage-started: 181 173 245;
+    --stage-started-soft: 39 36 74;
+    --stage-regular: 197 204 240;
+    --stage-regular-soft: 42 48 82;
+    --stage-publisher: 111 211 165;
+    --stage-publisher-soft: 23 51 39;
+    --stage-baptized: 242 203 107;
+    --stage-baptized-soft: 58 48 19;
+    --stage-paused: 169 174 187;
+    --stage-paused-soft: 38 42 58;
+
+    --toast: 46 51 72;
+    --toast-foreground: 255 255 255;
+    --toast-action: 197 204 240;
+  }
+}

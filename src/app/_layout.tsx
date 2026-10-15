@@ -1,56 +1,114 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import 'react-native-gesture-handler';
+import 'react-native-get-random-values';
+import '@/app/global.css';
+
+import { DrizzleStudio } from '@/components/drizzle-studio';
+import { ToastHost } from '@/components/ui/toast';
+import { FONTS } from '@/lib/fonts';
+import { NotificationProvider } from '@/contexts/notification-provider';
+import { OnboardingProvider, useOnboarding } from '@/contexts/onboarding';
+import { NAV_THEME } from '@/lib/theme';
+import { db } from '@/database/db';
+import migrations from '@/database/migrations/migrations';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from 'expo-router/react-navigation';
+import { PortalHost } from '@rn-primitives/portal';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { useFonts } from 'expo-font';
-import { SplashScreen, Stack } from 'expo-router';
+import { Redirect, SplashScreen, Stack, usePathname } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { colorScheme as nativeColorScheme, useColorScheme } from 'nativewind';
+import { getThemePreference } from '@/utils/storage';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
 
 export {
-  // Catch any errors thrown by the Layout component.
   ErrorBoundary,
 } from 'expo-router';
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(tabs)',
-};
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+nativeColorScheme.set(getThemePreference());
+
+const queryClient = new QueryClient();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
-  });
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+  const { colorScheme } = useColorScheme();
+  const { success: migrationsApplied, error: migrationError } = useMigrations(db, migrations);
+  const [fontsLoaded, fontError] = useFonts(FONTS);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
+    if (migrationError) throw migrationError;
+  }, [migrationError]);
 
-  if (!loaded) {
+  useEffect(() => {
+    if (fontError) throw fontError;
+  }, [fontError]);
+
+  const ready = migrationsApplied && fontsLoaded;
+
+  useEffect(() => {
+    if (ready) SplashScreen.hideAsync();
+  }, [ready]);
+
+  if (!ready) {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
+          <OnboardingProvider>
+            <NotificationProvider>
+              {__DEV__ && <DrizzleStudio />}
+              <RootNavigator colorScheme={colorScheme} />
+              <ToastHost />
+              <PortalHost />
+            </NotificationProvider>
+          </OnboardingProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
+  );
 }
 
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+function RootNavigator({ colorScheme }: { colorScheme: 'light' | 'dark' | undefined }) {
+  const { completed } = useOnboarding();
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+    <>
+      <StatusBar style={!completed || colorScheme !== 'dark' ? 'dark' : 'light'} />
+      <OnboardingRedirect />
+      <Stack
+        screenOptions={{
+          headerTitleAlign: 'center',
+          headerTitleStyle: { fontFamily: 'RedHatDisplay_700Bold', fontSize: 20 },
+          headerShadowVisible: false,
+        }}>
+        <Stack.Protected guard={!completed}>
+          <Stack.Screen name="welcome" options={{ headerShown: false }} />
+        </Stack.Protected>
+        <Stack.Protected guard={completed}>
+          <Stack.Screen name="(app)" options={{ headerShown: false }} />
+        </Stack.Protected>
+        <Stack.Screen name="auth" options={{ headerShown: false }} />
       </Stack>
-    </ThemeProvider>
+    </>
   );
+}
+
+function OnboardingRedirect() {
+  const { completed } = useOnboarding();
+  const pathname = usePathname();
+
+  const onWelcome = pathname === '/welcome' || pathname.startsWith('/welcome/');
+  const onAuth = pathname.startsWith('/auth/');
+
+  if (!completed && !onWelcome && !onAuth) {
+    return <Redirect href="/welcome" />;
+  }
+  if (completed && onWelcome) {
+    return <Redirect href="/" />;
+  }
+  return null;
 }

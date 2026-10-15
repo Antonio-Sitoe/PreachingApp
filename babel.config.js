@@ -1,12 +1,7 @@
 module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ["babel-preset-expo"],
-    plugins: [
-      "@babel/plugin-proposal-export-namespace-from",
-      "react-native-reanimated/plugin",
-      "nativewind/babel",
-      "expo-router/babel",
-    ],
+    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
+    plugins: [['inline-import', { extensions: ['.sql'] }]],
   };
 };

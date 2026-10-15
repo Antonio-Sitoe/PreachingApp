@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2008.96 1080">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #4a5385;
+      }
+
+      .cls-2, .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-4 {
+        fill: #6775b8;
+      }
+
+      .cls-5 {
+        fill: #c47a5d;
+      }
+
+      .cls-3, .cls-6 {
+        font-family: Nunito-SemiBold, Nunito;
+        font-size: 48px;
+        font-weight: 600;
+      }
+
+      .cls-6 {
+        fill: #231f20;
+      }
+
+      .cls-7 {
+        fill: #e8d9c5;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g>
+      <rect class="cls-1" width="404.5" height="1080"/>
+      <rect class="cls-4" x="401.11" width="401.11" height="1080"/>
+      <rect class="cls-5" x="802.23" width="401.11" height="1080"/>
+      <rect class="cls-7" x="1203.34" width="399.75" height="1080"/>
+      <rect class="cls-2" x="1604.46" width="404.5" height="1080"/>
+      <text class="cls-3" transform="translate(86.8 984.25)"><tspan x="0" y="0">#4A5385</tspan></text>
+      <text class="cls-3" transform="translate(475.99 984.25)"><tspan x="0" y="0">#6775B8</tspan></text>
+      <text class="cls-3" transform="translate(884.15 984.25)"><tspan x="0" y="0">#C47A5D</tspan></text>
+      <text class="cls-6" transform="translate(1281.85 984.25)"><tspan x="0" y="0">#E8D9C5</tspan></text>
+      <text class="cls-6" transform="translate(1711.53 984.25)"><tspan x="0" y="0">#FFFFFF</tspan></text>
+    </g>
+  </g>
+</svg>

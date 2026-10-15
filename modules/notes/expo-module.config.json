@@ -1,0 +1,8 @@
+{
+  "name": "notes",
+  "platforms": ["android"],
+  "coreFeatures": ["compose"],
+  "android": {
+    "modules": ["expo.modules.notes.NotesModule"]
+  }
+}
