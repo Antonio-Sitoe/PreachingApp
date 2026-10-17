@@ -1,8 +1,13 @@
 export const LEAD_MINUTES = [15, 30, 60, 120] as const;
-export const RHYTHM_DAYS = [7, 14, 30] as const;
+export const RHYTHM_SHORTCUTS = [
+  { days: 7, label: 'Semanal' },
+  { days: 14, label: 'Quinzenal' },
+  { days: 30, label: 'Mensal' },
+] as const;
+export const RHYTHM_MIN_DAYS = 1;
+export const RHYTHM_MAX_DAYS = 365;
 
 export type LeadMinutes = (typeof LEAD_MINUTES)[number];
-export type RhythmDays = (typeof RHYTHM_DAYS)[number];
 
 export type MonthlyReminderConfig = {
   title: string;
@@ -22,8 +27,8 @@ export type NotificationPreferences = {
   };
   visitLeadMinutes: LeadMinutes;
   rhythm: {
-    revisitDays: RhythmDays;
-    studyDays: RhythmDays;
+    revisitDays: number;
+    studyDays: number;
   };
   monthly: MonthlyReminderConfig;
   lastSync: string | null;
@@ -60,8 +65,8 @@ export function formatLead(minutes: LeadMinutes): string {
   return LEAD_LABELS[minutes];
 }
 
-export function formatRhythm(days: RhythmDays): string {
-  return `A cada ${days} dias`;
+export function formatRhythm(days: number): string {
+  return days === 1 ? 'Todos os dias' : `A cada ${days} dias`;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -94,8 +99,17 @@ function leadOf(value: unknown): LeadMinutes {
     : DEFAULT_NOTIFICATION_PREFERENCES.visitLeadMinutes;
 }
 
-function rhythmOf(value: unknown, fallback: RhythmDays): RhythmDays {
-  return RHYTHM_DAYS.includes(value as RhythmDays) ? (value as RhythmDays) : fallback;
+export function isRhythmDays(value: unknown): value is number {
+  return (
+    typeof value === 'number' &&
+    Number.isInteger(value) &&
+    value >= RHYTHM_MIN_DAYS &&
+    value <= RHYTHM_MAX_DAYS
+  );
+}
+
+function rhythmOf(value: unknown, fallback: number): number {
+  return isRhythmDays(value) ? value : fallback;
 }
 
 export function mergeNotificationPreferences(
