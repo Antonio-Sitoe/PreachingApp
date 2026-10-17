@@ -14,26 +14,16 @@ import {
   toSetupProfile,
   type SetupProfile,
 } from '@/utils/profile/setup';
-import { getThemePreference, setThemePreference, type ThemePreference } from '@/utils/storage';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { colorScheme } from 'nativewind';
 import * as React from 'react';
 import { View } from 'react-native';
-
-const THEME_OPTIONS = [
-  { value: 'light', label: 'Claro' },
-  { value: 'dark', label: 'Escuro' },
-  { value: 'system', label: 'Do sistema' },
-] as const;
 
 export default function ProfileScreen() {
   const queryClient = useQueryClient();
   const [profile, setProfile] = React.useState<SetupProfile>(DEFAULT_SETUP_PROFILE);
-  const [theme, setTheme] = React.useState<ThemePreference>(getThemePreference);
   const [saving, setSaving] = React.useState(false);
   const touched = React.useRef(false);
-  const saved = React.useRef(false);
 
   React.useEffect(() => {
     let cancelled = false;
@@ -48,21 +38,9 @@ export default function ProfileScreen() {
     };
   }, []);
 
-  React.useEffect(
-    () => () => {
-      if (!saved.current) colorScheme.set(getThemePreference());
-    },
-    []
-  );
-
   const update = (changes: Partial<SetupProfile>) => {
     touched.current = true;
     setProfile((current) => ({ ...current, ...changes }));
-  };
-
-  const changeTheme = (next: ThemePreference) => {
-    setTheme(next);
-    colorScheme.set(next);
   };
 
   const goals = [...MONTHLY_HOUR_GOALS[profile.publisherType]].sort((a, b) => b - a);
@@ -71,8 +49,6 @@ export default function ProfileScreen() {
     setSaving(true);
     try {
       await usersActions.saveProfile(profile);
-      setThemePreference(theme);
-      saved.current = true;
       await queryClient.invalidateQueries({ queryKey: ['user'] });
       router.back();
     } catch {
@@ -138,19 +114,8 @@ export default function ProfileScreen() {
       ) : null}
 
       <Text variant="bodyS" className="text-muted-foreground">
-        Podes mudar o tipo e a meta em qualquer mês. O relatório e o cronómetro ajustam-se
-        sozinhos.
+        Podes mudar o tipo e a meta em qualquer mês. O relatório e o cronómetro ajustam-se sozinhos.
       </Text>
-
-      <View className="gap-2">
-        <FieldLabel>Tema</FieldLabel>
-        <SegmentedControl
-          accessibilityLabel="Tema"
-          options={THEME_OPTIONS}
-          value={theme}
-          onChange={changeTheme}
-        />
-      </View>
     </SetupLayout>
   );
 }

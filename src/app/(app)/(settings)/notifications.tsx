@@ -2,20 +2,19 @@ import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { SettingsRow, SettingsSection, SettingsSwitch } from '@/components/settings/grouped-list';
+import { ChoiceRow } from '@/components/settings/choice-row';
+import { RhythmSheet } from '@/components/settings/rhythm-sheet';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
-import { AppIcon } from '@/components/ui/app-icon';
 import { showToast } from '@/components/ui/toast';
 import {
   formatLead,
   formatRhythm,
   formatTime,
   LEAD_MINUTES,
-  RHYTHM_DAYS,
   type LeadMinutes,
   type MonthlyReminderConfig,
   type NotificationPreferences,
-  type RhythmDays,
 } from '@/utils/notifications/preferences';
 import {
   checkPermission,
@@ -25,10 +24,12 @@ import {
 } from '@/utils/permissions';
 import { getNotificationPreferences, setNotificationPreferences } from '@/utils/storage';
 import { syncAllNotifications } from '@/utils/notifications/scheduler';
-import DateTimePicker, { type DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import DateTimePicker, {
+  type DateTimePickerChangeEvent,
+} from '@react-native-community/datetimepicker';
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { AppState, Pressable, ScrollView, View } from 'react-native';
+import { AppState, ScrollView, View } from 'react-native';
 
 type TimeTarget = 'daily' | 'monthly';
 type RhythmTarget = 'revisit' | 'study';
@@ -40,6 +41,8 @@ const EXACT_ALARM_HINT =
 
 const RHYTHM_HINT =
   'Quando alguém passa deste intervalo sem visita, aparece nos alertas do Hoje. Cada estudante pode ter o seu próprio ritmo.';
+
+const RHYTHM_SHEET_HINT = 'Vale para os estudantes novos. Quem já tem ritmo próprio não muda.';
 
 function timeDate(hour: number, minute: number): Date {
   return new Date(2020, 0, 1, hour, minute, 0, 0);
@@ -105,11 +108,15 @@ export default function NotificationsScreen() {
     void saveMonthly({ hour, minute });
   }
 
-  function onTimePicked(event: DateTimePickerEvent, date?: Date) {
+  function onTimeValueChange(_event: DateTimePickerChangeEvent, date: Date) {
     const target = timePicker?.target;
     setTimePicker(null);
-    if (event.type !== 'set' || !date || !target) return;
+    if (!target) return;
     commitTime(target, date);
+  }
+
+  function onTimeDismiss() {
+    setTimePicker(null);
   }
 
   function saveLead(minutes: LeadMinutes) {
@@ -117,7 +124,7 @@ export default function NotificationsScreen() {
     setSheet(null);
   }
 
-  function saveRhythm(days: RhythmDays) {
+  function saveRhythm(days: number) {
     if (sheet?.kind !== 'rhythm') return;
     const current = getNotificationPreferences();
     persist({
@@ -138,11 +145,9 @@ export default function NotificationsScreen() {
   }
 
   const rhythmDays =
-    sheet?.kind === 'rhythm'
-      ? sheet.target === 'revisit'
-        ? prefs.rhythm.revisitDays
-        : prefs.rhythm.studyDays
-      : null;
+    sheet?.kind === 'rhythm' && sheet.target === 'study'
+      ? prefs.rhythm.studyDays
+      : prefs.rhythm.revisitDays;
 
   return (
     <View className="flex-1 bg-background">
@@ -269,7 +274,8 @@ export default function NotificationsScreen() {
           mode="time"
           is24Hour
           display="default"
-          onChange={onTimePicked}
+          onValueChange={onTimeValueChange}
+          onDismiss={onTimeDismiss}
         />
       ) : null}
 
@@ -284,19 +290,18 @@ export default function NotificationsScreen() {
         ))}
       </BottomSheet>
 
-      <BottomSheet
+      <RhythmSheet
         open={sheet?.kind === 'rhythm'}
         onClose={() => setSheet(null)}
-        title={sheet?.kind === 'rhythm' && sheet.target === 'study' ? 'Estudos' : 'Revisitas'}>
-        {RHYTHM_DAYS.map((days) => (
-          <ChoiceRow
-            key={days}
-            label={formatRhythm(days)}
-            selected={rhythmDays === days}
-            onPress={() => saveRhythm(days)}
-          />
-        ))}
-      </BottomSheet>
+        title={
+          sheet?.kind === 'rhythm' && sheet.target === 'study'
+            ? 'Ritmo dos estudos'
+            : 'Ritmo das revisitas'
+        }
+        days={rhythmDays}
+        hint={RHYTHM_SHEET_HINT}
+        onSave={saveRhythm}
+      />
 
       <BottomSheet open={sheet?.kind === 'title'} onClose={() => setSheet(null)} title="Título">
         <TextField label="Título da notificação" value={titleDraft} onChangeText={setTitleDraft} />
@@ -305,28 +310,5 @@ export default function NotificationsScreen() {
         </Button>
       </BottomSheet>
     </View>
-  );
-}
-
-function ChoiceRow({
-  label,
-  selected,
-  onPress,
-}: {
-  label: string;
-  selected: boolean;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityState={{ selected }}
-      onPress={onPress}
-      className="min-h-[52px] flex-row items-center gap-3 active:opacity-70">
-      <Text variant="titleS" className="flex-1">
-        {label}
-      </Text>
-      {selected ? <AppIcon name="check" size={18} className="text-primary" /> : null}
-    </Pressable>
   );
 }
