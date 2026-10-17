@@ -57,6 +57,7 @@ export default {
         },
       ],
       '@react-native-community/datetimepicker',
+      'expo-sharing',
       ['expo-build-properties', { android: { kotlinVersion: KOTLIN_VERSION } }],
       ['./modules/notes/app.plugin.js', { kotlinVersion: KOTLIN_VERSION }],
     ],
