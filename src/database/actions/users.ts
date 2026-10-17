@@ -48,95 +48,99 @@ export function resolveMonthlyHourGoal(
 
 const now = () => new Date().toISOString();
 
-class UsersActions {
-  async getCurrent(): Promise<User | undefined> {
-    const rows = await db.select().from(users).where(isNull(users.deletedAt)).limit(1);
-    return rows[0];
-  }
+async function getCurrent(): Promise<User | undefined> {
+  const rows = await db.select().from(users).where(isNull(users.deletedAt)).limit(1);
+  return rows[0];
+}
 
-  async getById(id: string): Promise<User | undefined> {
+async function getById(id: string): Promise<User | undefined> {
+  const rows = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.id, id), isNull(users.deletedAt)));
+  return rows[0];
+}
+
+async function getAll(): Promise<User[]> {
+  return db.select().from(users).where(isNull(users.deletedAt));
+}
+
+async function create(data: UserInput): Promise<User> {
+  try {
+    const timestamp = now();
     const rows = await db
-      .select()
-      .from(users)
-      .where(and(eq(users.id, id), isNull(users.deletedAt)));
+      .insert(users)
+      .values({
+        name: data.name?.trim() ?? '',
+        publisherType: data.publisherType,
+        language: data.language,
+        monthlyHourGoal: data.monthlyHourGoal,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        syncStatus: 'pending',
+      })
+      .returning();
     return rows[0];
-  }
-
-  async getAll(): Promise<User[]> {
-    return db.select().from(users).where(isNull(users.deletedAt));
-  }
-
-  async create(data: UserInput): Promise<User> {
-    try {
-      const timestamp = now();
-      const rows = await db
-        .insert(users)
-        .values({
-          name: data.name?.trim() ?? '',
-          publisherType: data.publisherType,
-          language: data.language,
-          monthlyHourGoal: data.monthlyHourGoal,
-          createdAt: timestamp,
-          updatedAt: timestamp,
-          syncStatus: 'pending',
-        })
-        .returning();
-      return rows[0];
-    } catch (error) {
-      console.error('Error creating user:', error);
-      throw error;
-    }
-  }
-
-  async updateById(id: string, data: Partial<UserInput>): Promise<User | undefined> {
-    try {
-      const rows = await db
-        .update(users)
-        .set({
-          ...(data.name !== undefined && { name: data.name.trim() }),
-          ...(data.publisherType !== undefined && { publisherType: data.publisherType }),
-          ...(data.language !== undefined && { language: data.language }),
-          ...(data.monthlyHourGoal !== undefined && { monthlyHourGoal: data.monthlyHourGoal }),
-          updatedAt: now(),
-          syncStatus: 'pending',
-        })
-        .where(and(eq(users.id, id), isNull(users.deletedAt)))
-        .returning();
-      return rows[0];
-    } catch (error) {
-      console.error('Error updating user:', error);
-      throw error;
-    }
-  }
-
-  async saveProfile(profile: UserProfileInput): Promise<User> {
-    const { monthlyHourGoal: chosenGoal, ...fields } = profile;
-    const current = await this.getCurrent();
-    const keptGoal =
-      current && current.publisherType === fields.publisherType
-        ? current.monthlyHourGoal
-        : undefined;
-    const monthlyHourGoal = resolveMonthlyHourGoal(fields.publisherType, chosenGoal ?? keptGoal);
-
-    if (!current) return this.create({ ...fields, monthlyHourGoal });
-    const updated = await this.updateById(current.id, { ...fields, monthlyHourGoal });
-    return updated ?? current;
-  }
-
-  async deleteById(id: string): Promise<User | undefined> {
-    try {
-      const timestamp = now();
-      const rows = await db
-        .update(users)
-        .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
-        .where(and(eq(users.id, id), isNull(users.deletedAt)))
-        .returning();
-      return rows[0];
-    } catch (error) {
-      console.error('Error deleting user:', error);
-      throw error;
-    }
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
   }
 }
 
-export const usersActions = new UsersActions();
+async function updateById(id: string, data: Partial<UserInput>): Promise<User | undefined> {
+  try {
+    const rows = await db
+      .update(users)
+      .set({
+        ...(data.name !== undefined && { name: data.name.trim() }),
+        ...(data.publisherType !== undefined && { publisherType: data.publisherType }),
+        ...(data.language !== undefined && { language: data.language }),
+        ...(data.monthlyHourGoal !== undefined && { monthlyHourGoal: data.monthlyHourGoal }),
+        updatedAt: now(),
+        syncStatus: 'pending',
+      })
+      .where(and(eq(users.id, id), isNull(users.deletedAt)))
+      .returning();
+    return rows[0];
+  } catch (error) {
+    console.error('Error updating user:', error);
+    throw error;
+  }
+}
+
+async function saveProfile(profile: UserProfileInput): Promise<User> {
+  const { monthlyHourGoal: chosenGoal, ...fields } = profile;
+  const current = await getCurrent();
+  const keptGoal =
+    current && current.publisherType === fields.publisherType ? current.monthlyHourGoal : undefined;
+  const monthlyHourGoal = resolveMonthlyHourGoal(fields.publisherType, chosenGoal ?? keptGoal);
+
+  if (!current) return create({ ...fields, monthlyHourGoal });
+  const updated = await updateById(current.id, { ...fields, monthlyHourGoal });
+  return updated ?? current;
+}
+
+async function deleteById(id: string): Promise<User | undefined> {
+  try {
+    const timestamp = now();
+    const rows = await db
+      .update(users)
+      .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
+      .where(and(eq(users.id, id), isNull(users.deletedAt)))
+      .returning();
+    return rows[0];
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    throw error;
+  }
+}
+
+export const usersActions = {
+  getCurrent,
+  getById,
+  getAll,
+  create,
+  updateById,
+  saveProfile,
+  deleteById,
+};
