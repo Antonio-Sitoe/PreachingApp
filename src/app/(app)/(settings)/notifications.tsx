@@ -7,6 +7,7 @@ import { RhythmSheet } from '@/components/settings/rhythm-sheet';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { EXACT_ALARM_HINT, RHYTHM_HINT, RHYTHM_SHEET_HINT } from '@/constants/settings';
 import {
   formatLead,
   formatRhythm,
@@ -35,14 +36,6 @@ type TimeTarget = 'daily' | 'monthly';
 type RhythmTarget = 'revisit' | 'study';
 
 type Sheet = { kind: 'lead' } | { kind: 'rhythm'; target: RhythmTarget } | { kind: 'title' } | null;
-
-const EXACT_ALARM_HINT =
-  'Sem esta permissão o Android pode atrasar os lembretes alguns minutos ou mais. Ativa em Alarmes e lembretes.';
-
-const RHYTHM_HINT =
-  'Quando alguém passa deste intervalo sem visita, aparece nos alertas do Hoje. Cada estudante pode ter o seu próprio ritmo.';
-
-const RHYTHM_SHEET_HINT = 'Vale para os estudantes novos. Quem já tem ritmo próprio não muda.';
 
 function timeDate(hour: number, minute: number): Date {
   return new Date(2020, 0, 1, hour, minute, 0, 0);

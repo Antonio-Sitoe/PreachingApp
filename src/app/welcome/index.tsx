@@ -55,7 +55,7 @@ export default function WelcomeScreen() {
           </Pressable>
           <Pressable
             accessibilityRole="button"
-            className="h-11 items-center hidden justify-center active:opacity-80"
+            className="h-11 items-center justify-center active:opacity-80"
             onPress={() => router.push('/welcome/restore')}>
             <Text variant="titleS" className="font-display-semibold text-primary">
               Tenho uma cópia de segurança

@@ -20,11 +20,10 @@ import { Redirect, SplashScreen, Stack, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { colorScheme as nativeColorScheme, useColorScheme } from 'nativewind';
 import { getThemePreference } from '@/utils/storage';
+import { countEvent } from '@/utils/usage';
 import { useEffect } from 'react';
 
-export {
-  ErrorBoundary,
-} from 'expo-router';
+export { ErrorBoundary } from 'expo-router';
 
 SplashScreen.preventAutoHideAsync();
 nativeColorScheme.set(getThemePreference());
@@ -47,7 +46,9 @@ export default function RootLayout() {
   const ready = migrationsApplied && fontsLoaded;
 
   useEffect(() => {
-    if (ready) SplashScreen.hideAsync();
+    if (!ready) return;
+    SplashScreen.hideAsync();
+    void countEvent('app_open');
   }, [ready]);
 
   if (!ready) {

@@ -3,24 +3,48 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
-import { BACKUP_RESTORE_AVAILABLE, pickBackupFile, type BackupSummary } from '@/utils/backup';
+import { useOnboarding } from '@/contexts/onboarding';
+import { BackupError, pickBackupFile, restoreBackup, type PickedBackup } from '@/utils/backup';
+import { syncAllNotifications } from '@/utils/notifications/scheduler';
+import { getThemePreference } from '@/utils/storage';
+import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
+import { colorScheme } from 'nativewind';
 import * as React from 'react';
 import { View } from 'react-native';
 
-const NOT_AVAILABLE = 'Restaurar cópias ainda não está disponível nesta versão.';
-
 export default function RestoreScreen() {
-  const [backup, setBackup] = React.useState<BackupSummary | null>(null);
+  const queryClient = useQueryClient();
+  const { complete } = useOnboarding();
+  const [backup, setBackup] = React.useState<PickedBackup | null>(null);
+  const [restoring, setRestoring] = React.useState(false);
 
   const pick = async () => {
-    const picked = await pickBackupFile();
-    if (picked) setBackup(picked);
-    else if (!BACKUP_RESTORE_AVAILABLE) showToast({ message: NOT_AVAILABLE });
+    try {
+      const picked = await pickBackupFile();
+      if (picked) setBackup(picked);
+    } catch (error) {
+      showToast({
+        message:
+          error instanceof BackupError ? error.message : 'Não foi possível abrir o ficheiro.',
+      });
+    }
   };
 
-  const restore = () => {
-    showToast({ message: NOT_AVAILABLE });
+  const restore = async () => {
+    if (!backup) return;
+    setRestoring(true);
+    try {
+      restoreBackup(backup.data);
+      colorScheme.set(getThemePreference());
+      await queryClient.invalidateQueries();
+      void syncAllNotifications();
+      complete();
+    } catch (error) {
+      console.error('Error restoring backup:', error);
+      showToast({ message: 'Não foi possível restaurar a cópia. Os dados não foram alterados.' });
+      setRestoring(false);
+    }
   };
 
   return (
@@ -30,7 +54,7 @@ export default function RestoreScreen() {
       footerClassName="gap-2"
       footer={
         <>
-          <Button disabled={!backup} onPress={restore}>
+          <Button disabled={!backup || restoring} onPress={restore}>
             <Text>Restaurar e começar</Text>
           </Button>
           <Button variant="ghost" className="h-12" onPress={() => router.push('/welcome/setup')}>

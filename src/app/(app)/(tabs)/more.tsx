@@ -4,19 +4,19 @@ import { SettingsRow, SettingsSection } from '@/components/settings/grouped-list
 import { Text } from '@/components/ui/text';
 import { usersActions } from '@/database/actions';
 import { PUBLISHER_TYPE_INFO } from '@/utils/profile/setup';
-import { THEME } from '@/lib/theme';
+import { isUsageCountingEnabled } from '@/utils/storage';
 import { useQuery } from '@tanstack/react-query';
 import { router } from 'expo-router';
-import { Heart } from 'lucide-react-native';
-import { useColorScheme } from 'nativewind';
 import { Pressable, ScrollView, View } from 'react-native';
 
 export default function MoreScreen() {
-  const { colorScheme } = useColorScheme();
-  const theme = THEME[colorScheme ?? 'light'];
   const { data: user } = useQuery({
     queryKey: ['user', 'current'],
     queryFn: () => usersActions.getCurrent(),
+  });
+  const { data: usageCounting } = useQuery({
+    queryKey: ['usage-counting'],
+    queryFn: () => isUsageCountingEnabled(),
   });
 
   const name = user?.name.trim() || 'Sem nome';
@@ -51,17 +51,18 @@ export default function MoreScreen() {
         <View className="flex-row gap-2">
           <MenuTile icon="notes" label="Relatórios" onPress={() => router.push('/report')} />
           <MenuTile icon="clock" label="Horas" />
-          <View className="flex-1 gap-2.5 rounded-lg border border-border bg-card px-3 py-3.5">
-            <Heart size={22} color={theme.primary} strokeWidth={2} />
-            <Text variant="titleS">Apoiar</Text>
-          </View>
+          <MenuTile icon="heart" label="Apoiar" onPress={() => router.push('/support')} />
         </View>
 
         <SettingsSection title="Definições">
-          <SettingsRow first title="Gerais" chevron />
+          <SettingsRow first title="Gerais" onPress={() => router.push('/general')} />
           <SettingsRow title="Notificações" onPress={() => router.push('/notifications')} />
-          <SettingsRow title="Backup e restauro" chevron />
-          <SettingsRow title="Contagens anónimas" value="Desligadas" chevron />
+          <SettingsRow title="Backup e restauro" onPress={() => router.push('/backup')} />
+          <SettingsRow
+            title="Contagens anónimas"
+            value={usageCounting ? 'Ligadas' : 'Desligadas'}
+            onPress={() => router.push('/usage')}
+          />
         </SettingsSection>
 
         <Pressable
