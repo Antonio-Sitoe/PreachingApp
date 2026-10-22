@@ -1,9 +1,19 @@
 import { integer, real, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { v4 as uuid } from 'uuid';
-import { STAGES, type Stage } from '../../constants/stages';
 import { SYNC_STATUSES, users } from './users';
 
-const STAGE_KEYS = Object.keys(STAGES) as [Stage, ...Stage[]];
+export const STUDENT_STAGES = [
+  'first_contact',
+  'return_visit',
+  'study_started',
+  'regular_study',
+  'unbaptized_publisher',
+  'baptized',
+] as const;
+
+export const STUDENT_STATUSES = ['active', 'paused', 'closed'] as const;
+
+export const DEFAULT_RHYTHM_DAYS = 7;
 
 export const students = sqliteTable('students', {
   id: text('id')
@@ -13,11 +23,11 @@ export const students = sqliteTable('students', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   displayName: text('display_name').notNull(),
-  nameIsProvisional: integer('name_is_provisional', { mode: 'boolean' }).notNull().default(false),
+  note: text('note'),
   phone: text('phone'),
-  stage: text('stage', { enum: STAGE_KEYS }).notNull().default('contact'),
-  status: text('status'),
-  rhythmDays: integer('rhythm_days'),
+  stage: text('stage', { enum: STUDENT_STAGES }).notNull().default('first_contact'),
+  status: text('status', { enum: STUDENT_STATUSES }).notNull().default('active'),
+  rhythmDays: integer('rhythm_days').notNull().default(DEFAULT_RHYTHM_DAYS),
   latitude: real('latitude'),
   longitude: real('longitude'),
   address: text('address'),
@@ -29,3 +39,5 @@ export const students = sqliteTable('students', {
 
 export type Student = typeof students.$inferSelect;
 export type NewStudent = typeof students.$inferInsert;
+export type StudentStage = (typeof STUDENT_STAGES)[number];
+export type StudentStatus = (typeof STUDENT_STATUSES)[number];
