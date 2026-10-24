@@ -1,3 +1,4 @@
+import { STUDENT_SORTS, type StudentSort } from '@/constants/students';
 import {
   mergeNotificationPreferences,
   type NotificationPreferences,
@@ -11,6 +12,7 @@ const THEME_PREFERENCE = 'appearance.theme';
 const LIST_VIEW = 'appearance.listView';
 const LAST_BACKUP = 'backup.last';
 const USAGE_COUNTING = 'usage.countingEnabled';
+const STUDENT_SORT = 'students.sort';
 
 export const THEME_PREFERENCES = ['light', 'dark', 'system'] as const;
 export type ThemePreference = (typeof THEME_PREFERENCES)[number];
@@ -97,4 +99,13 @@ export function isUsageCountingEnabled(): boolean {
 
 export function setUsageCountingEnabled(value: boolean): void {
   getStorage().set(USAGE_COUNTING, value);
+}
+
+export function getStudentSort(): StudentSort {
+  const value = getStorage().getString(STUDENT_SORT);
+  return STUDENT_SORTS.find((option) => option.id === value)?.id ?? 'next-visit';
+}
+
+export function setStudentSort(value: StudentSort): void {
+  getStorage().set(STUDENT_SORT, value);
 }

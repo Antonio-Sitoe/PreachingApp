@@ -201,6 +201,7 @@ export default function DesignSystemScreen() {
             {STAGE_ORDER.map((stage) => (
               <StageBadge key={stage} stage={stage} />
             ))}
+            <StageBadge stage="return_visit" paused />
           </View>
         </Section>
 
@@ -237,7 +238,7 @@ export default function DesignSystemScreen() {
             <Caption>Visita de hoje</Caption>
             <PersonCard
               name="Celeste Nhantumbo"
-              stage="regular"
+              stage="regular_study"
               meta="10:00"
               detail="Lição 14 · levar a brochura"
               onPress={() => {}}
@@ -248,7 +249,7 @@ export default function DesignSystemScreen() {
             <Caption>Em atraso</Caption>
             <PersonCard
               name="Helena Macuácua"
-              stage="revisit"
+              stage="return_visit"
               meta="há 2 dias"
               metaTone="warning"
               detail="Ficou de ler Salmo 37:29"
@@ -260,7 +261,7 @@ export default function DesignSystemScreen() {
             <Caption>Na lista de pessoas</Caption>
             <PersonCard
               name="Ernesto Sitoe"
-              stage="revisit"
+              stage="return_visit"
               detail="Última visita há 16 dias"
               onPress={() => {}}
             />
