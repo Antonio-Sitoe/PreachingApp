@@ -50,7 +50,7 @@ export default function MoreScreen() {
 
         <View className="flex-row gap-2">
           <MenuTile icon="notes" label="Relatórios" onPress={() => router.push('/report')} />
-          <MenuTile icon="clock" label="Horas" />
+          <MenuTile icon="clock" label="Horas" onPress={() => router.push('/hours')} />
           <MenuTile icon="heart" label="Apoiar" onPress={() => router.push('/support')} />
         </View>
 

@@ -6,6 +6,7 @@ import m0001 from './0001_usage_counters.sql';
 import m0002 from './0002_students_v1.sql';
 import m0003 from './0003_blushing_madelyne_pryor.sql';
 import m0004 from './0004_students_journey.sql';
+import m0005 from './0005_hours.sql';
 
   export default {
     journal,
@@ -14,7 +15,8 @@ import m0004 from './0004_students_journey.sql';
 m0001,
 m0002,
 m0003,
-m0004
+m0004,
+m0005
     }
   }
   
