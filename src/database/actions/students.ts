@@ -9,7 +9,9 @@ import {
   type NewStudent,
   pauses,
   type Student,
+  type StudentAvailability,
   stageChanges,
+  studentAvailabilities,
   students,
 } from '../schemas';
 import { usersActions } from './users';
@@ -67,7 +69,51 @@ export type StudentListItem = Student & {
   lastVisitAt: string | null;
 };
 
+/** Dias da semana em que costuma estar (1 = segunda … 7 = domingo) e a melhor hora, HH:mm. */
+export type AvailabilityInput = {
+  weekdays: number[];
+  time: string | null;
+};
+
+export type StudentDetail = {
+  student: Student;
+  nextVisit: Appointment | null;
+  availabilities: StudentAvailability[];
+};
+
 const now = () => new Date().toISOString();
+
+type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+/** Troca os dias habituais: apaga (logicamente) os que havia e grava os novos. */
+function replaceAvailability(
+  tx: Transaction,
+  studentId: string,
+  availability: AvailabilityInput,
+  timestamp: string
+) {
+  tx.update(studentAvailabilities)
+    .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
+    .where(
+      and(eq(studentAvailabilities.studentId, studentId), isNull(studentAvailabilities.deletedAt))
+    )
+    .run();
+
+  const weekdays = [...new Set(availability.weekdays)].sort((a, b) => a - b);
+  if (weekdays.length === 0) return;
+  tx.insert(studentAvailabilities)
+    .values(
+      weekdays.map((weekday) => ({
+        studentId,
+        weekday,
+        time: availability.time,
+        createdAt: timestamp,
+        updatedAt: timestamp,
+        syncStatus: 'pending' as const,
+      }))
+    )
+    .run();
+}
 
 async function getById(id: string): Promise<Student | undefined> {
   const rows = await db
@@ -75,6 +121,34 @@ async function getById(id: string): Promise<Student | undefined> {
     .from(students)
     .where(and(eq(students.id, id), isNull(students.deletedAt)));
   return rows[0];
+}
+
+/** Tudo o que a ficha mostra: o estudante, a próxima marcação e os dias em que costuma estar. */
+async function getDetail(id: string): Promise<StudentDetail | null> {
+  const student = await getById(id);
+  if (!student) return null;
+
+  const [nextVisits, availabilities] = await Promise.all([
+    db
+      .select()
+      .from(appointments)
+      .where(
+        and(
+          eq(appointments.studentId, id),
+          eq(appointments.status, 'pending'),
+          isNull(appointments.deletedAt)
+        )
+      )
+      .orderBy(asc(appointments.scheduledAt))
+      .limit(1),
+    db
+      .select()
+      .from(studentAvailabilities)
+      .where(and(eq(studentAvailabilities.studentId, id), isNull(studentAvailabilities.deletedAt)))
+      .orderBy(asc(studentAvailabilities.weekday)),
+  ]);
+
+  return { student, nextVisit: nextVisits[0] ?? null, availabilities };
 }
 
 async function getAll(): Promise<Student[]> {
@@ -210,8 +284,69 @@ async function quickCreate(input: QuickStudentInput): Promise<QuickStudentResult
   }
 }
 
-/** Actualiza o estudante. Uma mudança de etapa grava também uma linha em `stage_changes`. */
-async function updateById(id: string, data: Partial<StudentInput>): Promise<Student | undefined> {
+/** Cria o estudante pelo formulário completo, com a etapa inicial e os dias habituais. */
+async function create(
+  data: Omit<StudentInput, 'status'>,
+  availability?: AvailabilityInput
+): Promise<Student> {
+  const name = data.displayName.trim();
+  if (!name) throw new Error('O nome é obrigatório.');
+
+  const user = await usersActions.getCurrent();
+  if (!user) throw new Error('Ainda não há utilizador. Faz a configuração inicial primeiro.');
+
+  try {
+    const timestamp = now();
+    return db.transaction((tx) => {
+      const student = tx
+        .insert(students)
+        .values({
+          ...data,
+          userId: user.id,
+          displayName: name,
+          note: data.note?.trim() || null,
+          phone: data.phone?.trim() || null,
+          address: data.address?.trim() || null,
+          directions: data.directions?.trim() || null,
+          status: 'active',
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
+        .returning()
+        .get();
+
+      tx.insert(stageChanges)
+        .values({
+          studentId: student.id,
+          fromStage: null,
+          toStage: student.stage,
+          changedAt: timestamp,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
+        .run();
+
+      if (availability) replaceAvailability(tx, student.id, availability, timestamp);
+
+      return student;
+    });
+  } catch (error) {
+    console.error('Error creating student:', error);
+    throw error;
+  }
+}
+
+/**
+ * Actualiza o estudante. Uma mudança de etapa grava também uma linha em `stage_changes`;
+ * com `availability`, troca os dias habituais.
+ */
+async function updateById(
+  id: string,
+  data: Partial<StudentInput>,
+  availability?: AvailabilityInput
+): Promise<Student | undefined> {
   try {
     const timestamp = now();
     return db.transaction((tx) => {
@@ -238,7 +373,7 @@ async function updateById(id: string, data: Partial<StudentInput>): Promise<Stud
           ...(data.rhythmDays !== undefined && { rhythmDays: data.rhythmDays }),
           ...(data.latitude !== undefined && { latitude: data.latitude }),
           ...(data.longitude !== undefined && { longitude: data.longitude }),
-          ...(data.address !== undefined && { address: data.address }),
+          ...(data.address !== undefined && { address: data.address?.trim() || null }),
           ...(data.directions !== undefined && { directions: data.directions?.trim() || null }),
           ...(data.locatedAt !== undefined && { locatedAt: data.locatedAt }),
           updatedAt: timestamp,
@@ -261,6 +396,8 @@ async function updateById(id: string, data: Partial<StudentInput>): Promise<Stud
           })
           .run();
       }
+
+      if (availability) replaceAvailability(tx, id, availability, timestamp);
 
       return updated;
     });
@@ -310,9 +447,11 @@ async function deleteById(id: string): Promise<Student | undefined> {
 
 export const studentsActions = {
   getById,
+  getDetail,
   getAll,
   getList,
   quickCreate,
+  create,
   updateById,
   resume,
   deleteById,

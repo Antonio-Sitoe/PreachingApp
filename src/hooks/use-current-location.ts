@@ -10,7 +10,7 @@ function formatAddress(place: Location.LocationGeocodedAddress | undefined): str
   return parts.length > 0 ? [...new Set(parts)].join(', ') : null;
 }
 
-async function readLocation(): Promise<StudentLocation | null> {
+export async function readLocation(): Promise<StudentLocation | null> {
   if ((await checkPermission('location')) !== 'granted') return null;
   const { coords } = await Location.getCurrentPositionAsync({
     accuracy: Location.Accuracy.Balanced,

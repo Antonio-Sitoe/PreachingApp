@@ -76,7 +76,7 @@ export function formatStudentCount(count: number, filter: StudentFilter): string
 }
 
 /** "Hoje", "Amanhã", "Quarta, 7 Out" */
-function formatVisitDay(day: Dayjs, today: Dayjs): string {
+export function formatVisitDay(day: Dayjs, today: Dayjs): string {
   if (day.isSame(today, 'day')) return 'Hoje';
   if (day.isSame(today.add(1, 'day'), 'day')) return 'Amanhã';
   const month = capitalize(day.format('MMMM').slice(0, 3));

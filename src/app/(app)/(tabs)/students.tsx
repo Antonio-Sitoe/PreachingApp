@@ -24,6 +24,7 @@ import {
 } from '@/utils/students/list';
 import { FlashList } from '@shopify/flash-list';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import { useCallback, useMemo, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, TextInput, View } from 'react-native';
@@ -162,7 +163,12 @@ export default function StudentsScreen() {
                   onResume={() => resume(item)}
                 />
               ) : (
-                <StudentRow student={item} first={first} last={last} />
+                <StudentRow
+                  student={item}
+                  first={first}
+                  last={last}
+                  onPress={() => router.push(`/student/${item.id}`)}
+                />
               );
             }}
             contentContainerStyle={{ paddingTop: 8, paddingBottom: 112, paddingHorizontal: 16 }}

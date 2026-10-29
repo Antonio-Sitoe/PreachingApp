@@ -10,6 +10,7 @@ import { cn } from '@/utils/cn';
 import { getNotificationPreferences } from '@/utils/storage';
 import { daysAhead, formatReturnSummary, formatShortDay } from '@/utils/students/return-date';
 import { useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 import { ReturnDateSheet } from './return-date-sheet';
@@ -77,6 +78,8 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
     try {
       await studentsActions.quickCreate({
         name: trimmed,
+        // Captura no terreno: o nome fica por confirmar até se editar a ficha.
+        nameIsProvisional: true,
         note,
         location,
         returnOn,
@@ -96,6 +99,11 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
   }
 
   const displayName = name.trim();
+
+  function openFullForm() {
+    onClose();
+    router.push({ pathname: '/student/new', params: displayName ? { name: displayName } : {} });
+  }
 
   return (
     <>
@@ -166,6 +174,9 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
         <View className="gap-1">
           <Button disabled={saving} onPress={save}>
             <Text>{saving ? 'A guardar…' : 'Guardar'}</Text>
+          </Button>
+          <Button variant="ghost" className="min-h-12" disabled={saving} onPress={openFullForm}>
+            <Text>Preencher a ficha completa</Text>
           </Button>
           <Button variant="ghost" className="min-h-12" disabled={saving} onPress={onClose}>
             <Text>Cancelar</Text>
