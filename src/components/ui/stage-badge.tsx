@@ -1,17 +1,19 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
-import { STAGES, type Stage } from '@/constants/stages';
+import { PAUSED_STYLE, STAGES, type Stage } from '@/constants/stages';
 import { cn } from '@/utils/cn';
 import { View, type ViewProps } from 'react-native';
 
 type StageBadgeProps = ViewProps & {
   stage: Stage;
 
+  paused?: boolean;
+
   label?: string;
 };
 
-function StageBadge({ stage, label, className, ...props }: StageBadgeProps) {
-  const config = STAGES[stage];
+function StageBadge({ stage, paused, label, className, ...props }: StageBadgeProps) {
+  const config = paused ? PAUSED_STYLE : STAGES[stage];
   return (
     <View
       className={cn(
@@ -20,7 +22,7 @@ function StageBadge({ stage, label, className, ...props }: StageBadgeProps) {
         className
       )}
       {...props}>
-      {stage === 'paused' && (
+      {paused && (
         <AppIcon name="pause" size={12} strokeWidth={2.5} className={config.textClass} />
       )}
       <Text variant="labelS" className={config.textClass}>

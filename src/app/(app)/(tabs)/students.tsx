@@ -83,7 +83,7 @@ export default function StudentsScreen() {
     if (resumingId) return;
     setResumingId(student.id);
     try {
-      await studentsActions.updateById(student.id, { status: 'active' });
+      await studentsActions.resume(student.id);
       await queryClient.invalidateQueries({ queryKey: ['students'] });
       showToast({ message: `${student.displayName} voltou à lista.` });
     } catch {

@@ -7,7 +7,9 @@ import {
   appointments,
   DEFAULT_RHYTHM_DAYS,
   type NewStudent,
+  pauses,
   type Student,
+  stageChanges,
   students,
 } from '../schemas';
 import { usersActions } from './users';
@@ -15,14 +17,19 @@ import { usersActions } from './users';
 export type StudentInput = Pick<
   NewStudent,
   | 'displayName'
+  | 'nameIsProvisional'
   | 'note'
   | 'phone'
+  | 'ageRange'
+  | 'gender'
   | 'stage'
   | 'status'
   | 'rhythmDays'
   | 'latitude'
   | 'longitude'
   | 'address'
+  | 'directions'
+  | 'locatedAt'
 >;
 
 export type StudentLocation = {
@@ -38,6 +45,7 @@ export type ReturnOn = {
 
 export type QuickStudentInput = {
   name: string;
+  nameIsProvisional?: boolean;
   note?: string;
   location?: StudentLocation | null;
   returnOn?: ReturnOn | null;
@@ -150,6 +158,7 @@ async function quickCreate(input: QuickStudentInput): Promise<QuickStudentResult
         .values({
           userId: user.id,
           displayName: name,
+          nameIsProvisional: input.nameIsProvisional ?? false,
           note: input.note?.trim() || null,
           stage: 'first_contact',
           status: 'active',
@@ -157,12 +166,25 @@ async function quickCreate(input: QuickStudentInput): Promise<QuickStudentResult
           latitude: input.location?.latitude ?? null,
           longitude: input.location?.longitude ?? null,
           address: input.location?.address ?? null,
+          locatedAt: input.location ? timestamp : null,
           createdAt: timestamp,
           updatedAt: timestamp,
           syncStatus: 'pending',
         })
         .returning()
         .get();
+
+      tx.insert(stageChanges)
+        .values({
+          studentId: student.id,
+          fromStage: null,
+          toStage: student.stage,
+          changedAt: timestamp,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
+        .run();
 
       const appointment = input.returnOn
         ? tx
@@ -188,28 +210,85 @@ async function quickCreate(input: QuickStudentInput): Promise<QuickStudentResult
   }
 }
 
+/** Actualiza o estudante. Uma mudança de etapa grava também uma linha em `stage_changes`. */
 async function updateById(id: string, data: Partial<StudentInput>): Promise<Student | undefined> {
   try {
-    const rows = await db
-      .update(students)
-      .set({
-        ...(data.displayName !== undefined && { displayName: data.displayName.trim() }),
-        ...(data.note !== undefined && { note: data.note?.trim() || null }),
-        ...(data.phone !== undefined && { phone: data.phone?.trim() || null }),
-        ...(data.stage !== undefined && { stage: data.stage }),
-        ...(data.status !== undefined && { status: data.status }),
-        ...(data.rhythmDays !== undefined && { rhythmDays: data.rhythmDays }),
-        ...(data.latitude !== undefined && { latitude: data.latitude }),
-        ...(data.longitude !== undefined && { longitude: data.longitude }),
-        ...(data.address !== undefined && { address: data.address }),
-        updatedAt: now(),
-        syncStatus: 'pending',
-      })
-      .where(and(eq(students.id, id), isNull(students.deletedAt)))
-      .returning();
-    return rows[0];
+    const timestamp = now();
+    return db.transaction((tx) => {
+      const current = tx
+        .select({ stage: students.stage })
+        .from(students)
+        .where(and(eq(students.id, id), isNull(students.deletedAt)))
+        .get();
+      if (!current) return undefined;
+
+      const updated = tx
+        .update(students)
+        .set({
+          ...(data.displayName !== undefined && { displayName: data.displayName.trim() }),
+          ...(data.nameIsProvisional !== undefined && {
+            nameIsProvisional: data.nameIsProvisional,
+          }),
+          ...(data.note !== undefined && { note: data.note?.trim() || null }),
+          ...(data.phone !== undefined && { phone: data.phone?.trim() || null }),
+          ...(data.ageRange !== undefined && { ageRange: data.ageRange }),
+          ...(data.gender !== undefined && { gender: data.gender }),
+          ...(data.stage !== undefined && { stage: data.stage }),
+          ...(data.status !== undefined && { status: data.status }),
+          ...(data.rhythmDays !== undefined && { rhythmDays: data.rhythmDays }),
+          ...(data.latitude !== undefined && { latitude: data.latitude }),
+          ...(data.longitude !== undefined && { longitude: data.longitude }),
+          ...(data.address !== undefined && { address: data.address }),
+          ...(data.directions !== undefined && { directions: data.directions?.trim() || null }),
+          ...(data.locatedAt !== undefined && { locatedAt: data.locatedAt }),
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
+        .where(eq(students.id, id))
+        .returning()
+        .get();
+
+      if (data.stage !== undefined && data.stage !== current.stage) {
+        tx.insert(stageChanges)
+          .values({
+            studentId: id,
+            fromStage: current.stage,
+            toStage: data.stage,
+            changedAt: timestamp,
+            createdAt: timestamp,
+            updatedAt: timestamp,
+            syncStatus: 'pending',
+          })
+          .run();
+      }
+
+      return updated;
+    });
   } catch (error) {
     console.error('Error updating student:', error);
+    throw error;
+  }
+}
+
+/** Volta a pôr o estudante activo e fecha a pausa em curso. */
+async function resume(id: string): Promise<Student | undefined> {
+  try {
+    const timestamp = now();
+    return db.transaction((tx) => {
+      tx.update(pauses)
+        .set({ resumedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(and(eq(pauses.studentId, id), isNull(pauses.resumedAt), isNull(pauses.deletedAt)))
+        .run();
+
+      return tx
+        .update(students)
+        .set({ status: 'active', updatedAt: timestamp, syncStatus: 'pending' })
+        .where(and(eq(students.id, id), isNull(students.deletedAt)))
+        .returning()
+        .get();
+    });
+  } catch (error) {
+    console.error('Error resuming student:', error);
     throw error;
   }
 }
@@ -235,5 +314,6 @@ export const studentsActions = {
   getList,
   quickCreate,
   updateById,
+  resume,
   deleteById,
 };
