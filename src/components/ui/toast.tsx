@@ -49,7 +49,8 @@ function ToastHost({ bottomOffset }: ToastHostProps) {
   const current = useToastStore((state) => state.current);
   const hide = useToastStore((state) => state.hide);
   const insets = useSafeAreaInsets();
-  const onTabs = useSegments()[1] === '(tabs)';
+  const segments: string[] = useSegments();
+  const onTabs = segments[1] === '(tabs)';
 
   React.useEffect(() => {
     if (!current) return;
