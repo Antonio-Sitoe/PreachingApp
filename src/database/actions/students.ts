@@ -8,8 +8,10 @@ import {
   DEFAULT_RHYTHM_DAYS,
   type NewStudent,
   pauses,
+  type StageChange,
   type Student,
   type StudentAvailability,
+  type StudentStage,
   stageChanges,
   studentAvailabilities,
   students,
@@ -81,6 +83,12 @@ export type StudentDetail = {
   availabilities: StudentAvailability[];
 };
 
+export type StudentJourney = {
+  student: Student;
+  /** Mudanças de etapa, da mais antiga para a mais recente. */
+  stageChanges: StageChange[];
+};
+
 const now = () => new Date().toISOString();
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
@@ -149,6 +157,18 @@ async function getDetail(id: string): Promise<StudentDetail | null> {
   ]);
 
   return { student, nextVisit: nextVisits[0] ?? null, availabilities };
+}
+
+/** O estudante e o histórico de etapas, para o ecrã Etapa e marcos. */
+async function getJourney(id: string): Promise<StudentJourney | null> {
+  const student = await getById(id);
+  if (!student) return null;
+  const changes = await db
+    .select()
+    .from(stageChanges)
+    .where(and(eq(stageChanges.studentId, id), isNull(stageChanges.deletedAt)))
+    .orderBy(asc(stageChanges.changedAt));
+  return { student, stageChanges: changes };
 }
 
 async function getAll(): Promise<Student[]> {
@@ -407,6 +427,65 @@ async function updateById(
   }
 }
 
+/** Muda a etapa e devolve a linha gravada em `stage_changes`, para se poder desfazer. */
+async function changeStage(id: string, stage: StudentStage): Promise<StageChange | undefined> {
+  try {
+    const timestamp = now();
+    return db.transaction((tx) => {
+      const current = tx
+        .select({ stage: students.stage })
+        .from(students)
+        .where(and(eq(students.id, id), isNull(students.deletedAt)))
+        .get();
+      if (!current || current.stage === stage) return undefined;
+
+      tx.update(students)
+        .set({ stage, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(eq(students.id, id))
+        .run();
+
+      return tx
+        .insert(stageChanges)
+        .values({
+          studentId: id,
+          fromStage: current.stage,
+          toStage: stage,
+          changedAt: timestamp,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
+        .returning()
+        .get();
+    });
+  } catch (error) {
+    console.error('Error changing stage:', error);
+    throw error;
+  }
+}
+
+/** Desfaz uma mudança de etapa: volta à etapa anterior e apaga (logicamente) a linha. */
+async function undoStageChange(change: StageChange): Promise<void> {
+  if (!change.fromStage) return;
+  const fromStage = change.fromStage;
+  try {
+    const timestamp = now();
+    db.transaction((tx) => {
+      tx.update(students)
+        .set({ stage: fromStage, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(and(eq(students.id, change.studentId), isNull(students.deletedAt)))
+        .run();
+      tx.update(stageChanges)
+        .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(eq(stageChanges.id, change.id))
+        .run();
+    });
+  } catch (error) {
+    console.error('Error undoing stage change:', error);
+    throw error;
+  }
+}
+
 /** Volta a pôr o estudante activo e fecha a pausa em curso. */
 async function resume(id: string): Promise<Student | undefined> {
   try {
@@ -448,11 +527,14 @@ async function deleteById(id: string): Promise<Student | undefined> {
 export const studentsActions = {
   getById,
   getDetail,
+  getJourney,
   getAll,
   getList,
   quickCreate,
   create,
   updateById,
+  changeStage,
+  undoStageChange,
   resume,
   deleteById,
 };

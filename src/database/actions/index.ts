@@ -1,5 +1,6 @@
 export * from './users';
 export * from './students';
+export * from './milestones';
 export * from './appointments';
 export * from './notes';
 export * from './tags';

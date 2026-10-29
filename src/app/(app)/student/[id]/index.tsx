@@ -6,6 +6,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { STAGES } from '@/constants/stages';
 import { studentsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';
 import {
@@ -82,11 +83,14 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
         <Text variant="titleXl" className="text-center">
           {student.displayName}
         </Text>
-        <StageBadge
-          stage={student.stage}
-          paused={student.status === 'paused'}
-          className="self-center"
-        />
+        <Pressable
+          role="button"
+          accessibilityLabel={`Etapa e marcos: ${STAGES[student.stage].label}`}
+          onPress={() => router.push(`/student/${student.id}/stage`)}
+          className="flex-row items-center gap-1.5 rounded-full active:opacity-70">
+          <StageBadge stage={student.stage} paused={student.status === 'paused'} />
+          <AppIcon name="chevron-right" size={16} className="text-subtle" />
+        </Pressable>
       </View>
 
       <View className="flex-row gap-2">
