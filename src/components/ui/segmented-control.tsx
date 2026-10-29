@@ -26,7 +26,7 @@ function SegmentedControl<T extends string | number>({
     <View
       role="radiogroup"
       aria-label={accessibilityLabel}
-      className={cn('flex-row rounded-lg border border-border bg-muted p-1', className)}>
+      className={cn('flex-row gap-1 rounded-lg border border-border bg-muted p-1', className)}>
       {options.map((option) => {
         const selected = option.value === value;
         return (
@@ -37,14 +37,16 @@ function SegmentedControl<T extends string | number>({
             accessibilityLabel={option.label}
             onPress={() => onChange(option.value)}
             className={cn(
-              'h-11 flex-1 items-center justify-center rounded-md px-2',
+              'h-9 flex-1 items-center justify-center rounded-[7px] px-2',
               selected ? 'bg-card' : 'active:opacity-70'
             )}>
             <Text
               numberOfLines={1}
               className={cn(
-                'font-display-medium text-[15px] leading-5',
-                selected ? 'text-primary-strong' : 'text-muted-foreground'
+                'text-[14px] leading-[18px]',
+                selected
+                  ? 'font-display-semibold text-primary-strong'
+                  : 'font-display-medium text-muted-foreground'
               )}>
               {option.label}
             </Text>

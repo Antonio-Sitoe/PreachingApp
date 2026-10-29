@@ -79,6 +79,10 @@ export default function MoreScreen() {
           </View>
           <AppIcon name="chevron-right" size={18} className="text-primary-strong" />
         </Pressable>
+
+        <Text variant="bodyS" className="text-center text-muted-foreground">
+          Ferramenta pessoal, não oficial.
+        </Text>
       </ScrollView>
     </View>
   );
