@@ -4,7 +4,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
-import { FieldLabel, TextField } from '@/components/ui/text-field';
+import { TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
 import { defaultMonthlyHourGoal, MONTHLY_HOUR_GOALS, usersActions } from '@/database/actions';
 import {
@@ -63,6 +63,7 @@ export default function ProfileScreen() {
       title="Perfil"
       onBack={() => router.back()}
       className="bg-background"
+      contentClassName="gap-4 pt-4"
       footer={
         <Button disabled={saving} onPress={save}>
           <Text>Guardar</Text>
@@ -72,7 +73,7 @@ export default function ProfileScreen() {
         <Avatar
           name={profile.name}
           initials={profile.name.trim().charAt(0).toUpperCase()}
-          size="xl"
+          size="lg"
           tone="brand"
         />
         <TextField
@@ -103,7 +104,9 @@ export default function ProfileScreen() {
 
       {goals.length > 1 ? (
         <View className="gap-2">
-          <FieldLabel>Meta deste mês</FieldLabel>
+          <Text className="px-1 font-display-semibold text-[13px] leading-4 text-muted-foreground">
+            Meta deste mês
+          </Text>
           <SegmentedControl
             accessibilityLabel="Meta deste mês"
             options={goals.map((goal) => ({ value: goal, label: `${goal} horas` }))}
@@ -113,7 +116,7 @@ export default function ProfileScreen() {
         </View>
       ) : null}
 
-      <Text variant="bodyS" className="text-muted-foreground">
+      <Text className="px-1 font-sans text-[13px] leading-[18px] text-muted-foreground">
         Podes mudar o tipo e a meta em qualquer mês. O relatório e o cronómetro ajustam-se sozinhos.
       </Text>
     </SetupLayout>
