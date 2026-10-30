@@ -4,7 +4,6 @@ const CHANNEL_ID = 'timer-reminders';
 const IDENTIFIER = 'timer-forgotten';
 export const FORGOTTEN_AFTER_MS = 4 * 60 * 60 * 1000;
 
-// "O cronómetro ainda está a contar", para quando fica esquecido.
 export async function scheduleForgottenTimerReminder(elapsedMs: number): Promise<void> {
   await cancelForgottenTimerReminder();
   const seconds = Math.max(60, Math.round((FORGOTTEN_AFTER_MS - elapsedMs) / 1000));

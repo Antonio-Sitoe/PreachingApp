@@ -114,7 +114,7 @@ export function setStudentSort(value: StudentSort): void {
   getStorage().set(STUDENT_SORT, value);
 }
 
-// Bloqueio do app. Fica fora do backup: o PIN é deste telemóvel.
+// Fora do backup: o PIN é só deste telemóvel.
 export function isLockEnabled(): boolean {
   return getStorage().getBoolean(LOCK_ENABLED) === true;
 }

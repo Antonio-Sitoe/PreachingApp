@@ -50,7 +50,6 @@ async function saveSession(session: TimerSession) {
 const invalidateHours = (queryClient: QueryClient) =>
   queryClient.invalidateQueries({ queryKey: ['time-entries'] });
 
-// Grava as sessões terminadas pela notificação e volta a mostrar a notificação se foi dispensada.
 async function syncTimer(queryClient: QueryClient) {
   const sessions = takePendingSessions();
   for (const session of sessions) await saveSession(session);

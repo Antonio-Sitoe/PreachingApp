@@ -15,11 +15,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-/**
- * Estado do cronómetro em SharedPreferences. É a fonte de verdade: a notificação pode pausar e
- * terminar com a app fechada, e o JS lê daqui ao voltar. O tempo na notificação avança sozinho
- * (setUsesChronometer), por isso não corre nenhum serviço em segundo plano.
- */
+// Fonte de verdade em SharedPreferences, para a notificação pausar e terminar com a app fechada.
+// setUsesChronometer faz o tempo avançar sem nenhum serviço em segundo plano.
 object TimerStore {
   const val ACTION_PAUSE = "expo.modules.timernotification.PAUSE"
   const val ACTION_RESUME = "expo.modules.timernotification.RESUME"
@@ -29,7 +26,6 @@ object TimerStore {
   private const val CHANNEL_ID = "timer"
   private const val NOTIFICATION_ID = 4120
 
-  // Avisado quando a notificação muda o estado, para o JS se actualizar.
   var listener: (() -> Unit)? = null
 
   data class State(
@@ -89,7 +85,6 @@ object TimerStore {
       .also { write(context, it); show(context, it) }
   }
 
-  /** Termina e devolve a sessão (startedAt, ms), ou null se não havia nada a contar. */
   fun finish(context: Context): Pair<Long, Long>? {
     val current = read(context)
     if (current.status == "idle") return null
@@ -98,7 +93,7 @@ object TimerStore {
     return session
   }
 
-  /** Terminar pela notificação: a sessão fica à espera que o JS a grave na base de dados. */
+  // Sem JS a correr: a sessão fica à espera que o app a grave ao abrir.
   fun finishToPending(context: Context) {
     val (startedAt, elapsedMs) = finish(context) ?: return
     val prefs = prefs(context)
@@ -119,7 +114,7 @@ object TimerStore {
     manager(context).cancel(NOTIFICATION_ID)
   }
 
-  /** Volta a publicar a notificação (Android 14+ deixa dispensá-la). */
+  // O Android 14+ deixa dispensar notificações ongoing.
   fun refresh(context: Context) {
     val current = read(context)
     if (current.status == "idle") manager(context).cancel(NOTIFICATION_ID) else show(context, current)

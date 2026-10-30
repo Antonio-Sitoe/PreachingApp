@@ -88,7 +88,6 @@ async function getMonthStats(year: number, month: number): Promise<MonthStats> {
   };
 }
 
-// Entradas desde segunda-feira desta semana.
 async function getThisWeek(now = dayjs()) {
   const monday = now.startOf('day').subtract((now.day() + 6) % 7, 'day');
   return getBetween(monday.toISOString(), monday.add(7, 'day').toISOString());

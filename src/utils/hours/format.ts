@@ -9,14 +9,14 @@ export function formatDuration(minutes: number): string {
   return `${Math.floor(total / 60)} h ${pad(total % 60)}`;
 }
 
-// "1 h 30" ou "30 h", para metas e totais redondos.
+// "1 h 30" ou "30 h".
 export function formatHours(minutes: number): string {
   const total = Math.max(0, Math.round(minutes));
   const rest = total % 60;
   return rest === 0 ? `${total / 60} h` : `${Math.floor(total / 60)} h ${pad(rest)}`;
 }
 
-// "28h30", o número grande do topo.
+// "28h30".
 export function formatHero(minutes: number): string {
   const total = Math.max(0, Math.round(minutes));
   return `${Math.floor(total / 60)}h${pad(total % 60)}`;

@@ -38,7 +38,6 @@ export async function hasPin(): Promise<boolean> {
   return (await readPin()) !== null;
 }
 
-// Só o hash sai daqui; o PIN nunca fica guardado em texto.
 export async function savePin(pin: string): Promise<void> {
   const salt = toHex(Crypto.getRandomBytes(16));
   const hash = await hashPin(salt, pin);
@@ -64,7 +63,7 @@ export async function disableLock(): Promise<void> {
 
 export type FailureResult = { attemptsLeft: number; blockedUntil: number };
 
-// À terceira falha seguida, espera de 1 minuto. Fica no MMKV para sobreviver a fechar o app.
+// No MMKV para a espera sobreviver a fechar o app.
 export function registerFailure(now = Date.now()): FailureResult {
   const attempts = getLockFailedAttempts() + 1;
   if (attempts >= MAX_ATTEMPTS) {

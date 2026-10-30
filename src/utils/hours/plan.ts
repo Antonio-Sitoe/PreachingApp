@@ -30,7 +30,6 @@ export function serializeWeekdays(days: readonly number[]): string {
   return [...new Set(days)].sort((a, b) => a - b).join(',');
 }
 
-// Dias do mês, a partir de `from` (incluído), que caem nos dias da semana escolhidos.
 export function planDates(
   year: number,
   month: number,
@@ -53,7 +52,7 @@ export function remainingMinutes(goalHours: number, doneMinutes: number): number
   return Math.max(0, goalHours * 60 - doneMinutes);
 }
 
-// Dias que faltam no mês, contando com hoje.
+// Conta com hoje.
 export function daysLeftInMonth(today: Dayjs = dayjs()): number {
   return today.daysInMonth() - today.date() + 1;
 }

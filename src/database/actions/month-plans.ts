@@ -40,7 +40,7 @@ async function getForMonth(year: number, month: number): Promise<MonthPlanWithDa
   return { ...plan, days };
 }
 
-// Guarda o plano e recria só os dias de hoje em diante; os passados ficam como estavam.
+// Os dias passados ficam como estavam; só se recriam os de hoje em diante.
 function save(input: MonthPlanInput, today = dayjs()) {
   const now = nowIso();
   const todayKey = today.format('YYYY-MM-DD');

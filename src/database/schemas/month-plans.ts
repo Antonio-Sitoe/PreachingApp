@@ -2,7 +2,6 @@ import { index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqli
 import { v4 as uuid } from 'uuid';
 import { PUBLISHER_TYPES, SYNC_STATUSES } from './users';
 
-// Plano do mês do pioneiro: uma linha por mês, com o tipo e a meta desse mês.
 export const monthPlans = sqliteTable(
   'month_plans',
   {
