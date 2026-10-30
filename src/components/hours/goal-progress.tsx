@@ -16,7 +16,7 @@ function GoalProgress({ doneMinutes, goalHours, monthName, daysLeft }: GoalProgr
 
   return (
     <View className="gap-3 rounded-lg border border-border bg-card p-4">
-      <View className="flex-row items-baseline gap-2">
+      <View className="flex-row flex-wrap items-baseline gap-x-2">
         <Text className="font-display text-[45px] leading-[48px] text-primary-strong">
           {formatHero(doneMinutes)}
         </Text>

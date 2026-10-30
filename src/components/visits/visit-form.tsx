@@ -13,7 +13,6 @@ import { studentsActions, visitsActions } from '@/database/actions';
 import { parseScriptures } from '@/database/actions/visits';
 import type { Visit, VisitOutcome } from '@/database/schemas';
 import { THEME } from '@/lib/theme';
-import { getNotificationPreferences } from '@/utils/storage';
 import { fromTimeString, toTimeString } from '@/utils/students/form';
 import { formatPickedDay } from '@/utils/students/journey';
 import { countEvent } from '@/utils/usage';
@@ -29,9 +28,9 @@ import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Pressable, TextInput, View } from 'react-native';
 import {
+  defaultRemind,
   NextVisitSheet,
   PickerField,
-  REMIND_OPTIONS,
   type NextVisitValue,
   type RemindMinutes,
 } from './next-visit-sheet';
@@ -55,18 +54,14 @@ const LESSON_OPTIONS = Array.from({ length: 60 }, (_, index) => ({
   label: `Lição ${index + 1}`,
 }));
 
-function defaultRemind(): RemindMinutes {
-  const lead = getNotificationPreferences().visitLeadMinutes;
-  return REMIND_OPTIONS.some((option) => option.value === lead) ? (lead as RemindMinutes) : 60;
-}
-
 type VisitFormProps = {
   initialStudentId?: string;
+  initialStudied?: boolean;
   /** Com `editing`, o formulário edita essa visita em vez de criar uma nova. */
   editing?: Visit;
 };
 
-function VisitForm({ initialStudentId, editing }: VisitFormProps) {
+function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps) {
   const queryClient = useQueryClient();
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme ?? 'light'];
@@ -85,7 +80,9 @@ function VisitForm({ initialStudentId, editing }: VisitFormProps) {
   const [addingScripture, setAddingScripture] = React.useState(false);
   const [pendingQuestion, setPendingQuestion] = React.useState(editing?.pendingQuestion ?? '');
   const [promisedToBring, setPromisedToBring] = React.useState(editing?.promisedToBring ?? '');
-  const [studied, setStudied] = React.useState(Boolean(editing?.lessonNumber));
+  const [studied, setStudied] = React.useState(
+    editing ? Boolean(editing.lessonNumber) : Boolean(initialStudied)
+  );
   const [lesson, setLesson] = React.useState<number | undefined>(
     editing?.lessonNumber ?? undefined
   );

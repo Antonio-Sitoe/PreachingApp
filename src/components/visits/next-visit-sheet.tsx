@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
+import { getNotificationPreferences } from '@/utils/storage';
 import { daysAhead, nextSaturday } from '@/utils/students/return-date';
 import { formatPickedDay } from '@/utils/students/journey';
 import { fromTimeString, toTimeString } from '@/utils/students/form';
@@ -22,6 +23,12 @@ export const REMIND_OPTIONS = [
 ] as const;
 
 export type RemindMinutes = (typeof REMIND_OPTIONS)[number]['value'];
+
+/** A antecedência das definições, se for uma das opções; senão 1 hora. */
+export function defaultRemind(): RemindMinutes {
+  const lead = getNotificationPreferences().visitLeadMinutes;
+  return REMIND_OPTIONS.some((option) => option.value === lead) ? (lead as RemindMinutes) : 60;
+}
 
 export type NextVisitValue = {
   date: Date;

@@ -98,7 +98,53 @@ async function getReminderTargets(limit = 50): Promise<ReminderTarget[]> {
   }));
 }
 
+export type ScheduleInput = {
+  date: Date;
+  /** HH:mm */
+  time: string | null;
+  remindMinutesBefore: number | null;
+};
+
+async function schedule(studentId: string, input: ScheduleInput) {
+  const timestamp = new Date().toISOString();
+  const rows = await db
+    .insert(appointments)
+    .values({
+      studentId,
+      scheduledAt: dayjs(input.date).startOf('day').toISOString(),
+      timeOfDay: 'any',
+      time: input.time,
+      status: 'pending',
+      remindMinutesBefore: input.time ? input.remindMinutesBefore : null,
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      syncStatus: 'pending',
+    })
+    .returning();
+  return rows[0];
+}
+
+/** Muda o dia da marcação e mantém a hora. Devolve o dia antigo, para se poder desfazer. */
+async function reschedule(id: string, date: Date): Promise<string | undefined> {
+  const current = await db
+    .select({ scheduledAt: appointments.scheduledAt })
+    .from(appointments)
+    .where(eq(appointments.id, id));
+  if (!current[0]) return undefined;
+  await db
+    .update(appointments)
+    .set({
+      scheduledAt: dayjs(date).startOf('day').toISOString(),
+      updatedAt: new Date().toISOString(),
+      syncStatus: 'pending',
+    })
+    .where(eq(appointments.id, id));
+  return current[0].scheduledAt;
+}
+
 export const appointmentsActions = {
   getScheduledDays,
+  schedule,
+  reschedule,
   getReminderTargets,
 };

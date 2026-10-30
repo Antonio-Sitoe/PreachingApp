@@ -28,7 +28,8 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Registar visita (VIS-01) com escolha do estudante, e próxima visita sugerida pelo ritmo e pelos dias habituais (VIS-03)
   - [x] Não estava em casa (VIS-02) e histórico e detalhe com editar e apagar (VIS-05)
   - [x] Lembretes no telemóvel (VIS-04)
-  - [ ] Ecrã Hoje (HOJ-01 a HOJ-06)
+  - [x] Ecrã Hoje, feita ou adiar, acções rápidas e quem sai do ritmo (HOJ-01 a HOJ-04)
+  - [ ] Notificação do dia (HOJ-05) e cartão de preparação (HOJ-06)
 
 ## Fundações
 
@@ -94,10 +95,14 @@ Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são
   - Uma notificação local por marcação com hora e aviso ("Visita à Celeste daqui a 1 hora", "10:00 · lição 14 · levar …"). Volta a agendar tudo ao abrir o app e depois de cada mudança em visitas, marcações, pausas ou remoções; quem está em pausa não recebe. Tocar abre a ficha. Falta: as acções "Ver preparação" e "Adiar" na notificação (dependem de HOJ-06 e HOJ-02)
 - [x] **Histórico e detalhe de visita** - Lista das visitas de uma pessoa, detalhe com tudo o que foi registado, editar e apagar com confirmação, e histórico vazio. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 25 Histórico de visitas, Detalhe de visita, Histórico vazio, Apagar visita (VIS-05, 3 h, sprint 4)
   - Histórico por mês com os filtros Todas, Com estudo e Tentativas; detalhe com a próxima visita marcada nessa visita; editar e apagar. Apagar volta a pôr por cumprir as marcações que a visita tinha dado por feitas. A ficha mostra a dúvida pendente e as três últimas visitas
-- [ ] **Ecrã Hoje (P4)** - Página inicial com as visitas de hoje, as que estão em atraso e o resumo do mês, por tipo de publicador. Inclui os estados Hoje vazio e Dia concluído. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje; 10 Hoje, pioneiro; 7 Hoje vazio; 7 Dia concluído (HOJ-01, 4 h, sprint 5)
-- [ ] **Feita ou adiar (P4)** - Em cada pessoa do Hoje: Visita feita abre o registo, Não estava em casa regista a tentativa e Adiar muda a data. Aviso com desfazer. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 8 Feita ou adiar; 8 Feita, com desfazer (HOJ-02, 2 h, sprint 5)
-- [ ] **Acções rápidas** - O botão do Hoje abre a folha com Visita, Estudo, Novo contacto e Horas. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Acções rápidas (HOJ-03, 1 h, sprint 5)
-- [ ] **Alertas por ritmo (P5)** - Calcular quem saiu do seu ritmo a partir da última visita e de `rhythm_days`, e mostrá-los no Hoje. Pessoas em pausa não contam. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje (HOJ-04, 3 h, sprint 5)
+- [x] **Ecrã Hoje (P4)** - Página inicial com as visitas de hoje, as que estão em atraso e o resumo do mês, por tipo de publicador. Inclui os estados Hoje vazio e Dia concluído. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje; 10 Hoje, pioneiro; 7 Hoje vazio; 7 Dia concluído (HOJ-01, 4 h, sprint 5)
+  - Semana com os dias marcados, resumo do mês (estudos e estudantes), horas do mês para pioneiros, Em atraso, Visitas de hoje ("1 de 3 feitas"), Dia concluído com Feitas hoje e Amanhã, e Hoje vazio. Testado num ecrã de 360 dp com letra a 130%
+- [x] **Feita ou adiar (P4)** - Em cada pessoa do Hoje: Visita feita abre o registo, Não estava em casa regista a tentativa e Adiar muda a data. Aviso com desfazer. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 8 Feita ou adiar; 8 Feita, com desfazer (HOJ-02, 2 h, sprint 5)
+  - Visita feita abre o Registar visita; Não estava em casa regista a tentativa num toque e abre a folha com Desfazer; Adiar (Amanhã, Sábado, Próxima semana, Escolher data) com Desfazer no aviso
+- [x] **Acções rápidas** - O botão do Hoje abre a folha com Visita, Estudo, Novo contacto e Horas. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Acções rápidas (HOJ-03, 1 h, sprint 5)
+  - Visita, Estudo (abre o registo já com estudo), Novo contacto (captura no terreno) e Horas
+- [x] **Alertas por ritmo (P5)** - Calcular quem saiu do seu ritmo a partir da última visita e de `rhythm_days`, e mostrá-los no Hoje. Pessoas em pausa não contam. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje (HOJ-04, 3 h, sprint 5)
+  - Secção A sair do ritmo para quem não tem marcação e passou do ritmo desde a última visita (ou o registo), com Agendar; quem está em pausa não conta
 - [ ] **Notificação do dia (P5)** - Uma notificação local por dia, à hora escolhida, com quem visitar e quem está a sair do ritmo. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 41 Notificações (HOJ-05, 2 h, sprint 5)
 - [ ] **Cartão de preparação (P8)** - Antes da visita mostra a última conversa, a dúvida pendente, o que ficou prometido levar e a lição seguinte. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 9 Cartão de preparação (HOJ-06, 2 h, sprint 5)7
 
