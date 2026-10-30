@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
-/** Igual ao AppIcon do RN: viewBox 24, só traço, pontas e junções redondas. */
 internal fun buildIconVector(path: String, strokeWidth: Float): ImageVector =
   ImageVector.Builder(defaultWidth = 24.dp, defaultHeight = 24.dp, viewportWidth = 24f, viewportHeight = 24f)
     .addPath(

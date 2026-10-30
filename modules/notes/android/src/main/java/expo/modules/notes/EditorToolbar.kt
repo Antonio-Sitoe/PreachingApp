@@ -38,10 +38,6 @@ private val ItalicStyle = SpanStyle(fontStyle = FontStyle.Italic)
 private val UnderlineStyle = SpanStyle(textDecoration = TextDecoration.Underline)
 private val StrikeStyle = SpanStyle(textDecoration = TextDecoration.LineThrough)
 
-/**
- * Barra do editor antigo (editor-toolbar.tsx): + Inserir, título, B, I, U, S, lista, tarefas,
- * citação e menção. Ativo em `primaryStrong` com fundo `secondary`; inativo em `mutedForeground`.
- */
 @Composable
 fun EditorToolbar(controller: EditorController, onInsert: () -> Unit) {
   val ds = LocalDs.current
@@ -100,7 +96,6 @@ fun EditorToolbar(controller: EditorController, onInsert: () -> Unit) {
   }
 }
 
-/** `size-11 rounded-lg active:bg-secondary`, com `bg-secondary` quando ativo. */
 @Composable
 private fun ToolButton(
   label: String,

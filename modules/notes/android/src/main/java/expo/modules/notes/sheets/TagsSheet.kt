@@ -37,7 +37,7 @@ import expo.modules.notes.model.Reference
 import java.util.UUID
 
 /**
- * Gerir etiquetas (tags-sheet.tsx antigo): criar, renomear e apagar. A base de dados é do JS:
+ * A base de dados é do JS:
  * os pedidos vão por evento com um `requestId` e a resposta volta em [feedback].
  */
 @Composable
@@ -117,7 +117,6 @@ private fun create(draft: String, pending: String?, send: (String) -> Unit) {
 
 private enum class RowMode { View, Edit, Confirm }
 
-/** Uma etiqueta: ver, renomear ou confirmar o apagar (o TagRow antigo). */
 @Composable
 private fun TagRow(
   tag: Reference,

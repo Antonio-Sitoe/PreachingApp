@@ -61,7 +61,6 @@ private const val SAVE_DEBOUNCE_MS = 250L
 private const val HEADER_KEY = "notes-header"
 private const val END_KEY = "notes-end"
 
-/** O ecrã da nota: barra de cima, cabeçalho e blocos (que fazem scroll juntos), sugestões, barra e folhas. */
 @OptIn(FlowPreview::class)
 @Composable
 fun EditorContent(
@@ -209,7 +208,6 @@ fun EditorContent(
         onCreate = callbacks.onTagCreate,
         onRename = callbacks.onTagRename,
         onDelete = callbacks.onTagDelete,
-        // Como no editor antigo, fechar as etiquetas volta às opções.
         onDismiss = { if (ui.sheet == Sheet.Tags) ui.sheet = Sheet.Options },
       )
       Sheet.Student -> StudentPickerSheet(

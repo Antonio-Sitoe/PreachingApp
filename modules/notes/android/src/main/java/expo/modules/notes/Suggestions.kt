@@ -44,11 +44,6 @@ private fun suggestionFor(block: BlockState): Suggestion? {
   return if (selection.collapsed) findTrigger(text, selection.end)?.let { Suggestion.Ref(it) } else null
 }
 
-/**
- * Painel por cima da barra (como o mention-suggestions.tsx antigo): `border-t bg-card py-2`
- * com as opções numa linha que desliza. Estudantes com iniciais, tags como TagChip e os tipos
- * de bloco para o "/".
- */
 @Composable
 fun Suggestions(
   controller: EditorController,
@@ -115,7 +110,6 @@ private fun <T> ChipRow(items: List<T>, item: @Composable (T) -> Unit) {
   }
 }
 
-/** `h-9 rounded-full border border-border pl-1.5 pr-3 active:bg-secondary`. */
 @Composable
 private fun Chip(onClick: () -> Unit, startPadding: androidx.compose.ui.unit.Dp = 12.dp, content: @Composable () -> Unit) {
   val ds = LocalDs.current

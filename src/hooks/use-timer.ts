@@ -135,7 +135,6 @@ function useTimer() {
   return { state, start, pause, resume, finish, discard };
 }
 
-// Milissegundos decorridos, a actualizar a cada segundo enquanto conta.
 function useElapsed(state: TimerState) {
   const [now, setNow] = useState(Date.now());
 

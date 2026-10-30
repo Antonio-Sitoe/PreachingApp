@@ -14,7 +14,6 @@ import expo.modules.notes.design.AppIcon
 import expo.modules.notes.design.DsIconButton
 import expo.modules.notes.design.LocalDs
 
-/** Barra de cima do editor antigo: voltar, "A guardar…/Guardado" e ⋯ (opções da nota). */
 @Composable
 fun TopBar(saving: Boolean, onBack: () -> Unit, onOptions: () -> Unit) {
   val ds = LocalDs.current

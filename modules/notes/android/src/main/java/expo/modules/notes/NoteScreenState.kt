@@ -65,7 +65,6 @@ data class EditorData(
   }
 }
 
-/** Tudo o que o ecrã avisa o JS (eventos da vista). */
 class EditorCallbacks(
   val onDocumentChange: (String) -> Unit,
   val onTitleChange: (String) -> Unit,

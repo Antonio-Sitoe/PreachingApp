@@ -30,7 +30,6 @@ private val SHORTCUTS = listOf(
   "> " to BlockType.QUOTE,
 )
 
-/** Estado do documento: o título, a lista de blocos, o bloco com foco e as operações entre blocos. */
 @Stable
 class EditorController(initial: List<BlockState>, initialTitle: String) {
   val blocks = mutableStateListOf<BlockState>().apply { addAll(initial) }
@@ -38,7 +37,6 @@ class EditorController(initial: List<BlockState>, initialTitle: String) {
   var title by mutableStateOf(TextFieldValue(initialTitle))
   val titleFocusRequester = FocusRequester()
 
-  /** Bloco (ou [TITLE_FOCUS_ID]) que tem o cursor. A toolbar e as sugestões trabalham sobre ele. */
   var focusedId: String?
     get() = focusedState
     set(value) {
@@ -51,7 +49,6 @@ class EditorController(initial: List<BlockState>, initialTitle: String) {
   var lastFocusedId: String? = null
     private set
 
-  /** O bloco onde inserir a partir de uma folha: o último com foco, ou o último do documento. */
   val insertTarget: BlockState? get() = blocks.firstOrNull { it.id == lastFocusedId } ?: blocks.lastOrNull()
 
   /** Bloco (ou [TITLE_FOCUS_ID]) que deve receber o foco assim que estiver composto. */
@@ -173,7 +170,6 @@ class EditorController(initial: List<BlockState>, initialTitle: String) {
     return true
   }
 
-  /** Junta [block] ao fim de [previous], com a formatação, e põe o cursor na junção. */
   private fun merge(previous: BlockState, block: BlockState) {
     val joinAt = previous.rich.annotatedString.text.length
     val markdown = block.toMarkdown()

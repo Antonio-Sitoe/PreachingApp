@@ -33,10 +33,6 @@ import expo.modules.notes.design.StageInitials
 import expo.modules.notes.design.pressable
 import expo.modules.notes.model.Reference
 
-/**
- * Cabeçalho do editor antigo, agora o primeiro item da lista (faz scroll com o texto):
- * título, data e as linhas Etiqueta e Sobre.
- */
 @Composable
 fun NoteHeader(
   controller: EditorController,
@@ -114,7 +110,6 @@ fun NoteHeader(
   }
 }
 
-/** `min-h-11 flex-row gap-2.5`: ícone 18, rótulo de 78 e o valor. */
 @Composable
 private fun DetailRow(icon: String, label: String, onClick: () -> Unit, content: @Composable () -> Unit) {
   val ds = LocalDs.current

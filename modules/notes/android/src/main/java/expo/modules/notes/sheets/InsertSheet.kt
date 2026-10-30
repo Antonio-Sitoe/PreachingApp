@@ -42,7 +42,7 @@ private val INSERTS = listOf(
 
 private val SHORTCUTS = listOf("#" to "título", "-" to "lista", "[]" to "tarefa", ">" to "citação", "---" to "divisória", "@" to "estudante")
 
-/** "+ Inserir" (insert-sheet.tsx antigo): os tipos de bloco e os atalhos. `null` = mencionar. */
+/** `null` = mencionar. */
 @Composable
 fun InsertSheet(onInsert: (BlockType?) -> Unit, onDismiss: () -> Unit) {
   val ds = LocalDs.current
@@ -80,7 +80,6 @@ fun InsertSheet(onInsert: (BlockType?) -> Unit, onDismiss: () -> Unit) {
   }
 }
 
-/** "Apagar esta nota?" (AlertDialog do editor antigo). */
 @Composable
 fun DeleteNoteDialog(title: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
   DsAlertDialog(

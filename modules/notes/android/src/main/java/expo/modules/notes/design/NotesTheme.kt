@@ -39,7 +39,6 @@ data class DsColors(
   val backdrop: Color,
   private val all: Map<String, Color>,
 ) {
-  /** Cor e fundo de um estágio de estudante (`stageRevisit` / `stageRevisitSoft`…). */
   fun stage(stage: String?): Pair<Color, Color> {
     val key = "stage" + (stage ?: "contact").replaceFirstChar { it.uppercase() }
     return (all[key] ?: mutedForeground) to (all["${key}Soft"] ?: muted)
@@ -120,7 +119,6 @@ data class DsFonts(
   }
 }
 
-/** O tema completo que os componentes leem de [LocalDs]. */
 @Immutable
 data class Ds(val colors: DsColors, val fonts: DsFonts, val icons: AppIcons) {
   private fun style(family: FontFamily, size: TextUnit, lineHeight: TextUnit, color: Color = colors.foreground) =
@@ -133,7 +131,6 @@ data class Ds(val colors: DsColors, val fonts: DsFonts, val icons: AppIcons) {
       lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None),
     )
 
-  // Escala tipográfica (tailwind.config.js) e variantes de components/ui/text.tsx.
   val titleXl get() = style(fonts.display, 25.sp, 32.sp)
   val titleL get() = style(fonts.display, 20.sp, 26.sp)
   val titleM get() = style(fonts.displaySemibold, 17.sp, 22.sp)
@@ -144,7 +141,6 @@ data class Ds(val colors: DsColors, val fonts: DsFonts, val icons: AppIcons) {
   val labelS get() = style(fonts.displayMedium, 12.sp, 16.sp)
   val button get() = style(fonts.displaySemibold, 16.sp, 20.sp)
 
-  /** Tamanhos livres usados no editor antigo (ex.: `text-[13px] leading-[18px]`). */
   fun sans(size: Float, lineHeight: Float, color: Color = colors.foreground) = style(fonts.sans, size.sp, lineHeight.sp, color)
   fun display(size: Float, lineHeight: Float, color: Color = colors.foreground) = style(fonts.display, size.sp, lineHeight.sp, color)
   fun displayMedium(size: Float, lineHeight: Float, color: Color = colors.foreground) =
@@ -153,7 +149,6 @@ data class Ds(val colors: DsColors, val fonts: DsFonts, val icons: AppIcons) {
     style(fonts.displaySemibold, size.sp, lineHeight.sp, color)
 }
 
-/** `rounded-*` do tailwind.config.js (--radius = 10). */
 object DsRadius {
   val lg = 10.dp
   val md = 8.dp
@@ -163,7 +158,6 @@ object DsRadius {
 
 val LocalDs = staticCompositionLocalOf<Ds> { error("Ds não definido") }
 
-/** Ícones do projeto (APP_ICONS em components/ui/app-icon.tsx), já convertidos para vetores. */
 @Immutable
 class AppIcons(private val paths: Map<String, String>) {
   private val cache = mutableMapOf<Pair<String, Float>, ImageVector?>()

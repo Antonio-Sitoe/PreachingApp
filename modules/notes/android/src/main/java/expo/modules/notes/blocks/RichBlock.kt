@@ -114,7 +114,6 @@ fun RichBlock(
   }
 }
 
-/** O que fica à esquerda do texto: a marca da lista ou a checkbox. */
 @Composable
 private fun BlockMarker(block: BlockState, ds: Ds, editable: Boolean) {
   when (block.type) {
@@ -141,7 +140,6 @@ private fun BlockMarker(block: BlockState, ds: Ds, editable: Boolean) {
   }
 }
 
-/** Barra vertical à esquerda da citação (no editor antigo: borda primary de 3, `gapWidth` 12). */
 private fun quoteBar(color: Color): Modifier =
   Modifier
     .drawBehind {
@@ -162,7 +160,6 @@ private fun verticalPadding(type: BlockType) = when (type) {
   else -> 4.dp
 }
 
-/** Corpo em Sen 15/24 (como no editor antigo) e títulos em Red Hat Display. */
 private fun blockTextStyle(block: BlockState, ds: Ds): TextStyle =
   when (block.type) {
     BlockType.HEADING1 -> ds.display(25f, 32f)

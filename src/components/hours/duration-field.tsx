@@ -11,7 +11,6 @@ type DurationFieldProps = {
   maxHours?: number;
 };
 
-// Horas com +/- e minutos de 15 em 15.
 function DurationField({ minutes, onChange, maxHours = 12 }: DurationFieldProps) {
   const hours = Math.floor(minutes / 60);
   const rest = minutes % 60;

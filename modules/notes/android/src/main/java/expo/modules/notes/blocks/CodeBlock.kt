@@ -25,7 +25,7 @@ import expo.modules.notes.design.DsRadius
 import expo.modules.notes.design.LocalDs
 import expo.modules.notes.model.BlockState
 
-/** Bloco de código: texto simples monoespaçado (`bg-muted`, `rounded-md`). Aqui o Enter parte a linha. */
+/** Aqui o Enter parte a linha em vez de criar um bloco. */
 @Composable
 fun CodeBlock(block: BlockState, controller: EditorController, editable: Boolean, modifier: Modifier = Modifier) {
   val ds = LocalDs.current

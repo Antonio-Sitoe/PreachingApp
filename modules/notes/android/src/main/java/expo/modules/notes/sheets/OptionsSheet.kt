@@ -32,7 +32,6 @@ import expo.modules.notes.design.parseCssColor
 import expo.modules.notes.design.pressable
 import expo.modules.notes.model.Reference
 
-/** Nome curto como no editor antigo: "Maria S." */
 private fun shortName(name: String): String {
   val words = name.trim().split(Regex("\\s+"))
   if (words.size < 2) return name
@@ -41,7 +40,7 @@ private fun shortName(name: String): String {
 
 /**
  * Reparte as etiquetas por até 3 linhas, cada uma na mais curta até ali, para ficarem com
- * comprimentos parecidos (o `tagRows` do details-sheet.tsx antigo).
+ * comprimentos parecidos.
  */
 private fun tagRows(tags: List<Reference>): List<List<Reference>> {
   if (tags.isEmpty()) return emptyList()
@@ -56,7 +55,6 @@ private fun tagRows(tags: List<Reference>): List<List<Reference>> {
   return rows
 }
 
-/** Os ⋯ da barra de cima: etiqueta, cor na lista, "Sobre alguém" e apagar (details-sheet.tsx antigo). */
 @Composable
 fun OptionsSheet(
   tags: List<Reference>,
@@ -107,7 +105,6 @@ fun OptionsSheet(
       }
     }
 
-    // Cor na lista (colors-palette.tsx antigo).
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       Text("Cor na lista", style = ds.displayMedium(14f, 19f))
       Row(modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(4.dp)) {

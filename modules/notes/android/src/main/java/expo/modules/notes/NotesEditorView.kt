@@ -84,7 +84,6 @@ class TagRenameEvent(@Field val requestId: String = "", @Field val id: String = 
 class TagDeleteEvent(@Field val id: String = "") : Record
 
 /**
- * O ecrã inteiro da nota, em Compose, com os tokens do design system vindos do JS.
  * Vista autónoma (tem o seu próprio ComposeView), por isso não precisa do `<Host>` do @expo/ui.
  */
 @SuppressLint("ViewConstructor")

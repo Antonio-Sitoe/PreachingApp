@@ -30,7 +30,6 @@ import expo.modules.notes.design.StageBadge
 import expo.modules.notes.design.pressable
 import expo.modules.notes.model.Reference
 
-/** "Sobre alguém" (student-picker-sheet.tsx antigo): liga a nota à ficha de um estudante. */
 @Composable
 fun StudentPickerSheet(
   students: List<Reference>,

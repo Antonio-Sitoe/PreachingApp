@@ -76,7 +76,6 @@ fun Modifier.pressable(
 
 enum class ButtonVariant { Default, Outline, Ghost, Destructive, Secondary }
 
-/** components/ui/button.tsx: `min-h-[52px] px-5` (sm: `min-h-11 px-3`), `rounded-lg`. */
 @Composable
 fun DsButton(
   label: String,
@@ -114,7 +113,6 @@ fun DsButton(
   }
 }
 
-/** Botão só com ícone, `size-11` (44 dp), como os do editor antigo. */
 @Composable
 fun DsIconButton(
   icon: String,
@@ -141,7 +139,6 @@ fun DsIconButton(
   }
 }
 
-/** notes/list/tags-filter.tsx: `h-9 rounded-full border px-3.5`. */
 @Composable
 fun TagChip(label: String, active: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
   val ds = LocalDs.current
@@ -162,7 +159,6 @@ fun TagChip(label: String, active: Boolean, onClick: () -> Unit, modifier: Modif
   }
 }
 
-/** Iniciais como em components/ui/avatar.tsx (`getInitials`). */
 fun initials(name: String): String {
   val words = name.trim().split(Regex("\\s+")).filter { it.isNotEmpty() }
   if (words.isEmpty()) return ""
@@ -170,7 +166,6 @@ fun initials(name: String): String {
   return (words.first().take(1) + last.take(1)).uppercase()
 }
 
-/** Círculo com as iniciais na cor do estágio (editor antigo: `size-6`, `text-[10px]`). */
 @Composable
 fun StageInitials(name: String, stage: String?, size: Dp = 24.dp) {
   val ds = LocalDs.current
@@ -180,7 +175,6 @@ fun StageInitials(name: String, stage: String?, size: Dp = 24.dp) {
   }
 }
 
-/** components/ui/avatar.tsx (md): `size-10 rounded-full bg-secondary`, `text-title-s text-primary-strong`. */
 @Composable
 fun Avatar(name: String) {
   val ds = LocalDs.current
@@ -189,7 +183,6 @@ fun Avatar(name: String) {
   }
 }
 
-/** components/ui/stage-badge.tsx: `rounded-full px-2 py-[3px]`, `labelS` na cor do estágio. */
 @Composable
 fun StageBadge(stage: String?, label: String) {
   val ds = LocalDs.current
@@ -212,7 +205,6 @@ private fun toneColors(tone: Tone): Pair<Color, Color> {
   }
 }
 
-/** components/ui/bottom-sheet.tsx (SheetOption): ícone num círculo de 40, título, descrição e seta. */
 @Composable
 fun SheetOption(icon: String, title: String, description: String?, onClick: () -> Unit, tone: Tone = Tone.Brand) {
   val ds = LocalDs.current
@@ -239,8 +231,6 @@ fun SheetOption(icon: String, title: String, description: String?, onClick: () -
 }
 
 /**
- * Folha inferior como components/ui/bottom-sheet.tsx (que no Android já é este ModalBottomSheet):
- * fundo card, cantos de 24, pega de 36×4, `px-5`, `gap-4` e título `titleL`.
  * O conteúdo recebe `close`, que fecha com animação antes de chamar [onDismiss].
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -286,7 +276,6 @@ fun DsBottomSheet(
   }
 }
 
-/** components/ui/alert-dialog.tsx: cartão `rounded-lg bg-card`, ícone num círculo de 56, título e descrição ao centro. */
 @Composable
 fun DsAlertDialog(
   icon: String,
@@ -327,7 +316,6 @@ fun DsAlertDialog(
   }
 }
 
-/** Campo do editor antigo: `h-12 rounded-lg border border-border bg-card px-3 font-sans text-[14px]`. */
 @Composable
 fun DsTextField(
   value: String,
@@ -365,7 +353,6 @@ fun DsTextField(
   )
 }
 
-/** Linha de texto pequena com reticências. */
 @Composable
 fun RowScope.EllipsizedText(text: String, style: TextStyle) {
   Text(text, style = style, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f, fill = false))
