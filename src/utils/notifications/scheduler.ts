@@ -1,4 +1,5 @@
 import { monthlyReportNotificationManager } from '@/utils/notifications/monthly-report';
+import { syncVisitReminders } from '@/utils/notifications/visit-reminders';
 import { checkPermission } from '@/utils/permissions';
 import { getNotificationPreferences, setNotificationPreferences } from '@/utils/storage';
 import * as Notifications from 'expo-notifications';
@@ -25,6 +26,7 @@ async function runSync(): Promise<void> {
 
     const prefs = getNotificationPreferences();
     await monthlyReportNotificationManager.sync(prefs.monthly);
+    await syncVisitReminders();
 
     setNotificationPreferences({
       ...getNotificationPreferences(),

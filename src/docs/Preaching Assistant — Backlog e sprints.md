@@ -27,7 +27,7 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Migração 0006: tabela `visits` (resultado, notas, textos, dúvida, "Prometi levar", lição e ponto) e hora (`time`) nas marcações
   - [x] Registar visita (VIS-01) com escolha do estudante, e próxima visita sugerida pelo ritmo e pelos dias habituais (VIS-03)
   - [x] Não estava em casa (VIS-02) e histórico e detalhe com editar e apagar (VIS-05)
-  - [ ] Lembretes no telemóvel (VIS-04)
+  - [x] Lembretes no telemóvel (VIS-04)
   - [ ] Ecrã Hoje (HOJ-01 a HOJ-06)
 
 ## Fundações
@@ -89,8 +89,9 @@ Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são
 - [x] **Não estava em casa (P2)** - Um toque regista a tentativa como visita com `outcome = not_home` e propõe nova data. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 23 Não estava em casa (VIS-02, 1 h, sprint 4)
   - No Registar visita, guardar com "Não estava" abre a folha Tentativa guardada, com Desfazer e Tentar de novo (Amanhã, Sábado, Próxima semana, Escolher data). O toque único fica para o Hoje (HOJ-02)
 - [x] **Agendar a próxima visita (P6)** - Dia e hora com sugestão pelo ritmo da pessoa, atalhos de 7 e 14 dias e a escolha Avisar: na hora, 30 minutos antes ou 1 hora antes. Grava em `appointments`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 24 Agendar a próxima visita (VIS-03, 3 h, sprint 4)
-  - Folha Próxima visita com atalhos, dia, hora e Avisar. Grava a hora em `appointments.time` e o aviso em `remind_minutes_before`; a notificação é a VIS-04
-- [ ] **Lembretes de visita (P6)** - Notificação local do telemóvel para cada visita marcada, reagendada ou cancelada quando a visita muda. Tocar na notificação abre a pessoa. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 26 Notificações locais (VIS-04, 3 h, sprint 4)
+  - Folha Próxima visita com atalhos, dia, hora e Avisar. Grava a hora em `appointments.time` e o aviso em `remind_minutes_before`, que a VIS-04 usa para a notificação
+- [x] **Lembretes de visita (P6)** - Notificação local do telemóvel para cada visita marcada, reagendada ou cancelada quando a visita muda. Tocar na notificação abre a pessoa. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 26 Notificações locais (VIS-04, 3 h, sprint 4)
+  - Uma notificação local por marcação com hora e aviso ("Visita à Celeste daqui a 1 hora", "10:00 · lição 14 · levar …"). Volta a agendar tudo ao abrir o app e depois de cada mudança em visitas, marcações, pausas ou remoções; quem está em pausa não recebe. Tocar abre a ficha. Falta: as acções "Ver preparação" e "Adiar" na notificação (dependem de HOJ-06 e HOJ-02)
 - [x] **Histórico e detalhe de visita** - Lista das visitas de uma pessoa, detalhe com tudo o que foi registado, editar e apagar com confirmação, e histórico vazio. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 25 Histórico de visitas, Detalhe de visita, Histórico vazio, Apagar visita (VIS-05, 3 h, sprint 4)
   - Histórico por mês com os filtros Todas, Com estudo e Tentativas; detalhe com a próxima visita marcada nessa visita; editar e apagar. Apagar volta a pôr por cumprir as marcações que a visita tinha dado por feitas. A ficha mostra a dúvida pendente e as três últimas visitas
 - [ ] **Ecrã Hoje (P4)** - Página inicial com as visitas de hoje, as que estão em atraso e o resumo do mês, por tipo de publicador. Inclui os estados Hoje vazio e Dia concluído. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje; 10 Hoje, pioneiro; 7 Hoje vazio; 7 Dia concluído (HOJ-01, 4 h, sprint 5)

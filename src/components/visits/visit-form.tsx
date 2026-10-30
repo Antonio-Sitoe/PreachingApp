@@ -22,6 +22,7 @@ import { suggestNextVisit } from '@/utils/visits/next-visit';
 import DateTimePicker, {
   type DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useColorScheme } from 'nativewind';
@@ -144,13 +145,7 @@ function VisitForm({ initialStudentId, editing }: VisitFormProps) {
     if (target === 'time') setVisitedAt((current) => withTime(current, toTimeString(value)));
   }
 
-  async function refresh() {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['students'] }),
-      queryClient.invalidateQueries({ queryKey: ['visits'] }),
-      queryClient.invalidateQueries({ queryKey: ['appointments'] }),
-    ]);
-  }
+  const refresh = () => refreshVisitData(queryClient);
 
   async function save() {
     if (!student || saving) return;

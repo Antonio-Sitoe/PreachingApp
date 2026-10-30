@@ -13,6 +13,7 @@ import { timeOf } from '@/utils/visits/format';
 import DateTimePicker, {
   type DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import * as React from 'react';
@@ -55,13 +56,7 @@ function NotHomeSheet({ visit, studentName, onUndo, onDone }: NotHomeSheetProps)
   );
   const custom = retryOn && !options.some((option) => dayjs(option.date).isSame(retryOn, 'day'));
 
-  async function refresh() {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ['students'] }),
-      queryClient.invalidateQueries({ queryKey: ['visits'] }),
-      queryClient.invalidateQueries({ queryKey: ['appointments'] }),
-    ]);
-  }
+  const refresh = () => refreshVisitData(queryClient);
 
   async function undo() {
     if (!visit || busy) return;

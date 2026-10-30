@@ -23,6 +23,7 @@ import {
   sortStudents,
 } from '@/utils/students/list';
 import { FlashList } from '@shopify/flash-list';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import { useColorScheme } from 'nativewind';
@@ -85,7 +86,7 @@ export default function StudentsScreen() {
     setResumingId(student.id);
     try {
       await studentsActions.resume(student.id);
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await refreshVisitData(queryClient);
       showToast({ message: `${student.displayName} voltou à lista.` });
     } catch {
       showToast({ message: 'Não foi possível retomar. Tenta outra vez.' });

@@ -20,6 +20,7 @@ import {
   getNextVisitHint,
 } from '@/utils/students/detail';
 import { shortName, withArticle } from '@/utils/students/journey';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
@@ -87,7 +88,7 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
     setBusy(true);
     try {
       await studentsActions.resume(student.id);
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await refreshVisitData(queryClient);
       showToast({ message: `${shortName(student.displayName)} voltou à lista.` });
     } catch {
       showToast({ message: 'Não foi possível retomar. Tenta outra vez.' });
@@ -102,7 +103,7 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
     try {
       await studentsActions.deleteById(student.id);
       setRemoving(false);
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await refreshVisitData(queryClient);
       showToast({ message: 'Estudante removido.' });
       router.back();
     } catch {

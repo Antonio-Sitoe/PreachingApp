@@ -14,6 +14,7 @@ import { formatDayMonth } from '@/utils/students/pause';
 import DateTimePicker, {
   type DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import * as React from 'react';
@@ -56,7 +57,7 @@ function PauseSheet({ open, student, onClose }: PauseSheetProps) {
         note,
         retryAt: retryAt ? dayjs(retryAt).format('YYYY-MM-DD') : null,
       });
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await refreshVisitData(queryClient);
       showToast({ message: `${shortName(student.displayName)} está em pausa.` });
       onClose();
     } catch {

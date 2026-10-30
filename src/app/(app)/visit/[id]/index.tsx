@@ -11,6 +11,7 @@ import { parseScriptures } from '@/database/actions/visits';
 import { cn } from '@/utils/cn';
 import { formatDayMonth } from '@/utils/students/pause';
 import { formatAppointmentLabel, formatVisitLongDate, timeOf } from '@/utils/visits/format';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
@@ -59,11 +60,7 @@ function VisitContent({ detail }: { detail: VisitDetail }) {
     try {
       await visitsActions.remove(visit.id);
       setDeleting(false);
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['students'] }),
-        queryClient.invalidateQueries({ queryKey: ['visits'] }),
-        queryClient.invalidateQueries({ queryKey: ['appointments'] }),
-      ]);
+      await refreshVisitData(queryClient);
       showToast({ message: 'Visita apagada.' });
       router.back();
     } catch {

@@ -10,6 +10,7 @@ import { cn } from '@/utils/cn';
 import { defaultRhythmFor } from '@/utils/students/rhythm';
 import { countEvent } from '@/utils/usage';
 import { daysAhead, formatReturnSummary, formatShortDay } from '@/utils/students/return-date';
+import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
 import * as React from 'react';
@@ -86,10 +87,7 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
         returnOn,
         rhythmDays,
       });
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['students'] }),
-        queryClient.invalidateQueries({ queryKey: ['appointments'] }),
-      ]);
+      await refreshVisitData(queryClient);
       void countEvent('student_created');
       showToast({ message: `${trimmed} guardado.` });
       onClose();
