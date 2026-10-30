@@ -10,8 +10,10 @@ export default function AppLayout() {
       }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="note/[id]" options={{ headerShown: false }} />
+      <Stack.Screen name="student" options={{ headerShown: false }} />
       <Stack.Screen name="(settings)" options={{ headerShown: false }} />
       <Stack.Screen name="report" options={{ title: 'Relatório' }} />
+      <Stack.Screen name="hours" options={{ headerShown: false }} />
     </Stack>
   );
 }

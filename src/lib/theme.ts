@@ -104,16 +104,23 @@ function toChannels(hex: string) {
   return `${(value >> 16) & 255} ${(value >> 8) & 255} ${value & 255}`;
 }
 
-export const LIGHT_THEME_VARS = vars(
-  Object.fromEntries(
-    Object.entries(THEME.light)
-      .filter(([key]) => key !== 'radius')
-      .map(([key, hex]) => [
-        `--${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
-        toChannels(hex as string),
-      ])
-  )
-);
+function themeVars(name: ThemeName) {
+  return vars(
+    Object.fromEntries(
+      Object.entries(THEME[name])
+        .filter(([key]) => key !== 'radius')
+        .map(([key, hex]) => [
+          `--${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
+          toChannels(hex as string),
+        ])
+    )
+  );
+}
+
+export const LIGHT_THEME_VARS = themeVars('light');
+
+/** As cores de cada tema, para o que abre fora da raiz da app (como um Modal). */
+export const THEME_VARS = { light: LIGHT_THEME_VARS, dark: themeVars('dark') } as const;
 
 export const BRAND = {
   purple: '#6775B8',

@@ -14,6 +14,15 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
 - [x] Notas,
   - [x] Lista de notas (S6) - Notas com título, etiqueta e cor, em lista ou cartões, e lista vazia
   - [x] Criar e editar nota (S6) -Título, texto, etiqueta, cor e a linha opcional "Sobre alguém", que liga a nota a uma pessoa. Grava em `notes`
+- [ ] Pessoas (separador Estudantes, tabela `students`)
+  - [x] Migração 0004: `name_is_provisional`, `age_range`, `gender`, `directions`, `located_at` e as tabelas `stage_changes`, `milestones`, `pauses` e `student_availabilities`
+  - [x] Lista, captura no terreno, ficha e criar e editar (PES-01, PES-02, PES-03, PES-06)
+  - [x] Etapa e marcos (PES-04, PES-05)
+  - [x] Localização, pausar e remover (PES-07, PES-08, PES-09)
+  - [x] Ritmo por omissão conforme a etapa: o das revisitas para primeiro contacto e revisita, o dos estudos (Mais › Notificações) a partir de estudo iniciado. Criar um estudante conta `student_created` em `usage_counters`
+  - [ ] Dias e hora habituais a sugerir a próxima visita (PES-10, depende de VIS-03)
+  - [x] Testes no emulador (Pixel 9 Pro): lista, captura, ficha, formulário, etapa, marcos, pausa, retomar e remover, em tema escuro e claro. Falta: gravar um ponto no mapa num telemóvel real (o emulador pede "Location Accuracy" da Google)
+  - [x] Responsivo na maior parte dos Android: testado num ecrã de 360 × 640 dp com a letra a 130%. Alturas mínimas em vez de fixas, folhas com scroll e abaixo da barra de estado, calendário que cabe em 320 dp, conteúdo limitado a 640 dp nos tablets. Falta testar num telemóvel real e num tablet
 
 ## Fundações
 
@@ -41,16 +50,26 @@ Seis tarefas. Três são da versão 1 (7 horas): a primeira abertura e o bloquei
 
 Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o épico maior, porque a pessoa é o centro do app.
 
-- [ ] **Lista de pessoas** - Lista das pessoas activas com etapa e próxima visita, pesquisa por nome, ordenação, lista vazia e pesquisa sem resultados. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 11 Lista de pessoas, Ordenar, Lista vazia, Pesquisa sem resultados (PES-01, 4 h, sprint 2)
-- [ ] **Criar e editar pessoa (P1)** - Formulário em que só o nome é obrigatório. Telefone, morada, etapa, ritmo (7, 14, 30 ou um número de dias), faixa etária e género são opcionais. Grava em `people`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa; Criar pessoa, campos com erro (PES-02, 3 h, sprint 2)
-- [ ] **Ficha da pessoa (P1)** - Cabeçalho com iniciais e etapa, acções Registar visita, Ligar e Direcções, próxima visita, ritmo e as secções que os outros épicos vão preencher. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa (PES-03, 4 h, sprint 2)
-- [ ] **Etapa do percurso (P1)** - Mudar a etapa entre as seis do BRD. Cada mudança grava uma linha em `stage_changes`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Etapa do percurso e marcos (PES-04, 2 h, sprint 3)
-- [ ] **Marcos (P1)** - Acrescentar um marco em texto livre, com exemplos sugeridos e data. Lista de marcos na ficha. Grava em `milestones`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Novo marco (PES-05, 2 h, sprint 3)
-- [ ] **Captura no terreno (P7)** - Criar um contacto em dez segundos: nome provisório, localização actual e uma linha de nota. Fica marcado com `name_is_provisional` para completar depois. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 12 Captura no terreno, Captura com erro (PES-06, 3 h, sprint 3)
-- [ ] **Localização e direcções (P10)** - Guardar a ligação do Google Maps ou a posição actual, e abrir o Google Maps com as direcções. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 16 Localização e direcções (PES-07, 2 h, sprint 3)
-- [ ] **Pausar e retomar (P9)** - Pôr a pessoa em pausa com motivo e data para tentar de novo, vê-la na lista Em pausa e retomá-la. Grava em `pauses` e muda `people.status`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 17 Pausar, 11 Em pausa (PES-08, 3 h, sprint 3)
-- [ ] **Remover pessoa** - Confirmação que oferece a pausa primeiro. A remoção é lógica, com `deleted_at`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 18 Remover pessoa (PES-09, 1 h, sprint 3)
+- [x] **Lista de pessoas** - Lista das pessoas activas com etapa e próxima visita, pesquisa por nome, ordenação, lista vazia e pesquisa sem resultados. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 11 Lista de pessoas, Ordenar, Lista vazia, Pesquisa sem resultados (PES-01, 4 h, sprint 2)
+  - Falta: "lição 14" ao lado da próxima visita e a última visita a sério, que dependem da tabela `visits` (VIS-01)
+- [x] **Criar e editar pessoa (P1)** - Formulário em que só o nome é obrigatório. Telefone, morada, etapa, ritmo (7, 14, 30 ou um número de dias), faixa etária e género são opcionais. Grava em `people`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa; Criar pessoa, campos com erro (PES-02, 3 h, sprint 2)
+  - Grava em `students`. Novo estudante abre pelo link "Preencher a ficha completa" da captura
+- [x] **Ficha da pessoa (P1)** - Cabeçalho com iniciais e etapa, acções Registar visita, Ligar e Direcções, próxima visita, ritmo e as secções que os outros épicos vão preencher. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa (PES-03, 4 h, sprint 2)
+  - Falta: Registar visita, Estudo, Dúvida pendente e Últimas visitas (VIS-01, EST-06); Direcções abre o Google Maps directamente até haver a PES-07
+- [x] **Etapa do percurso (P1)** - Mudar a etapa entre as seis do BRD. Cada mudança grava uma linha em `stage_changes`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Etapa do percurso e marcos (PES-04, 2 h, sprint 3)
+  - Ecrã Etapa e marcos, aberto pela etiqueta da etapa na ficha. "Passar a …" avança uma etapa, com desfazer; para recuar, muda-se no formulário de editar
+- [x] **Marcos (P1)** - Acrescentar um marco em texto livre, com exemplos sugeridos e data. Lista de marcos na ficha. Grava em `milestones`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Novo marco (PES-05, 2 h, sprint 3)
+  - Os marcos aparecem no ecrã Etapa e marcos, como no canvas, e não na ficha. Falta apagar ou editar um marco (não está no canvas)
+- [x] **Captura no terreno (P7)** - Criar um contacto em dez segundos: nome provisório, localização actual e uma linha de nota. Fica marcado com `name_is_provisional` para completar depois. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 12 Captura no terreno, Captura com erro (PES-06, 3 h, sprint 3)
+  - Inclui "Quando voltas?", que cria a marcação em `appointments`
+- [x] **Localização e direcções (P10)** - Guardar a ligação do Google Maps ou a posição actual, e abrir o Google Maps com as direcções. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 16 Localização e direcções (PES-07, 2 h, sprint 3)
+  - Como no canvas, não há campo para colar a ligação do Google Maps: guarda a posição actual, a morada e "Como chegar" (`directions`, `located_at`). "Abrir no Google Maps" abre as direcções até ao ponto ou à morada
+- [x] **Pausar e retomar (P9)** - Pôr a pessoa em pausa com motivo e data para tentar de novo, vê-la na lista Em pausa e retomá-la. Grava em `pauses` e muda `people.status`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 17 Pausar, 11 Em pausa (PES-08, 3 h, sprint 3)
+  - Motivo (Viajou, Pediu para parar, Sem disponibilidade, Outro), nota e data para tentar de novo. Retomar na lista Em pausa ou na ficha fecha a pausa com `resumed_at`. Falta tirar quem está em pausa do Hoje e dos alertas (HOJ-01, HOJ-04)
+- [x] **Remover pessoa** - Confirmação que oferece a pausa primeiro. A remoção é lógica, com `deleted_at`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 18 Remover pessoa (PES-09, 1 h, sprint 3)
+  - Também cancela as marcações por cumprir do estudante removido
 - [ ] **Dias e hora habituais** - Dias da semana e hora em que a pessoa costuma estar, usados para sugerir a próxima visita. Grava em `person_availabilities`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa (PES-10, 2 h, sprint 3)
+  - Já grava em `student_availabilities` pelo formulário. Falta usá-los para sugerir a próxima visita (VIS-03)
 - [ ] **Tentativas e melhor horário (P11)** - A partir das visitas conseguidas e falhadas, mostrar em que dias e horas a pessoa costuma estar. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 19 Melhor horário (PES-11, 6 h, sprint 20)
 - [ ] **Linha do tempo (P12)** - Vista cronológica do percurso, com visitas, lições, mudanças de etapa e marcos. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 20 Linha do tempo (PES-12, 8 h, sprint 20)
 - [ ] **Foto da casa (P13)** - Tirar ou escolher uma fotografia do local, com legenda e "como chegar", guardada só no telemóvel. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 21 Foto da casa (PES-13, 5 h, sprint 15)
@@ -89,11 +108,11 @@ Nove tarefas. Sete são da versão 1 (16 horas) e cobrem S2, S3 e S4. Não há h
 - [ ] **Relatório do mês (S2)** - Calculado das visitas e das horas, conforme o tipo: o publicador vê participei e número de estudos, o pioneiro vê horas e número de estudos. Grava em `monthly_reports`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 31 Relatório do mês, publicador e pioneiro (REL-01, 3 h, sprint 7)
 - [ ] **Partilhar o relatório (S2)** - Gerar o texto do relatório e abrir a partilha do telemóvel (WhatsApp ou outro). Marca o relatório como enviado. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 31 Relatório do mês (REL-02, 1 h, sprint 7)
 - [ ] **Histórico de relatórios** - Meses anteriores em lista ou em cartões, conforme a definição Vista das listas, e histórico vazio. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 32 Histórico, em lista; Histórico, em cartões; Histórico vazio (REL-03, 2 h, sprint 7)
-- [ ] **Horas por tipo de publicador (S4)** - Ecrã de horas para publicador, pioneiro auxiliar e pioneiro regular, e entrada manual de horas. Grava em `time_entries` com origem `manual`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Horas, publicador; 33 Horas e plano, pioneiro auxiliar; 35 Horas e plano, pioneiro regular; 33 Entrada manual de horas (REL-04, 3 h, sprint 7)
-- [ ] **Cronómetro (S4)** - Iniciar, pausar e terminar com o app aberto. Grava em `time_entries` com origem `timer`. Opcional e desligado por omissão para publicadores. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Cronómetro e horas (REL-05, 2 h, sprint 7)
-- [ ] **Plano do mês do pioneiro (S4)** - Escolher os dias da semana e as horas por dia, ver as horas em falta e acertar dia a dia. Grava em `month_plans` e `plan_days`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Planear os dias do mês (REL-06, 3 h, sprint 7)
+- [x] **Horas por tipo de publicador (S4)** - Ecrã de horas para publicador, pioneiro auxiliar e pioneiro regular, e entrada manual de horas. Grava em `time_entries` com origem `manual`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Horas, publicador; 33 Horas e plano, pioneiro auxiliar; 35 Horas e plano, pioneiro regular; 33 Entrada manual de horas (REL-04, 3 h, sprint 7)
+- [x] **Cronómetro (S4)** - Iniciar, pausar e terminar com o app aberto. Grava em `time_entries` com origem `timer`. Opcional e desligado por omissão para publicadores. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Cronómetro e horas (REL-05, 2 h, sprint 7)
+- [x] **Plano do mês do pioneiro (S4)** - Escolher os dias da semana e as horas por dia, ver as horas em falta e acertar dia a dia. Grava em `month_plans` e `plan_days`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Planear os dias do mês (REL-06, 3 h, sprint 7)
 - [ ] **Avisos de fim de mês (S3)** - Notificação local e aviso no app quando o relatório está por enviar ou o mês acaba sem participação registada. Respeita a hora que o utilizador escolheu. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 34 Avisos de fim de mês (REL-07, 2 h, sprint 8)
-- [ ] **Cronómetro em segundo plano (S9)** - O cronómetro continua a contar com o app fechado, com notificação fixa para parar. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 35 Cronómetro em segundo plano (REL-08, 8 h, sprint 18)
+- [x] **Cronómetro em segundo plano (S9)** - O cronómetro continua a contar com o app fechado, com notificação fixa para parar. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 35 Cronómetro em segundo plano (REL-08, 8 h, sprint 18)
 - [ ] **Metas do mês e do ano (S9)** - Progresso face à meta do mês e às 600 horas do ano de serviço, de Setembro a Agosto. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 35 Horas e plano, pioneiro regular (REL-09, 4 h, sprint 19)
 
 ## Mais, definições e cópia de segurança

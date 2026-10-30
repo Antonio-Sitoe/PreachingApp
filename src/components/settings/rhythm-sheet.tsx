@@ -106,5 +106,5 @@ function DaysStepper({ value, onChange }: { value: number; onChange: (value: num
   );
 }
 
-export { RhythmSheet };
+export { DaysStepper, RhythmSheet };
 export type { RhythmSheetProps };

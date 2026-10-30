@@ -7,9 +7,11 @@ import { type ReturnOn, studentsActions } from '@/database/actions';
 import { useCurrentLocation } from '@/hooks/use-current-location';
 import { showToast } from '@/hooks/use-toast';
 import { cn } from '@/utils/cn';
-import { getNotificationPreferences } from '@/utils/storage';
+import { defaultRhythmFor } from '@/utils/students/rhythm';
+import { countEvent } from '@/utils/usage';
 import { daysAhead, formatReturnSummary, formatShortDay } from '@/utils/students/return-date';
 import { useQueryClient } from '@tanstack/react-query';
+import { router } from 'expo-router';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 import { ReturnDateSheet } from './return-date-sheet';
@@ -24,7 +26,7 @@ type QuickStudentSheetProps = {
 
 function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProps) {
   const queryClient = useQueryClient();
-  const rhythmDays = getNotificationPreferences().rhythm.revisitDays;
+  const rhythmDays = defaultRhythmFor('first_contact');
   const { location } = useCurrentLocation(open);
 
   const [name, setName] = React.useState('');
@@ -77,6 +79,8 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
     try {
       await studentsActions.quickCreate({
         name: trimmed,
+        // Captura no terreno: o nome fica por confirmar até se editar a ficha.
+        nameIsProvisional: true,
         note,
         location,
         returnOn,
@@ -86,6 +90,7 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
         queryClient.invalidateQueries({ queryKey: ['students'] }),
         queryClient.invalidateQueries({ queryKey: ['appointments'] }),
       ]);
+      void countEvent('student_created');
       showToast({ message: `${trimmed} guardado.` });
       onClose();
     } catch {
@@ -96,6 +101,11 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
   }
 
   const displayName = name.trim();
+
+  function openFullForm() {
+    onClose();
+    router.push({ pathname: '/student/new', params: displayName ? { name: displayName } : {} });
+  }
 
   return (
     <>
@@ -139,7 +149,7 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
               onPress={() => choose('tomorrow')}
             />
             <ReturnOption
-              label={`Em ${rhythmDays} dias`}
+              label={rhythmDays === 1 ? 'Em 1 dia' : `Em ${rhythmDays} dias`}
               selected={choice === 'rhythm'}
               onPress={() => choose('rhythm')}
             />
@@ -166,6 +176,9 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
         <View className="gap-1">
           <Button disabled={saving} onPress={save}>
             <Text>{saving ? 'A guardar…' : 'Guardar'}</Text>
+          </Button>
+          <Button variant="ghost" className="min-h-12" disabled={saving} onPress={openFullForm}>
+            <Text>Preencher a ficha completa</Text>
           </Button>
           <Button variant="ghost" className="min-h-12" disabled={saving} onPress={onClose}>
             <Text>Cancelar</Text>
@@ -199,14 +212,14 @@ function ReturnOption({ label, selected, icon, onPress }: ReturnOptionProps) {
       aria-checked={selected}
       onPress={onPress}
       className={cn(
-        'h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg border',
+        'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg border px-2 py-2',
         selected ? 'border-primary bg-secondary' : 'border-border bg-card active:bg-secondary'
       )}>
       {icon ? <AppIcon name={icon} size={18} className="text-primary" /> : null}
       <Text
-        numberOfLines={1}
+        numberOfLines={2}
         className={cn(
-          'font-display-medium text-[15px] leading-5',
+          'shrink text-center font-display-medium text-[15px] leading-5',
           selected ? 'text-primary-strong' : 'text-foreground'
         )}>
         {label}

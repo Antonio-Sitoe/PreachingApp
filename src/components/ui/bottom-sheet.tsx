@@ -10,7 +10,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { useColorScheme, useUnstableNativeVariable } from 'nativewind';
 import * as React from 'react';
-import { Pressable, useWindowDimensions, View, type ViewProps } from 'react-native';
+import { Pressable, ScrollView, useWindowDimensions, View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function SheetContent({ title, className, children, ...props }: ViewProps & { title?: string }) {
@@ -59,6 +59,8 @@ function useCardColor() {
   return THEME[colorScheme ?? 'light'].card;
 }
 
+const SHEET_TOP_GAP = 48;
+
 type BottomSheetProps = ViewProps & {
   title?: string;
 
@@ -68,9 +70,13 @@ type BottomSheetProps = ViewProps & {
 };
 
 function BottomSheet({ open, onClose, title, className, children, ...props }: BottomSheetProps) {
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
   const containerColor = useCardColor();
+  // Sem limite, num ecrã pequeno a folha sobe até debaixo da barra de estado e a pega tapa o título.
+  const maxHeight = height - insets.top - SHEET_TOP_GAP;
+  const [contentHeight, setContentHeight] = React.useState<number>();
   const sheetRef = React.useRef<ModalBottomSheetRef>(null);
   const [mounted, setMounted] = React.useState(open);
   const [instance, setInstance] = React.useState(0);
@@ -123,11 +129,20 @@ function BottomSheet({ open, onClose, title, className, children, ...props }: Bo
         containerColor={containerColor}
         scrimColor={SHADOWS.backdrop}>
         <RNHostView matchContents>
-          <View style={{ width }}>
+          <ScrollView
+            style={{
+              width,
+              height: contentHeight === undefined ? undefined : Math.min(contentHeight, maxHeight),
+            }}
+            contentContainerStyle={{ paddingBottom: insets.bottom }}
+            onContentSizeChange={(_width, nextHeight) => setContentHeight(nextHeight)}
+            bounces={false}
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
             <SheetContent aria-modal title={title} className={cn('pb-6', className)} {...props}>
               {children}
             </SheetContent>
-          </View>
+          </ScrollView>
         </RNHostView>
       </ModalBottomSheet>
     </Host>

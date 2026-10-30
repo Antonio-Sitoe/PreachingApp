@@ -2,20 +2,30 @@ import { Text } from '@/components/ui/text';
 import { cn } from '@/utils/cn';
 import { Pressable, ScrollView } from 'react-native';
 
-function TagChip({ label, active, onPress }: { label: string; active: boolean; onPress: () => void }) {
+function TagChip({
+  label,
+  active,
+  onPress,
+}: {
+  label: string;
+  active: boolean;
+  onPress: () => void;
+}) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected: active }}
       onPress={onPress}
       className={cn(
-        'h-9 justify-center rounded-full border px-3.5',
+        'min-h-9 justify-center rounded-full border px-3.5 py-1.5',
         active ? 'border-primary bg-secondary' : 'border-border bg-card active:bg-secondary'
       )}>
       <Text
         className={cn(
           'text-[13px] leading-[18px]',
-          active ? 'font-display-semibold text-primary-strong' : 'font-display-medium text-foreground'
+          active
+            ? 'font-display-semibold text-primary-strong'
+            : 'font-display-medium text-foreground'
         )}>
         {label}
       </Text>
