@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
-import { daysAhead } from '@/utils/students/return-date';
+import { daysAhead, nextSaturday } from '@/utils/students/return-date';
 import { formatPickedDay } from '@/utils/students/journey';
 import { fromTimeString, toTimeString } from '@/utils/students/form';
 import DateTimePicker, {
@@ -38,12 +38,6 @@ type NextVisitSheetProps = {
   onConfirm: (value: NextVisitValue) => void;
   onClose: () => void;
 };
-
-function nextSaturday(): Date {
-  let day = dayjs().add(1, 'day').startOf('day');
-  while (day.day() !== 6) day = day.add(1, 'day');
-  return day.toDate();
-}
 
 function NextVisitSheet({
   open,

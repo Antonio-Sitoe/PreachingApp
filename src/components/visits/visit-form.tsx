@@ -10,7 +10,8 @@ import { Text } from '@/components/ui/text';
 import { FieldLabel, TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
 import { studentsActions, visitsActions } from '@/database/actions';
-import type { VisitOutcome } from '@/database/schemas';
+import { parseScriptures } from '@/database/actions/visits';
+import type { Visit, VisitOutcome } from '@/database/schemas';
 import { THEME } from '@/lib/theme';
 import { getNotificationPreferences } from '@/utils/storage';
 import { fromTimeString, toTimeString } from '@/utils/students/form';
@@ -33,6 +34,7 @@ import {
   type NextVisitValue,
   type RemindMinutes,
 } from './next-visit-sheet';
+import { NotHomeSheet } from './not-home-sheet';
 import { ScriptureSheet } from './scripture-sheet';
 import { StudentPicker } from './student-picker';
 
@@ -59,26 +61,35 @@ function defaultRemind(): RemindMinutes {
 
 type VisitFormProps = {
   initialStudentId?: string;
+  /** Com `editing`, o formulário edita essa visita em vez de criar uma nova. */
+  editing?: Visit;
 };
 
-function VisitForm({ initialStudentId }: VisitFormProps) {
+function VisitForm({ initialStudentId, editing }: VisitFormProps) {
   const queryClient = useQueryClient();
   const { colorScheme } = useColorScheme();
   const theme = THEME[colorScheme ?? 'light'];
 
-  const [studentId, setStudentId] = React.useState(initialStudentId);
-  const [choosingStudent, setChoosingStudent] = React.useState(!initialStudentId);
-  const [visitedAt, setVisitedAt] = React.useState(() => new Date());
+  const [studentId, setStudentId] = React.useState(editing?.studentId ?? initialStudentId);
+  const [choosingStudent, setChoosingStudent] = React.useState(!editing && !initialStudentId);
+  const [visitedAt, setVisitedAt] = React.useState(() =>
+    editing ? new Date(editing.visitedAt) : new Date()
+  );
   const [picking, setPicking] = React.useState<'date' | 'time' | null>(null);
-  const [outcome, setOutcome] = React.useState<VisitOutcome>('met');
-  const [notes, setNotes] = React.useState('');
-  const [scriptures, setScriptures] = React.useState<string[]>([]);
+  const [outcome, setOutcome] = React.useState<VisitOutcome>(editing?.outcome ?? 'met');
+  const [notes, setNotes] = React.useState(editing?.notes ?? '');
+  const [scriptures, setScriptures] = React.useState<string[]>(() =>
+    parseScriptures(editing?.scriptures ?? null)
+  );
   const [addingScripture, setAddingScripture] = React.useState(false);
-  const [pendingQuestion, setPendingQuestion] = React.useState('');
-  const [promisedToBring, setPromisedToBring] = React.useState('');
-  const [studied, setStudied] = React.useState(false);
-  const [lesson, setLesson] = React.useState<number>();
-  const [stoppedAt, setStoppedAt] = React.useState('');
+  const [pendingQuestion, setPendingQuestion] = React.useState(editing?.pendingQuestion ?? '');
+  const [promisedToBring, setPromisedToBring] = React.useState(editing?.promisedToBring ?? '');
+  const [studied, setStudied] = React.useState(Boolean(editing?.lessonNumber));
+  const [lesson, setLesson] = React.useState<number | undefined>(
+    editing?.lessonNumber ?? undefined
+  );
+  const [stoppedAt, setStoppedAt] = React.useState(editing?.stoppedAtPoint ?? '');
+  const [notHomeVisit, setNotHomeVisit] = React.useState<Visit | null>(null);
   const [next, setNext] = React.useState<NextVisitValue | null>(null);
   const [nextEdited, setNextEdited] = React.useState(false);
   const [editingNext, setEditingNext] = React.useState(false);
@@ -117,8 +128,8 @@ function VisitForm({ initialStudentId }: VisitFormProps) {
   }, [suggestion, nextEdited]);
 
   React.useEffect(() => {
-    setLesson(lastLesson ?? undefined);
-  }, [lastLesson]);
+    if (!editing) setLesson(lastLesson ?? undefined);
+  }, [lastLesson, editing]);
 
   function selectStudent(id: string) {
     setStudentId(id);
@@ -133,35 +144,55 @@ function VisitForm({ initialStudentId }: VisitFormProps) {
     if (target === 'time') setVisitedAt((current) => withTime(current, toTimeString(value)));
   }
 
+  async function refresh() {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['students'] }),
+      queryClient.invalidateQueries({ queryKey: ['visits'] }),
+      queryClient.invalidateQueries({ queryKey: ['appointments'] }),
+    ]);
+  }
+
   async function save() {
     if (!student || saving) return;
     setSaving(true);
     const met = outcome === 'met';
+    const fields = {
+      visitedAt,
+      outcome,
+      notes,
+      scriptures: met ? scriptures : [],
+      pendingQuestion: met ? pendingQuestion : '',
+      promisedToBring,
+      lessonNumber: met && studied ? (lesson ?? 1) : null,
+      stoppedAtPoint: stoppedAt,
+    };
     try {
-      await visitsActions.create({
+      if (editing) {
+        await visitsActions.update(editing.id, fields);
+        await refresh();
+        showToast({ message: 'Visita actualizada.' });
+        router.back();
+        return;
+      }
+
+      const visit = await visitsActions.create({
+        ...fields,
         studentId: student.id,
-        visitedAt,
-        outcome,
-        notes,
-        scriptures: met ? scriptures : [],
-        pendingQuestion: met ? pendingQuestion : '',
-        promisedToBring,
-        lessonNumber: met && studied ? (lesson ?? 1) : null,
-        stoppedAtPoint: stoppedAt,
-        next: next
-          ? {
-              date: next.date,
-              time: next.time,
-              remindMinutesBefore: remind ? next.remindMinutes : null,
-            }
-          : null,
+        next:
+          outcome !== 'not_home' && next
+            ? {
+                date: next.date,
+                time: next.time,
+                remindMinutesBefore: remind ? next.remindMinutes : null,
+              }
+            : null,
       });
       void countEvent('visit_logged');
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ['students'] }),
-        queryClient.invalidateQueries({ queryKey: ['visits'] }),
-        queryClient.invalidateQueries({ queryKey: ['appointments'] }),
-      ]);
+      await refresh();
+      if (outcome === 'not_home') {
+        setNotHomeVisit(visit);
+        return;
+      }
       showToast({ message: 'Visita guardada.' });
       router.back();
     } catch {
@@ -175,12 +206,12 @@ function VisitForm({ initialStudentId }: VisitFormProps) {
   return (
     <>
       <SetupLayout
-        title="Registar visita"
+        title={editing ? 'Editar visita' : 'Registar visita'}
         onBack={() => router.back()}
         className="bg-background"
         footer={
           <Button disabled={!student || saving} onPress={save}>
-            <Text>{saving ? 'A guardar…' : 'Guardar visita'}</Text>
+            <Text>{saving ? 'A guardar…' : editing ? 'Guardar alterações' : 'Guardar visita'}</Text>
           </Button>
         }>
         {student ? (
@@ -192,9 +223,11 @@ function VisitForm({ initialStudentId }: VisitFormProps) {
               </Text>
               <StageBadge stage={student.stage} paused={student.status === 'paused'} />
             </View>
-            <Button variant="ghost" size="sm" onPress={() => setChoosingStudent(true)}>
-              <Text>Trocar</Text>
-            </Button>
+            {editing ? null : (
+              <Button variant="ghost" size="sm" onPress={() => setChoosingStudent(true)}>
+                <Text>Trocar</Text>
+              </Button>
+            )}
           </View>
         ) : (
           <Button variant="outline" onPress={() => setChoosingStudent(true)}>
@@ -320,7 +353,7 @@ function VisitForm({ initialStudentId }: VisitFormProps) {
           </>
         ) : null}
 
-        {student ? (
+        {student && !editing && outcome !== 'not_home' ? (
           <SettingsSection title="Próxima visita">
             <SettingsRow
               first
@@ -353,6 +386,18 @@ function VisitForm({ initialStudentId }: VisitFormProps) {
         />
       ) : null}
 
+      <NotHomeSheet
+        visit={notHomeVisit}
+        studentName={student?.displayName ?? ''}
+        onUndo={() => {
+          setNotHomeVisit(null);
+          setSaving(false);
+        }}
+        onDone={() => {
+          setNotHomeVisit(null);
+          router.back();
+        }}
+      />
       <StudentPicker
         open={choosingStudent}
         onSelect={selectStudent}

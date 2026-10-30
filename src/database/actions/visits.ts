@@ -1,7 +1,15 @@
-import { and, desc, eq, inArray, isNull, lte } from 'drizzle-orm';
+import { and, asc, desc, eq, inArray, isNull, lte } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import { db } from '../db';
-import { appointments, type Visit, type VisitOutcome, visits } from '../schemas';
+import {
+  type Appointment,
+  appointments,
+  type Student,
+  students,
+  type Visit,
+  type VisitOutcome,
+  visits,
+} from '../schemas';
 
 export type NextVisitInput = {
   date: Date;
@@ -21,6 +29,15 @@ export type VisitInput = {
   lessonNumber?: number | null;
   stoppedAtPoint?: string;
   next?: NextVisitInput | null;
+};
+
+export type VisitEdit = Omit<VisitInput, 'studentId' | 'next'>;
+
+export type VisitDetail = {
+  visit: Visit;
+  student: Student;
+  /** A marcação feita ao guardar esta visita. */
+  next: Appointment | null;
 };
 
 const now = () => new Date().toISOString();
@@ -105,6 +122,96 @@ async function create(input: VisitInput): Promise<Visit> {
   }
 }
 
+async function getById(id: string): Promise<VisitDetail | null> {
+  const rows = await db
+    .select({ visit: visits, student: students })
+    .from(visits)
+    .innerJoin(students, eq(visits.studentId, students.id))
+    .where(and(eq(visits.id, id), isNull(visits.deletedAt)));
+  const row = rows[0];
+  if (!row) return null;
+  const next = await db
+    .select()
+    .from(appointments)
+    .where(
+      and(
+        eq(appointments.studentId, row.visit.studentId),
+        eq(appointments.createdAt, row.visit.createdAt),
+        isNull(appointments.deletedAt)
+      )
+    )
+    .orderBy(asc(appointments.scheduledAt))
+    .limit(1);
+  return { ...row, next: next[0] ?? null };
+}
+
+async function update(id: string, input: VisitEdit): Promise<Visit | undefined> {
+  try {
+    const scriptures = (input.scriptures ?? []).map((text) => text.trim()).filter(Boolean);
+    const rows = await db
+      .update(visits)
+      .set({
+        visitedAt: input.visitedAt.toISOString(),
+        outcome: input.outcome,
+        notes: input.notes?.trim() || null,
+        scriptures: scriptures.length > 0 ? JSON.stringify(scriptures) : null,
+        pendingQuestion: input.pendingQuestion?.trim() || null,
+        promisedToBring: input.promisedToBring?.trim() || null,
+        lessonNumber: input.lessonNumber ?? null,
+        stoppedAtPoint: input.lessonNumber ? input.stoppedAtPoint?.trim() || null : null,
+        updatedAt: now(),
+        syncStatus: 'pending',
+      })
+      .where(and(eq(visits.id, id), isNull(visits.deletedAt)))
+      .returning();
+    return rows[0];
+  } catch (error) {
+    console.error('Error updating visit:', error);
+    throw error;
+  }
+}
+
+/**
+ * Remoção lógica. As marcações que a visita tinha dado por feitas voltam a ficar por cumprir,
+ * como se a visita não tivesse acontecido.
+ */
+async function remove(id: string): Promise<void> {
+  try {
+    const timestamp = now();
+    db.transaction((tx) => {
+      tx.update(visits)
+        .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(eq(visits.id, id))
+        .run();
+      tx.update(appointments)
+        .set({ status: 'pending', visitId: null, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(eq(appointments.visitId, id))
+        .run();
+    });
+  } catch (error) {
+    console.error('Error removing visit:', error);
+    throw error;
+  }
+}
+
+/** Marca uma nova tentativa, sem hora, para o dia escolhido. */
+async function scheduleRetry(studentId: string, date: Date): Promise<Appointment> {
+  const timestamp = now();
+  const rows = await db
+    .insert(appointments)
+    .values({
+      studentId,
+      scheduledAt: dayjs(date).startOf('day').toISOString(),
+      timeOfDay: 'any',
+      status: 'pending',
+      createdAt: timestamp,
+      updatedAt: timestamp,
+      syncStatus: 'pending',
+    })
+    .returning();
+  return rows[0];
+}
+
 async function getByStudent(studentId: string): Promise<Visit[]> {
   return db
     .select()
@@ -133,6 +240,10 @@ async function getLastMet(studentIds: string[]): Promise<Map<string, Visit>> {
 
 export const visitsActions = {
   create,
+  getById,
+  update,
+  remove,
+  scheduleRetry,
   getByStudent,
   getLastMet,
 };

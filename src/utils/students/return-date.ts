@@ -8,6 +8,13 @@ export function daysAhead(days: number): Date {
   return dayjs().add(days, 'day').startOf('day').toDate();
 }
 
+/** O primeiro sábado a contar de amanhã. */
+export function nextSaturday(): Date {
+  let day = dayjs().add(1, 'day').startOf('day');
+  while (day.day() !== 6) day = day.add(1, 'day');
+  return day.toDate();
+}
+
 /** "segunda", "sábado": sem o "-feira" do locale. */
 export function weekdayName(day: Dayjs): string {
   return day.format('dddd').replace('-feira', '');

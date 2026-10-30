@@ -26,7 +26,8 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
 - [ ] Visitas e Hoje
   - [x] Migração 0006: tabela `visits` (resultado, notas, textos, dúvida, "Prometi levar", lição e ponto) e hora (`time`) nas marcações
   - [x] Registar visita (VIS-01) com escolha do estudante, e próxima visita sugerida pelo ritmo e pelos dias habituais (VIS-03)
-  - [ ] Não estava em casa (VIS-02), lembretes (VIS-04), histórico e detalhe (VIS-05)
+  - [x] Não estava em casa (VIS-02) e histórico e detalhe com editar e apagar (VIS-05)
+  - [ ] Lembretes no telemóvel (VIS-04)
   - [ ] Ecrã Hoje (HOJ-01 a HOJ-06)
 
 ## Fundações
@@ -60,7 +61,7 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
 - [x] **Criar e editar pessoa (P1)** - Formulário em que só o nome é obrigatório. Telefone, morada, etapa, ritmo (7, 14, 30 ou um número de dias), faixa etária e género são opcionais. Grava em `people`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa; Criar pessoa, campos com erro (PES-02, 3 h, sprint 2)
   - Grava em `students`. Novo estudante abre pelo link "Preencher a ficha completa" da captura
 - [x] **Ficha da pessoa (P1)** - Cabeçalho com iniciais e etapa, acções Registar visita, Ligar e Direcções, próxima visita, ritmo e as secções que os outros épicos vão preencher. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa (PES-03, 4 h, sprint 2)
-  - Falta: Registar visita, Estudo, Dúvida pendente e Últimas visitas (VIS-01, VIS-05, EST-06). Direcções abre o ecrã Localização (PES-07); Linha do tempo, Melhor horário e Foto da casa são da versão 2
+  - Registar visita, Dúvida pendente e Últimas visitas feitos (VIS-01, VIS-05). Falta o Estudo (EST-06). Direcções abre o ecrã Localização (PES-07); Linha do tempo, Melhor horário e Foto da casa são da versão 2
 - [x] **Etapa do percurso (P1)** - Mudar a etapa entre as seis do BRD. Cada mudança grava uma linha em `stage_changes`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Etapa do percurso e marcos (PES-04, 2 h, sprint 3)
   - Ecrã Etapa e marcos, aberto pela etiqueta da etapa na ficha. "Passar a …" avança uma etapa, com desfazer; para recuar, muda-se no formulário de editar
 - [x] **Marcos (P1)** - Acrescentar um marco em texto livre, com exemplos sugeridos e data. Lista de marcos na ficha. Grava em `milestones`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Novo marco (PES-05, 2 h, sprint 3)
@@ -84,12 +85,14 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
 Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são o uso diário do app.
 
 - [x] **Registar visita (P2)** - Formulário com a pessoa já escolhida e a data e hora pré-preenchidas: nota, textos usados, dúvida pendente, "Prometi levar" e resultado (encontrei, não estava, remarcada). Sem campo de duração. Grava em `visits`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, Escolher pessoa, Escolher o dia, Escolher a hora (VIS-01, 4 h, sprint 4)
-  - Abre pela ficha (Registar visita) e escolhe o estudante quando vem sem ele. Ao guardar, dá por feitas as marcações por cumprir até esse dia. Falta: o avanço de lição e o "Tente o seguinte" (EST-01, EST-04) e editar ou apagar (VIS-05)
-- [ ] **Não estava em casa (P2)** - Um toque regista a tentativa como visita com `outcome = not_home` e propõe nova data. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 23 Não estava em casa (VIS-02, 1 h, sprint 4)
+  - Abre pela ficha (Registar visita) e escolhe o estudante quando vem sem ele. Ao guardar, dá por feitas as marcações por cumprir até esse dia. Falta: o avanço de lição e o "Tente o seguinte" (EST-01, EST-04)
+- [x] **Não estava em casa (P2)** - Um toque regista a tentativa como visita com `outcome = not_home` e propõe nova data. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 23 Não estava em casa (VIS-02, 1 h, sprint 4)
+  - No Registar visita, guardar com "Não estava" abre a folha Tentativa guardada, com Desfazer e Tentar de novo (Amanhã, Sábado, Próxima semana, Escolher data). O toque único fica para o Hoje (HOJ-02)
 - [x] **Agendar a próxima visita (P6)** - Dia e hora com sugestão pelo ritmo da pessoa, atalhos de 7 e 14 dias e a escolha Avisar: na hora, 30 minutos antes ou 1 hora antes. Grava em `appointments`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 24 Agendar a próxima visita (VIS-03, 3 h, sprint 4)
   - Folha Próxima visita com atalhos, dia, hora e Avisar. Grava a hora em `appointments.time` e o aviso em `remind_minutes_before`; a notificação é a VIS-04
 - [ ] **Lembretes de visita (P6)** - Notificação local do telemóvel para cada visita marcada, reagendada ou cancelada quando a visita muda. Tocar na notificação abre a pessoa. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 26 Notificações locais (VIS-04, 3 h, sprint 4)
-- [ ] **Histórico e detalhe de visita** - Lista das visitas de uma pessoa, detalhe com tudo o que foi registado, editar e apagar com confirmação, e histórico vazio. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 25 Histórico de visitas, Detalhe de visita, Histórico vazio, Apagar visita (VIS-05, 3 h, sprint 4)
+- [x] **Histórico e detalhe de visita** - Lista das visitas de uma pessoa, detalhe com tudo o que foi registado, editar e apagar com confirmação, e histórico vazio. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 25 Histórico de visitas, Detalhe de visita, Histórico vazio, Apagar visita (VIS-05, 3 h, sprint 4)
+  - Histórico por mês com os filtros Todas, Com estudo e Tentativas; detalhe com a próxima visita marcada nessa visita; editar e apagar. Apagar volta a pôr por cumprir as marcações que a visita tinha dado por feitas. A ficha mostra a dúvida pendente e as três últimas visitas
 - [ ] **Ecrã Hoje (P4)** - Página inicial com as visitas de hoje, as que estão em atraso e o resumo do mês, por tipo de publicador. Inclui os estados Hoje vazio e Dia concluído. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje; 10 Hoje, pioneiro; 7 Hoje vazio; 7 Dia concluído (HOJ-01, 4 h, sprint 5)
 - [ ] **Feita ou adiar (P4)** - Em cada pessoa do Hoje: Visita feita abre o registo, Não estava em casa regista a tentativa e Adiar muda a data. Aviso com desfazer. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 8 Feita ou adiar; 8 Feita, com desfazer (HOJ-02, 2 h, sprint 5)
 - [ ] **Acções rápidas** - O botão do Hoje abre a folha com Visita, Estudo, Novo contacto e Horas. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Acções rápidas (HOJ-03, 1 h, sprint 5)

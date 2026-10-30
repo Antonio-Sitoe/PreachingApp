@@ -10,7 +10,8 @@ import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
 import { STAGES } from '@/constants/stages';
-import { studentsActions } from '@/database/actions';
+import { VisitRow } from '@/components/visits/visit-row';
+import { studentsActions, visitsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';
 import {
   formatAvailability,
@@ -63,6 +64,13 @@ type StudentDetailContentProps = {
 
 function StudentDetailContent({ detail }: StudentDetailContentProps) {
   const { student, nextVisit, availabilities } = detail;
+  const visitsQuery = useQuery({
+    queryKey: ['visits', 'student', student.id],
+    queryFn: () => visitsActions.getByStudent(student.id),
+  });
+  const visits = visitsQuery.data ?? [];
+  const pendingQuestion = visits.find((visit) => visit.outcome === 'met')?.pendingQuestion;
+  const openVisits = () => router.push(`/student/${student.id}/visits`);
   const queryClient = useQueryClient();
   const [pausing, setPausing] = React.useState(false);
   const [removing, setRemoving] = React.useState(false);
@@ -153,6 +161,32 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
           title={nextVisit ? formatNextVisit(nextVisit) : 'Sem visita marcada'}
           description={nextVisitHint.text}
           descriptionTone={nextVisitHint.tone}
+        />
+      </SettingsSection>
+
+      {pendingQuestion ? (
+        <SettingsSection title="Dúvida pendente">
+          <View className="px-4 py-3.5">
+            <Text>{pendingQuestion}</Text>
+          </View>
+        </SettingsSection>
+      ) : null}
+
+      <SettingsSection title="Últimas visitas">
+        {visits.slice(0, 3).map((visit, index) => (
+          <VisitRow key={visit.id} visit={visit} first={index === 0} />
+        ))}
+        <SettingsRow
+          first={visits.length === 0}
+          title={
+            visits.length === 0
+              ? 'Ainda sem visitas'
+              : visits.length === 1
+                ? 'Ver a visita'
+                : `Ver as ${visits.length} visitas`
+          }
+          tone={visits.length === 0 ? 'default' : 'primary'}
+          onPress={openVisits}
         />
       </SettingsSection>
 
