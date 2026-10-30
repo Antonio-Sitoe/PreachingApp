@@ -32,7 +32,9 @@ function TodayCard({
       <Avatar name={student.displayName} className={done ? 'bg-muted' : undefined} />
       <Pressable
         role="button"
-        onPress={() => router.push(`/student/${student.id}`)}
+        onPress={() =>
+          router.push(done ? `/student/${student.id}` : `/student/${student.id}/prepare`)
+        }
         className="min-w-0 flex-1 gap-1 active:opacity-70">
         <View className="flex-row items-start justify-between gap-2">
           <Text

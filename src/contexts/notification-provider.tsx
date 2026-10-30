@@ -1,6 +1,7 @@
 import { useOnboarding } from '@/contexts/onboarding';
 import { useTimerSync } from '@/hooks/use-timer';
 import { syncAllNotifications } from '@/utils/notifications/scheduler';
+import { isDailySummary } from '@/utils/notifications/daily-summary';
 import { isVisitReminder } from '@/utils/notifications/visit-reminders';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
@@ -30,7 +31,10 @@ function NotificationProvider({ children }: { children: React.ReactNode }) {
   return children;
 }
 
-/** Tocar num lembrete de visita abre a ficha do estudante, também quando a app estava fechada. */
+/**
+ * Tocar num lembrete de visita abre a preparação; tocar no resumo do dia abre o Hoje.
+ * Funciona também quando a app estava fechada.
+ */
 function useOpenFromNotification(ready: boolean) {
   const lastResponse = Notifications.useLastNotificationResponse();
   const handled = useRef<string | null>(null);
@@ -41,7 +45,8 @@ function useOpenFromNotification(ready: boolean) {
     if (handled.current === id) return;
     handled.current = id;
     const data = lastResponse.notification.request.content.data;
-    if (isVisitReminder(data)) router.push(`/student/${data.studentId}`);
+    if (isVisitReminder(data)) router.push(`/student/${data.studentId}/prepare`);
+    else if (isDailySummary(data)) router.dismissTo('/');
   }, [ready, lastResponse]);
 }
 

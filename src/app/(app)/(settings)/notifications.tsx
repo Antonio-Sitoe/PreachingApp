@@ -63,6 +63,7 @@ export default function NotificationsScreen() {
   function persist(next: NotificationPreferences) {
     setNotificationPreferences(next);
     setPrefs(next);
+    void syncAllNotifications();
   }
 
   async function saveMonthly(patch: Partial<MonthlyReminderConfig>) {
