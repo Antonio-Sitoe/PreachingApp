@@ -35,7 +35,6 @@ export function formatPickedDay(date: Date): string {
   return `${prefix}, ${day.date()} ${month}`;
 }
 
-/** As seis etapas, com as já passadas, a actual e as que faltam. */
 export function buildStageSteps(current: Stage, changes: readonly StageChange[]): StageStep[] {
   // A última vez que o estudante entrou em cada etapa.
   const reachedAt = new Map<Stage, string>();
@@ -83,11 +82,17 @@ const HONORIFICS = new Set([
 ]);
 
 /** "Celeste Nhantumbo" → "Celeste"; "Sr. Mário" → "Sr. Mário", para não ficar só o tratamento. */
-function shortName(name: string): string {
+export function shortName(name: string): string {
   const words = name.trim().split(/\s+/).filter(Boolean);
   const first = words[0] ?? '';
   const isHonorific = first.endsWith('.') || HONORIFICS.has(first.toLocaleLowerCase('pt'));
   return isHonorific && words[1] ? `${first} ${words[1]}` : first;
+}
+
+/** "a Celeste", "o Tomás"; sem género conhecido, só o nome. */
+export function withArticle(name: string, gender: StudentGender | null): string {
+  const short = shortName(name);
+  return gender ? `${gender === 'female' ? 'a' : 'o'} ${short}` : short;
 }
 
 /** "Percurso da Celeste"; sem género conhecido, "de". */

@@ -1,6 +1,9 @@
 import { SettingsRow, SettingsSection } from '@/components/settings/grouped-list';
+import { PauseSheet } from '@/components/students/pause-sheet';
+import { AlertDialog } from '@/components/ui/alert-dialog';
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Avatar } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StageBadge } from '@/components/ui/stage-badge';
@@ -13,11 +16,12 @@ import {
   formatAvailability,
   formatNextVisit,
   formatPhone,
-  getDirectionsUrl,
   getNextVisitHint,
 } from '@/utils/students/detail';
-import { useQuery } from '@tanstack/react-query';
+import { shortName, withArticle } from '@/utils/students/journey';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
+import * as React from 'react';
 import { Linking, Pressable, ScrollView, View } from 'react-native';
 
 export default function StudentScreen() {
@@ -59,11 +63,45 @@ type StudentDetailContentProps = {
 
 function StudentDetailContent({ detail }: StudentDetailContentProps) {
   const { student, nextVisit, availabilities } = detail;
-  const directionsUrl = getDirectionsUrl(student);
+  const queryClient = useQueryClient();
+  const [pausing, setPausing] = React.useState(false);
+  const [removing, setRemoving] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
+  const paused = student.status === 'paused';
   const availability = formatAvailability(availabilities);
   const nextVisitHint = getNextVisitHint(student, nextVisit);
   const hasContact = Boolean(student.phone || student.address || availability);
   const openEdit = () => router.push(`/student/${student.id}/edit`);
+  const openLocation = () => router.push(`/student/${student.id}/location`);
+
+  async function resume() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await studentsActions.resume(student.id);
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      showToast({ message: `${shortName(student.displayName)} voltou à lista.` });
+    } catch {
+      showToast({ message: 'Não foi possível retomar. Tenta outra vez.' });
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function remove() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await studentsActions.deleteById(student.id);
+      setRemoving(false);
+      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      showToast({ message: 'Estudante removido.' });
+      router.back();
+    } catch {
+      setBusy(false);
+      showToast({ message: 'Não foi possível remover. Tenta outra vez.' });
+    }
+  }
 
   async function open(url: string) {
     try {
@@ -100,12 +138,7 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
           disabled={!student.phone}
           onPress={() => student.phone && open(`tel:${student.phone.replace(/\s/g, '')}`)}
         />
-        <ActionButton
-          icon="map-pin"
-          label="Direcções"
-          disabled={!directionsUrl}
-          onPress={() => directionsUrl && open(directionsUrl)}
-        />
+        <ActionButton icon="map-pin" label="Direcções" onPress={openLocation} />
       </View>
 
       <SettingsSection title="Próxima visita">
@@ -140,7 +173,7 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
               first={!student.phone}
               title={student.address ?? 'Sem morada'}
               description={availability ?? undefined}
-              onPress={openEdit}
+              onPress={openLocation}
             />
           ) : null}
         </SettingsSection>
@@ -148,7 +181,39 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
 
       <SettingsSection>
         <SettingsRow first title="Editar dados" onPress={openEdit} />
+        {paused ? (
+          <SettingsRow title="Retomar" onPress={resume} />
+        ) : (
+          <SettingsRow title="Pôr em pausa" onPress={() => setPausing(true)} />
+        )}
+        <SettingsRow title="Remover estudante" tone="danger" onPress={() => setRemoving(true)} />
       </SettingsSection>
+
+      <PauseSheet open={pausing} student={student} onClose={() => setPausing(false)} />
+
+      <AlertDialog
+        open={removing}
+        onClose={() => setRemoving(false)}
+        icon="trash"
+        title={`Remover ${withArticle(student.displayName, student.gender)}?`}
+        description="Apaga a ficha, as visitas e o progresso no estudo. Não dá para desfazer.">
+        {paused ? null : (
+          <Button
+            disabled={busy}
+            onPress={() => {
+              setRemoving(false);
+              setPausing(true);
+            }}>
+            <Text>Pôr em pausa em vez disso</Text>
+          </Button>
+        )}
+        <Button variant="destructive" disabled={busy} className="mt-1" onPress={remove}>
+          <Text>Remover para sempre</Text>
+        </Button>
+        <Button variant="ghost" className="min-h-12" onPress={() => setRemoving(false)}>
+          <Text>Cancelar</Text>
+        </Button>
+      </AlertDialog>
     </ScrollView>
   );
 }
@@ -169,7 +234,7 @@ function ActionButton({ icon, label, disabled, onPress }: ActionButtonProps) {
       disabled={disabled}
       onPress={onPress}
       className={cn(
-        'h-16 flex-1 items-center justify-center gap-1 rounded-lg border border-border bg-card',
+        'min-h-16 flex-1 items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-2',
         disabled ? 'opacity-50' : 'active:bg-secondary'
       )}>
       <AppIcon name={icon} size={20} className="text-primary-strong" />

@@ -18,7 +18,11 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Migração 0004: `name_is_provisional`, `age_range`, `gender`, `directions`, `located_at` e as tabelas `stage_changes`, `milestones`, `pauses` e `student_availabilities`
   - [x] Lista, captura no terreno, ficha e criar e editar (PES-01, PES-02, PES-03, PES-06)
   - [x] Etapa e marcos (PES-04, PES-05)
-  - [ ] Localização, pausar e remover (PES-07, PES-08, PES-09)
+  - [x] Localização, pausar e remover (PES-07, PES-08, PES-09)
+  - [x] Ritmo por omissão conforme a etapa: o das revisitas para primeiro contacto e revisita, o dos estudos (Mais › Notificações) a partir de estudo iniciado. Criar um estudante conta `student_created` em `usage_counters`
+  - [ ] Dias e hora habituais a sugerir a próxima visita (PES-10, depende de VIS-03)
+  - [x] Testes no emulador (Pixel 9 Pro): lista, captura, ficha, formulário, etapa, marcos, pausa, retomar e remover, em tema escuro e claro. Falta: gravar um ponto no mapa num telemóvel real (o emulador pede "Location Accuracy" da Google)
+  - [x] Responsivo na maior parte dos Android: testado num ecrã de 360 × 640 dp com a letra a 130%. Alturas mínimas em vez de fixas, folhas com scroll e abaixo da barra de estado, calendário que cabe em 320 dp, conteúdo limitado a 640 dp nos tablets. Falta testar num telemóvel real e num tablet
 
 ## Fundações
 
@@ -58,9 +62,12 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
   - Os marcos aparecem no ecrã Etapa e marcos, como no canvas, e não na ficha. Falta apagar ou editar um marco (não está no canvas)
 - [x] **Captura no terreno (P7)** - Criar um contacto em dez segundos: nome provisório, localização actual e uma linha de nota. Fica marcado com `name_is_provisional` para completar depois. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 12 Captura no terreno, Captura com erro (PES-06, 3 h, sprint 3)
   - Inclui "Quando voltas?", que cria a marcação em `appointments`
-- [ ] **Localização e direcções (P10)** - Guardar a ligação do Google Maps ou a posição actual, e abrir o Google Maps com as direcções. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 16 Localização e direcções (PES-07, 2 h, sprint 3)
-- [ ] **Pausar e retomar (P9)** - Pôr a pessoa em pausa com motivo e data para tentar de novo, vê-la na lista Em pausa e retomá-la. Grava em `pauses` e muda `people.status`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 17 Pausar, 11 Em pausa (PES-08, 3 h, sprint 3)
-- [ ] **Remover pessoa** - Confirmação que oferece a pausa primeiro. A remoção é lógica, com `deleted_at`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 18 Remover pessoa (PES-09, 1 h, sprint 3)
+- [x] **Localização e direcções (P10)** - Guardar a ligação do Google Maps ou a posição actual, e abrir o Google Maps com as direcções. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 16 Localização e direcções (PES-07, 2 h, sprint 3)
+  - Como no canvas, não há campo para colar a ligação do Google Maps: guarda a posição actual, a morada e "Como chegar" (`directions`, `located_at`). "Abrir no Google Maps" abre as direcções até ao ponto ou à morada
+- [x] **Pausar e retomar (P9)** - Pôr a pessoa em pausa com motivo e data para tentar de novo, vê-la na lista Em pausa e retomá-la. Grava em `pauses` e muda `people.status`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 17 Pausar, 11 Em pausa (PES-08, 3 h, sprint 3)
+  - Motivo (Viajou, Pediu para parar, Sem disponibilidade, Outro), nota e data para tentar de novo. Retomar na lista Em pausa ou na ficha fecha a pausa com `resumed_at`. Falta tirar quem está em pausa do Hoje e dos alertas (HOJ-01, HOJ-04)
+- [x] **Remover pessoa** - Confirmação que oferece a pausa primeiro. A remoção é lógica, com `deleted_at`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 18 Remover pessoa (PES-09, 1 h, sprint 3)
+  - Também cancela as marcações por cumprir do estudante removido
 - [ ] **Dias e hora habituais** - Dias da semana e hora em que a pessoa costuma estar, usados para sugerir a próxima visita. Grava em `person_availabilities`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa (PES-10, 2 h, sprint 3)
   - Já grava em `student_availabilities` pelo formulário. Falta usá-los para sugerir a próxima visita (VIS-03)
 - [ ] **Tentativas e melhor horário (P11)** - A partir das visitas conseguidas e falhadas, mostrar em que dias e horas a pessoa costuma estar. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 19 Melhor horário (PES-11, 6 h, sprint 20)

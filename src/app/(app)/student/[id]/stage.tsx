@@ -16,6 +16,7 @@ import {
   getNextStage,
   type StageStep,
 } from '@/utils/students/journey';
+import { rhythmAfterStageChange } from '@/utils/students/rhythm';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as React from 'react';
@@ -47,7 +48,13 @@ export default function StudentStageScreen() {
     if (!student || !nextStage || advancing) return;
     setAdvancing(true);
     try {
-      const change = await studentsActions.changeStage(student.id, nextStage);
+      const previousRhythm = student.rhythmDays;
+      const rhythmDays = rhythmAfterStageChange(previousRhythm, student.stage, nextStage);
+      const change = await studentsActions.changeStage(
+        student.id,
+        nextStage,
+        rhythmDays === previousRhythm ? undefined : rhythmDays
+      );
       await queryClient.invalidateQueries({ queryKey: ['students'] });
       if (change) {
         showToast({
@@ -57,6 +64,9 @@ export default function StudentStageScreen() {
             icon: 'undo',
             onPress: async () => {
               await studentsActions.undoStageChange(change);
+              if (rhythmDays !== previousRhythm) {
+                await studentsActions.updateById(student.id, { rhythmDays: previousRhythm });
+              }
               await queryClient.invalidateQueries({ queryKey: ['students'] });
             },
           },
@@ -121,7 +131,7 @@ export default function StudentStageScreen() {
           <Pressable
             role="button"
             onPress={() => setAddingMilestone(true)}
-            className="h-[52px] flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-primary active:bg-secondary">
+            className="min-h-[52px] flex-row items-center justify-center gap-2 rounded-lg border border-dashed border-primary py-3 active:bg-secondary">
             <AppIcon name="plus" size={18} className="text-primary" />
             <Text variant="button" className="text-primary">
               Adicionar marco

@@ -125,7 +125,7 @@ function CalendarDay({ day, isToday, isSelected, isPast, hasVisits, onPress }: C
         disabled={isPast}
         onPress={onPress}
         className={cn(
-          'size-11 items-center justify-center rounded-full',
+          'aspect-square w-full max-w-11 items-center justify-center rounded-full',
           isToday && !isSelected && 'border-[1.5px] border-primary',
           isSelected ? 'bg-primary' : 'active:bg-secondary'
         )}>

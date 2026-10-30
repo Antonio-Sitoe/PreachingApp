@@ -7,6 +7,8 @@ import {
   appointments,
   DEFAULT_RHYTHM_DAYS,
   type NewStudent,
+  type Pause,
+  type PauseReason,
   pauses,
   type StageChange,
   type Student,
@@ -69,6 +71,14 @@ export type StudentNextVisit = {
 export type StudentListItem = Student & {
   nextVisit: StudentNextVisit | null;
   lastVisitAt: string | null;
+  pause: Pick<Pause, 'reason' | 'note' | 'retryAt'> | null;
+};
+
+export type PauseInput = {
+  reason: PauseReason;
+  note?: string | null;
+  /** Dia para tentar de novo, YYYY-MM-DD. */
+  retryAt?: string | null;
 };
 
 /** Dias da semana em que costuma estar (1 = segunda … 7 = domingo) e a melhor hora, HH:mm. */
@@ -131,7 +141,6 @@ async function getById(id: string): Promise<Student | undefined> {
   return rows[0];
 }
 
-/** Tudo o que a ficha mostra: o estudante, a próxima marcação e os dias em que costuma estar. */
 async function getDetail(id: string): Promise<StudentDetail | null> {
   const student = await getById(id);
   if (!student) return null;
@@ -159,7 +168,6 @@ async function getDetail(id: string): Promise<StudentDetail | null> {
   return { student, nextVisit: nextVisits[0] ?? null, availabilities };
 }
 
-/** O estudante e o histórico de etapas, para o ecrã Etapa e marcos. */
 async function getJourney(id: string): Promise<StudentJourney | null> {
   const student = await getById(id);
   if (!student) return null;
@@ -186,7 +194,7 @@ async function getList(): Promise<StudentListItem[]> {
   const user = await usersActions.getCurrent();
   if (!user) return [];
 
-  const [rows, visits] = await Promise.all([
+  const [rows, visits, openPauses] = await Promise.all([
     db
       .select()
       .from(students)
@@ -210,7 +218,21 @@ async function getList(): Promise<StudentListItem[]> {
         )
       )
       .orderBy(asc(appointments.scheduledAt)),
+    db
+      .select({
+        studentId: pauses.studentId,
+        reason: pauses.reason,
+        note: pauses.note,
+        retryAt: pauses.retryAt,
+      })
+      .from(pauses)
+      .innerJoin(students, eq(pauses.studentId, students.id))
+      .where(and(eq(students.userId, user.id), isNull(pauses.resumedAt), isNull(pauses.deletedAt)))
+      .orderBy(asc(pauses.pausedAt)),
   ]);
+
+  // Ordenadas por data: a última escrita é a mais recente.
+  const currentPauses = new Map(openPauses.map(({ studentId, ...pause }) => [studentId, pause]));
 
   const nextVisits = new Map<string, StudentNextVisit>();
   const lastVisits = new Map<string, string>();
@@ -232,6 +254,7 @@ async function getList(): Promise<StudentListItem[]> {
     ...student,
     nextVisit: nextVisits.get(student.id) ?? null,
     lastVisitAt: lastVisits.get(student.id) ?? null,
+    pause: student.status === 'paused' ? (currentPauses.get(student.id) ?? null) : null,
   }));
 }
 
@@ -304,7 +327,6 @@ async function quickCreate(input: QuickStudentInput): Promise<QuickStudentResult
   }
 }
 
-/** Cria o estudante pelo formulário completo, com a etapa inicial e os dias habituais. */
 async function create(
   data: Omit<StudentInput, 'status'>,
   availability?: AvailabilityInput
@@ -428,7 +450,11 @@ async function updateById(
 }
 
 /** Muda a etapa e devolve a linha gravada em `stage_changes`, para se poder desfazer. */
-async function changeStage(id: string, stage: StudentStage): Promise<StageChange | undefined> {
+async function changeStage(
+  id: string,
+  stage: StudentStage,
+  rhythmDays?: number
+): Promise<StageChange | undefined> {
   try {
     const timestamp = now();
     return db.transaction((tx) => {
@@ -440,7 +466,12 @@ async function changeStage(id: string, stage: StudentStage): Promise<StageChange
       if (!current || current.stage === stage) return undefined;
 
       tx.update(students)
-        .set({ stage, updatedAt: timestamp, syncStatus: 'pending' })
+        .set({
+          stage,
+          ...(rhythmDays !== undefined && { rhythmDays }),
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
         .where(eq(students.id, id))
         .run();
 
@@ -486,7 +517,39 @@ async function undoStageChange(change: StageChange): Promise<void> {
   }
 }
 
-/** Volta a pôr o estudante activo e fecha a pausa em curso. */
+async function pause(id: string, input: PauseInput): Promise<Student | undefined> {
+  try {
+    const timestamp = now();
+    return db.transaction((tx) => {
+      const updated = tx
+        .update(students)
+        .set({ status: 'paused', updatedAt: timestamp, syncStatus: 'pending' })
+        .where(and(eq(students.id, id), isNull(students.deletedAt)))
+        .returning()
+        .get();
+      if (!updated) return undefined;
+
+      tx.insert(pauses)
+        .values({
+          studentId: id,
+          reason: input.reason,
+          note: input.note?.trim() || null,
+          pausedAt: timestamp,
+          retryAt: input.retryAt ?? null,
+          createdAt: timestamp,
+          updatedAt: timestamp,
+          syncStatus: 'pending',
+        })
+        .run();
+
+      return updated;
+    });
+  } catch (error) {
+    console.error('Error pausing student:', error);
+    throw error;
+  }
+}
+
 async function resume(id: string): Promise<Student | undefined> {
   try {
     const timestamp = now();
@@ -509,15 +572,26 @@ async function resume(id: string): Promise<Student | undefined> {
   }
 }
 
+/** Remoção lógica. Cancela as marcações por cumprir, para não aparecerem no calendário. */
 async function deleteById(id: string): Promise<Student | undefined> {
   try {
     const timestamp = now();
-    const rows = await db
-      .update(students)
-      .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
-      .where(and(eq(students.id, id), isNull(students.deletedAt)))
-      .returning();
-    return rows[0];
+    return db.transaction((tx) => {
+      const removed = tx
+        .update(students)
+        .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
+        .where(and(eq(students.id, id), isNull(students.deletedAt)))
+        .returning()
+        .get();
+      if (!removed) return undefined;
+
+      tx.update(appointments)
+        .set({ status: 'cancelled', updatedAt: timestamp, syncStatus: 'pending' })
+        .where(and(eq(appointments.studentId, id), eq(appointments.status, 'pending')))
+        .run();
+
+      return removed;
+    });
   } catch (error) {
     console.error('Error deleting student:', error);
     throw error;
@@ -535,6 +609,7 @@ export const studentsActions = {
   updateById,
   changeStage,
   undoStageChange,
+  pause,
   resume,
   deleteById,
 };

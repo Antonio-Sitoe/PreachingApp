@@ -105,7 +105,7 @@ function MilestoneSheet({ open, studentId, onClose }: MilestoneSheetProps) {
           role="button"
           accessibilityLabel={`Quando: ${formatPickedDay(date)}`}
           onPress={() => setPickingDate(true)}
-          className="h-[52px] flex-row items-center gap-2.5 rounded-lg border border-input bg-card px-4 active:bg-secondary">
+          className="min-h-[52px] flex-row items-center gap-2.5 rounded-lg border border-input bg-card px-4 py-3 active:bg-secondary">
           <AppIcon name="calendar" size={18} className="text-primary" />
           <Text className="flex-1 text-[14px]">{formatPickedDay(date)}</Text>
         </Pressable>

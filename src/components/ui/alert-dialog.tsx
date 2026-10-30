@@ -1,6 +1,8 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
+import { THEME_VARS } from '@/lib/theme';
 import { cn } from '@/utils/cn';
+import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn, ZoomIn } from 'react-native-reanimated';
@@ -37,6 +39,7 @@ function AlertDialog({
   themeVars,
 }: AlertDialogProps) {
   const colors = TONES[tone];
+  const { colorScheme } = useColorScheme();
   const titleId = React.useId();
 
   return (
@@ -46,7 +49,9 @@ function AlertDialog({
       statusBarTranslucent
       animationType="none"
       onRequestClose={onClose}>
-      <View className="flex-1 items-center justify-center px-3.5" style={themeVars}>
+      <View
+        className="flex-1 items-center justify-center px-3.5"
+        style={themeVars ?? THEME_VARS[colorScheme ?? 'light']}>
         <Animated.View entering={FadeIn.duration(150)} style={StyleSheet.absoluteFill}>
           <Pressable
             style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 0, 0.6)' }]}

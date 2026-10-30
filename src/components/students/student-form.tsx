@@ -12,11 +12,13 @@ import { STAGE_ORDER, STAGES } from '@/constants/stages';
 import { AGE_RANGE_OPTIONS, GENDER_OPTIONS, WEEKDAY_OPTIONS } from '@/constants/students';
 import { type StudentDetail, studentsActions } from '@/database/actions';
 import type { StudentAgeRange, StudentGender, StudentStage } from '@/database/schemas';
-import { readLocation } from '@/hooks/use-current-location';
+import { requestLocation } from '@/hooks/use-current-location';
+import { openAppSettings } from '@/utils/permissions';
 import { cn } from '@/utils/cn';
 import { RHYTHM_SHORTCUTS } from '@/utils/notifications/preferences';
-import { getNotificationPreferences } from '@/utils/storage';
 import { fromTimeString, toTimeString, validatePhone } from '@/utils/students/form';
+import { defaultRhythmFor, rhythmAfterStageChange } from '@/utils/students/rhythm';
+import { countEvent } from '@/utils/usage';
 import DateTimePicker, {
   type DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
@@ -59,7 +61,7 @@ function initialState(detail?: StudentDetail, initialName = ''): FormState {
       name: initialName,
       phone: '',
       stage: 'first_contact',
-      rhythmDays: getNotificationPreferences().rhythm.revisitDays,
+      rhythmDays: defaultRhythmFor('first_contact'),
       weekdays: [],
       time: null,
       address: '',
@@ -127,7 +129,14 @@ function StudentForm({ detail, initialName }: StudentFormProps) {
     if (locating) return;
     setLocating(true);
     try {
-      const result = await readLocation();
+      const result = await requestLocation();
+      if (result === 'blocked') {
+        showToast({
+          message: 'Sem acesso à localização. Podes escrever a morada.',
+          action: { label: 'Definições', onPress: () => void openAppSettings() },
+        });
+        return;
+      }
       if (!result) {
         showToast({ message: 'Sem acesso à localização. Podes escrever a morada.' });
         return;
@@ -186,6 +195,7 @@ function StudentForm({ detail, initialName }: StudentFormProps) {
         router.back();
       } else {
         const student = await studentsActions.create(data, availability);
+        void countEvent('student_created');
         await queryClient.invalidateQueries({ queryKey: ['students'] });
         showToast({ message: `${student.displayName} guardado.` });
         router.replace(`/student/${student.id}`);
@@ -236,7 +246,9 @@ function StudentForm({ detail, initialName }: StudentFormProps) {
         label="Etapa"
         value={form.stage}
         options={STAGE_OPTIONS}
-        onChange={(stage) => update({ stage })}
+        onChange={(stage) =>
+          update({ stage, rhythmDays: rhythmAfterStageChange(form.rhythmDays, form.stage, stage) })
+        }
       />
 
       <View className="gap-2">
@@ -276,7 +288,7 @@ function StudentForm({ detail, initialName }: StudentFormProps) {
             role="button"
             accessibilityLabel={`Melhor hora: ${form.time ?? 'por escolher'}`}
             onPress={() => setPickingTime(true)}
-            className="h-[52px] flex-row items-center gap-2.5 rounded-lg border border-input bg-card px-4 active:bg-secondary">
+            className="min-h-[52px] flex-row items-center gap-2.5 rounded-lg border border-input bg-card px-4 py-3 active:bg-secondary">
             <Text
               className={cn('flex-1 text-[14px]', !form.time && 'text-muted-foreground')}
               numberOfLines={1}>

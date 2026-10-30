@@ -1,5 +1,6 @@
 import type {
   AppointmentTimeOfDay,
+  PauseReason,
   StudentAgeRange,
   StudentGender,
   StudentStage,
@@ -61,4 +62,11 @@ export const WEEKDAY_OPTIONS: readonly { value: number; label: string }[] = [
   { value: 5, label: 'Sex' },
   { value: 6, label: 'Sáb' },
   { value: 7, label: 'Dom' },
+];
+
+export const PAUSE_REASON_OPTIONS: readonly { value: PauseReason; label: string }[] = [
+  { value: 'travelled', label: 'Viajou' },
+  { value: 'asked_to_stop', label: 'Pediu para parar' },
+  { value: 'unavailable', label: 'Sem disponibilidade' },
+  { value: 'other', label: 'Outro' },
 ];

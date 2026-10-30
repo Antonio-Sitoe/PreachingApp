@@ -7,7 +7,8 @@ import { type ReturnOn, studentsActions } from '@/database/actions';
 import { useCurrentLocation } from '@/hooks/use-current-location';
 import { showToast } from '@/hooks/use-toast';
 import { cn } from '@/utils/cn';
-import { getNotificationPreferences } from '@/utils/storage';
+import { defaultRhythmFor } from '@/utils/students/rhythm';
+import { countEvent } from '@/utils/usage';
 import { daysAhead, formatReturnSummary, formatShortDay } from '@/utils/students/return-date';
 import { useQueryClient } from '@tanstack/react-query';
 import { router } from 'expo-router';
@@ -25,7 +26,7 @@ type QuickStudentSheetProps = {
 
 function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProps) {
   const queryClient = useQueryClient();
-  const rhythmDays = getNotificationPreferences().rhythm.revisitDays;
+  const rhythmDays = defaultRhythmFor('first_contact');
   const { location } = useCurrentLocation(open);
 
   const [name, setName] = React.useState('');
@@ -89,6 +90,7 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
         queryClient.invalidateQueries({ queryKey: ['students'] }),
         queryClient.invalidateQueries({ queryKey: ['appointments'] }),
       ]);
+      void countEvent('student_created');
       showToast({ message: `${trimmed} guardado.` });
       onClose();
     } catch {
@@ -147,7 +149,7 @@ function QuickStudentSheet({ open, initialName, onClose }: QuickStudentSheetProp
               onPress={() => choose('tomorrow')}
             />
             <ReturnOption
-              label={`Em ${rhythmDays} dias`}
+              label={rhythmDays === 1 ? 'Em 1 dia' : `Em ${rhythmDays} dias`}
               selected={choice === 'rhythm'}
               onPress={() => choose('rhythm')}
             />
@@ -210,14 +212,14 @@ function ReturnOption({ label, selected, icon, onPress }: ReturnOptionProps) {
       aria-checked={selected}
       onPress={onPress}
       className={cn(
-        'h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg border',
+        'min-h-12 flex-1 flex-row items-center justify-center gap-2 rounded-lg border px-2 py-2',
         selected ? 'border-primary bg-secondary' : 'border-border bg-card active:bg-secondary'
       )}>
       {icon ? <AppIcon name={icon} size={18} className="text-primary" /> : null}
       <Text
-        numberOfLines={1}
+        numberOfLines={2}
         className={cn(
-          'font-display-medium text-[15px] leading-5',
+          'shrink text-center font-display-medium text-[15px] leading-5',
           selected ? 'text-primary-strong' : 'text-foreground'
         )}>
         {label}

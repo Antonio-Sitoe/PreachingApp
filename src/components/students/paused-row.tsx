@@ -2,6 +2,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import type { StudentListItem } from '@/database/actions';
+import { formatPauseRetry, formatPauseSummary } from '@/utils/students/pause';
 import { View } from 'react-native';
 import { GroupedRow } from './student-row';
 
@@ -22,10 +23,15 @@ function PausedRow({ student, first, last, resuming, onResume }: PausedRowProps)
           <Text variant="titleS" numberOfLines={1}>
             {student.displayName}
           </Text>
-          {student.note ? (
-            <Text variant="bodyS" numberOfLines={2} className="text-muted-foreground">
-              {student.note}
-            </Text>
+          {student.pause ? (
+            <>
+              <Text variant="bodyS" numberOfLines={2} className="text-muted-foreground">
+                {formatPauseSummary(student.pause)}
+              </Text>
+              <Text variant="bodyS" className="text-muted-foreground">
+                {formatPauseRetry(student.pause.retryAt)}
+              </Text>
+            </>
           ) : null}
         </View>
         <Button
