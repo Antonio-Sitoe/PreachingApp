@@ -13,6 +13,10 @@ const LIST_VIEW = 'appearance.listView';
 const LAST_BACKUP = 'backup.last';
 const USAGE_COUNTING = 'usage.countingEnabled';
 const STUDENT_SORT = 'students.sort';
+const LOCK_ENABLED = 'lock.enabled';
+const LOCK_BIOMETRIC = 'lock.biometric';
+const LOCK_FAILED_ATTEMPTS = 'lock.failedAttempts';
+const LOCK_BLOCKED_UNTIL = 'lock.blockedUntil';
 
 export const THEME_PREFERENCES = ['light', 'dark', 'system'] as const;
 export type ThemePreference = (typeof THEME_PREFERENCES)[number];
@@ -108,4 +112,37 @@ export function getStudentSort(): StudentSort {
 
 export function setStudentSort(value: StudentSort): void {
   getStorage().set(STUDENT_SORT, value);
+}
+
+// Bloqueio do app. Fica fora do backup: o PIN é deste telemóvel.
+export function isLockEnabled(): boolean {
+  return getStorage().getBoolean(LOCK_ENABLED) === true;
+}
+
+export function setLockEnabled(value: boolean): void {
+  getStorage().set(LOCK_ENABLED, value);
+}
+
+export function isBiometricEnabled(): boolean {
+  return getStorage().getBoolean(LOCK_BIOMETRIC) === true;
+}
+
+export function setBiometricEnabled(value: boolean): void {
+  getStorage().set(LOCK_BIOMETRIC, value);
+}
+
+export function getLockFailedAttempts(): number {
+  return getStorage().getNumber(LOCK_FAILED_ATTEMPTS) ?? 0;
+}
+
+export function setLockFailedAttempts(value: number): void {
+  getStorage().set(LOCK_FAILED_ATTEMPTS, value);
+}
+
+export function getLockBlockedUntil(): number {
+  return getStorage().getNumber(LOCK_BLOCKED_UNTIL) ?? 0;
+}
+
+export function setLockBlockedUntil(value: number): void {
+  getStorage().set(LOCK_BLOCKED_UNTIL, value);
 }

@@ -3,8 +3,10 @@ import 'react-native-get-random-values';
 import '@/app/global.css';
 
 import { DrizzleStudio } from '@/components/drizzle-studio';
+import { LockScreen } from '@/components/lock/lock-screen';
 import { ToastHost } from '@/components/ui/toast';
 import { FONTS } from '@/lib/fonts';
+import { LockProvider, useLock } from '@/contexts/lock';
 import { NotificationProvider } from '@/contexts/notification-provider';
 import { OnboardingProvider, useOnboarding } from '@/contexts/onboarding';
 import { NAV_THEME } from '@/lib/theme';
@@ -60,12 +62,14 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={NAV_THEME[colorScheme ?? 'light']}>
           <OnboardingProvider>
-            <NotificationProvider>
-              {__DEV__ && <DrizzleStudio />}
-              <RootNavigator colorScheme={colorScheme} />
-              <ToastHost />
-              <PortalHost />
-            </NotificationProvider>
+            <LockProvider>
+              <NotificationProvider>
+                {__DEV__ && <DrizzleStudio />}
+                <RootNavigator colorScheme={colorScheme} />
+                <ToastHost />
+                <PortalHost />
+              </NotificationProvider>
+            </LockProvider>
           </OnboardingProvider>
         </ThemeProvider>
       </QueryClientProvider>
@@ -75,6 +79,7 @@ export default function RootLayout() {
 
 function RootNavigator({ colorScheme }: { colorScheme: 'light' | 'dark' | undefined }) {
   const { completed } = useOnboarding();
+  const { locked } = useLock();
 
   return (
     <>
@@ -94,6 +99,8 @@ function RootNavigator({ colorScheme }: { colorScheme: 'light' | 'dark' | undefi
         </Stack.Protected>
         <Stack.Screen name="auth" options={{ headerShown: false }} />
       </Stack>
+      {/* Por cima do Stack: um deep link abre o ecrã certo, tapado até desbloquear. */}
+      {completed && locked ? <LockScreen /> : null}
     </>
   );
 }

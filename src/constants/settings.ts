@@ -19,7 +19,6 @@ export const LANGUAGE_LABELS: Record<Language, string> = {
 
 export const LOCK_HINT =
   'O bloqueio protege os dados dos estudantes se alguém pegar no teu telemóvel.';
-export const LOCK_NOT_AVAILABLE = 'O bloqueio do app ainda não está disponível nesta versão.';
 
 export const EXACT_ALARM_HINT =
   'Sem esta permissão o Android pode atrasar os lembretes alguns minutos ou mais. Ativa em Alarmes e lembretes.';

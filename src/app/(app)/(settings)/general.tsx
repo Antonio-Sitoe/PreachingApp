@@ -10,7 +10,6 @@ import {
   LANGUAGE_LABELS,
   LIST_VIEW_OPTIONS,
   LOCK_HINT,
-  LOCK_NOT_AVAILABLE,
   THEME_OPTIONS,
 } from '@/constants/settings';
 import { usersActions } from '@/database/actions';
@@ -18,13 +17,17 @@ import { LANGUAGES, type Language } from '@/database/schemas';
 import {
   getListView,
   getThemePreference,
+  isBiometricEnabled,
+  isLockEnabled,
+  setBiometricEnabled,
   setListView,
   setThemePreference,
   type ListView,
   type ThemePreference,
 } from '@/utils/storage';
+import { authenticate, canUseBiometrics } from '@/utils/lock/biometric';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { colorScheme } from 'nativewind';
 import * as React from 'react';
 import { ScrollView, View } from 'react-native';
@@ -38,6 +41,24 @@ export default function GeneralScreen() {
   const [theme, setTheme] = React.useState<ThemePreference>(getThemePreference);
   const [listView, setListViewState] = React.useState<ListView>(getListView);
   const [languageOpen, setLanguageOpen] = React.useState(false);
+  const [lockEnabled, setLockEnabledState] = React.useState(isLockEnabled);
+  const [biometric, setBiometric] = React.useState(isBiometricEnabled);
+  const [biometricAvailable, setBiometricAvailable] = React.useState(false);
+
+  // O PIN liga-se e desliga-se noutro ecrã; relê ao voltar.
+  useFocusEffect(
+    React.useCallback(() => {
+      setLockEnabledState(isLockEnabled());
+      setBiometric(isBiometricEnabled());
+      void canUseBiometrics().then(setBiometricAvailable);
+    }, [])
+  );
+
+  const toggleBiometric = async (next: boolean) => {
+    if (next && !(await authenticate())) return;
+    setBiometricEnabled(next);
+    setBiometric(next);
+  };
 
   const language = user?.language ?? 'pt';
 
@@ -94,21 +115,31 @@ export default function GeneralScreen() {
             trailing={
               <SettingsSwitch
                 label="Pedir PIN ao abrir"
-                value={false}
-                onValueChange={() => showToast({ message: LOCK_NOT_AVAILABLE })}
+                value={lockEnabled}
+                onValueChange={(next) =>
+                  router.push({ pathname: '/lock-setup', params: { mode: next ? 'create' : 'disable' } })
+                }
               />
             }
           />
-          <SettingsRow
-            title="Usar impressão digital ou rosto"
-            trailing={
-              <SettingsSwitch
-                label="Usar impressão digital ou rosto"
-                value={false}
-                onValueChange={() => showToast({ message: LOCK_NOT_AVAILABLE })}
-              />
-            }
-          />
+          {lockEnabled && biometricAvailable ? (
+            <SettingsRow
+              title="Usar impressão digital ou rosto"
+              trailing={
+                <SettingsSwitch
+                  label="Usar impressão digital ou rosto"
+                  value={biometric}
+                  onValueChange={(next) => void toggleBiometric(next)}
+                />
+              }
+            />
+          ) : null}
+          {lockEnabled ? (
+            <SettingsRow
+              title="Alterar PIN"
+              onPress={() => router.push({ pathname: '/lock-setup', params: { mode: 'change' } })}
+            />
+          ) : null}
         </SettingsSection>
 
         <SegmentedSection title="Vista das listas">
