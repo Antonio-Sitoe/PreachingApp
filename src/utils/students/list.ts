@@ -7,6 +7,7 @@ import {
   type StudentSort,
 } from '@/constants/students';
 import type { StudentListItem } from '@/database/actions';
+import type { AppointmentTimeOfDay } from '@/database/schemas';
 import dayjs, { type Dayjs } from 'dayjs';
 import '@/lib/dayjs';
 import { weekdayName } from './return-date';
@@ -75,6 +76,11 @@ export function formatStudentCount(count: number, filter: StudentFilter): string
   return filter === 'paused' ? `${count} ${noun} em pausa` : `${count} ${noun}`;
 }
 
+/** ", 10:00" ou ", à tarde" */
+export function formatVisitTime(next: { time: string | null; timeOfDay: AppointmentTimeOfDay }) {
+  return next.time ? `, ${next.time}` : TIME_OF_DAY_SUFFIX[next.timeOfDay];
+}
+
 /** "Hoje", "Amanhã", "Quarta, 7 Out" */
 export function formatVisitDay(day: Dayjs, today: Dayjs): string {
   if (day.isSame(today, 'day')) return 'Hoje';
@@ -94,8 +100,9 @@ export function getStudentDetail(item: StudentListItem): StudentDetail {
   if (item.nextVisit) {
     const day = dayjs(item.nextVisit.scheduledAt).startOf('day');
     if (day.isBefore(today)) return overdue(today.diff(day, 'day'));
+    const when = `${formatVisitDay(day, today)}${formatVisitTime(item.nextVisit)}`;
     return {
-      text: `${formatVisitDay(day, today)}${TIME_OF_DAY_SUFFIX[item.nextVisit.timeOfDay]}`,
+      text: item.lastLesson ? `${when} · lição ${item.lastLesson}` : when,
       tone: 'default',
     };
   }

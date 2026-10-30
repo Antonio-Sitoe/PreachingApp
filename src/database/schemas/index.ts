@@ -1,6 +1,7 @@
 export * from './users';
 export * from './students';
 export * from './appointments';
+export * from './visits';
 export * from './stage-changes';
 export * from './milestones';
 export * from './pauses';

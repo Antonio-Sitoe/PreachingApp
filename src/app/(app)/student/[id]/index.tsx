@@ -133,6 +133,12 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
 
       <View className="flex-row gap-2">
         <ActionButton
+          primary
+          icon="edit"
+          label="Registar visita"
+          onPress={() => router.push(`/visit/new?studentId=${student.id}`)}
+        />
+        <ActionButton
           icon="phone"
           label="Ligar"
           disabled={!student.phone}
@@ -219,13 +225,14 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
 }
 
 type ActionButtonProps = {
+  primary?: boolean;
   icon: AppIconName;
   label: string;
   disabled?: boolean;
   onPress: () => void;
 };
 
-function ActionButton({ icon, label, disabled, onPress }: ActionButtonProps) {
+function ActionButton({ primary, icon, label, disabled, onPress }: ActionButtonProps) {
   return (
     <Pressable
       role="button"
@@ -234,11 +241,21 @@ function ActionButton({ icon, label, disabled, onPress }: ActionButtonProps) {
       disabled={disabled}
       onPress={onPress}
       className={cn(
-        'min-h-16 flex-1 items-center justify-center gap-1 rounded-lg border border-border bg-card px-2 py-2',
-        disabled ? 'opacity-50' : 'active:bg-secondary'
+        'min-h-16 flex-1 items-center justify-center gap-1 rounded-lg px-2 py-2',
+        primary ? 'bg-primary' : 'border border-border bg-card',
+        disabled ? 'opacity-50' : primary ? 'active:opacity-90' : 'active:bg-secondary'
       )}>
-      <AppIcon name={icon} size={20} className="text-primary-strong" />
-      <Text variant="button" className="text-[13px] leading-[18px] text-primary-strong">
+      <AppIcon
+        name={icon}
+        size={20}
+        className={primary ? 'text-primary-foreground' : 'text-primary-strong'}
+      />
+      <Text
+        variant="button"
+        className={cn(
+          'text-center text-[13px] leading-[18px]',
+          primary ? 'text-primary-foreground' : 'text-primary-strong'
+        )}>
         {label}
       </Text>
     </Pressable>

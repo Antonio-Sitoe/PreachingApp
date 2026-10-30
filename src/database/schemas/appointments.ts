@@ -2,6 +2,7 @@ import { index, integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { v4 as uuid } from 'uuid';
 import { students } from './students';
 import { SYNC_STATUSES } from './users';
+import { visits } from './visits';
 
 export const APPOINTMENT_STATUSES = ['pending', 'done', 'postponed', 'cancelled'] as const;
 
@@ -16,10 +17,11 @@ export const appointments = sqliteTable(
     studentId: text('student_id')
       .notNull()
       .references(() => students.id, { onDelete: 'cascade' }),
-    // Liga a visits.id. A referência entra quando a tabela visits existir.
-    visitId: text('visit_id'),
+    visitId: text('visit_id').references(() => visits.id, { onDelete: 'set null' }),
     scheduledAt: text('scheduled_at').notNull(),
     timeOfDay: text('time_of_day', { enum: APPOINTMENT_TIMES_OF_DAY }).notNull().default('any'),
+    // HH:mm quando a hora é conhecida; a captura no terreno só guarda o período do dia.
+    time: text('time'),
     status: text('status', { enum: APPOINTMENT_STATUSES }).notNull().default('pending'),
     remindMinutesBefore: integer('remind_minutes_before'),
     createdAt: text('created_at').notNull(),

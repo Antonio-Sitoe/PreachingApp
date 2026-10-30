@@ -1,8 +1,7 @@
-import { TIME_OF_DAY_SUFFIX } from '@/constants/students';
 import type { Appointment, Student, StudentAvailability } from '@/database/schemas';
 import dayjs from 'dayjs';
 import '@/lib/dayjs';
-import { formatVisitDay } from './list';
+import { formatVisitDay, formatVisitTime } from './list';
 
 const RHYTHM_LABELS: Record<number, string> = {
   7: 'Ritmo semanal',
@@ -19,7 +18,7 @@ export function formatRhythm(days: number): string {
 export function formatNextVisit(appointment: Appointment): string {
   const today = dayjs().startOf('day');
   const day = dayjs(appointment.scheduledAt).startOf('day');
-  return `${formatVisitDay(day, today)}${TIME_OF_DAY_SUFFIX[appointment.timeOfDay]}`;
+  return `${formatVisitDay(day, today)}${formatVisitTime(appointment)}`;
 }
 
 export type NextVisitHint = {

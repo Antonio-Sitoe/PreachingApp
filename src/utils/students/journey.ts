@@ -95,11 +95,14 @@ export function withArticle(name: string, gender: StudentGender | null): string 
   return gender ? `${gender === 'female' ? 'a' : 'o'} ${short}` : short;
 }
 
+/** "da Celeste", "do Tomás"; sem género conhecido, "de Mito". */
+export function ofName(name: string, gender: StudentGender | null): string {
+  return `${gender ? ARTICLE[gender] : 'de'} ${shortName(name)}`;
+}
+
 /** "Percurso da Celeste"; sem género conhecido, "de". */
 export function formatJourneyTitle(name: string, gender: StudentGender | null): string {
-  const short = shortName(name);
-  if (!short) return 'Percurso';
-  return `Percurso ${gender ? ARTICLE[gender] : 'de'} ${short}`;
+  return shortName(name) ? `Percurso ${ofName(name, gender)}` : 'Percurso';
 }
 
 export const MILESTONE_EXAMPLES = [

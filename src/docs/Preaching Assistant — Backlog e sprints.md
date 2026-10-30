@@ -14,15 +14,20 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
 - [x] Notas,
   - [x] Lista de notas (S6) - Notas com título, etiqueta e cor, em lista ou cartões, e lista vazia
   - [x] Criar e editar nota (S6) -Título, texto, etiqueta, cor e a linha opcional "Sobre alguém", que liga a nota a uma pessoa. Grava em `notes`
-- [ ] Pessoas (separador Estudantes, tabela `students`): versão 1 feita, falta só a PES-10, que depende das Visitas. No GitHub na branch `migracao` (commits 63ce038c a 3edfe8e8)
+- [x] Pessoas (separador Estudantes, tabela `students`): versão 1 feita. No GitHub na branch `migracao` (commits 63ce038c a 3edfe8e8)
   - [x] Migração 0004: `name_is_provisional`, `age_range`, `gender`, `directions`, `located_at` e as tabelas `stage_changes`, `milestones`, `pauses` e `student_availabilities`
   - [x] Lista, captura no terreno, ficha e criar e editar (PES-01, PES-02, PES-03, PES-06)
   - [x] Etapa e marcos (PES-04, PES-05)
   - [x] Localização, pausar e remover (PES-07, PES-08, PES-09)
   - [x] Ritmo por omissão conforme a etapa: o das revisitas para primeiro contacto e revisita, o dos estudos (Mais › Notificações) a partir de estudo iniciado. Criar um estudante conta `student_created` em `usage_counters`
-  - [ ] Dias e hora habituais a sugerir a próxima visita (PES-10, depende de VIS-03)
+  - [x] Dias e hora habituais a sugerir a próxima visita (PES-10)
   - [x] Testes no emulador (Pixel 9 Pro): lista, captura, ficha, formulário, etapa, marcos, pausa, retomar e remover, em tema escuro e claro. Falta: gravar um ponto no mapa num telemóvel real (o emulador pede "Location Accuracy" da Google)
   - [x] Responsivo na maior parte dos Android: testado num ecrã de 360 × 640 dp com a letra a 130%. Alturas mínimas em vez de fixas, folhas com scroll e abaixo da barra de estado, calendário que cabe em 320 dp, conteúdo limitado a 640 dp nos tablets. Falta testar num telemóvel real e num tablet
+- [ ] Visitas e Hoje
+  - [x] Migração 0006: tabela `visits` (resultado, notas, textos, dúvida, "Prometi levar", lição e ponto) e hora (`time`) nas marcações
+  - [x] Registar visita (VIS-01) com escolha do estudante, e próxima visita sugerida pelo ritmo e pelos dias habituais (VIS-03)
+  - [ ] Não estava em casa (VIS-02), lembretes (VIS-04), histórico e detalhe (VIS-05)
+  - [ ] Ecrã Hoje (HOJ-01 a HOJ-06)
 
 ## Fundações
 
@@ -51,7 +56,7 @@ Seis tarefas. Três são da versão 1 (7 horas): a primeira abertura e o bloquei
 Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o épico maior, porque a pessoa é o centro do app.
 
 - [x] **Lista de pessoas** - Lista das pessoas activas com etapa e próxima visita, pesquisa por nome, ordenação, lista vazia e pesquisa sem resultados. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 11 Lista de pessoas, Ordenar, Lista vazia, Pesquisa sem resultados (PES-01, 4 h, sprint 2)
-  - Falta: "lição 14" ao lado da próxima visita e a última visita a sério, que dependem da tabela `visits` (VIS-01)
+  - A lição e a última visita vêm de `visits` desde a VIS-01
 - [x] **Criar e editar pessoa (P1)** - Formulário em que só o nome é obrigatório. Telefone, morada, etapa, ritmo (7, 14, 30 ou um número de dias), faixa etária e género são opcionais. Grava em `people`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa; Criar pessoa, campos com erro (PES-02, 3 h, sprint 2)
   - Grava em `students`. Novo estudante abre pelo link "Preencher a ficha completa" da captura
 - [x] **Ficha da pessoa (P1)** - Cabeçalho com iniciais e etapa, acções Registar visita, Ligar e Direcções, próxima visita, ritmo e as secções que os outros épicos vão preencher. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa (PES-03, 4 h, sprint 2)
@@ -68,8 +73,8 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
   - Motivo (Viajou, Pediu para parar, Sem disponibilidade, Outro), nota e data para tentar de novo. Retomar na lista Em pausa ou na ficha fecha a pausa com `resumed_at`. Falta tirar quem está em pausa do Hoje e dos alertas (HOJ-01, HOJ-04)
 - [x] **Remover pessoa** - Confirmação que oferece a pausa primeiro. A remoção é lógica, com `deleted_at`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 18 Remover pessoa (PES-09, 1 h, sprint 3)
   - Também cancela as marcações por cumprir do estudante removido
-- [ ] **Dias e hora habituais** - Dias da semana e hora em que a pessoa costuma estar, usados para sugerir a próxima visita. Grava em `person_availabilities`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa (PES-10, 2 h, sprint 3)
-  - Já grava em `student_availabilities` pelo formulário. Falta usá-los para sugerir a próxima visita (VIS-03)
+- [x] **Dias e hora habituais** - Dias da semana e hora em que a pessoa costuma estar, usados para sugerir a próxima visita. Grava em `person_availabilities`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa (PES-10, 2 h, sprint 3)
+  - Grava em `student_availabilities` pelo formulário. A próxima visita é sugerida no primeiro dia habitual depois do ritmo, à melhor hora
 - [ ] **Tentativas e melhor horário (P11)** - A partir das visitas conseguidas e falhadas, mostrar em que dias e horas a pessoa costuma estar. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 19 Melhor horário (PES-11, 6 h, sprint 20)
 - [ ] **Linha do tempo (P12)** - Vista cronológica do percurso, com visitas, lições, mudanças de etapa e marcos. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 20 Linha do tempo (PES-12, 8 h, sprint 20)
 - [ ] **Foto da casa (P13)** - Tirar ou escolher uma fotografia do local, com legenda e "como chegar", guardada só no telemóvel. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 21 Foto da casa (PES-13, 5 h, sprint 15)
@@ -78,9 +83,11 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
 
 Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são o uso diário do app.
 
-- [ ] **Registar visita (P2)** - Formulário com a pessoa já escolhida e a data e hora pré-preenchidas: nota, textos usados, dúvida pendente, "Prometi levar" e resultado (encontrei, não estava, remarcada). Sem campo de duração. Grava em `visits`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, Escolher pessoa, Escolher o dia, Escolher a hora (VIS-01, 4 h, sprint 4)
+- [x] **Registar visita (P2)** - Formulário com a pessoa já escolhida e a data e hora pré-preenchidas: nota, textos usados, dúvida pendente, "Prometi levar" e resultado (encontrei, não estava, remarcada). Sem campo de duração. Grava em `visits`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, Escolher pessoa, Escolher o dia, Escolher a hora (VIS-01, 4 h, sprint 4)
+  - Abre pela ficha (Registar visita) e escolhe o estudante quando vem sem ele. Ao guardar, dá por feitas as marcações por cumprir até esse dia. Falta: o avanço de lição e o "Tente o seguinte" (EST-01, EST-04) e editar ou apagar (VIS-05)
 - [ ] **Não estava em casa (P2)** - Um toque regista a tentativa como visita com `outcome = not_home` e propõe nova data. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 23 Não estava em casa (VIS-02, 1 h, sprint 4)
-- [ ] **Agendar a próxima visita (P6)** - Dia e hora com sugestão pelo ritmo da pessoa, atalhos de 7 e 14 dias e a escolha Avisar: na hora, 30 minutos antes ou 1 hora antes. Grava em `appointments`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 24 Agendar a próxima visita (VIS-03, 3 h, sprint 4)
+- [x] **Agendar a próxima visita (P6)** - Dia e hora com sugestão pelo ritmo da pessoa, atalhos de 7 e 14 dias e a escolha Avisar: na hora, 30 minutos antes ou 1 hora antes. Grava em `appointments`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 24 Agendar a próxima visita (VIS-03, 3 h, sprint 4)
+  - Folha Próxima visita com atalhos, dia, hora e Avisar. Grava a hora em `appointments.time` e o aviso em `remind_minutes_before`; a notificação é a VIS-04
 - [ ] **Lembretes de visita (P6)** - Notificação local do telemóvel para cada visita marcada, reagendada ou cancelada quando a visita muda. Tocar na notificação abre a pessoa. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 26 Notificações locais (VIS-04, 3 h, sprint 4)
 - [ ] **Histórico e detalhe de visita** - Lista das visitas de uma pessoa, detalhe com tudo o que foi registado, editar e apagar com confirmação, e histórico vazio. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 25 Histórico de visitas, Detalhe de visita, Histórico vazio, Apagar visita (VIS-05, 3 h, sprint 4)
 - [ ] **Ecrã Hoje (P4)** - Página inicial com as visitas de hoje, as que estão em atraso e o resumo do mês, por tipo de publicador. Inclui os estados Hoje vazio e Dia concluído. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 6 Hoje; 10 Hoje, pioneiro; 7 Hoje vazio; 7 Dia concluído (HOJ-01, 4 h, sprint 5)

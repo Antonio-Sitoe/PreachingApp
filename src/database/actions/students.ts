@@ -14,6 +14,7 @@ import {
   type Student,
   type StudentAvailability,
   type StudentStage,
+  visits,
   stageChanges,
   studentAvailabilities,
   students,
@@ -66,11 +67,13 @@ export type QuickStudentResult = {
 export type StudentNextVisit = {
   scheduledAt: string;
   timeOfDay: AppointmentTimeOfDay;
+  time: string | null;
 };
 
 export type StudentListItem = Student & {
   nextVisit: StudentNextVisit | null;
   lastVisitAt: string | null;
+  lastLesson: number | null;
   pause: Pick<Pause, 'reason' | 'note' | 'retryAt'> | null;
 };
 
@@ -189,12 +192,12 @@ async function getAll(): Promise<Student[]> {
     .orderBy(desc(students.updatedAt));
 }
 
-/** Os estudantes por encerrar, com a próxima marcação e a última visita feita. */
+/** Os estudantes por encerrar, com a próxima marcação e a última visita em que os encontraram. */
 async function getList(): Promise<StudentListItem[]> {
   const user = await usersActions.getCurrent();
   if (!user) return [];
 
-  const [rows, visits, openPauses] = await Promise.all([
+  const [rows, pending, met, openPauses] = await Promise.all([
     db
       .select()
       .from(students)
@@ -206,7 +209,7 @@ async function getList(): Promise<StudentListItem[]> {
         studentId: appointments.studentId,
         scheduledAt: appointments.scheduledAt,
         timeOfDay: appointments.timeOfDay,
-        status: appointments.status,
+        time: appointments.time,
       })
       .from(appointments)
       .innerJoin(students, eq(appointments.studentId, students.id))
@@ -214,10 +217,20 @@ async function getList(): Promise<StudentListItem[]> {
         and(
           eq(students.userId, user.id),
           isNull(appointments.deletedAt),
-          inArray(appointments.status, ['pending', 'done'])
+          eq(appointments.status, 'pending')
         )
       )
-      .orderBy(asc(appointments.scheduledAt)),
+      .orderBy(asc(appointments.scheduledAt), asc(appointments.time)),
+    db
+      .select({
+        studentId: visits.studentId,
+        visitedAt: visits.visitedAt,
+        lessonNumber: visits.lessonNumber,
+      })
+      .from(visits)
+      .innerJoin(students, eq(visits.studentId, students.id))
+      .where(and(eq(students.userId, user.id), eq(visits.outcome, 'met'), isNull(visits.deletedAt)))
+      .orderBy(asc(visits.visitedAt)),
     db
       .select({
         studentId: pauses.studentId,
@@ -235,25 +248,23 @@ async function getList(): Promise<StudentListItem[]> {
   const currentPauses = new Map(openPauses.map(({ studentId, ...pause }) => [studentId, pause]));
 
   const nextVisits = new Map<string, StudentNextVisit>();
+  for (const { studentId, ...next } of pending) {
+    if (!nextVisits.has(studentId)) nextVisits.set(studentId, next);
+  }
+
+  // Ordenadas por data: a última escrita é a mais recente.
   const lastVisits = new Map<string, string>();
-  for (const visit of visits) {
-    if (visit.status === 'pending') {
-      if (!nextVisits.has(visit.studentId)) {
-        nextVisits.set(visit.studentId, {
-          scheduledAt: visit.scheduledAt,
-          timeOfDay: visit.timeOfDay,
-        });
-      }
-    } else {
-      // Ordenadas por data: a última escrita é a mais recente.
-      lastVisits.set(visit.studentId, visit.scheduledAt);
-    }
+  const lastLessons = new Map<string, number>();
+  for (const visit of met) {
+    lastVisits.set(visit.studentId, visit.visitedAt);
+    if (visit.lessonNumber) lastLessons.set(visit.studentId, visit.lessonNumber);
   }
 
   return rows.map((student) => ({
     ...student,
     nextVisit: nextVisits.get(student.id) ?? null,
     lastVisitAt: lastVisits.get(student.id) ?? null,
+    lastLesson: lastLessons.get(student.id) ?? null,
     pause: student.status === 'paused' ? (currentPauses.get(student.id) ?? null) : null,
   }));
 }
