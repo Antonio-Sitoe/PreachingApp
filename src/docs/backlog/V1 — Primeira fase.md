@@ -1,9 +1,12 @@
-# Preaching Assistant — Backlog e sprints
+# Preaching Assistant — Versão 1 (primeira fase)
 
-Oct 5, 2026 ·
+Tudo o que entra na versão 1: o que já está feito, com notas do que falta em cada tarefa, e as duas tarefas que fecham a versão. A versão 2 está em [V2 — Segunda fase](V2%20—%20Segunda%20fase.md).
 
-- &#32;[Preaching Assistant — Design 2.0](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1).&#32;
-- &#32;[BRD](https://claude.ai/code/artifact/bf2ff2bc-d715-4a0d-bb72-c1ff11599947).&#32;
+- [Preaching Assistant — Design 2.0](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1)
+- [BRD](../brd/Preaching%20Assistant%20—%20BRD.md) e [BRD no Claude](https://claude.ai/code/artifact/bf2ff2bc-d715-4a0d-bb72-c1ff11599947)
+- [Casos de teste da versão 1](../casos%20de%20teste/V1%20—%20Casos%20de%20teste.md)
+- [Plano de refactoração](../refatoracao/Plano%20de%20refactoração.md)
+- [Versão 2 — segunda fase](V2%20—%20Segunda%20fase.md)
 
 ## Sprints
 
@@ -36,6 +39,9 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Progresso no estudo e detalhe da lição (EST-02, EST-03)
   - [x] Revisão de parte como marco e estudo na ficha e na preparação (EST-05, EST-06)
   - Testado no emulador: migração com preenchimento a partir das visitas, avanço com pergunta pelas intermédias, avanço quando a lição actual ainda não tem registo, toast, ficha, progresso no estudo com a grelha de 6 colunas, detalhe da lição, folha de revisão e cartão da preparação. Por testar no emulador: o toque em Desfazer e o ecrã pequeno com letra grande
+- [x] Relatório e horas: relatório do mês, partilha, histórico, horas, cronómetro, plano do pioneiro e avisos de fim de mês (REL-01 a REL-07), e ainda o cronómetro em segundo plano e as metas do ano (REL-08, REL-09), que eram da versão 2
+- [x] Mais e definições: perfil, gerais, notificações, cópia de segurança, contagens anónimas e apoiar (DEF-01 a DEF-07)
+- [ ] Fechar a versão 1: inglês e estrutura de tradução (LAN-01, FND-05) e entrega aos testadores (LAN-02)
 
 ## Fundações
 
@@ -45,23 +51,21 @@ Seis tarefas, 14 horas, todas no sprint 1. Nada do resto começa sem elas.
 - [x] **Tokens e temas** - Cores, tipografia (Red Hat Display e Sen), espaçamentos e raios como tokens, em claro e escuro, com a escolha Claro, Escuro ou Do sistema. UI: [Componentes](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › Cores, Tipografia, Marca e logótipo (FND-02, 2 h, sprint 1)
 - [x] **Componentes base** - Botão, etiqueta de etapa, avatar com iniciais, campo de texto, interruptor, selector segmentado, grupo de linhas e cartão de pessoa. UI: [Componentes](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › Etiquetas, botões e avatar; Cartão de pessoa; Ícones (FND-03, 3 h, sprint 1)
 - [x] **Navegação** - Barra com os separadores Hoje, Pessoas, Notas e Mais, folha inferior, estado vazio e aviso com desfazer, reutilizáveis em todos os ecrãs. UI: [Componentes](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › Navegação, folha inferior, estado vazio e aviso (FND-04, 3 h, sprint 1)
-- [x] **Línguas** - Estrutura de tradução com português e inglês. Nenhum texto fica escrito directamente no ecrã. UI: sem ecrã (FND-05, 1 h, sprint 1)
+- [ ] **Línguas** - Estrutura de tradução com português e inglês. Nenhum texto fica escrito directamente no ecrã. UI: sem ecrã (FND-05, 1 h, sprint 1)
+  - Falta: o código não tem estrutura de tradução. Os textos estão escritos directamente nos ecrãs. Fica junto com a LAN-01
 - [x] **Base de dados local** - As 17 tabelas no SQLite com Drizzle, com UUID gerado no telemóvel e as colunas `created_at`, `updated_at`, `deleted_at` e `sync_status`, mais as migrações. UI: sem ecrã (FND-06, 3 h, sprint 1)
 
 ## Entrada e conta
 
-Seis tarefas. Três são da versão 1 (7 horas): a primeira abertura e o bloqueio. A conta só entra na versão 2, porque o app funciona sem ela.
+Três tarefas da versão 1 (7 horas): a primeira abertura e o bloqueio. A conta fica para a versão 2.
 
 - [x] **Splash e boas-vindas** - Ecrã de arranque e boas-vindas com Começar e "Tenho uma cópia de segurança". Só aparece na primeira abertura. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 1 Splash, 2 Boas-vindas (ENT-01, 1 h, sprint 2)
 - [x] **Configuração inicial** - Dois passos: nome, língua e tipo de publicador, depois as permissões de notificações e localização. Grava em `users`. O app funciona se as permissões forem recusadas. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 3 Configuração inicial, 1 de 2 e 2 de 2 (ENT-02, 2 h, sprint 2)
 - [x] **Bloqueio do app (S5)** - Criar PIN, activar biometria, desbloquear ao abrir, PIN errado e PIN esquecido. Liga e desliga em Mais › Gerais. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 4 Criar PIN, Activar biometria, Desbloquear, PIN errado, Esqueci-me do PIN (ENT-03, 4 h, sprint 9)
-- [ ] **Entrar e criar conta (S7)** - Entrar com Google ou com email e senha, criar conta com as quatro regras de senha, confirmar o email com código de 4 dígitos, e os erros de cada passo. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 5 Entrar, Criar conta, Confirmar email, Código incorrecto, Código expirado, Email com o código (ENT-04, 8 h, sprint 14)
-- [ ] **Recuperar senha** - Pedido de recuperação por email e definição da senha nova. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 5 Recuperar senha (ENT-05, 2 h, sprint 14)
-- [ ] **Convite a entrar** - Avisos pontuais a quem usa sem conta, a convidar a entrar para ter cópia no servidor. Podem ser dispensados. UI: sem ecrã próprio no canvas; aparece no [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) com o componente de aviso (ENT-06, 2 h, sprint 14)
 
 ## Pessoas
 
-Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o épico maior, porque a pessoa é o centro do app.
+Dez tarefas da versão 1 (26 horas), que cobrem P1, P7, P9 e P10. O melhor horário, a linha do tempo e a foto da casa ficam para a versão 2.
 
 - [x] **Lista de pessoas** - Lista das pessoas activas com etapa e próxima visita, pesquisa por nome, ordenação, lista vazia e pesquisa sem resultados. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 11 Lista de pessoas, Ordenar, Lista vazia, Pesquisa sem resultados (PES-01, 4 h, sprint 2)
   - A lição e a última visita vêm de `visits` desde a VIS-01
@@ -83,9 +87,6 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
   - Também cancela as marcações por cumprir do estudante removido
 - [x] **Dias e hora habituais** - Dias da semana e hora em que a pessoa costuma estar, usados para sugerir a próxima visita. Grava em `person_availabilities`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa (PES-10, 2 h, sprint 3)
   - Grava em `student_availabilities` pelo formulário. A próxima visita é sugerida no primeiro dia habitual depois do ritmo, à melhor hora
-- [ ] **Tentativas e melhor horário (P11)** - A partir das visitas conseguidas e falhadas, mostrar em que dias e horas a pessoa costuma estar. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 19 Melhor horário (PES-11, 6 h, sprint 20)
-- [ ] **Linha do tempo (P12)** - Vista cronológica do percurso, com visitas, lições, mudanças de etapa e marcos. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 20 Linha do tempo (PES-12, 8 h, sprint 20)
-- [ ] **Foto da casa (P13)** - Tirar ou escolher uma fotografia do local, com legenda e "como chegar", guardada só no telemóvel. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 21 Foto da casa (PES-13, 5 h, sprint 15)
 
 ## Visitas e Hoje
 
@@ -116,7 +117,7 @@ Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são
 
 ## Estudo
 
-Seis tarefas, 14 horas, todas no sprint 6. Cobrem P3, o que nenhum outro app faz: acompanhar o livro *Seja Feliz para Sempre!* lição a lição.
+Seis tarefas, 14 horas, todas no sprint 6. Cobrem P3: acompanhar o livro *Seja Feliz para Sempre!* lição a lição.
 
 - [x] **Visita com estudo (P3)** - No registo da visita, "Estudaram o livro?" abre a lição e o ponto onde pararam. Grava `lesson_number` e `stopped_at_point`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, com estudo (EST-01, 2 h, sprint 6)
   - A lição vem por defeito na lição em curso. A tabela `lesson_progress` guarda início, conclusão, "Tente o seguinte" e nota; a migração 0007 preenche-a a partir das visitas já registadas
@@ -133,7 +134,7 @@ Seis tarefas, 14 horas, todas no sprint 6. Cobrem P3, o que nenhum outro app faz
 
 ## Relatório e horas
 
-Nove tarefas. Sete são da versão 1 (16 horas) e cobrem S2, S3 e S4. Não há horas de crédito em nenhum ecrã.
+Nove tarefas. Sete eram da versão 1 (16 horas) e cobrem S2, S3 e S4; as outras duas foram feitas antes do previsto. Não há horas de crédito em nenhum ecrã.
 
 - [x] **Relatório do mês (S2)** - Calculado das visitas e das horas, conforme o tipo: o publicador vê participei e número de estudos, o pioneiro vê horas e número de estudos. Grava em `monthly_reports`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 31 Relatório do mês, publicador e pioneiro (REL-01, 3 h, sprint 7)
 - [x] **Partilhar o relatório (S2)** - Gerar o texto do relatório e abrir a partilha do telemóvel (WhatsApp ou outro). Marca o relatório como enviado. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 31 Relatório do mês (REL-02, 1 h, sprint 7). Falta confirmar no Android se fechar a partilha sem enviar também marca como enviado; há Desfazer
@@ -143,11 +144,13 @@ Nove tarefas. Sete são da versão 1 (16 horas) e cobrem S2, S3 e S4. Não há h
 - [x] **Plano do mês do pioneiro (S4)** - Escolher os dias da semana e as horas por dia, ver as horas em falta e acertar dia a dia. Grava em `month_plans` e `plan_days`. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 33 Planear os dias do mês (REL-06, 3 h, sprint 7)
 - [x] **Avisos de fim de mês (S3)** - Notificação local e aviso no app quando o relatório está por enviar ou o mês acaba sem participação registada. Respeita a hora que o utilizador escolheu. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 34 Avisos de fim de mês (REL-07, 2 h, sprint 8)
 - [x] **Cronómetro em segundo plano (S9)** - O cronómetro continua a contar com o app fechado, com notificação fixa para parar. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 35 Cronómetro em segundo plano (REL-08, 8 h, sprint 18)
+  - Estava na versão 2 (sprint 18) e foi feita antes, com o resto do Relatório
 - [x] **Metas do mês e do ano (S9)** - Progresso face à meta do mês e às 600 horas do ano de serviço, de Setembro a Agosto. UI: [Relatório e horas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 35 Horas e plano, pioneiro regular (REL-09, 4 h, sprint 19)
+  - Estava na versão 2 (sprint 19) e foi feita antes, com o resto do Relatório
 
 ## Mais, definições e cópia de segurança
 
-Oito tarefas. Sete são da versão 1 (13 horas) e cobrem S1 e as definições essenciais de S14.
+Sete tarefas da versão 1 (13 horas), que cobrem S1 e as definições essenciais de S14. A conta fica para a versão 2.
 
 - [x] **Menu Mais e perfil (S14)** - Menu com os atalhos Relatórios e Apoiar e as definições. No perfil: nome, tipo de publicador e meta do mês, que podem mudar de mês para mês. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 38 Menu Mais; 39 Perfil: tipo de publicador e metas (DEF-01, 3 h, sprint 8)
 - [x] **Definições gerais (S14)** - Língua, tema (Claro, Escuro, Do sistema), vista das listas e ritmo por omissão para pessoas novas. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 40 Gerais, 40 Escolher a língua, 41 Ritmo por omissão (DEF-02, 2 h, sprint 8). Falta: a língua só muda os textos com a LAN-01
@@ -156,77 +159,14 @@ Oito tarefas. Sete são da versão 1 (13 horas) e cobrem S1 e as definições es
 - [x] **Restaurar cópia (S1)** - Restaurar a partir das definições, com confirmação de que substitui os dados, e a partir das boas-vindas num telemóvel novo. Valida o ficheiro antes de escrever. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 42 Restaurar, confirmação; Entrada › 2 Restaurar cópia no arranque (DEF-05, 3 h, sprint 9)
 - [x] **Contagens anónimas** - Interruptor desligado por omissão. Ligado, o app conta em `usage_counters` os dias de uso, as visitas, as pessoas criadas e as lições concluídas. O envio é a BKD-03. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 43 Contagens anónimas (DEF-06, 1 h, sprint 9). Falta: contar visitas e lições quando existirem
 - [x] **Apoiar** - Número de e-Mola com botão de copiar. O app não processa pagamentos. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 45 Apoiar (DEF-07, 1 h, sprint 9)
-- [ ] **Conta e sincronização (S7)** - Estado da conta e da sincronização, sair, e apagar a conta e os dados no servidor com confirmação. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 44 Conta e sincronização; 44 Apagar conta, confirmação (DEF-08, 4 h, sprint 13)
 
-## Backend e sincronização
+## Fechar a versão 1
 
-Treze tarefas, 103 horas, todas na versão 2. A sincronização sozinha leva 44 horas e só avança se os testadores a pedirem, como diz o BRD.
-
-- [ ] **Correcções da versão 1** - Os problemas que os testadores encontrarem nas quatro semanas de uso. UI: os ecrãs afectados (FIX-01, 7 h, sprint 10)
-- [ ] **Projecto do backend** - Stack decidida (Node.js com TypeScript ou Java), projecto criado, alojado e com entrega automática. UI: sem ecrã (BKD-01, 6 h, sprint 10)
-- [ ] **Receber contagens** - Endpoint que recebe dia, evento e quantidade, sem identificar ninguém. UI: sem ecrã (BKD-02, 3 h, sprint 11)
-- [ ] **Enviar contagens** - O app envia as linhas de `usage_counters` quando há internet e marca `sent_at`. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 43 Contagens anónimas (BKD-03, 3 h, sprint 11)
-- [ ] **Painel admin com dados reais** - O painel que já existe deixa os dados de exemplo e mostra dispositivos activos, visitas, pessoas e lições por semana. UI: painel admin, fora do canvas (BKD-04, 6 h, sprint 11)
-- [ ] **Base de dados do servidor** - Tabelas de contas e de dados sincronizados, com os campos pessoais guardados cifrados. UI: sem ecrã (BKD-05, 6 h, sprint 12)
-- [ ] **Login com Google** - Entrar com Google no backend próprio, com sessão que se mantém. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 5 Entrar (BKD-06, 8 h, sprint 12)
-- [ ] **Login por email e senha** - Criar conta, envio do email com o código de 4 dígitos, confirmação, recuperação de senha e apagar conta. UI: [Entrada](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 5 Email com o código (BKD-07, 10 h, sprint 13)
-- [ ] **Cifra no telemóvel** - Os campos pessoais e as notas são cifrados antes de saírem do telemóvel. O administrador não os consegue ler. UI: sem ecrã (SYN-01, 10 h, sprint 15)
-- [ ] **Sincronização: envio** - Enviar as linhas alteradas, usando `updated_at`, `deleted_at` e `sync_status`. UI: sem ecrã (SYN-02, 14 h, sprint 16)
-- [ ] **Sincronização: recepção** - Receber as alterações de outro dispositivo e resolver conflitos pela alteração mais recente. UI: sem ecrã (SYN-03, 14 h, sprint 17)
-- [ ] **Sincronização em segundo plano** - Sincronizar sem o utilizador pedir e mostrar o estado nas definições. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 44 Conta e sincronização (SYN-04, 6 h, sprint 18)
-- [ ] **Testes entre dois telemóveis** - Usar a mesma conta em dois dispositivos, com e sem internet, e corrigir o que falhar. UI: sem ecrã (QA-01, 10 h, sprint 19)
-
-## Entrega e lançamento
-
-Dez tarefas: duas fecham a versão 1 (4 horas) e oito são do lançamento (45 horas, mais os 14 dias de teste fechado).
+Duas tarefas fecham a versão 1 (4 horas). O resto do lançamento está na versão 2.
 
 - [ ] **Inglês** - Todos os textos traduzidos e revistos, com a troca de língua a funcionar em todos os ecrãs. UI: todas as páginas do canvas (LAN-01, 2 h, sprint 9)
 - [ ] **Entrega aos testadores** - Build de Android, teste num telemóvel modesto e distribuição pelo teste interno da Play Console. UI: sem ecrã (LAN-02, 2 h, sprint 9)
-- [ ] **Dados e privacidade (S14)** - Apagar todos os dados do telemóvel, política de privacidade e termos. UI: sem ecrã no canvas (LAN-03, 6 h, sprint 21)
-- [ ] **Ajuda e sobre (S14)** - Guia de uso, contacto, versão do app e aviso de que não é uma ferramenta oficial. UI: sem ecrã no canvas (LAN-04, 5 h, sprint 21)
-- [ ] **Revisão final das línguas** - Rever português e inglês em todos os ecrãs novos da versão 2. UI: todas as páginas do canvas (LAN-10, 3 h, sprint 21)
-- [ ] **Retrospectiva mensal (S10)** - Resumo pessoal do mês: pessoas acompanhadas, visitas, lições concluídas e marcos. UI: sem ecrã no canvas (LAN-05, 8 h, sprint 22)
-- [ ] **Nome e ficha da loja** - Nome final, ícone, descrição e capturas de ecrã para a Play Store. UI: [Componentes](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › Marca e logótipo (LAN-06, 6 h, sprint 22)
-- [ ] **Teste fechado** - Recrutar 15 ou mais testadores e manter 12 inscritos durante 14 dias seguidos, como a Play Store exige. UI: sem ecrã (LAN-07, 4 h, sprint 23)
-- [ ] **Correcções do teste fechado** - Corrigir o que o teste fechado mostrar. UI: os ecrãs afectados (LAN-08, 10 h, sprint 23)
-- [ ] **Publicação** - Pedido de produção na Play Console e publicação. UI: sem ecrã (LAN-09, 3 h, sprint 24)
 
-**Versão 2 e lançamento**
+## Critério para passar à versão 2
 
-As datas marcam-se quando a versão 1 cumprir o critério do BRD: testadores a registar pelo menos uma visita por semana durante quatro semanas.
-
-Ficam fora dos sprints, para depois do lançamento: passar a pessoa a outro publicador (P14), estatísticas pessoais (S11), mapa das pessoas (S12) e a versão web para iPhone (S13).
-
-| Sprint | Objectivo | Tarefas | Horas |
-| --- | --- | --- | --- |
-| 10 | Correcções pedidas pelos testadores e projecto do backend | FIX-01, BKD-01 | 13 |
-| 11 | Contagens anónimas de ponta a ponta, até ao painel admin | BKD-02 a BKD-04 | 12 |
-| 12 | Base de dados do servidor e login com Google | BKD-05, BKD-06 | 14 |
-| 13 | Login por email e senha, e conta nas definições | BKD-07, DEF-08 | 14 |
-| 14 | Ecrãs de entrar e criar conta no app | ENT-04 a ENT-06 | 12 |
-| 15 | Cifra dos dados pessoais e foto da casa | SYN-01, PES-13 | 15 |
-| 16 | Sincronização: envio | SYN-02 | 14 |
-| 17 | Sincronização: recepção e conflitos | SYN-03 | 14 |
-| 18 | Sincronização em segundo plano e cronómetro em segundo plano | SYN-04, REL-08 | 14 |
-| 19 | Testes entre dois telemóveis e metas de horas | QA-01, REL-09 | 14 |
-| 20 | Melhor horário e linha do tempo da pessoa | PES-11, PES-12 | 14 |
-| 21 | Privacidade, termos, ajuda e revisão das línguas | LAN-03, LAN-04, LAN-10 | 14 |
-| 22 | Retrospectiva mensal, nome e ficha da loja | LAN-05, LAN-06 | 14 |
-| 23 | Teste fechado de 14 dias e correcções | LAN-07, LAN-08 | 14 |
-| 24 | Publicação na Play Store | LAN-09 | 3 |
-
-## Pontos por decidir
-
-Dois pontos bloqueiam o sprint 1; os outros podem esperar pelo sprint em que a tarefa entra.
-
-| Ponto | Bloqueia | O que proponho |
-| --- | --- | --- |
-| React Native com Expo ou Flutter | FND-01, sprint 1 | Expo. As 128 horas contam com o código da branch `dev`; em Flutter recomeça-se do zero |
-| Fim da tua revisão do design | Início a 12 de Outubro | Se a revisão passar desta semana, todas as datas da versão 1 deslizam o mesmo número de semanas |
-| Dados de quem usa a versão 1.0.3 | Sprint 9 | Se houver utilizadores com dados, falta uma tarefa de migração de cerca de 3 horas. As três perguntas da migração estão no Modelo de dados |
-| Notas em texto simples ou em blocos | NOT-02, sprint 8 | Texto simples na versão 1. O editor em blocos do canvas pede mais cerca de 8 horas e uma mudança na tabela `notes` |
-| Plano do mês do pioneiro na versão 1 | REL-06, sprint 7 | Manter. Se sair, o sprint 7 fica com 3 horas livres |
-| PIN esquecido e PIN errado | ENT-03, sprint 9 | Como está no canvas: o PIN não se recupera, restaura-se a cópia; 3 tentativas erradas bloqueiam 1 minuto |
-| Números de uso durante o teste da versão 1 | Sprint 9 | O envio das contagens só chega no sprint 11. Até lá, Play Console e a pergunta quinzenal aos testadores. Para ter números antes, puxar BKD-01 a BKD-03 (12 horas) para um sprint 9B |
-| Node.js ou Java no backend | BKD-01, sprint 10 | Node.js com TypeScript, como recomenda o BRD |
-| Ecrãs que faltam no canvas | Sprints 14 e 21 | Desenhar antes do sprint em que entram: convite a entrar (ENT-06), dados e privacidade (LAN-03), ajuda e sobre (LAN-04) e retrospectiva mensal (LAN-05)\\  |
+Testadores a registar pelo menos uma visita por semana durante quatro semanas, como diz o BRD. Só depois se marcam as datas da versão 2.
