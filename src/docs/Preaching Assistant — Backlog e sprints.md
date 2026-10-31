@@ -35,7 +35,7 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Visita com estudo e avanço de lição com desfazer (EST-01, EST-04)
   - [x] Progresso no estudo e detalhe da lição (EST-02, EST-03)
   - [x] Revisão de parte como marco e estudo na ficha e na preparação (EST-05, EST-06)
-  - Testado no emulador: migração com preenchimento a partir das visitas, avanço com pergunta pelas intermédias, toast com desfazer, ficha e progresso no estudo. Por testar no emulador: detalhe da lição, folha de revisão, Desfazer, cartão da preparação e ecrã pequeno com letra grande
+  - Testado no emulador: migração com preenchimento a partir das visitas, avanço com pergunta pelas intermédias, avanço quando a lição actual ainda não tem registo, toast, ficha, progresso no estudo com a grelha de 6 colunas, detalhe da lição, folha de revisão e cartão da preparação. Por testar no emulador: o toque em Desfazer e o ecrã pequeno com letra grande
 
 ## Fundações
 

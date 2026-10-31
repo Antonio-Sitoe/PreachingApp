@@ -9,6 +9,7 @@ import {
   students,
   visits,
 } from '../schemas';
+import { currentLesson } from '@/utils/study/parts';
 
 export type AdvanceInput = {
   studentId: string;
@@ -66,7 +67,7 @@ function advance(input: AdvanceInput): AdvanceResult {
     const undo: AdvanceUndo = { createdIds: [], closedIds: [], goalDone: null, stageChange: null };
     const closedLessons: number[] = [];
 
-    const insert = (lesson: number, completed: boolean) => {
+    const insert = (lesson: number, completed: boolean, goalDone = false) => {
       const row = tx
         .insert(lessonProgress)
         .values({
@@ -74,6 +75,7 @@ function advance(input: AdvanceInput): AdvanceResult {
           lessonNumber: lesson,
           startedAt: date,
           completedAt: completed ? date : null,
+          goalDone,
           createdAt: timestamp,
           updatedAt: timestamp,
           syncStatus: 'pending',
@@ -85,12 +87,18 @@ function advance(input: AdvanceInput): AdvanceResult {
     };
 
     const known = new Set(rows.map((row) => row.lessonNumber));
-    const highest = rows.length > 0 ? Math.max(...rows.map((row) => row.lessonNumber)) : null;
+    const current = currentLesson(rows);
     const startedLesson = known.has(input.lesson) ? null : input.lesson;
     if (startedLesson) insert(input.lesson, false);
 
-    if (input.closeSkipped && highest !== null) {
-      for (let lesson = highest + 1; lesson < input.lesson; lesson += 1) {
+    const advancing = current !== null && current < input.lesson;
+    if (advancing && !known.has(current)) {
+      insert(current, true, input.previousGoalDone ?? false);
+      closedLessons.push(current);
+    }
+
+    if (advancing && input.closeSkipped) {
+      for (let lesson = current + 1; lesson < input.lesson; lesson += 1) {
         insert(lesson, true);
         closedLessons.push(lesson);
       }

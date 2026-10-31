@@ -116,12 +116,8 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
   const openLesson = lessonRows.find((row) => !row.completedAt && row.lessonNumber === inProgress);
   const chosenLesson = lesson ?? inProgress ?? 1;
   const advancing =
-    !editing &&
-    outcome === 'met' &&
-    studied &&
-    openLesson !== undefined &&
-    chosenLesson > openLesson.lessonNumber;
-  const skipped = advancing && openLesson ? chosenLesson - openLesson.lessonNumber - 1 : 0;
+    !editing && outcome === 'met' && studied && inProgress !== null && chosenLesson > inProgress;
+  const skipped = advancing && inProgress !== null ? chosenLesson - inProgress - 1 : 0;
   const [previousGoalDone, setPreviousGoalDone] = React.useState(false);
   const [askingSkipped, setAskingSkipped] = React.useState(false);
   const suggestion = React.useMemo(
@@ -408,18 +404,18 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
               value={stoppedAt}
               onChangeText={setStoppedAt}
             />
-            {advancing && openLesson ? (
+            {advancing && inProgress !== null ? (
               <>
                 <View role="note" className="flex-row gap-2.5 rounded-lg bg-secondary px-4 py-3">
                   <AppIcon name="alert" size={18} className="mt-px text-primary-strong" />
                   <Text
                     variant="labelS"
                     className="flex-1 text-[13px] leading-[18px] text-primary-strong">
-                    A lição {openLesson.lessonNumber} fica fechada com a data desta visita e a{' '}
-                    {chosenLesson} passa a ser a actual. Podes desfazer depois de guardar.
+                    A lição {inProgress} fica fechada com a data desta visita e a {chosenLesson}{' '}
+                    passa a ser a actual. Podes desfazer depois de guardar.
                   </Text>
                 </View>
-                <SettingsSection title={`Lição ${openLesson.lessonNumber}, que terminaram`}>
+                <SettingsSection title={`Lição ${inProgress}, que terminaram`}>
                   <SettingsRow
                     first
                     title='Cumpriu o "Tente o seguinte"'
@@ -480,7 +476,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
             ? `A lição ${chosenLesson - 1} também ficou concluída?`
             : `As ${formatLessons([chosenLesson - skipped, chosenLesson - 1])} também ficaram concluídas?`
         }
-        description={`Passaram da lição ${openLesson?.lessonNumber ?? ''} para a ${chosenLesson}.`}>
+        description={`Passaram da lição ${inProgress ?? ''} para a ${chosenLesson}.`}>
         <Button onPress={() => void save(true)}>
           <Text>{skipped === 1 ? 'Sim, ficou concluída' : 'Sim, ficaram concluídas'}</Text>
         </Button>
