@@ -93,6 +93,18 @@ async function getThisWeek(now = dayjs()) {
   return getBetween(monday.toISOString(), monday.add(7, 'day').toISOString());
 }
 
+// Minutos por mês, com chaves "2026-09".
+async function getServiceYear(startYear: number): Promise<Map<string, number>> {
+  const start = dayjs(new Date(startYear, 8, 1));
+  const rows = await getBetween(start.toISOString(), start.add(1, 'year').toISOString());
+  const byMonth = new Map<string, number>();
+  for (const row of rows) {
+    const key = dayjs(row.startedAt).format('YYYY-MM');
+    byMonth.set(key, (byMonth.get(key) ?? 0) + row.minutes);
+  }
+  return byMonth;
+}
+
 export const timeEntriesActions = {
   create,
   update,
@@ -100,4 +112,5 @@ export const timeEntriesActions = {
   getMonth,
   getMonthStats,
   getThisWeek,
+  getServiceYear,
 };

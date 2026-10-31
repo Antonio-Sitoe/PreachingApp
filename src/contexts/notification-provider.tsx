@@ -2,6 +2,7 @@ import { useOnboarding } from '@/contexts/onboarding';
 import { useTimerSync } from '@/hooks/use-timer';
 import { syncAllNotifications } from '@/utils/notifications/scheduler';
 import { isDailySummary } from '@/utils/notifications/daily-summary';
+import { isMonthEnd } from '@/utils/notifications/month-end';
 import { isVisitReminder } from '@/utils/notifications/visit-reminders';
 import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
@@ -47,6 +48,12 @@ function useOpenFromNotification(ready: boolean) {
     const data = lastResponse.notification.request.content.data;
     if (isVisitReminder(data)) router.push(`/student/${data.studentId}/prepare`);
     else if (isDailySummary(data)) router.dismissTo('/');
+    else if (isMonthEnd(data)) router.push('/visit/new');
+    else if (data?.type === 'monthly-reminder' && data.year && data.month)
+      router.push({
+        pathname: '/report',
+        params: { year: String(data.year), month: String(data.month) },
+      });
   }, [ready, lastResponse]);
 }
 

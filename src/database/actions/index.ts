@@ -7,7 +7,7 @@ export * from './today';
 export * from './appointments';
 export * from './notes';
 export * from './tags';
-export * from './reports';
+export * from './monthly-reports';
 export * from './time-entries';
 export * from './month-plans';
 export * from './usage';

@@ -71,6 +71,7 @@ export function planSummary(days: number, minutesPerDay: number, remaining: numb
   if (total < remaining) {
     return `${sum} Não chega: das ${formatDuration(remaining)} que faltam, ficam ${formatDuration(remaining - total)} por fazer.`;
   }
-  if (total === remaining) return `${sum} Chega certo para as ${formatDuration(remaining)} que faltam.`;
+  if (total === remaining)
+    return `${sum} Chega certo para as ${formatDuration(remaining)} que faltam.`;
   return `${sum} Chega para as ${formatDuration(remaining)} que faltam, com ${formatDuration(total - remaining)} de folga.`;
 }

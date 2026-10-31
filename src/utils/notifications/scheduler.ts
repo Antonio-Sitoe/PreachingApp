@@ -1,3 +1,5 @@
+import { monthlyReportsActions } from '@/database/actions';
+import { syncMonthEndNotice } from '@/utils/notifications/month-end';
 import { monthlyReportNotificationManager } from '@/utils/notifications/monthly-report';
 import { syncDailySummary } from '@/utils/notifications/daily-summary';
 import { syncVisitReminders } from '@/utils/notifications/visit-reminders';
@@ -26,7 +28,13 @@ async function runSync(): Promise<void> {
     if ((await checkPermission('notifications')) !== 'granted') return;
 
     const prefs = getNotificationPreferences();
-    await monthlyReportNotificationManager.sync(prefs.monthly);
+    const now = new Date();
+    const [sentMonths, current] = await Promise.all([
+      monthlyReportsActions.getSentMonths(),
+      monthlyReportsActions.getMonth(now.getFullYear(), now.getMonth() + 1),
+    ]);
+    await monthlyReportNotificationManager.sync(prefs.monthly, sentMonths);
+    await syncMonthEndNotice(prefs.monthly, current.participated);
     await syncVisitReminders();
     await syncDailySummary(prefs.dailySummary);
 

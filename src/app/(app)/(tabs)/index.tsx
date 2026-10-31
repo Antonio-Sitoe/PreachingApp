@@ -2,6 +2,7 @@ import { GoalProgress } from '@/components/hours/goal-progress';
 import { ManualEntrySheet } from '@/components/hours/manual-entry-sheet';
 import { QuickStudentSheet } from '@/components/students/quick-student-sheet';
 import { type QuickAction, QuickActionsSheet } from '@/components/today/quick-actions-sheet';
+import { ReportNotices } from '@/components/today/report-notices';
 import { SectionTitle, TodayCard } from '@/components/today/today-card';
 import { VisitActionsSheet } from '@/components/today/visit-actions-sheet';
 import { WeekStrip } from '@/components/today/week-strip';
@@ -192,6 +193,8 @@ export default function TodayScreen() {
             onPress={() => router.push('/notifications')}
           />
         </View>
+
+        <ReportNotices />
 
         <WeekStrip markedDays={data?.weekDays ?? []} />
 

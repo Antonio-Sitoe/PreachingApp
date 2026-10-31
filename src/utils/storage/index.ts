@@ -13,6 +13,7 @@ const LIST_VIEW = 'appearance.listView';
 const LAST_BACKUP = 'backup.last';
 const USAGE_COUNTING = 'usage.countingEnabled';
 const STUDENT_SORT = 'students.sort';
+const REPORT_NOTICES_DISMISSED = 'reports.noticesDismissed';
 const LOCK_ENABLED = 'lock.enabled';
 const LOCK_BIOMETRIC = 'lock.biometric';
 const LOCK_FAILED_ATTEMPTS = 'lock.failedAttempts';
@@ -145,4 +146,16 @@ export function getLockBlockedUntil(): number {
 
 export function setLockBlockedUntil(value: number): void {
   getStorage().set(LOCK_BLOCKED_UNTIL, value);
+}
+
+// Chaves como "pending:2026-09" ou "month-end:2026-10".
+export function isReportNoticeDismissed(key: string): boolean {
+  return (getStorage().getString(REPORT_NOTICES_DISMISSED) ?? '').split(',').includes(key);
+}
+
+export function dismissReportNotice(key: string): void {
+  const current = (getStorage().getString(REPORT_NOTICES_DISMISSED) ?? '')
+    .split(',')
+    .filter(Boolean);
+  getStorage().set(REPORT_NOTICES_DISMISSED, [...current.slice(-23), key].join(','));
 }

@@ -3,6 +3,7 @@ import { GoalProgress } from '@/components/hours/goal-progress';
 import { ManualEntrySheet } from '@/components/hours/manual-entry-sheet';
 import { PlanSheet } from '@/components/hours/plan-sheet';
 import { PlanSummaryCard } from '@/components/hours/plan-summary-card';
+import { ServiceYearCard, ServiceYearMonths } from '@/components/hours/service-year';
 import { TimerCard } from '@/components/hours/timer-card';
 import { UpcomingDaysList } from '@/components/hours/upcoming-days-list';
 import { SettingsRow, SettingsSection } from '@/components/settings/grouped-list';
@@ -13,7 +14,8 @@ import { Text } from '@/components/ui/text';
 import { monthPlansActions, timeEntriesActions, usersActions } from '@/database/actions';
 import { formatDuration, formatMonthName } from '@/utils/hours/format';
 import { daysLeftInMonth, remainingMinutes } from '@/utils/hours/plan';
-import { isPioneer, monthHourGoal } from '@/utils/hours/profile';
+import { isPioneer, monthHourGoal, yearlyHourGoal } from '@/utils/hours/profile';
+import { serviceYearStart } from '@/utils/hours/service-year';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import { router } from 'expo-router';
@@ -49,6 +51,14 @@ export default function HoursScreen() {
     queryFn: () => monthPlansActions.getForMonth(year, month),
   });
 
+  const startYear = serviceYearStart(today);
+  const yearGoal = user ? yearlyHourGoal(user.publisherType) : null;
+  const { data: yearMinutes } = useQuery({
+    queryKey: ['time-entries', 'service-year', startYear],
+    queryFn: () => timeEntriesActions.getServiceYear(startYear),
+    enabled: yearGoal !== null,
+  });
+
   const pioneer = user ? isPioneer(user.publisherType) : false;
   const goal = monthHourGoal(user, plan);
   const daysLeft = daysLeftInMonth(today);
@@ -61,6 +71,14 @@ export default function HoursScreen() {
       <ScrollView
         className="flex-1"
         contentContainerClassName="w-full max-w-[640px] gap-5 self-center px-4 pb-8 pt-5">
+        {yearGoal && yearMinutes ? (
+          <ServiceYearCard
+            startYear={startYear}
+            goalHours={yearGoal}
+            minutesByMonth={yearMinutes}
+          />
+        ) : null}
+
         {pioneer && goal ? (
           <GoalProgress
             doneMinutes={stats.minutes}
@@ -94,6 +112,9 @@ export default function HoursScreen() {
               onEdit={() => setPlanOpen(true)}
             />
             <UpcomingDaysList days={futureDays.slice(0, UPCOMING_LIMIT)} />
+            {yearGoal && yearMinutes ? (
+              <ServiceYearMonths startYear={startYear} minutesByMonth={yearMinutes} />
+            ) : null}
           </>
         ) : (
           <SettingsSection title={`${monthName}, só para ti`}>

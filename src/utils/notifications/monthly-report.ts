@@ -13,12 +13,15 @@ export function nextTwelveMonthlyDates(hour: number, minute: number, now = new D
 }
 
 class MonthlyNotificationManager {
-  async sync(monthly: MonthlyReminderConfig): Promise<void> {
+  async sync(
+    monthly: MonthlyReminderConfig,
+    sentMonths: ReadonlySet<string> = new Set()
+  ): Promise<void> {
     await this.cancelAllMonthlyNotifications();
     if (!monthly.enabled) return;
 
     await this.prepareChannel(monthly);
-    await this.scheduleNext12Months(monthly);
+    await this.scheduleNext12Months(monthly, sentMonths);
   }
 
   async cancelAllMonthlyNotifications(): Promise<void> {
@@ -35,8 +38,7 @@ class MonthlyNotificationManager {
   private async prepareChannel(config: MonthlyReminderConfig): Promise<void> {
     try {
       await Notifications.deleteNotificationChannelAsync(CHANNEL_ID);
-    } catch {
-    }
+    } catch {}
 
     await Notifications.setNotificationChannelAsync(CHANNEL_ID, {
       name: 'Relatório mensal',
@@ -47,10 +49,17 @@ class MonthlyNotificationManager {
     });
   }
 
-  private async scheduleNext12Months(config: MonthlyReminderConfig): Promise<void> {
+  private async scheduleNext12Months(
+    config: MonthlyReminderConfig,
+    sentMonths: ReadonlySet<string>
+  ): Promise<void> {
     const dates = nextTwelveMonthlyDates(config.hour, config.minute);
 
     for (const date of dates) {
+      const reported = new Date(date.getFullYear(), date.getMonth() - 1, 1);
+      const year = reported.getFullYear();
+      const month = reported.getMonth() + 1;
+      if (sentMonths.has(`${year}-${String(month).padStart(2, '0')}`)) continue;
       const identifier = `monthly-reminder-${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
 
       await Notifications.scheduleNotificationAsync({
@@ -59,7 +68,7 @@ class MonthlyNotificationManager {
           title: config.title,
           body: config.body,
           sound: config.sound,
-          data: { type: 'monthly-reminder' },
+          data: { type: 'monthly-reminder', year, month },
           priority: Notifications.AndroidNotificationPriority.HIGH,
           vibrate: config.vibration ? [0, 250, 250, 250] : [],
         },
