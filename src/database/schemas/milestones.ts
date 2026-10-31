@@ -17,6 +17,7 @@ export const milestones = sqliteTable(
       .references(() => students.id, { onDelete: 'cascade' }),
     type: text('type', { enum: MILESTONE_TYPES }).notNull().default('custom'),
     label: text('label').notNull(),
+    note: text('note'),
     // Dia do marco, YYYY-MM-DD.
     occurredAt: text('occurred_at').notNull(),
     createdAt: text('created_at').notNull(),

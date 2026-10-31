@@ -23,13 +23,19 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Dias e hora habituais a sugerir a próxima visita (PES-10)
   - [x] Testes no emulador (Pixel 9 Pro): lista, captura, ficha, formulário, etapa, marcos, pausa, retomar e remover, em tema escuro e claro. Falta: gravar um ponto no mapa num telemóvel real (o emulador pede "Location Accuracy" da Google)
   - [x] Responsivo na maior parte dos Android: testado num ecrã de 360 × 640 dp com a letra a 130%. Alturas mínimas em vez de fixas, folhas com scroll e abaixo da barra de estado, calendário que cabe em 320 dp, conteúdo limitado a 640 dp nos tablets. Falta testar num telemóvel real e num tablet
-- [ ] Visitas e Hoje
+- [x] Visitas e Hoje: versão 1 feita (commits e3036f52 a 0d8b074e, no GitHub). Falta só a VIS-04 ter os botões "Ver preparação" e "Adiar" dentro da notificação
   - [x] Migração 0006: tabela `visits` (resultado, notas, textos, dúvida, "Prometi levar", lição e ponto) e hora (`time`) nas marcações
   - [x] Registar visita (VIS-01) com escolha do estudante, e próxima visita sugerida pelo ritmo e pelos dias habituais (VIS-03)
   - [x] Não estava em casa (VIS-02) e histórico e detalhe com editar e apagar (VIS-05)
   - [x] Lembretes no telemóvel (VIS-04)
   - [x] Ecrã Hoje, feita ou adiar, acções rápidas e quem sai do ritmo (HOJ-01 a HOJ-04)
   - [x] Notificação do dia (HOJ-05) e cartão de preparação (HOJ-06)
+- [x] Estudo (livro *Seja Feliz para Sempre!*, 60 lições)
+  - [x] Migração: tabela `lesson_progress`
+  - [x] Visita com estudo e avanço de lição com desfazer (EST-01, EST-04)
+  - [x] Progresso no estudo e detalhe da lição (EST-02, EST-03)
+  - [x] Revisão de parte como marco e estudo na ficha e na preparação (EST-05, EST-06)
+  - Testado no emulador: migração com preenchimento a partir das visitas, avanço com pergunta pelas intermédias, toast com desfazer, ficha e progresso no estudo. Por testar no emulador: detalhe da lição, folha de revisão, Desfazer, cartão da preparação e ecrã pequeno com letra grande
 
 ## Fundações
 
@@ -62,7 +68,7 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
 - [x] **Criar e editar pessoa (P1)** - Formulário em que só o nome é obrigatório. Telefone, morada, etapa, ritmo (7, 14, 30 ou um número de dias), faixa etária e género são opcionais. Grava em `people`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 13 Criar e editar pessoa; Criar pessoa, campos com erro (PES-02, 3 h, sprint 2)
   - Grava em `students`. Novo estudante abre pelo link "Preencher a ficha completa" da captura
 - [x] **Ficha da pessoa (P1)** - Cabeçalho com iniciais e etapa, acções Registar visita, Ligar e Direcções, próxima visita, ritmo e as secções que os outros épicos vão preencher. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa (PES-03, 4 h, sprint 2)
-  - Registar visita, Dúvida pendente e Últimas visitas feitos (VIS-01, VIS-05). Falta o Estudo (EST-06). Direcções abre o ecrã Localização (PES-07); Linha do tempo, Melhor horário e Foto da casa são da versão 2
+  - Registar visita, Dúvida pendente e Últimas visitas feitos (VIS-01, VIS-05). O Estudo mostra o cartão do progresso no livro (EST-06). Direcções abre o ecrã Localização (PES-07); Linha do tempo, Melhor horário e Foto da casa são da versão 2
 - [x] **Etapa do percurso (P1)** - Mudar a etapa entre as seis do BRD. Cada mudança grava uma linha em `stage_changes`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Etapa do percurso e marcos (PES-04, 2 h, sprint 3)
   - Ecrã Etapa e marcos, aberto pela etiqueta da etapa na ficha. "Passar a …" avança uma etapa, com desfazer; para recuar, muda-se no formulário de editar
 - [x] **Marcos (P1)** - Acrescentar um marco em texto livre, com exemplos sugeridos e data. Lista de marcos na ficha. Grava em `milestones`. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 15 Novo marco (PES-05, 2 h, sprint 3)
@@ -86,7 +92,7 @@ Treze tarefas. Dez são da versão 1 (26 horas) e cobrem P1, P7, P9 e P10. É o 
 Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são o uso diário do app.
 
 - [x] **Registar visita (P2)** - Formulário com a pessoa já escolhida e a data e hora pré-preenchidas: nota, textos usados, dúvida pendente, "Prometi levar" e resultado (encontrei, não estava, remarcada). Sem campo de duração. Grava em `visits`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, Escolher pessoa, Escolher o dia, Escolher a hora (VIS-01, 4 h, sprint 4)
-  - Abre pela ficha (Registar visita) e escolhe o estudante quando vem sem ele. Ao guardar, dá por feitas as marcações por cumprir até esse dia. Falta: o avanço de lição e o "Tente o seguinte" (EST-01, EST-04)
+  - Abre pela ficha (Registar visita) e escolhe o estudante quando vem sem ele. Ao guardar, dá por feitas as marcações por cumprir até esse dia. O avanço de lição e o "Tente o seguinte" estão no Estudo (EST-01, EST-04)
 - [x] **Não estava em casa (P2)** - Um toque regista a tentativa como visita com `outcome = not_home` e propõe nova data. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 23 Não estava em casa (VIS-02, 1 h, sprint 4)
   - No Registar visita, guardar com "Não estava" abre a folha Tentativa guardada, com Desfazer e Tentar de novo (Amanhã, Sábado, Próxima semana, Escolher data). O toque único fica para o Hoje (HOJ-02)
 - [x] **Agendar a próxima visita (P6)** - Dia e hora com sugestão pelo ritmo da pessoa, atalhos de 7 e 14 dias e a escolha Avisar: na hora, 30 minutos antes ou 1 hora antes. Grava em `appointments`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 24 Agendar a próxima visita (VIS-03, 3 h, sprint 4)
@@ -106,18 +112,24 @@ Onze tarefas, 28 horas, todas na versão 1. Cobrem P2, P4, P5, P6 e P8, que são
 - [x] **Notificação do dia (P5)** - Uma notificação local por dia, à hora escolhida, com quem visitar e quem está a sair do ritmo. UI: [Mais e definições](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 41 Notificações (HOJ-05, 2 h, sprint 5)
   - Agendada para os próximos 7 dias à hora de Mais › Notificações, só nos dias com algo a dizer: "Hoje tens 3 visitas · Celeste às 10:00, … · 2 em atraso", ou quem está em atraso ou a sair do ritmo. Volta a agendar ao abrir o app, ao mudar as definições e depois de cada visita. Tocar abre o Hoje
 - [x] **Cartão de preparação (P8)** - Antes da visita mostra a última conversa, a dúvida pendente, o que ficou prometido levar e a lição seguinte. UI: [Hoje](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 9 Cartão de preparação (HOJ-06, 2 h, sprint 5)7
-  - Ecrã Preparar a visita (student/[id]/prepare), aberto pelo cartão do Hoje e pelo lembrete da visita: última conversa com notas, dúvida pendente, lição em curso com a parte do livro, "Prometi levar" com caixas para marcar, e Direcções e Registar visita. A lição seguinte e o progresso das 60 vêm com o Estudo (EST-02, EST-06)
+  - Ecrã Preparar a visita (student/[id]/prepare), aberto pelo cartão do Hoje e pelo lembrete da visita: última conversa com notas, dúvida pendente, lição em curso com a parte do livro, "Prometi levar" com caixas para marcar, e Direcções e Registar visita. Com o Estudo, a lição em curso passou a ser o cartão do progresso no livro (EST-06)
 
 ## Estudo
 
 Seis tarefas, 14 horas, todas no sprint 6. Cobrem P3, o que nenhum outro app faz: acompanhar o livro *Seja Feliz para Sempre!* lição a lição.
 
-- [ ] **Visita com estudo (P3)** - No registo da visita, "Estudaram o livro?" abre a lição e o ponto onde pararam. Grava `lesson_number` e `stopped_at_point`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, com estudo (EST-01, 2 h, sprint 6)
-- [ ] **Progresso no estudo (P3)** - Lição actual das 60, a parte em que está (1 a 12, 13 a 33, 34 a 47, 48 a 60), o ritmo e o número de sessões por lição. Inclui o estado Estudo por começar. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 27 Progresso no estudo, Estudo por começar (EST-02, 4 h, sprint 6)
-- [ ] **Detalhe da lição (P3)** - Data de início e de conclusão, "Tente o seguinte" marcado só pelo utilizador, nota e dúvidas pendentes. Grava em `lesson_progress`. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 28 Detalhe da lição (EST-03, 2 h, sprint 6)
-- [ ] **Avanço de lição (P3)** - Quando a visita regista uma lição mais avançada, o app fecha a anterior e abre a nova, com desfazer. Se saltar mais de uma, pergunta pelas intermédias. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 29 Avanço de lição com desfazer (EST-04, 3 h, sprint 6)
-- [ ] **Revisão de parte (P3)** - Ao fechar a última lição de uma parte, propor a revisão e guardá-la como marco. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 30 Revisão de parte como marco (EST-05, 1 h, sprint 6)
-- [ ] **Estudo na ficha e na preparação** - A ficha da pessoa mostra o progresso no livro e o cartão de preparação passa a mostrar a lição seguinte. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa; Hoje › 9 Cartão de preparação (EST-06, 2 h, sprint 6)
+- [x] **Visita com estudo (P3)** - No registo da visita, "Estudaram o livro?" abre a lição e o ponto onde pararam. Grava `lesson_number` e `stopped_at_point`. UI: [Visitas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 22 Registar visita, com estudo (EST-01, 2 h, sprint 6)
+  - A lição vem por defeito na lição em curso. A tabela `lesson_progress` guarda início, conclusão, "Tente o seguinte" e nota; a migração 0007 preenche-a a partir das visitas já registadas
+- [x] **Progresso no estudo (P3)** - Lição actual das 60, a parte em que está (1 a 12, 13 a 33, 34 a 47, 48 a 60), o ritmo e o número de sessões por lição. Inclui o estado Estudo por começar. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 27 Progresso no estudo, Estudo por começar (EST-02, 4 h, sprint 6)
+  - Ecrã student/[id]/study: lição actual, barra das 60, ritmo (uma lição a cada N visitas) e as 4 partes, com a grelha de lições da parte em curso. Sem lições, mostra Estudo por começar com Registar visita com estudo
+- [x] **Detalhe da lição (P3)** - Data de início e de conclusão, "Tente o seguinte" marcado só pelo utilizador, nota e dúvidas pendentes. Grava em `lesson_progress`. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 28 Detalhe da lição (EST-03, 2 h, sprint 6)
+  - Ecrã student/[id]/lesson/[n]: datas, número de visitas, "Tente o seguinte", nota, dúvidas pendentes com Respondida (`visits.question_resolved_at`) e Marcar como concluída na última lição
+- [x] **Avanço de lição (P3)** - Quando a visita regista uma lição mais avançada, o app fecha a anterior e abre a nova, com desfazer. Se saltar mais de uma, pergunta pelas intermédias. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 29 Avanço de lição com desfazer (EST-04, 3 h, sprint 6)
+  - Ao guardar, fecha as lições anteriores com a data da visita, pede o "Tente o seguinte" da que fecha e, na primeira lição, passa o percurso a Estudo iniciado. O toast tem Desfazer. Falta: editar uma visita não volta a calcular o avanço
+- [x] **Revisão de parte (P3)** - Ao fechar a última lição de uma parte, propor a revisão e guardá-la como marco. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 30 Revisão de parte como marco (EST-05, 1 h, sprint 6)
+  - A folha abre sozinha quando a visita fecha a última lição de uma parte; depois, ao tocar numa parte concluída no Progresso no estudo. Guarda um marco `part_review` com data e nota (`milestones.note`)
+- [x] **Estudo na ficha e na preparação** - A ficha da pessoa mostra o progresso no livro e o cartão de preparação passa a mostrar a lição seguinte. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa; Hoje › 9 Cartão de preparação (EST-06, 2 h, sprint 6)
+  - Cartão do estudo (lição, parte, barra e ritmo) na ficha e na preparação, que abre o Progresso no estudo. A dúvida pendente passa a ser a última por responder
 
 ## Relatório e horas
 

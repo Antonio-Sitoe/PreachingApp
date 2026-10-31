@@ -11,7 +11,8 @@ import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
 import { STAGES } from '@/constants/stages';
 import { VisitRow } from '@/components/visits/visit-row';
-import { studentsActions, visitsActions } from '@/database/actions';
+import { StudyCard } from '@/components/study/study-card';
+import { lessonsActions, studentsActions, visitsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';
 import {
   formatAvailability,
@@ -70,7 +71,14 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
     queryFn: () => visitsActions.getByStudent(student.id),
   });
   const visits = visitsQuery.data ?? [];
-  const pendingQuestion = visits.find((visit) => visit.outcome === 'met')?.pendingQuestion;
+  const pendingQuestion = visits.find(
+    (visit) => visit.pendingQuestion && !visit.questionResolvedAt
+  )?.pendingQuestion;
+  const lessonsQuery = useQuery({
+    queryKey: ['lessons', student.id],
+    queryFn: () => lessonsActions.getByStudent(student.id),
+  });
+  const studying = (lessonsQuery.data ?? []).length > 0;
   const openVisits = () => router.push(`/student/${student.id}/visits`);
   const queryClient = useQueryClient();
   const [pausing, setPausing] = React.useState(false);
@@ -164,6 +172,24 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
           descriptionTone={nextVisitHint.tone}
         />
       </SettingsSection>
+
+      {studying ? (
+        <View className="gap-2">
+          <Text className="px-1 font-display-semibold text-[13px] leading-4 text-muted-foreground">
+            Estudo
+          </Text>
+          <StudyCard studentId={student.id} />
+        </View>
+      ) : lessonsQuery.data ? (
+        <SettingsSection title="Estudo">
+          <SettingsRow
+            first
+            title="Estudo por começar"
+            description="Regista uma visita com estudo para começar o livro"
+            onPress={() => router.push(`/student/${student.id}/study`)}
+          />
+        </SettingsSection>
+      ) : null}
 
       {pendingQuestion ? (
         <SettingsSection title="Dúvida pendente">

@@ -7,6 +7,8 @@ export async function refreshVisitData(queryClient: QueryClient): Promise<void> 
     queryClient.invalidateQueries({ queryKey: ['students'] }),
     queryClient.invalidateQueries({ queryKey: ['visits'] }),
     queryClient.invalidateQueries({ queryKey: ['appointments'] }),
+    queryClient.invalidateQueries({ queryKey: ['lessons'] }),
+    queryClient.invalidateQueries({ queryKey: ['milestones'] }),
   ]);
   void syncAllNotifications();
 }

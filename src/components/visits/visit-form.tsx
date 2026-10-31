@@ -1,5 +1,6 @@
 import { SetupLayout } from '@/components/onboarding/setup-layout';
 import { SettingsRow, SettingsSection, SettingsSwitch } from '@/components/settings/grouped-list';
+import { AlertDialog } from '@/components/ui/alert-dialog';
 import { AppIcon } from '@/components/ui/app-icon';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,7 @@ import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { FieldLabel, TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
-import { studentsActions, visitsActions } from '@/database/actions';
+import { lessonsActions, studentsActions, visitsActions } from '@/database/actions';
 import { parseScriptures } from '@/database/actions/visits';
 import type { Visit, VisitOutcome } from '@/database/schemas';
 import { THEME } from '@/lib/theme';
@@ -17,6 +18,9 @@ import { fromTimeString, toTimeString } from '@/utils/students/form';
 import { formatPickedDay } from '@/utils/students/journey';
 import { countEvent } from '@/utils/usage';
 import { formatAppointmentLabel, timeOf, withTime } from '@/utils/visits/format';
+import { capitalize } from '@/components/reports/format';
+import { formatLessons } from '@/utils/study/format';
+import { currentLesson } from '@/utils/study/parts';
 import { suggestNextVisit } from '@/utils/visits/next-visit';
 import DateTimePicker, {
   type DateTimePickerChangeEvent,
@@ -99,15 +103,27 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
     queryFn: () => studentsActions.getDetail(studentId as string),
     enabled: Boolean(studentId),
   });
-  const lastMetQuery = useQuery({
-    queryKey: ['visits', 'last-met', studentId],
-    queryFn: () => visitsActions.getLastMet([studentId as string]),
+  const lessonsQuery = useQuery({
+    queryKey: ['lessons', studentId],
+    queryFn: () => lessonsActions.getByStudent(studentId as string),
     enabled: Boolean(studentId),
   });
 
   const detail = detailQuery.data;
   const student = detail?.student;
-  const lastLesson = studentId ? lastMetQuery.data?.get(studentId)?.lessonNumber : undefined;
+  const lessonRows = lessonsQuery.data ?? [];
+  const inProgress = lessonsQuery.data ? currentLesson(lessonsQuery.data) : null;
+  const openLesson = lessonRows.find((row) => !row.completedAt && row.lessonNumber === inProgress);
+  const chosenLesson = lesson ?? inProgress ?? 1;
+  const advancing =
+    !editing &&
+    outcome === 'met' &&
+    studied &&
+    openLesson !== undefined &&
+    chosenLesson > openLesson.lessonNumber;
+  const skipped = advancing && openLesson ? chosenLesson - openLesson.lessonNumber - 1 : 0;
+  const [previousGoalDone, setPreviousGoalDone] = React.useState(false);
+  const [askingSkipped, setAskingSkipped] = React.useState(false);
   const suggestion = React.useMemo(
     () =>
       student && detail
@@ -126,8 +142,12 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
   }, [suggestion, nextEdited]);
 
   React.useEffect(() => {
-    if (!editing) setLesson(lastLesson ?? undefined);
-  }, [lastLesson, editing]);
+    if (!editing) setLesson(inProgress ?? undefined);
+  }, [inProgress, editing]);
+
+  React.useEffect(() => {
+    setPreviousGoalDone(openLesson?.goalDone ?? false);
+  }, [openLesson]);
 
   function selectStudent(id: string) {
     setStudentId(id);
@@ -144,7 +164,44 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
 
   const refresh = () => refreshVisitData(queryClient);
 
-  async function save() {
+  function onSavePress() {
+    if (skipped > 0) setAskingSkipped(true);
+    else void save(false);
+  }
+
+  function recordStudy(studentId: string, lessonNumber: number, closeSkipped: boolean) {
+    const result = lessonsActions.advance({
+      studentId,
+      lesson: lessonNumber,
+      date: visitedAt,
+      previousGoalDone: advancing ? previousGoalDone : undefined,
+      closeSkipped,
+    });
+    const closed = result.closedLessons;
+    const message =
+      closed.length > 0
+        ? `${capitalize(formatLessons(closed))} ${closed.length === 1 ? 'fechada' : 'fechadas'}. A ${lessonNumber} é agora a actual.`
+        : result.startedLesson && result.undo.stageChange
+          ? `Estudo iniciado na lição ${lessonNumber}.`
+          : null;
+    if (message) {
+      showToast({
+        message,
+        action: {
+          label: 'Desfazer',
+          icon: 'undo',
+          onPress: async () => {
+            lessonsActions.undoAdvance(result.undo);
+            await refresh();
+          },
+        },
+      });
+    }
+    return result;
+  }
+
+  async function save(closeSkipped: boolean) {
+    setAskingSkipped(false);
     if (!student || saving) return;
     setSaving(true);
     const met = outcome === 'met';
@@ -155,7 +212,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
       scriptures: met ? scriptures : [],
       pendingQuestion: met ? pendingQuestion : '',
       promisedToBring,
-      lessonNumber: met && studied ? (lesson ?? 1) : null,
+      lessonNumber: met && studied ? chosenLesson : null,
       stoppedAtPoint: stoppedAt,
     };
     try {
@@ -180,13 +237,22 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
             : null,
       });
       void countEvent('visit_logged');
+      const study = fields.lessonNumber
+        ? recordStudy(student.id, fields.lessonNumber, closeSkipped)
+        : null;
       await refresh();
       if (outcome === 'not_home') {
         setNotHomeVisit(visit);
         return;
       }
-      showToast({ message: 'Visita guardada.' });
-      router.back();
+      if (!study || (study.closedLessons.length === 0 && !study.undo.stageChange)) {
+        showToast({ message: 'Visita guardada.' });
+      }
+      if (study?.completedPart) {
+        router.replace(`/student/${student.id}/study?review=${study.completedPart}`);
+      } else {
+        router.back();
+      }
     } catch {
       setSaving(false);
       showToast({ message: 'Não foi possível guardar a visita. Tenta outra vez.' });
@@ -202,7 +268,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
         onBack={() => router.back()}
         className="bg-background"
         footer={
-          <Button disabled={!student || saving} onPress={save}>
+          <Button disabled={!student || saving} onPress={onSavePress}>
             <Text>{saving ? 'A guardar…' : editing ? 'Guardar alterações' : 'Guardar visita'}</Text>
           </Button>
         }>
@@ -342,6 +408,32 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
               value={stoppedAt}
               onChangeText={setStoppedAt}
             />
+            {advancing && openLesson ? (
+              <>
+                <View role="note" className="flex-row gap-2.5 rounded-lg bg-secondary px-4 py-3">
+                  <AppIcon name="alert" size={18} className="mt-px text-primary-strong" />
+                  <Text
+                    variant="labelS"
+                    className="flex-1 text-[13px] leading-[18px] text-primary-strong">
+                    A lição {openLesson.lessonNumber} fica fechada com a data desta visita e a{' '}
+                    {chosenLesson} passa a ser a actual. Podes desfazer depois de guardar.
+                  </Text>
+                </View>
+                <SettingsSection title={`Lição ${openLesson.lessonNumber}, que terminaram`}>
+                  <SettingsRow
+                    first
+                    title='Cumpriu o "Tente o seguinte"'
+                    trailing={
+                      <SettingsSwitch
+                        value={previousGoalDone}
+                        onValueChange={setPreviousGoalDone}
+                        label='Cumpriu o "Tente o seguinte"'
+                      />
+                    }
+                  />
+                </SettingsSection>
+              </>
+            ) : null}
           </>
         ) : null}
 
@@ -378,6 +470,24 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
         />
       ) : null}
 
+      <AlertDialog
+        open={askingSkipped}
+        onClose={() => setAskingSkipped(false)}
+        icon="book"
+        tone="brand"
+        title={
+          skipped === 1
+            ? `A lição ${chosenLesson - 1} também ficou concluída?`
+            : `As ${formatLessons([chosenLesson - skipped, chosenLesson - 1])} também ficaram concluídas?`
+        }
+        description={`Passaram da lição ${openLesson?.lessonNumber ?? ''} para a ${chosenLesson}.`}>
+        <Button onPress={() => void save(true)}>
+          <Text>{skipped === 1 ? 'Sim, ficou concluída' : 'Sim, ficaram concluídas'}</Text>
+        </Button>
+        <Button variant="ghost" className="min-h-12" onPress={() => void save(false)}>
+          <Text>{skipped === 1 ? 'Não, saltaram-na' : 'Não, saltaram-nas'}</Text>
+        </Button>
+      </AlertDialog>
       <NotHomeSheet
         visit={notHomeVisit}
         studentName={student?.displayName ?? ''}

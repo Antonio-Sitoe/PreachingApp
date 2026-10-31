@@ -20,6 +20,7 @@ export const visits = sqliteTable(
     // Lista JSON de textos: ["Salmo 37:29", "Apocalipse 21:4"].
     scriptures: text('scriptures'),
     pendingQuestion: text('pending_question'),
+    questionResolvedAt: text('question_resolved_at'),
     promisedToBring: text('promised_to_bring'),
     // 1 a 60, a lição do livro em que ficaram. Vazio quando não estudaram.
     lessonNumber: integer('lesson_number'),

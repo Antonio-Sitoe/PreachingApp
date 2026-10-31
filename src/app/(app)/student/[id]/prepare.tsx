@@ -1,4 +1,5 @@
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { StudyCard } from '@/components/study/study-card';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,7 +10,7 @@ import { studentsActions, visitsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';
 import { formatRhythm } from '@/utils/students/detail';
 import { formatDayMonth } from '@/utils/students/pause';
-import { formatBookPart, splitPromised } from '@/utils/today/format';
+import { splitPromised } from '@/utils/today/format';
 import { formatAppointmentLabel } from '@/utils/visits/format';
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -38,7 +39,9 @@ export default function PrepareVisitScreen() {
   const met = (visitsQuery.data ?? []).filter((visit) => visit.outcome === 'met');
   const lastMet = met[0] ?? null;
   const lastTalk = met.find((visit) => visit.notes?.trim()) ?? null;
-  const lastLesson = (visitsQuery.data ?? []).find((visit) => visit.lessonNumber)?.lessonNumber;
+  const pendingQuestion = met.find(
+    (visit) => visit.pendingQuestion && !visit.questionResolvedAt
+  )?.pendingQuestion;
   const promised = splitPromised(lastMet?.promisedToBring ?? null);
 
   function toggle(item: string) {
@@ -96,26 +99,21 @@ export default function PrepareVisitScreen() {
               </PrepSection>
             )}
 
-            {lastMet?.pendingQuestion ? (
+            {pendingQuestion ? (
               <PrepSection icon="question" title="Dúvida pendente" tone="warning">
-                <Text>{lastMet.pendingQuestion}</Text>
+                <Text>{pendingQuestion}</Text>
               </PrepSection>
             ) : null}
 
-            {lastLesson ? (
-              <PrepSection icon="book" title="Lição em curso">
-                <View className="flex-row flex-wrap items-baseline justify-between gap-2">
-                  <Text variant="titleM">Lição {lastLesson}</Text>
-                  <Text variant="bodyS" className="text-muted-foreground">
-                    {formatBookPart(lastLesson)}
-                  </Text>
-                </View>
-                <Text variant="bodyS" className="text-muted-foreground">
-                  {formatRhythm(student.rhythmDays)}
-                  {lastMet?.stoppedAtPoint ? ` · pararam em ${lastMet.stoppedAtPoint}` : ''}
-                </Text>
-              </PrepSection>
-            ) : null}
+            <StudyCard
+              studentId={student.id}
+              footer={[
+                formatRhythm(student.rhythmDays),
+                lastMet?.stoppedAtPoint ? `pararam em ${lastMet.stoppedAtPoint}` : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            />
 
             {promised.length > 0 ? (
               <PrepSection icon="gift" title="Prometi levar">

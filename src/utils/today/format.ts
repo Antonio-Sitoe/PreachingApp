@@ -64,21 +64,6 @@ export function weekOf(date = new Date()): Date[] {
   return Array.from({ length: 7 }, (_, index) => monday.add(index, 'day').toDate());
 }
 
-const BOOK_PARTS = [
-  { from: 1, to: 12 },
-  { from: 13, to: 33 },
-  { from: 34, to: 47 },
-  { from: 48, to: 60 },
-] as const;
-
-/** "Parte 2 · lições 13 a 33" */
-export function formatBookPart(lesson: number): string {
-  const index = BOOK_PARTS.findIndex((part) => lesson >= part.from && lesson <= part.to);
-  if (index < 0) return '';
-  const part = BOOK_PARTS[index];
-  return `Parte ${index + 1} · lições ${part.from} a ${part.to}`;
-}
-
 /** "a brochura; o convite" → ["a brochura", "o convite"] */
 export function splitPromised(value: string | null): string[] {
   return (value ?? '')
