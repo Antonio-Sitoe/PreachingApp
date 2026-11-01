@@ -74,7 +74,7 @@ object TimerStore {
     val current = read(context)
     if (current.status != "running") return current
     val now = System.currentTimeMillis()
-    return current.copy(status = "paused", accumulatedMs = current.elapsedMs(now), resumedAt = now)
+    return current.copy(status = "paused", accumulatedMs = current.elapsedMs(now))
       .also { write(context, it); show(context, it) }
   }
 

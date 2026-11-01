@@ -137,7 +137,6 @@ fun EditorContent(
   }
 
   MaterialTheme(colorScheme = scheme) {
-    // O ecrã vai até ao fundo: a barra fica acima do teclado ou da barra de navegação.
     Column(
       modifier = Modifier
         .fillMaxSize()
@@ -260,7 +259,6 @@ private fun ReorderableCollectionItemScope.BlockRow(
       .padding(vertical = 2.dp),
     verticalAlignment = Alignment.Top,
   ) {
-    // A pega fica na margem de 20 (o texto alinha com o título, como o `px-5` do editor antigo).
     Box(
       modifier = Modifier
         .width(20.dp)
