@@ -1,7 +1,7 @@
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import type { StudentListItem } from '@/database/actions';
+import type { StudentListItem } from '@/database/@types';
 import { formatPauseRetry, formatPauseSummary } from '@/utils/students/pause';
 import { View } from 'react-native';
 import { GroupedRow } from './student-row';

@@ -2,12 +2,9 @@ import { getTableName, is } from 'drizzle-orm';
 import { getTableConfig, SQLiteTable } from 'drizzle-orm/sqlite-core';
 import { db } from '../db';
 import * as schema from '../schemas';
+import type { BackupRow, BackupTables } from '../@types';
 
 const INSERT_VARIABLES_LIMIT = 900;
-
-export type BackupRow = Record<string, unknown>;
-
-export type BackupTables = Record<string, BackupRow[]>;
 
 function sortByDependencies(tables: SQLiteTable[]): SQLiteTable[] {
   const sorted: SQLiteTable[] = [];

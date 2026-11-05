@@ -1,44 +1,8 @@
 import { and, asc, desc, eq, inArray, isNull, lte } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import { db } from '../db';
-import {
-  type Appointment,
-  appointments,
-  type Student,
-  students,
-  type Visit,
-  type VisitOutcome,
-  visits,
-} from '../schemas';
-
-export type NextVisitInput = {
-  date: Date;
-  /** HH:mm */
-  time: string | null;
-  remindMinutesBefore: number | null;
-};
-
-export type VisitInput = {
-  studentId: string;
-  visitedAt: Date;
-  outcome: VisitOutcome;
-  notes?: string;
-  scriptures?: string[];
-  pendingQuestion?: string;
-  promisedToBring?: string;
-  lessonNumber?: number | null;
-  stoppedAtPoint?: string;
-  next?: NextVisitInput | null;
-};
-
-export type VisitEdit = Omit<VisitInput, 'studentId' | 'next'>;
-
-export type VisitDetail = {
-  visit: Visit;
-  student: Student;
-  /** A marcação feita ao guardar esta visita. */
-  next: Appointment | null;
-};
+import { type Appointment, appointments, students, type Visit, visits } from '../schemas';
+import type { VisitDetail, VisitEdit, VisitInput } from '../@types';
 
 const now = () => new Date().toISOString();
 

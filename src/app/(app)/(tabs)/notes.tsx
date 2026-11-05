@@ -10,7 +10,7 @@ import { ListCard, TagsFilter } from '@/components/notes/list';
 import { useTags } from '@/components/notes/tags';
 import { CONTENT_MAX_WIDTH } from '@/components/ui/screen';
 import { notesActions } from '@/database/actions';
-import type { NoteListItem } from '@/database/actions';
+import type { NoteListItem } from '@/database/@types';
 import { THEME } from '@/lib/theme';
 import { FlashList } from '@shopify/flash-list';
 import { keepPreviousData, useInfiniteQuery, useQueryClient } from '@tanstack/react-query';

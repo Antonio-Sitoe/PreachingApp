@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
-import type { TodayItem } from '@/database/actions';
+import type { TodayItem } from '@/database/@types';
 import { cn } from '@/utils/cn';
 import { daysAhead, formatShortDay, nextSaturday } from '@/utils/students/return-date';
 import { formatAppointmentLabel } from '@/utils/visits/format';

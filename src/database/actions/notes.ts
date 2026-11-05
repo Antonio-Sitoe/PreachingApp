@@ -1,25 +1,10 @@
 import { normalizeSearch, plainBody } from '@/components/notes/body';
-import type { Stage } from '@/constants/stages';
 import { and, asc, count, desc, eq, isNull, sql } from 'drizzle-orm';
 import { db } from '../db';
-import { type NewNote, type Note, notes } from '../schemas/notes';
+import { type Note, notes } from '../schemas/notes';
 import { tags } from '../schemas/tags';
 import { students } from '../schemas/students';
-
-export type NoteInput = Pick<NewNote, 'title' | 'body' | 'tagId' | 'color' | 'studentId' | 'remoteId'>;
-
-export type NoteListItem = Note & { tagName: string | null };
-
-export type NotePage = {
-  data: NoteListItem[];
-  totalPage: number;
-};
-
-export type LinkableStudent = {
-  id: string;
-  name: string;
-  stage: Stage;
-};
+import type { LinkableStudent, NoteInput, NotePage } from '../@types';
 
 function nowIso() {
   return new Date().toISOString();

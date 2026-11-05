@@ -1,5 +1,5 @@
 import { capitalize } from '@/components/reports/format';
-import type { MonthReport } from '@/database/actions/monthly-reports';
+import type { MonthReport } from '@/database/@types';
 import { formatMonthName } from '@/utils/hours/format';
 import dayjs from 'dayjs';
 

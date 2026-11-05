@@ -1,6 +1,7 @@
 import { useEditorStore } from '@/components/notes/editor/store';
 import { showToast } from '@/components/ui/toast';
-import { notesActions, type NoteInput } from '@/database/actions';
+import { notesActions } from '@/database/actions';
+import type { NoteInput } from '@/database/@types';
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 let pending: Partial<NoteInput> | null = null;

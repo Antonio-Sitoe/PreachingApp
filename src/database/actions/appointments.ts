@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import { and, asc, desc, eq, gte, inArray, isNotNull, isNull, lt } from 'drizzle-orm';
 import { db } from '../db';
 import { appointments, students, visits } from '../schemas';
+import type { ReminderTarget, ScheduleInput } from '../@types';
 
 /** Os dias (YYYY-MM-DD) do mês com marcações por cumprir. */
 async function getScheduledDays(month: Date): Promise<string[]> {
@@ -19,19 +20,6 @@ async function getScheduledDays(month: Date): Promise<string[]> {
     );
   return [...new Set(rows.map((row) => dayjs(row.scheduledAt).format('YYYY-MM-DD')))];
 }
-
-export type ReminderTarget = {
-  appointmentId: string;
-  studentId: string;
-  studentName: string;
-  studentGender: (typeof students.$inferSelect)['gender'];
-  scheduledAt: string;
-  /** HH:mm */
-  time: string;
-  remindMinutesBefore: number;
-  lastLesson: number | null;
-  promisedToBring: string | null;
-};
 
 /**
  * As marcações por cumprir com hora e aviso, de estudantes activos, a partir de hoje.
@@ -97,13 +85,6 @@ async function getReminderTargets(limit = 50): Promise<ReminderTarget[]> {
     promisedToBring: lastVisits.get(row.studentId)?.promisedToBring ?? null,
   }));
 }
-
-export type ScheduleInput = {
-  date: Date;
-  /** HH:mm */
-  time: string | null;
-  remindMinutesBefore: number | null;
-};
 
 async function schedule(studentId: string, input: ScheduleInput) {
   const timestamp = new Date().toISOString();

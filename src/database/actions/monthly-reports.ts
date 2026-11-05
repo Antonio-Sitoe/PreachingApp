@@ -4,28 +4,8 @@ import { db } from '../db';
 import { type MonthlyReport, monthlyReports } from '../schemas/monthly-reports';
 import { students } from '../schemas/students';
 import { timeEntries } from '../schemas/time-entries';
-import type { PublisherType } from '../schemas/users';
 import { visits } from '../schemas/visits';
-
-export type MonthReport = {
-  year: number;
-  month: number;
-  participated: boolean;
-  participatedAuto: boolean;
-  bibleStudies: number;
-  studiesAuto: number;
-  studyNames: string[];
-  minutes: number;
-  sentAt: string | null;
-  sentHours: number | null;
-};
-
-export type SentReport = {
-  publisherType: PublisherType;
-  participated: boolean;
-  bibleStudies: number;
-  hours: number;
-};
+import type { MonthReport, SentReport } from '../@types';
 
 function nowIso() {
   return new Date().toISOString();

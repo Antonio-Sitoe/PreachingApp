@@ -2,19 +2,8 @@ import { planDates, serializeWeekdays } from '@/utils/hours/plan';
 import { and, asc, eq, gte, isNull } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import { db } from '../db';
-import { type MonthPlan, type PlanDay, monthPlans, planDays } from '../schemas/month-plans';
-import type { PublisherType } from '../schemas/users';
-
-export type MonthPlanInput = {
-  year: number;
-  month: number;
-  publisherType: PublisherType;
-  hourGoal: number;
-  weekdays: readonly number[];
-  minutesPerDay: number;
-};
-
-export type MonthPlanWithDays = MonthPlan & { days: PlanDay[] };
+import { monthPlans, planDays } from '../schemas/month-plans';
+import type { MonthPlanInput, MonthPlanWithDays } from '../@types';
 
 function nowIso() {
   return new Date().toISOString();

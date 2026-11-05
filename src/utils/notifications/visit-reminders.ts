@@ -1,4 +1,5 @@
-import { appointmentsActions, type ReminderTarget } from '@/database/actions';
+import { appointmentsActions } from '@/database/actions';
+import type { ReminderTarget } from '@/database/@types';
 import { shortName } from '@/utils/students/journey';
 import { withTime } from '@/utils/visits/format';
 import dayjs from 'dayjs';

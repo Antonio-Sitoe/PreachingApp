@@ -2,17 +2,11 @@ import dayjs from 'dayjs';
 import { and, asc, desc, eq, inArray, isNull, ne } from 'drizzle-orm';
 import { db } from '../db';
 import {
-  type Appointment,
-  type AppointmentTimeOfDay,
   appointments,
   DEFAULT_RHYTHM_DAYS,
-  type NewStudent,
-  type Pause,
-  type PauseReason,
   pauses,
   type StageChange,
   type Student,
-  type StudentAvailability,
   type StudentStage,
   visits,
   stageChanges,
@@ -20,91 +14,20 @@ import {
   students,
 } from '../schemas';
 import { usersActions } from './users';
-
-export type StudentInput = Pick<
-  NewStudent,
-  | 'displayName'
-  | 'nameIsProvisional'
-  | 'note'
-  | 'phone'
-  | 'ageRange'
-  | 'gender'
-  | 'stage'
-  | 'status'
-  | 'rhythmDays'
-  | 'latitude'
-  | 'longitude'
-  | 'address'
-  | 'directions'
-  | 'locatedAt'
->;
-
-export type StudentLocation = {
-  latitude: number;
-  longitude: number;
-  address?: string | null;
-};
-
-export type ReturnOn = {
-  date: Date;
-  timeOfDay?: AppointmentTimeOfDay;
-};
-
-export type QuickStudentInput = {
-  name: string;
-  nameIsProvisional?: boolean;
-  note?: string;
-  location?: StudentLocation | null;
-  returnOn?: ReturnOn | null;
-  rhythmDays?: number;
-};
-
-export type QuickStudentResult = {
-  student: Student;
-  appointment: Appointment | null;
-};
-
-export type StudentNextVisit = {
-  scheduledAt: string;
-  timeOfDay: AppointmentTimeOfDay;
-  time: string | null;
-};
-
-export type StudentListItem = Student & {
-  nextVisit: StudentNextVisit | null;
-  lastVisitAt: string | null;
-  lastLesson: number | null;
-  pause: Pick<Pause, 'reason' | 'note' | 'retryAt'> | null;
-};
-
-export type PauseInput = {
-  reason: PauseReason;
-  note?: string | null;
-  /** Dia para tentar de novo, YYYY-MM-DD. */
-  retryAt?: string | null;
-};
-
-/** Dias da semana em que costuma estar (1 = segunda … 7 = domingo) e a melhor hora, HH:mm. */
-export type AvailabilityInput = {
-  weekdays: number[];
-  time: string | null;
-};
-
-export type StudentDetail = {
-  student: Student;
-  nextVisit: Appointment | null;
-  availabilities: StudentAvailability[];
-};
-
-export type StudentJourney = {
-  student: Student;
-  /** Mudanças de etapa, da mais antiga para a mais recente. */
-  stageChanges: StageChange[];
-};
+import type {
+  AvailabilityInput,
+  PauseInput,
+  QuickStudentInput,
+  QuickStudentResult,
+  StudentDetail,
+  StudentInput,
+  StudentJourney,
+  StudentListItem,
+  StudentNextVisit,
+  Transaction,
+} from '../@types';
 
 const now = () => new Date().toISOString();
-
-type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 /** Troca os dias habituais: apaga (logicamente) os que havia e grava os novos. */
 function replaceAvailability(

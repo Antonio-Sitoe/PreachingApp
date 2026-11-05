@@ -1,5 +1,5 @@
 import { PersonCard } from '@/components/ui/person-card';
-import type { StudentListItem } from '@/database/actions';
+import type { StudentListItem } from '@/database/@types';
 import { cn } from '@/utils/cn';
 import { getStudentDetail } from '@/utils/students/list';
 import { View } from 'react-native';

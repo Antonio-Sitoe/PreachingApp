@@ -1,18 +1,8 @@
 import { and, desc, eq, gte, isNull, lt } from 'drizzle-orm';
 import dayjs from 'dayjs';
 import { db } from '../db';
-import { type NewTimeEntry, type TimeEntrySource, timeEntries } from '../schemas/time-entries';
-
-export type TimeEntryInput = {
-  startedAt: string;
-  minutes: number;
-  source: TimeEntrySource;
-};
-
-export type MonthStats = {
-  minutes: number;
-  daysOut: number;
-};
+import { type NewTimeEntry, timeEntries } from '../schemas/time-entries';
+import type { MonthStats, TimeEntryInput } from '../@types';
 
 function nowIso() {
   return new Date().toISOString();

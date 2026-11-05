@@ -4,42 +4,12 @@ import {
   type LessonProgress,
   lessonProgress,
   milestones,
-  type StageChange,
   stageChanges,
   students,
   visits,
 } from '../schemas';
 import { currentLesson } from '@/utils/study/parts';
-
-export type AdvanceInput = {
-  studentId: string;
-  lesson: number;
-  date: Date;
-  /** "Tente o seguinte" da lição que fica fechada agora. */
-  previousGoalDone?: boolean;
-  closeSkipped?: boolean;
-};
-
-export type AdvanceResult = {
-  startedLesson: number | null;
-  closedLessons: number[];
-  /** Parte cuja última lição ficou fechada agora: 1 a 4. */
-  completedPart: number | null;
-  undo: AdvanceUndo;
-};
-
-export type AdvanceUndo = {
-  createdIds: string[];
-  closedIds: string[];
-  goalDone: { id: string; previous: boolean } | null;
-  stageChange: StageChange | null;
-};
-
-export type LessonDetail = {
-  row: LessonProgress | null;
-  visitCount: number;
-  questions: { visitId: string; question: string; askedAt: string }[];
-};
+import type { AdvanceInput, AdvanceResult, AdvanceUndo, LessonDetail } from '../@types';
 
 const PART_ENDS: Record<number, number> = { 12: 1, 33: 2, 47: 3, 60: 4 };
 const REVISIT_STAGES = ['first_contact', 'return_visit'];

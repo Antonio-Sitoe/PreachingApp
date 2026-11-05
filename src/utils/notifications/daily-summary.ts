@@ -1,4 +1,5 @@
-import { todayActions, type TodayData } from '@/database/actions';
+import { todayActions } from '@/database/actions';
+import type { TodayData } from '@/database/@types';
 import { formatRhythm } from '@/utils/students/detail';
 import { shortName } from '@/utils/students/journey';
 import type { NotificationPreferences } from '@/utils/notifications/preferences';

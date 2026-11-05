@@ -1,11 +1,7 @@
 import { and, eq, isNull } from 'drizzle-orm';
 import { db } from '../db';
-import { type NewUser, type PublisherType, type User, users } from '../schemas';
-
-export type UserInput = Pick<NewUser, 'name' | 'publisherType' | 'language' | 'monthlyHourGoal'>;
-
-export type UserProfileInput = Required<Pick<UserInput, 'name' | 'publisherType' | 'language'>> &
-  Pick<UserInput, 'monthlyHourGoal'>;
+import { type PublisherType, type User, users } from '../schemas';
+import type { UserInput, UserProfileInput } from '../@types';
 
 export const MONTHLY_HOUR_GOALS: Record<PublisherType, readonly number[]> = {
   publisher: [],

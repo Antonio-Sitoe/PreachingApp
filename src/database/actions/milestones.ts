@@ -1,14 +1,7 @@
 import { and, desc, eq, isNull } from 'drizzle-orm';
 import { db } from '../db';
-import { type Milestone, type MilestoneType, milestones } from '../schemas';
-
-export type MilestoneInput = {
-  studentId: string;
-  label: string;
-  /** Dia do marco, YYYY-MM-DD. */
-  occurredAt: string;
-  type?: MilestoneType;
-};
+import { type Milestone, milestones } from '../schemas';
+import type { MilestoneInput } from '../@types';
 
 const now = () => new Date().toISOString();
 

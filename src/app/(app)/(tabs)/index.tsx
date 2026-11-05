@@ -22,13 +22,12 @@ import { NotHomeSheet } from '@/components/visits/not-home-sheet';
 import {
   appointmentsActions,
   monthPlansActions,
-  type OutOfRhythmItem,
   timeEntriesActions,
-  type TodayItem,
   todayActions,
   usersActions,
   visitsActions,
 } from '@/database/actions';
+import type { OutOfRhythmItem, TodayItem } from '@/database/@types';
 import type { Visit } from '@/database/schemas';
 import { formatMonthName } from '@/utils/hours/format';
 import { daysLeftInMonth } from '@/utils/hours/plan';

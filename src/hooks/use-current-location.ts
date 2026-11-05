@@ -1,4 +1,4 @@
-import type { StudentLocation } from '@/database/actions';
+import type { StudentLocation } from '@/database/@types';
 import { checkPermission, requestPermission } from '@/utils/permissions';
 import * as Location from 'expo-location';
 import * as React from 'react';

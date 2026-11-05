@@ -2,7 +2,7 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { NOTE_INK, NOTE_INK_MUTED } from '@/components/notes/colors';
 import { formatNoteDay } from '@/components/notes/format';
-import type { NoteListItem } from '@/database/actions';
+import type { NoteListItem } from '@/database/@types';
 import { useMemo, useRef } from 'react';
 import { Pressable, View } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';

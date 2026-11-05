@@ -5,7 +5,8 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { LIST_VIEW_OPTIONS } from '@/constants/settings';
-import { type MonthReport, monthlyReportsActions, usersActions } from '@/database/actions';
+import { monthlyReportsActions, usersActions } from '@/database/actions';
+import type { MonthReport } from '@/database/@types';
 import { isPioneer } from '@/utils/hours/profile';
 import {
   formatReportDetail,

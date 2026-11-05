@@ -1,4 +1,5 @@
-import { backupActions, type BackupTables } from '@/database/actions';
+import { backupActions } from '@/database/actions';
+import type { BackupTables } from '@/database/@types';
 import journal from '@/database/migrations/meta/_journal.json';
 import { monthNameToPortuguese } from '@/utils/dates';
 import { mergeNotificationPreferences } from '@/utils/notifications/preferences';

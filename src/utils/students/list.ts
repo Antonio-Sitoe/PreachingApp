@@ -6,7 +6,7 @@ import {
   type StudentFilter,
   type StudentSort,
 } from '@/constants/students';
-import type { StudentListItem } from '@/database/actions';
+import type { StudentListItem } from '@/database/@types';
 import type { AppointmentTimeOfDay } from '@/database/schemas';
 import dayjs, { type Dayjs } from 'dayjs';
 import '@/lib/dayjs';
