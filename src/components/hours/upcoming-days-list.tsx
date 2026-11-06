@@ -3,6 +3,7 @@ import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { monthPlansActions } from '@/database/actions';
 import type { PlanDay } from '@/database/schemas';
 import { formatDuration, formatEntryDay } from '@/utils/hours/format';
@@ -30,7 +31,7 @@ function UpcomingDaysList({ days }: UpcomingDaysListProps) {
   const run = async (action: () => Promise<unknown>) => {
     try {
       await action();
-      await queryClient.invalidateQueries({ queryKey: ['month-plans'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.monthPlans.all });
       setEditing(null);
     } catch {
       showToast({ message: 'Não foi possível guardar. Tenta de novo.' });

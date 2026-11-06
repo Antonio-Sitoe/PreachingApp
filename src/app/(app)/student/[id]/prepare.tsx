@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { studentsActions, visitsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';
 import { formatRhythm } from '@/utils/students/detail';
@@ -22,12 +23,12 @@ export default function PrepareVisitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const detailQuery = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });
   const visitsQuery = useQuery({
-    queryKey: ['visits', 'student', id],
+    queryKey: queryKeys.visits.byStudent(id),
     queryFn: () => visitsActions.getByStudent(id),
     enabled: Boolean(id),
   });

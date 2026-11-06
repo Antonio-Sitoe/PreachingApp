@@ -11,6 +11,7 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { monthPlansActions, timeEntriesActions, usersActions } from '@/database/actions';
 import { formatDuration, formatMonthName } from '@/utils/hours/format';
 import { daysLeftInMonth, remainingMinutes } from '@/utils/hours/plan';
@@ -36,26 +37,26 @@ export default function HoursScreen() {
   const [planOpen, setPlanOpen] = React.useState(false);
 
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
   const { data: stats = { minutes: 0, daysOut: 0 } } = useQuery({
-    queryKey: ['time-entries', 'month', year, month],
+    queryKey: queryKeys.timeEntries.month(year, month),
     queryFn: () => timeEntriesActions.getMonthStats(year, month),
   });
   const { data: week = [] } = useQuery({
-    queryKey: ['time-entries', 'week', todayKey],
+    queryKey: queryKeys.timeEntries.week(todayKey),
     queryFn: () => timeEntriesActions.getThisWeek(),
   });
   const { data: plan = null } = useQuery({
-    queryKey: ['month-plans', year, month],
+    queryKey: queryKeys.monthPlans.month(year, month),
     queryFn: () => monthPlansActions.getForMonth(year, month),
   });
 
   const startYear = serviceYearStart(today);
   const yearGoal = user ? yearlyHourGoal(user.publisherType) : null;
   const { data: yearMinutes } = useQuery({
-    queryKey: ['time-entries', 'service-year', startYear],
+    queryKey: queryKeys.timeEntries.serviceYear(startYear),
     queryFn: () => timeEntriesActions.getServiceYear(startYear),
     enabled: yearGoal !== null,
   });

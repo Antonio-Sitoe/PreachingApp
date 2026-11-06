@@ -5,6 +5,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { lessonsActions, studentsActions, visitsActions } from '@/database/actions';
 import { BOOK_LESSONS, type LessonProgress } from '@/database/schemas';
 import { cn } from '@/utils/cn';
@@ -29,22 +30,22 @@ export default function StudyProgressScreen() {
   const [reviewing, setReviewing] = React.useState<number | null>(review ? Number(review) : null);
 
   const studentQuery = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });
   const lessonsQuery = useQuery({
-    queryKey: ['lessons', id],
+    queryKey: queryKeys.lessons.byStudent(id),
     queryFn: () => lessonsActions.getByStudent(id),
     enabled: Boolean(id),
   });
   const visitsQuery = useQuery({
-    queryKey: ['visits', 'student', id],
+    queryKey: queryKeys.visits.byStudent(id),
     queryFn: () => visitsActions.getByStudent(id),
     enabled: Boolean(id),
   });
   const reviewedQuery = useQuery({
-    queryKey: ['milestones', id, 'reviews'],
+    queryKey: queryKeys.milestones.reviews(id),
     queryFn: () => lessonsActions.getReviewedParts(id),
     enabled: Boolean(id),
   });

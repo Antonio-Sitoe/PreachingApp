@@ -4,6 +4,7 @@ import { AppIcon } from '@/components/ui/app-icon';
 import { Avatar } from '@/components/ui/avatar';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { studentsActions } from '@/database/actions';
 import type { StudentListItem } from '@/database/@types';
 import { THEME } from '@/lib/theme';
@@ -27,7 +28,7 @@ function StudentPicker({ open, onSelect, onClose }: StudentPickerProps) {
   const theme = THEME[colorScheme ?? 'light'];
   const [search, setSearch] = React.useState('');
   const { data = [] } = useQuery({
-    queryKey: ['students', 'list'],
+    queryKey: queryKeys.students.list,
     queryFn: studentsActions.getList,
     enabled: open,
   });

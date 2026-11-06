@@ -2,6 +2,7 @@ import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { SettingsRow, SettingsSection } from '@/components/settings/grouped-list';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { usersActions } from '@/database/actions';
 import { PUBLISHER_TYPE_INFO } from '@/utils/profile/setup';
 import { isUsageCountingEnabled } from '@/utils/storage';
@@ -11,11 +12,11 @@ import { Pressable, ScrollView, View } from 'react-native';
 
 export default function MoreScreen() {
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
   const { data: usageCounting } = useQuery({
-    queryKey: ['usage-counting'],
+    queryKey: queryKeys.usage.counting,
     queryFn: () => isUsageCountingEnabled(),
   });
 

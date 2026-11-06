@@ -4,6 +4,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { lessonsActions, studentsActions } from '@/database/actions';
 import { THEME } from '@/lib/theme';
 import { cn } from '@/utils/cn';
@@ -30,17 +31,17 @@ export default function LessonScreen() {
   const theme = THEME[colorScheme ?? 'light'];
 
   const studentQuery = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });
   const lessonsQuery = useQuery({
-    queryKey: ['lessons', id],
+    queryKey: queryKeys.lessons.byStudent(id),
     queryFn: () => lessonsActions.getByStudent(id),
     enabled: Boolean(id),
   });
   const detailQuery = useQuery({
-    queryKey: ['lessons', id, 'detail', lesson],
+    queryKey: queryKeys.lessons.detail(id, lesson),
     queryFn: () => lessonsActions.getDetail(id, lesson),
     enabled: Boolean(id) && Number.isInteger(lesson),
   });

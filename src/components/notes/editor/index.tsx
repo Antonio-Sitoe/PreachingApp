@@ -10,7 +10,8 @@ import {
 import { flushNoteSave, saveNote } from '@/components/notes/editor/save';
 import { useEditorStore } from '@/components/notes/editor/store';
 import { formatNoteStamp } from '@/components/notes/format';
-import { TAGS_QUERY_KEY, useTags } from '@/components/notes/tags';
+import { useTags } from '@/components/notes/tags';
+import { queryKeys } from '@/constants/query-keys';
 import { STAGES } from '@/constants/stages';
 import { TAG_NAME_MAX, TagError, notesActions, tagsActions } from '@/database/actions';
 import { SHADOWS, THEME } from '@/lib/theme';
@@ -48,7 +49,7 @@ function NoteEditor() {
   const busy = useEditorStore((state) => state.isSaving || state.isDirty);
   const tags = useTags();
   const students = useQuery({
-    queryKey: ['notes', 'linkable-students'],
+    queryKey: queryKeys.notes.linkableStudents,
     queryFn: notesActions.listLinkableStudents,
   }).data;
 
@@ -104,7 +105,7 @@ function NoteEditor() {
       void saved
         .then(() => (deleted.current ? false : notesActions.deleteIfEmpty(noteId)))
         .catch(() => undefined)
-        .then(() => queryClient.invalidateQueries({ queryKey: ['notes'] }));
+        .then(() => queryClient.invalidateQueries({ queryKey: queryKeys.notes.all }));
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
@@ -142,8 +143,8 @@ function NoteEditor() {
   }
 
   async function refreshTags() {
-    await queryClient.invalidateQueries({ queryKey: TAGS_QUERY_KEY });
-    await queryClient.invalidateQueries({ queryKey: ['notes'] });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.tags.all });
+    await queryClient.invalidateQueries({ queryKey: queryKeys.notes.all });
   }
 
   async function createTag(requestId: string, name: string) {

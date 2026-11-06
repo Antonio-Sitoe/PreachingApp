@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { timeEntriesActions } from '@/database/actions';
 import { formatEntryDay } from '@/utils/hours/format';
 import DateTimePicker, { type DateTimePickerChangeEvent } from '@react-native-community/datetimepicker';
@@ -50,7 +51,7 @@ function ManualEntrySheet({ open, onClose }: ManualEntrySheetProps) {
       // Meio-dia local, para o dia não mudar ao passar para UTC.
       const startedAt = dayjs(date).hour(12).minute(0).second(0).millisecond(0).toISOString();
       const entry = await timeEntriesActions.create({ startedAt, minutes, source: 'manual' });
-      await queryClient.invalidateQueries({ queryKey: ['time-entries'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.timeEntries.all });
       onClose();
       showToast({
         message: 'Horas adicionadas',
@@ -59,7 +60,7 @@ function ManualEntrySheet({ open, onClose }: ManualEntrySheetProps) {
           icon: 'undo',
           onPress: async () => {
             await timeEntriesActions.remove(entry.id);
-            await queryClient.invalidateQueries({ queryKey: ['time-entries'] });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.timeEntries.all });
           },
         },
       });

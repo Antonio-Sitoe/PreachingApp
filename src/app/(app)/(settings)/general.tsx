@@ -6,6 +6,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import {
   LANGUAGE_LABELS,
   LIST_VIEW_OPTIONS,
@@ -35,7 +36,7 @@ import { ScrollView, View } from 'react-native';
 export default function GeneralScreen() {
   const queryClient = useQueryClient();
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
   const [theme, setTheme] = React.useState<ThemePreference>(getThemePreference);
@@ -78,7 +79,7 @@ export default function GeneralScreen() {
     if (!user || next === user.language) return;
     try {
       await usersActions.updateById(user.id, { language: next });
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
     } catch {
       showToast({ message: 'Não foi possível mudar a língua. Tenta de novo.' });
     }

@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { VisitRow } from '@/components/visits/visit-row';
+import { queryKeys } from '@/constants/query-keys';
 import { studentsActions, visitsActions } from '@/database/actions';
 import type { Visit } from '@/database/schemas';
 import { formatDayMonth } from '@/utils/students/pause';
@@ -33,12 +34,12 @@ export default function StudentVisitsScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [filter, setFilter] = React.useState<VisitFilter>('all');
   const studentQuery = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });
   const visitsQuery = useQuery({
-    queryKey: ['visits', 'student', id],
+    queryKey: queryKeys.visits.byStudent(id),
     queryFn: () => visitsActions.getByStudent(id),
     enabled: Boolean(id),
   });

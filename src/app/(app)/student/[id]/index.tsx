@@ -9,6 +9,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { STAGES } from '@/constants/stages';
 import { VisitRow } from '@/components/visits/visit-row';
 import { StudyCard } from '@/components/study/study-card';
@@ -31,7 +32,7 @@ export default function StudentScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const detailQuery = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });
@@ -67,7 +68,7 @@ type StudentDetailContentProps = {
 function StudentDetailContent({ detail }: StudentDetailContentProps) {
   const { student, nextVisit, availabilities } = detail;
   const visitsQuery = useQuery({
-    queryKey: ['visits', 'student', student.id],
+    queryKey: queryKeys.visits.byStudent(student.id),
     queryFn: () => visitsActions.getByStudent(student.id),
   });
   const visits = visitsQuery.data ?? [];
@@ -75,7 +76,7 @@ function StudentDetailContent({ detail }: StudentDetailContentProps) {
     (visit) => visit.pendingQuestion && !visit.questionResolvedAt
   )?.pendingQuestion;
   const lessonsQuery = useQuery({
-    queryKey: ['lessons', student.id],
+    queryKey: queryKeys.lessons.byStudent(student.id),
     queryFn: () => lessonsActions.getByStudent(student.id),
   });
   const studying = (lessonsQuery.data ?? []).length > 0;

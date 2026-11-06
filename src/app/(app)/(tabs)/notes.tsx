@@ -9,6 +9,7 @@ import { DEFAULT_NOTE_COLOR } from '@/components/notes/colors';
 import { ListCard, TagsFilter } from '@/components/notes/list';
 import { useTags } from '@/components/notes/tags';
 import { CONTENT_MAX_WIDTH } from '@/components/ui/screen';
+import { queryKeys } from '@/constants/query-keys';
 import { notesActions } from '@/database/actions';
 import type { NoteListItem } from '@/database/@types';
 import { THEME } from '@/lib/theme';
@@ -41,7 +42,7 @@ export default function NotesScreen() {
   const search = searchQuery.trim() || undefined;
 
   const notesQuery = useInfiniteQuery({
-    queryKey: ['notes', tagId ?? 'all', search ?? ''],
+    queryKey: queryKeys.notes.list(tagId, search),
     queryFn: ({ pageParam }) => notesActions.getPage(pageParam, PAGE_SIZE, tagId, search),
     initialPageParam: 0,
     getNextPageParam: (lastPage, _pages, page) => (page + 1 < lastPage.totalPage ? page + 1 : undefined),
@@ -107,7 +108,7 @@ export default function NotesScreen() {
       await notesActions.deleteNote(pendingDelete.note.id);
       openCard.current = null;
       setPendingDelete(null);
-      await queryClient.invalidateQueries({ queryKey: ['notes'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.notes.all });
     } catch {
       showToast({ message: 'Não foi possível apagar a nota.' });
       cancelDelete();

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { FieldLabel } from '@/components/ui/text-field';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { TIMES_OF_DAY } from '@/constants/students';
 import { appointmentsActions } from '@/database/actions';
 import type { ReturnOn } from '@/database/@types';
@@ -45,7 +46,7 @@ function ReturnDateSheet({ open, name, address, value, onConfirm, onClose }: Ret
 
   const monthKey = dayjs(month).format('YYYY-MM');
   const { data: scheduledDays = [] } = useQuery({
-    queryKey: ['appointments', 'scheduled-days', monthKey],
+    queryKey: queryKeys.appointments.scheduledDays(monthKey),
     queryFn: () => appointmentsActions.getScheduledDays(month),
     enabled: open,
   });

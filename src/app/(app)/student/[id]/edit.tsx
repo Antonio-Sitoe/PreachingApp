@@ -1,5 +1,6 @@
 import { StudentForm } from '@/components/students/student-form';
 import { ScreenHeader } from '@/components/ui/screen-header';
+import { queryKeys } from '@/constants/query-keys';
 import { studentsActions } from '@/database/actions';
 import { useQuery } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -9,7 +10,7 @@ export default function EditStudentScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const detailQuery = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });

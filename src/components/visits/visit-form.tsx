@@ -10,6 +10,7 @@ import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { FieldLabel, TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import type { AdvanceResult } from '@/database/@types';
 import { lessonsActions, studentsActions, visitsActions } from '@/database/actions';
 import type { Visit, VisitOutcome } from '@/database/schemas';
@@ -100,12 +101,12 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
   const [saving, setSaving] = React.useState(false);
 
   const detailQuery = useQuery({
-    queryKey: ['students', 'detail', studentId],
+    queryKey: queryKeys.students.detail(studentId),
     queryFn: () => studentsActions.getDetail(studentId as string),
     enabled: Boolean(studentId),
   });
   const lessonsQuery = useQuery({
-    queryKey: ['lessons', studentId],
+    queryKey: queryKeys.lessons.byStudent(studentId),
     queryFn: () => lessonsActions.getByStudent(studentId as string),
     enabled: Boolean(studentId),
   });

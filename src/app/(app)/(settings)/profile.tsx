@@ -6,6 +6,7 @@ import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { defaultMonthlyHourGoal, MONTHLY_HOUR_GOALS, usersActions } from '@/database/actions';
 import {
   DEFAULT_SETUP_PROFILE,
@@ -49,7 +50,7 @@ export default function ProfileScreen() {
     setSaving(true);
     try {
       await usersActions.saveProfile(profile);
-      await queryClient.invalidateQueries({ queryKey: ['user'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.user.all });
       router.back();
     } catch {
       showToast({ message: 'Não foi possível guardar. Tenta de novo.' });

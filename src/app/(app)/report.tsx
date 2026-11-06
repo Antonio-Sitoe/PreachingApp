@@ -6,6 +6,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { monthlyReportsActions, monthPlansActions, usersActions } from '@/database/actions';
 import { formatHero, formatHours, formatMonthName } from '@/utils/hours/format';
 import { isPioneer, monthHourGoal } from '@/utils/hours/profile';
@@ -49,16 +50,16 @@ export default function ReportScreen() {
   const current = isCurrentMonth({ year, month });
 
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
   const { data: report } = useQuery({
-    queryKey: ['monthly-reports', year, month],
+    queryKey: queryKeys.monthlyReports.month(year, month),
     queryFn: () => monthlyReportsActions.getMonth(year, month),
   });
   const pioneer = user ? isPioneer(user.publisherType) : false;
   const { data: plan = null } = useQuery({
-    queryKey: ['month-plans', year, month],
+    queryKey: queryKeys.monthPlans.month(year, month),
     queryFn: () => monthPlansActions.getForMonth(year, month),
     enabled: pioneer,
   });
@@ -77,7 +78,7 @@ export default function ReportScreen() {
         })
       : '';
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['monthly-reports'] });
+  const refresh = () => queryClient.invalidateQueries({ queryKey: queryKeys.monthlyReports.all });
 
   const change = async (action: () => Promise<unknown>) => {
     try {

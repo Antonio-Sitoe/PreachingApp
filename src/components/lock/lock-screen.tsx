@@ -3,6 +3,7 @@ import { AlertDialog } from '@/components/ui/alert-dialog';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { useLock } from '@/contexts/lock';
 import { useOnboarding } from '@/contexts/onboarding';
 import { usersActions } from '@/database/actions';
@@ -47,7 +48,7 @@ function LockScreen() {
   const [checking, setChecking] = React.useState(false);
 
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
 

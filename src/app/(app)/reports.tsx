@@ -4,6 +4,7 @@ import { EmptyState } from '@/components/ui/empty-state';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { LIST_VIEW_OPTIONS } from '@/constants/settings';
 import { monthlyReportsActions, usersActions } from '@/database/actions';
 import type { MonthReport } from '@/database/@types';
@@ -31,11 +32,11 @@ const open = (report: MonthReport) =>
 export default function ReportsScreen() {
   const [view, setView] = React.useState<ListView>(getListView);
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
   const { data: history } = useQuery({
-    queryKey: ['monthly-reports', 'history'],
+    queryKey: queryKeys.monthlyReports.history,
     queryFn: () => monthlyReportsActions.getHistory(),
   });
   const pioneer = user ? isPioneer(user.publisherType) : false;

@@ -11,6 +11,7 @@ import { IconButton } from '@/components/ui/icon-button';
 import { CONTENT_MAX_WIDTH } from '@/components/ui/screen';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import type { StudentFilter, StudentSort } from '@/constants/students';
 import { studentsActions } from '@/database/actions';
 import type { StudentListItem } from '@/database/@types';
@@ -46,7 +47,7 @@ export default function StudentsScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   const studentsQuery = useQuery({
-    queryKey: ['students', 'list'],
+    queryKey: queryKeys.students.list,
     queryFn: studentsActions.getList,
   });
 

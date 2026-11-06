@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { monthPlansActions } from '@/database/actions';
 import type { MonthPlanWithDays } from '@/database/@types';
 import type { PublisherType } from '@/database/schemas';
@@ -57,7 +58,7 @@ function PlanSheet({
     setSaving(true);
     try {
       monthPlansActions.save({ year, month, publisherType, hourGoal, weekdays, minutesPerDay });
-      await queryClient.invalidateQueries({ queryKey: ['month-plans'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.monthPlans.all });
       onClose();
     } catch {
       showToast({ message: 'Não foi possível guardar o plano. Tenta de novo.' });

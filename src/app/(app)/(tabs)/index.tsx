@@ -19,6 +19,7 @@ import {
   type NextVisitValue,
 } from '@/components/visits/next-visit-sheet';
 import { NotHomeSheet } from '@/components/visits/not-home-sheet';
+import { queryKeys } from '@/constants/query-keys';
 import {
   appointmentsActions,
   monthPlansActions,
@@ -57,21 +58,21 @@ export default function TodayScreen() {
   const month = now.month() + 1;
 
   const todayQuery = useQuery({
-    queryKey: ['appointments', 'today', toDayString(now)],
+    queryKey: queryKeys.appointments.today(toDayString(now)),
     queryFn: () => todayActions.getToday(),
   });
   const { data: user } = useQuery({
-    queryKey: ['user', 'current'],
+    queryKey: queryKeys.user.current,
     queryFn: () => usersActions.getCurrent(),
   });
   const pioneer = user ? isPioneer(user.publisherType) : false;
   const { data: stats } = useQuery({
-    queryKey: ['time-entries', 'month', year, month],
+    queryKey: queryKeys.timeEntries.month(year, month),
     queryFn: () => timeEntriesActions.getMonthStats(year, month),
     enabled: pioneer,
   });
   const { data: plan = null } = useQuery({
-    queryKey: ['month-plans', year, month],
+    queryKey: queryKeys.monthPlans.month(year, month),
     queryFn: () => monthPlansActions.getForMonth(year, month),
     enabled: pioneer,
   });

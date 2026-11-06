@@ -1,5 +1,6 @@
 import { capitalize } from '@/components/reports/format';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { lessonsActions, visitsActions } from '@/database/actions';
 import { BOOK_LESSONS } from '@/database/schemas';
 import { currentLesson, partOf } from '@/utils/study/parts';
@@ -16,11 +17,11 @@ type StudyCardProps = {
 
 function StudyCard({ studentId, footer }: StudyCardProps) {
   const lessonsQuery = useQuery({
-    queryKey: ['lessons', studentId],
+    queryKey: queryKeys.lessons.byStudent(studentId),
     queryFn: () => lessonsActions.getByStudent(studentId),
   });
   const visitsQuery = useQuery({
-    queryKey: ['visits', 'student', studentId],
+    queryKey: queryKeys.visits.byStudent(studentId),
     queryFn: () => visitsActions.getByStudent(studentId),
   });
 

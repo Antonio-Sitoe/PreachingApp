@@ -6,6 +6,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
 import { OutcomeBadge } from '@/components/visits/visit-row';
+import { queryKeys } from '@/constants/query-keys';
 import { visitsActions } from '@/database/actions';
 import type { VisitDetail } from '@/database/@types';
 import { cn } from '@/utils/cn';
@@ -25,7 +26,7 @@ import { ScrollView, View } from 'react-native';
 export default function VisitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const query = useQuery({
-    queryKey: ['visits', 'detail', id],
+    queryKey: queryKeys.visits.detail(id),
     queryFn: () => visitsActions.getById(id),
     enabled: Boolean(id),
   });

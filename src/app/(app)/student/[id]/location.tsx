@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { studentsActions } from '@/database/actions';
 import type { Student } from '@/database/schemas';
 import { requestLocation } from '@/hooks/use-current-location';
@@ -27,7 +28,7 @@ function formatLocatedAt(student: Student): string {
 export default function StudentLocationScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const query = useQuery({
-    queryKey: ['students', 'detail', id],
+    queryKey: queryKeys.students.detail(id),
     queryFn: () => studentsActions.getDetail(id),
     enabled: Boolean(id),
   });
@@ -51,7 +52,7 @@ function LocationContent({ student }: { student: Student }) {
   const directionsUrl = getDirectionsUrl(student);
   const hasPoint = student.latitude != null && student.longitude != null;
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ['students'] });
+  const refresh = () => queryClient.invalidateQueries({ queryKey: queryKeys.students.all });
 
   async function saveDirections() {
     const next = directions.trim();

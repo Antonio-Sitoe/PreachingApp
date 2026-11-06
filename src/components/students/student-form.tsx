@@ -8,6 +8,7 @@ import { SelectField } from '@/components/ui/select-field';
 import { Text } from '@/components/ui/text';
 import { FieldLabel, TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { STAGE_ORDER, STAGES } from '@/constants/stages';
 import { AGE_RANGE_OPTIONS, GENDER_OPTIONS, WEEKDAY_OPTIONS } from '@/constants/students';
 import { studentsActions } from '@/database/actions';
@@ -191,13 +192,13 @@ function StudentForm({ detail, initialName }: StudentFormProps) {
     try {
       if (detail) {
         await studentsActions.updateById(detail.student.id, data, availability);
-        await queryClient.invalidateQueries({ queryKey: ['students'] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.students.all });
         showToast({ message: 'Alterações guardadas.' });
         router.back();
       } else {
         const student = await studentsActions.create(data, availability);
         void countEvent('student_created');
-        await queryClient.invalidateQueries({ queryKey: ['students'] });
+        await queryClient.invalidateQueries({ queryKey: queryKeys.students.all });
         showToast({ message: `${student.displayName} guardado.` });
         router.replace(`/student/${student.id}`);
       }

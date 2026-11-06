@@ -78,8 +78,8 @@ Prioridade **A**: corrige um erro ou um risco real. **B**: facilita muito mexer 
 
 ### B. Estrutura
 
-- [ ] **B1. Chaves do React Query num só sítio.** Há 74 `queryKey` escritas à mão, espalhadas por cerca de 40 ficheiros (`['students', 'detail', id]`, `['lessons', id]`…) e 28 `invalidateQueries`. Uma chave mal escrita deixa um ecrã por actualizar sem dar erro
-  - Criar `src/database/query-keys.ts` com uma fábrica, ex. `queryKeys.students.detail(id)`, e trocar todas as chaves
+- [x] **B1. Chaves do React Query num só sítio.** Há 74 `queryKey` escritas à mão, espalhadas por cerca de 40 ficheiros (`['students', 'detail', id]`, `['lessons', id]`…) e 28 `invalidateQueries`. Uma chave mal escrita deixa um ecrã por actualizar sem dar erro
+  - Criar `src/constants/query-keys.ts` com uma fábrica, ex. `queryKeys.students.detail(id)`, e trocar todas as chaves
   - Feito quando: `grep -rn "queryKey: \['" src` não encontra nada
 - [ ] **B2. Hooks de dados por área.** Os ecrãs repetem os mesmos `useQuery` (o estudante, as lições e as visitas aparecem em 4 ou 5 ecrãs cada). Criar `useStudent(id)`, `useLessons(studentId)`, `useStudentVisits(studentId)`… ao lado das acções, ex. `src/database/hooks/`
   - Feito quando: nenhum ecrã chama `useQuery` com uma acção que já tenha hook

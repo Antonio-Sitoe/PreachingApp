@@ -3,6 +3,7 @@ import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { timeEntriesActions } from '@/database/actions';
 import type { TimeEntry } from '@/database/schemas';
 import { formatDuration, formatEntryDay, formatTimeOfDay } from '@/utils/hours/format';
@@ -31,7 +32,7 @@ function EntryList({ entries }: EntryListProps) {
     setSelected(null);
     try {
       await timeEntriesActions.remove(entry.id);
-      await queryClient.invalidateQueries({ queryKey: ['time-entries'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.timeEntries.all });
       showToast({
         message: 'Entrada apagada',
         action: {
@@ -43,7 +44,7 @@ function EntryList({ entries }: EntryListProps) {
               minutes: entry.minutes,
               source: entry.source,
             });
-            await queryClient.invalidateQueries({ queryKey: ['time-entries'] });
+            await queryClient.invalidateQueries({ queryKey: queryKeys.timeEntries.all });
           },
         },
       });

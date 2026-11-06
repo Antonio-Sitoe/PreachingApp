@@ -2,6 +2,7 @@ import { SettingsSwitch } from '@/components/settings/grouped-list';
 import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { USAGE_NEVER_SENT, USAGE_SENT } from '@/constants/settings';
 import { isUsageCountingEnabled, setUsageCountingEnabled } from '@/utils/storage';
 import { countEvent } from '@/utils/usage';
@@ -17,7 +18,7 @@ export default function UsageScreen() {
   const toggle = (next: boolean) => {
     setEnabled(next);
     setUsageCountingEnabled(next);
-    void queryClient.invalidateQueries({ queryKey: ['usage-counting'] });
+    void queryClient.invalidateQueries({ queryKey: queryKeys.usage.counting });
     if (next) void countEvent('app_open');
   };
 

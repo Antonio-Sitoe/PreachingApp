@@ -1,3 +1,4 @@
+import { queryKeys } from '@/constants/query-keys';
 import { monthPlansActions, timeEntriesActions, usersActions } from '@/database/actions';
 import { showToast } from '@/hooks/use-toast';
 import { formatHours, formatMonthName } from '@/utils/hours/format';
@@ -52,7 +53,7 @@ async function saveSession(session: TimerSession) {
 }
 
 const invalidateHours = (queryClient: QueryClient) =>
-  queryClient.invalidateQueries({ queryKey: ['time-entries'] });
+  queryClient.invalidateQueries({ queryKey: queryKeys.timeEntries.all });
 
 // "Outubro: 28 h 30 de 30 h", só para quem tem meta de horas.
 async function syncTimerProgress() {

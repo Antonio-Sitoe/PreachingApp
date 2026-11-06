@@ -1,6 +1,7 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { queryKeys } from '@/constants/query-keys';
 import { monthKey, monthlyReportsActions } from '@/database/actions';
 import { formatMonthName } from '@/utils/hours/format';
 import { daysLeftInMonth } from '@/utils/hours/plan';
@@ -23,11 +24,11 @@ export function ReportNotices() {
   const [, rerender] = React.useReducer((value: number) => value + 1, 0);
 
   const { data: last } = useQuery({
-    queryKey: ['monthly-reports', prevYear, prevMonth],
+    queryKey: queryKeys.monthlyReports.month(prevYear, prevMonth),
     queryFn: () => monthlyReportsActions.getMonth(prevYear, prevMonth),
   });
   const { data: current } = useQuery({
-    queryKey: ['monthly-reports', year, month],
+    queryKey: queryKeys.monthlyReports.month(year, month),
     queryFn: () => monthlyReportsActions.getMonth(year, month),
     enabled: daysLeft <= MONTH_END_DAYS,
   });

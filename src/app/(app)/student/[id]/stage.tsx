@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { STAGES } from '@/constants/stages';
 import { milestonesActions, studentsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';
@@ -29,12 +30,12 @@ export default function StudentStageScreen() {
   const [advancing, setAdvancing] = React.useState(false);
 
   const journeyQuery = useQuery({
-    queryKey: ['students', 'journey', id],
+    queryKey: queryKeys.students.journey(id),
     queryFn: () => studentsActions.getJourney(id),
     enabled: Boolean(id),
   });
   const milestonesQuery = useQuery({
-    queryKey: ['milestones', id],
+    queryKey: queryKeys.milestones.byStudent(id),
     queryFn: () => milestonesActions.getByStudent(id),
     enabled: Boolean(id),
   });
@@ -55,7 +56,7 @@ export default function StudentStageScreen() {
         nextStage,
         rhythmDays === previousRhythm ? undefined : rhythmDays
       );
-      await queryClient.invalidateQueries({ queryKey: ['students'] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.students.all });
       if (change) {
         showToast({
           message: `Passou a ${STAGES[nextStage].label.toLocaleLowerCase('pt')}.`,
@@ -67,7 +68,7 @@ export default function StudentStageScreen() {
               if (rhythmDays !== previousRhythm) {
                 await studentsActions.updateById(student.id, { rhythmDays: previousRhythm });
               }
-              await queryClient.invalidateQueries({ queryKey: ['students'] });
+              await queryClient.invalidateQueries({ queryKey: queryKeys.students.all });
             },
           },
         });

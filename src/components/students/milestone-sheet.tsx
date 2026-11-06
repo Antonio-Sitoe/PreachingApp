@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { FieldLabel, TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import { queryKeys } from '@/constants/query-keys';
 import { milestonesActions } from '@/database/actions';
 import { formatPickedDay, MILESTONE_EXAMPLES } from '@/utils/students/journey';
 import DateTimePicker, {
@@ -56,7 +57,7 @@ function MilestoneSheet({ open, studentId, onClose }: MilestoneSheetProps) {
         label,
         occurredAt: toDayString(date),
       });
-      await queryClient.invalidateQueries({ queryKey: ['milestones', studentId] });
+      await queryClient.invalidateQueries({ queryKey: queryKeys.milestones.byStudent(studentId) });
       showToast({ message: 'Marco guardado.' });
       onClose();
     } catch {
