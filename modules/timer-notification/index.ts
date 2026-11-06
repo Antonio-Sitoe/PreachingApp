@@ -24,6 +24,7 @@ type TimerNotificationModule = {
   finish(): TimerSession | null;
   discard(): void;
   refresh(): void;
+  setProgress(label: string | null, percent: number): void;
   canNotify(): boolean;
   takePending(): TimerSession[];
   addListener(event: 'onChange', listener: (state: TimerState) => void): EventSubscription;
@@ -42,6 +43,8 @@ export const resumeTimer = () => TimerNotification.resume();
 export const finishTimer = () => TimerNotification.finish();
 export const discardTimer = () => TimerNotification.discard();
 export const refreshTimerNotification = () => TimerNotification.refresh();
+export const setTimerProgress = (label: string | null, percent: number) =>
+  TimerNotification.setProgress(label, Math.round(percent));
 export const canShowTimerNotification = () => TimerNotification.canNotify();
 export const takePendingSessions = () => TimerNotification.takePending();
 

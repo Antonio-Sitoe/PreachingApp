@@ -1,10 +1,13 @@
-import { timeEntriesActions } from '@/database/actions';
+import { monthPlansActions, timeEntriesActions, usersActions } from '@/database/actions';
 import { showToast } from '@/hooks/use-toast';
+import { formatHours, formatMonthName } from '@/utils/hours/format';
+import { isPioneer, monthHourGoal } from '@/utils/hours/profile';
 import {
   cancelForgottenTimerReminder,
   scheduleForgottenTimerReminder,
 } from '@/utils/notifications/timer-reminder';
 import { type QueryClient, useQueryClient } from '@tanstack/react-query';
+import dayjs from 'dayjs';
 import * as Linking from 'expo-linking';
 import { useEffect, useState } from 'react';
 import { AppState } from 'react-native';
@@ -18,6 +21,7 @@ import {
   pauseTimer,
   refreshTimerNotification,
   resumeTimer,
+  setTimerProgress,
   startTimer,
   takePendingSessions,
   type TimerSession,
@@ -50,6 +54,31 @@ async function saveSession(session: TimerSession) {
 const invalidateHours = (queryClient: QueryClient) =>
   queryClient.invalidateQueries({ queryKey: ['time-entries'] });
 
+// "Outubro: 28 h 30 de 30 h", só para quem tem meta de horas.
+async function syncTimerProgress() {
+  try {
+    const today = dayjs();
+    const [year, month] = [today.year(), today.month() + 1];
+    const [user, plan, stats] = await Promise.all([
+      usersActions.getCurrent(),
+      monthPlansActions.getForMonth(year, month),
+      timeEntriesActions.getMonthStats(year, month),
+    ]);
+    const goal = user && isPioneer(user.publisherType) ? monthHourGoal(user, plan) : null;
+    if (!goal) {
+      setTimerProgress(null, 0);
+      return;
+    }
+    const minutes = stats.minutes + Math.floor(elapsedMs(getTimerState()) / 60_000);
+    setTimerProgress(
+      `${formatMonthName(year, month)}: ${formatHours(minutes)} de ${goal} h`,
+      Math.min(100, (minutes / (goal * 60)) * 100)
+    );
+  } catch (error) {
+    console.error('Error syncing timer progress:', error);
+  }
+}
+
 async function syncTimer(queryClient: QueryClient) {
   const sessions = takePendingSessions();
   for (const session of sessions) await saveSession(session);
@@ -57,8 +86,12 @@ async function syncTimer(queryClient: QueryClient) {
 
   const state = getTimerState();
   useTimerStore.getState().setState(state);
-  if (state.status === 'idle') await cancelForgottenTimerReminder();
-  else refreshTimerNotification();
+  if (state.status === 'idle') {
+    await cancelForgottenTimerReminder();
+    return;
+  }
+  refreshTimerNotification();
+  await syncTimerProgress();
 }
 
 function useTimerSync(enabled: boolean) {
@@ -87,6 +120,7 @@ function useTimer() {
     const next = startTimer(Linking.createURL('/hours'));
     setState(next);
     void scheduleForgottenTimerReminder(elapsedMs(next));
+    void syncTimerProgress();
   };
 
   const pause = () => {

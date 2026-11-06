@@ -1,0 +1,10 @@
+<resources>
+  <color name="timer_notification_running">#5D6CB2</color>
+  <color name="timer_notification_paused">#6B7080</color>
+  <color name="timer_notification_clock">#1E1E1E</color>
+  <color name="timer_notification_clock_paused">#6B7080</color>
+  <color name="timer_notification_body">#484C52</color>
+  <color name="timer_notification_caption">#6B7080</color>
+  <color name="timer_notification_progress">#5D6CB2</color>
+  <color name="timer_notification_progress_track">#E4E4E4</color>
+</resources>

@@ -1,0 +1,28 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content">
+
+  <Chronometer
+    android:id="@+id/timer_clock"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fontFamily="sans-serif"
+    android:fontFeatureSettings="tnum"
+    android:letterSpacing="0.01"
+    android:textColor="@color/timer_notification_clock"
+    android:textSize="24sp"
+    android:textStyle="bold" />
+
+  <TextView
+    android:id="@+id/timer_paused_clock"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:fontFamily="sans-serif"
+    android:fontFeatureSettings="tnum"
+    android:letterSpacing="0.01"
+    android:maxLines="1"
+    android:textColor="@color/timer_notification_clock_paused"
+    android:textSize="24sp"
+    android:textStyle="bold"
+    android:visibility="gone" />
+</FrameLayout>

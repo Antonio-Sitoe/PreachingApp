@@ -48,6 +48,10 @@ class TimerNotificationModule : Module() {
 
     Function("refresh") { TimerStore.refresh(context) }
 
+    Function("setProgress") { label: String?, percent: Int ->
+      TimerStore.setProgress(context, label, percent)
+    }
+
     Function("canNotify") { TimerStore.canNotify(context) }
 
     Function("takePending") {

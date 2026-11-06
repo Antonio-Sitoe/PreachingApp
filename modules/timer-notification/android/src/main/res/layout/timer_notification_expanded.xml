@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical">
+
+  <include layout="@layout/timer_notification_clock" />
+
+  <TextView
+    android:id="@+id/timer_body"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
+    android:textColor="@color/timer_notification_body"
+    android:textSize="14sp" />
+
+  <LinearLayout
+    android:id="@+id/timer_progress_group"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:orientation="vertical">
+
+    <ProgressBar
+      android:id="@+id/timer_progress"
+      style="@android:style/Widget.ProgressBar.Horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="4dp"
+      android:max="100"
+      android:maxHeight="4dp"
+      android:minHeight="4dp"
+      android:progressDrawable="@drawable/timer_progress" />
+
+    <TextView
+      android:id="@+id/timer_progress_label"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="6dp"
+      android:maxLines="1"
+      android:textColor="@color/timer_notification_caption"
+      android:textSize="12sp" />
+  </LinearLayout>
+</LinearLayout>

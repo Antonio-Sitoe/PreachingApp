@@ -1,0 +1,17 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:gravity="center_vertical"
+  android:orientation="vertical">
+
+  <include layout="@layout/timer_notification_clock" />
+
+  <TextView
+    android:id="@+id/timer_body"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="end"
+    android:maxLines="1"
+    android:textColor="@color/timer_notification_body"
+    android:textSize="14sp" />
+</LinearLayout>

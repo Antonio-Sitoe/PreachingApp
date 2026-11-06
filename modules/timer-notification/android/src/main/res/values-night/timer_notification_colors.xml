@@ -1,0 +1,8 @@
+<resources>
+  <color name="timer_notification_clock">#FFFFFF</color>
+  <color name="timer_notification_clock_paused">#B8BAC4</color>
+  <color name="timer_notification_body">#C9CBD3</color>
+  <color name="timer_notification_caption">#B8BAC4</color>
+  <color name="timer_notification_progress">#9AA6E0</color>
+  <color name="timer_notification_progress_track">#24FFFFFF</color>
+</resources>
