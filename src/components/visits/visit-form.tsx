@@ -38,7 +38,6 @@ import {
   NextVisitSheet,
   PickerField,
   type NextVisitValue,
-  type RemindMinutes,
 } from './next-visit-sheet';
 import { NotHomeSheet } from './not-home-sheet';
 import { ScriptureSheet } from './scripture-sheet';
