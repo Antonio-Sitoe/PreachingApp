@@ -59,18 +59,19 @@ Prioridade **A**: corrige um erro ou um risco real. **B**: facilita muito mexer 
 
 ### A. Erros e riscos
 
-- [ ] **A1. Datas guardadas em UTC em vez de no dia local.** `lessonsActions.saveReview` grava o dia com `date.toISOString().slice(0, 10)`. Em Moçambique (UTC+2), uma revisão guardada entre a meia-noite e as 2h fica com o dia anterior. Os outros 13 sítios usam `dayjs(...).format('YYYY-MM-DD')`, que está certo
+- [x] **A1. Datas guardadas em UTC em vez de no dia local.** `lessonsActions.saveReview` grava o dia com `date.toISOString().slice(0, 10)`. Em Moçambique (UTC+2), uma revisão guardada entre a meia-noite e as 2h fica com o dia anterior. Os outros 13 sítios usam `dayjs(...).format('YYYY-MM-DD')`, que está certo
   - Feito quando: não há `toISOString().slice(0, 10)` no código e existe uma função única, ex. `toDayString(date)` em `src/utils/dates.ts`, usada em todos os sítios
-- [ ] **A2. Tabela `reports` antiga ainda no esquema.** `src/database/schemas/reports.ts` continua exportado em `schemas/index.ts`, mas o relatório passou para `monthly_reports`
+- [x] **A2. Tabela `reports` antiga ainda no esquema.** `src/database/schemas/reports.ts` continua exportado em `schemas/index.ts`, mas o relatório passou para `monthly_reports`
   - Confirmar que nada a lê (cópia de segurança incluída), remover o ficheiro e o export, e gerar uma migração que apague a tabela
   - Feito quando: `grep -rn "schemas/reports\|from './reports'" src` não encontra nada e a cópia de segurança restaura sem erro
 - [ ] **A3. Língua sem estrutura de tradução.** A FND-05 está marcada como feita, mas os textos estão escritos directamente nos ecrãs e Mais › Gerais › Língua não muda nada. Bloqueia a LAN-01
   - Escolher a biblioteca (ex.: `i18next` com `react-i18next`, ou `expo-localization` com um dicionário próprio), criar `src/locales/pt.ts` e `en.ts`, e passar os textos ecrã a ecrã, começando pelos separadores
   - Feito quando: mudar a língua muda os textos do Hoje, Pessoas, Notas e Mais
-- [ ] **A4. Sem verificação automática.** Não há linter (o FND-01 previa o Biome) nem testes. Só o `tsc` apanha erros
-  - Acrescentar o Biome com um `biome.json` e um script `npm run lint`, e um script `npm run typecheck` (`tsc --noEmit`)
+- [x] **A4. Sem verificação automática.** Não há linter (o FND-01 previa o Biome, ficou o ESLint) nem testes. Só o `tsc` apanha erros
+  - Acrescentar o ESLint com `eslint-config-expo`, um `eslint.config.js` e um script `npm run lint`, e um script `npm run typecheck` (`tsc --noEmit`)
   - Acrescentar Jest com `jest-expo` e começar pelas funções puras, que têm regras de negócio e são fáceis de testar: `utils/study/parts.ts`, `utils/visits/next-visit.ts`, `utils/students/rhythm.ts`, `utils/hours/service-year.ts`, `utils/reports`
   - Feito quando: `npm run lint`, `npm run typecheck` e `npm test` correm sem erros
+  - Por fazer: as regras `react-hooks/set-state-in-effect`, `purity`, `refs` e `use-memo` ficaram como aviso (26 no total). São regras do React Compiler, que não está ligado. Corrigir antes de o ligar e voltar a pô-las como erro
 - [x] **A5. Editar uma visita não recalcula o estudo.** Se a lição de uma visita antiga mudar, `lesson_progress` fica como estava (limitação conhecida da EST-04)
   - Regra: lição acima da actual chama `advance`. Lição que desce ou sai, ou visita apagada, desfaz o avanço dessa visita se puder (`lesson_advances`) e, se não puder, não mexe no progresso e avisa. Não se recalcula a partir das visitas porque `lesson_progress` guarda dados que elas não têm (`goalDone`, notas, lições fechadas à mão ou saltadas). Ver `lessonEditEffect` e `undoBlockReason`
   - Avanços feitos antes da migração 0010 não têm registo: mantêm só o aviso
