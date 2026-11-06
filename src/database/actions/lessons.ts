@@ -1,4 +1,4 @@
-import { and, asc, eq, inArray, isNull } from 'drizzle-orm';
+import { and, asc, eq, isNull } from 'drizzle-orm';
 import { db } from '../db';
 import {
   type LessonProgress,
@@ -9,7 +9,7 @@ import {
   visits,
 } from '../schemas';
 import { currentLesson } from '@/utils/study/parts';
-import type { AdvanceInput, AdvanceResult, AdvanceUndo, LessonDetail } from '../@types';
+import type { AdvanceInput, AdvanceResult, LessonDetail } from '../@types';
 import { toDayString } from '@/utils/dates';
 
 const PART_ENDS: Record<number, number> = { 12: 1, 33: 2, 47: 3, 60: 4 };
@@ -35,12 +35,10 @@ function advance(input: AdvanceInput): AdvanceResult {
       .from(lessonProgress)
       .where(and(eq(lessonProgress.studentId, input.studentId), isNull(lessonProgress.deletedAt)))
       .all();
-    const undo: AdvanceUndo = { createdIds: [], closedIds: [], goalDone: null, stageChange: null };
     const closedLessons: number[] = [];
 
     const insert = (lesson: number, completed: boolean, goalDone = false) => {
-      const row = tx
-        .insert(lessonProgress)
+      tx.insert(lessonProgress)
         .values({
           studentId: input.studentId,
           lessonNumber: lesson,
@@ -51,10 +49,7 @@ function advance(input: AdvanceInput): AdvanceResult {
           updatedAt: timestamp,
           syncStatus: 'pending',
         })
-        .returning()
-        .get();
-      undo.createdIds.push(row.id);
-      return row;
+        .run();
     };
 
     const known = new Set(rows.map((row) => row.lessonNumber));
@@ -83,7 +78,6 @@ function advance(input: AdvanceInput): AdvanceResult {
         .set({ completedAt: date, updatedAt: timestamp, syncStatus: 'pending' })
         .where(eq(lessonProgress.id, row.id))
         .run();
-      undo.closedIds.push(row.id);
       closedLessons.push(row.lessonNumber);
     }
 
@@ -97,7 +91,6 @@ function advance(input: AdvanceInput): AdvanceResult {
         .set({ goalDone: input.previousGoalDone, updatedAt: timestamp, syncStatus: 'pending' })
         .where(eq(lessonProgress.id, previous.id))
         .run();
-      undo.goalDone = { id: previous.id, previous: previous.goalDone };
     }
 
     const student = tx
@@ -105,13 +98,13 @@ function advance(input: AdvanceInput): AdvanceResult {
       .from(students)
       .where(eq(students.id, input.studentId))
       .get();
-    if (student && REVISIT_STAGES.includes(student.stage)) {
+    const studyStarted = Boolean(student && REVISIT_STAGES.includes(student.stage));
+    if (student && studyStarted) {
       tx.update(students)
         .set({ stage: 'study_started', updatedAt: timestamp, syncStatus: 'pending' })
         .where(eq(students.id, input.studentId))
         .run();
-      undo.stageChange = tx
-        .insert(stageChanges)
+      tx.insert(stageChanges)
         .values({
           studentId: input.studentId,
           fromStage: student.stage,
@@ -121,8 +114,7 @@ function advance(input: AdvanceInput): AdvanceResult {
           updatedAt: timestamp,
           syncStatus: 'pending',
         })
-        .returning()
-        .get();
+        .run();
     }
 
     const completedPart =
@@ -135,43 +127,8 @@ function advance(input: AdvanceInput): AdvanceResult {
       startedLesson,
       closedLessons: closedLessons.sort((a, b) => a - b),
       completedPart,
-      undo,
+      studyStarted,
     };
-  });
-}
-
-function undoAdvance(undo: AdvanceUndo): void {
-  const timestamp = now();
-  db.transaction((tx) => {
-    if (undo.createdIds.length > 0) {
-      tx.update(lessonProgress)
-        .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
-        .where(inArray(lessonProgress.id, undo.createdIds))
-        .run();
-    }
-    if (undo.closedIds.length > 0) {
-      tx.update(lessonProgress)
-        .set({ completedAt: null, updatedAt: timestamp, syncStatus: 'pending' })
-        .where(inArray(lessonProgress.id, undo.closedIds))
-        .run();
-    }
-    if (undo.goalDone) {
-      tx.update(lessonProgress)
-        .set({ goalDone: undo.goalDone.previous, updatedAt: timestamp, syncStatus: 'pending' })
-        .where(eq(lessonProgress.id, undo.goalDone.id))
-        .run();
-    }
-    const change = undo.stageChange;
-    if (change?.fromStage) {
-      tx.update(students)
-        .set({ stage: change.fromStage, updatedAt: timestamp, syncStatus: 'pending' })
-        .where(eq(students.id, change.studentId))
-        .run();
-      tx.update(stageChanges)
-        .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
-        .where(eq(stageChanges.id, change.id))
-        .run();
-    }
   });
 }
 
@@ -269,7 +226,6 @@ async function getReviewedParts(studentId: string): Promise<number[]> {
 export const lessonsActions = {
   getByStudent,
   advance,
-  undoAdvance,
   getDetail,
   update,
   resolveQuestion,

@@ -195,7 +195,7 @@ erDiagram
 
 1. Uma lição pode levar várias visitas. Cada visita guarda em `lesson_number` a lição onde pararam e, se o utilizador quiser, o ponto em `stopped_at_point`.
 2. A primeira visita de uma lição cria a linha em `lesson_progress`, com `started_at` preenchido e `completed_at` vazio.
-3. Quando uma visita regista uma lição mais avançada, o app faz duas marcações: fecha a lição anterior com a data da visita e abre a nova. Mostra uma confirmação com opção de desfazer.
+3. Quando uma visita regista uma lição mais avançada, o app faz duas marcações: fecha a lição anterior com a data da visita e abre a nova. Mostra uma confirmação.
 4. `goal_done` nunca é automático. Só o utilizador sabe se o estudante cumpriu o "Tente o seguinte".
 5. Se a lição saltar mais de uma, o app pergunta se as lições intermédias também foram concluídas.
 6. O número de sessões por lição calcula-se contando as visitas com esse `lesson_number`.

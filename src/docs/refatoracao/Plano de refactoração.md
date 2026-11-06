@@ -36,7 +36,7 @@ Seguir este fluxo é a forma mais rápida de perceber a arquitectura:
 1. `src/app/(app)/visit/new.tsx` é só a rota; desenha o `VisitForm`
 2. `src/components/visits/visit-form.tsx` lê o estudante, as lições e as disponibilidades com `useQuery`, guarda o estado do formulário e, ao guardar, chama as acções
 3. `src/database/actions/visits.ts` (`visitsActions.create`) grava a visita e a próxima marcação
-4. `src/database/actions/lessons.ts` (`lessonsActions.advance`) fecha e abre lições numa transacção síncrona e devolve o que é preciso para desfazer
+4. `src/database/actions/lessons.ts` (`lessonsActions.advance`) fecha e abre lições numa transacção síncrona
 5. `src/utils/visits/refresh.ts` invalida as consultas de estudantes, visitas, marcações, lições e marcos e chama `syncAllNotifications`
 6. `src/utils/notifications/scheduler.ts` volta a agendar todas as notificações do app (lembretes de visita, resumo do dia, relatório e fim de mês)
 
@@ -71,8 +71,9 @@ Prioridade **A**: corrige um erro ou um risco real. **B**: facilita muito mexer 
   - Acrescentar o Biome com um `biome.json` e um script `npm run lint`, e um script `npm run typecheck` (`tsc --noEmit`)
   - Acrescentar Jest com `jest-expo` e começar pelas funções puras, que têm regras de negócio e são fáceis de testar: `utils/study/parts.ts`, `utils/visits/next-visit.ts`, `utils/students/rhythm.ts`, `utils/hours/service-year.ts`, `utils/reports`
   - Feito quando: `npm run lint`, `npm run typecheck` e `npm test` correm sem erros
-- [ ] **A5. Editar uma visita não recalcula o estudo.** Se a lição de uma visita antiga mudar, `lesson_progress` fica como estava (limitação conhecida da EST-04)
-  - Decidir a regra (recalcular a partir das visitas, ou só avisar) antes de mexer
+- [x] **A5. Editar uma visita não recalcula o estudo.** Se a lição de uma visita antiga mudar, `lesson_progress` fica como estava (limitação conhecida da EST-04)
+  - Regra: editar só avança. Lição acima da actual chama `advance`. Lição que desce ou sai, ou visita apagada, não mexe no progresso e avisa. Não se recalcula a partir das visitas porque `lesson_progress` guarda dados que elas não têm (`goalDone`, notas, lições fechadas à mão ou saltadas). Ver `lessonEditEffect`
+  - Por fazer (V2): corrigir uma lição registada a mais continua a ser manual. Resolver de vez pede ligar `lesson_progress` às visitas
   - Feito quando: há um caso de teste com o comportamento escolhido
 
 ### B. Estrutura

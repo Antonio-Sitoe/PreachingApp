@@ -35,7 +35,7 @@ Cada sprint entrega uma parte utilizável do app, pela ordem do objectivo centra
   - [x] Notificação do dia (HOJ-05) e cartão de preparação (HOJ-06)
 - [x] Estudo (livro *Seja Feliz para Sempre!*, 60 lições)
   - [x] Migração: tabela `lesson_progress`
-  - [x] Visita com estudo e avanço de lição com desfazer (EST-01, EST-04)
+  - [x] Visita com estudo e avanço de lição (EST-01, EST-04)
   - [x] Progresso no estudo e detalhe da lição (EST-02, EST-03)
   - [x] Revisão de parte como marco e estudo na ficha e na preparação (EST-05, EST-06)
   - Testado no emulador: migração com preenchimento a partir das visitas, avanço com pergunta pelas intermédias, avanço quando a lição actual ainda não tem registo, toast, ficha, progresso no estudo com a grelha de 6 colunas, detalhe da lição, folha de revisão e cartão da preparação. Por testar no emulador: o toque em Desfazer e o ecrã pequeno com letra grande
@@ -125,8 +125,8 @@ Seis tarefas, 14 horas, todas no sprint 6. Cobrem P3: acompanhar o livro *Seja F
   - Ecrã student/[id]/study: lição actual, barra das 60, ritmo (uma lição a cada N visitas) e as 4 partes, com a grelha de lições da parte em curso. Sem lições, mostra Estudo por começar com Registar visita com estudo
 - [x] **Detalhe da lição (P3)** - Data de início e de conclusão, "Tente o seguinte" marcado só pelo utilizador, nota e dúvidas pendentes. Grava em `lesson_progress`. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 28 Detalhe da lição (EST-03, 2 h, sprint 6)
   - Ecrã student/[id]/lesson/[n]: datas, número de visitas, "Tente o seguinte", nota, dúvidas pendentes com Respondida (`visits.question_resolved_at`) e Marcar como concluída na última lição
-- [x] **Avanço de lição (P3)** - Quando a visita regista uma lição mais avançada, o app fecha a anterior e abre a nova, com desfazer. Se saltar mais de uma, pergunta pelas intermédias. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 29 Avanço de lição com desfazer (EST-04, 3 h, sprint 6)
-  - Ao guardar, fecha as lições anteriores com a data da visita, pede o "Tente o seguinte" da que fecha e, na primeira lição, passa o percurso a Estudo iniciado. O toast tem Desfazer. Falta: editar uma visita não volta a calcular o avanço
+- [x] **Avanço de lição (P3)** - Quando a visita regista uma lição mais avançada, o app fecha a anterior e abre a nova. Se saltar mais de uma, pergunta pelas intermédias. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 29 Avanço de lição com desfazer (EST-04, 3 h, sprint 6)
+  - Ao guardar, fecha as lições anteriores com a data da visita, pede o "Tente o seguinte" da que fecha e, na primeira lição, passa o percurso a Estudo iniciado. Sem Desfazer no toast, porque repunha o progresso mas não a lição da visita. Editar uma visita só avança o estudo: se a lição descer ou sair, ou se a visita for apagada, o progresso fica igual e o app avisa
 - [x] **Revisão de parte (P3)** - Ao fechar a última lição de uma parte, propor a revisão e guardá-la como marco. UI: [Estudo](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 30 Revisão de parte como marco (EST-05, 1 h, sprint 6)
   - A folha abre sozinha quando a visita fecha a última lição de uma parte; depois, ao tocar numa parte concluída no Progresso no estudo. Guarda um marco `part_review` com data e nota (`milestones.note`)
 - [x] **Estudo na ficha e na preparação** - A ficha da pessoa mostra o progresso no livro e o cartão de preparação passa a mostrar a lição seguinte. UI: [Pessoas](https://claude.ai/artifact/Ja8xqKnSJ3L61wqBXRgcA1) › 14 Ficha da pessoa; Hoje › 9 Cartão de preparação (EST-06, 2 h, sprint 6)

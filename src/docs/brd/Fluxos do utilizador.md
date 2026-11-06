@@ -12,7 +12,7 @@ Só o nome é obrigatório. A localização é guardada sem perguntar, e o estud
 
 &#91;embedded content: registo de visita · 6 passos, 2 decisões\]
 
-Uma tentativa falhada regista-se com um toque e sai logo do fluxo. Quando a lição indicada é mais avançada do que a que estava em curso, o app fecha a anterior, abre a nova e mostra a opção de desfazer. Serve as funcionalidades P2, P3 e P6.
+Uma tentativa falhada regista-se com um toque e sai logo do fluxo. Quando a lição indicada é mais avançada do que a que estava em curso, o app fecha a anterior e abre a nova. Serve as funcionalidades P2, P3 e P6.
 
 ## Dia de pregação
 

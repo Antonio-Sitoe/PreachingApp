@@ -10,6 +10,7 @@ import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { FieldLabel, TextField } from '@/components/ui/text-field';
 import { showToast } from '@/components/ui/toast';
+import type { AdvanceResult } from '@/database/@types';
 import { lessonsActions, studentsActions, visitsActions } from '@/database/actions';
 import type { Visit, VisitOutcome } from '@/database/schemas';
 import { THEME } from '@/lib/theme';
@@ -19,6 +20,7 @@ import { countEvent } from '@/utils/usage';
 import { formatAppointmentLabel, parseScriptures, timeOf, withTime } from '@/utils/visits/format';
 import { capitalize } from '@/components/reports/format';
 import { formatLessons } from '@/utils/study/format';
+import { lessonEditEffect } from '@/utils/study/lesson-edit';
 import { currentLesson } from '@/utils/study/parts';
 import { suggestNextVisit } from '@/utils/visits/next-visit';
 import DateTimePicker, {
@@ -114,8 +116,16 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
   const inProgress = lessonsQuery.data ? currentLesson(lessonsQuery.data) : null;
   const openLesson = lessonRows.find((row) => !row.completedAt && row.lessonNumber === inProgress);
   const chosenLesson = lesson ?? inProgress ?? 1;
+  const nextLesson = outcome === 'met' && studied ? chosenLesson : null;
+  const editEffect =
+    editing && lessonsQuery.data
+      ? lessonEditEffect(editing.lessonNumber, nextLesson, inProgress)
+      : null;
   const advancing =
-    !editing && outcome === 'met' && studied && inProgress !== null && chosenLesson > inProgress;
+    (!editing || editEffect === 'advance') &&
+    nextLesson !== null &&
+    inProgress !== null &&
+    nextLesson > inProgress;
   const skipped = advancing && inProgress !== null ? chosenLesson - inProgress - 1 : 0;
   const [previousGoalDone, setPreviousGoalDone] = React.useState(false);
   const [askingSkipped, setAskingSkipped] = React.useState(false);
@@ -176,23 +186,25 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
     const message =
       closed.length > 0
         ? `${capitalize(formatLessons(closed))} ${closed.length === 1 ? 'fechada' : 'fechadas'}. A ${lessonNumber} é agora a actual.`
-        : result.startedLesson && result.undo.stageChange
+        : result.startedLesson && result.studyStarted
           ? `Estudo iniciado na lição ${lessonNumber}.`
           : null;
-    if (message) {
-      showToast({
-        message,
-        action: {
-          label: 'Desfazer',
-          icon: 'undo',
-          onPress: async () => {
-            lessonsActions.undoAdvance(result.undo);
-            await refresh();
-          },
-        },
-      });
-    }
+    if (message) showToast({ message });
     return result;
+  }
+
+  function confirmSaved(study: AdvanceResult | null, message: string) {
+    if (!study || (study.closedLessons.length === 0 && !study.studyStarted)) {
+      showToast({ message });
+    }
+  }
+
+  function leave(studentId: string, study: AdvanceResult | null) {
+    if (study?.completedPart) {
+      router.replace(`/student/${studentId}/study?review=${study.completedPart}`);
+    } else {
+      router.back();
+    }
   }
 
   async function save(closeSkipped: boolean) {
@@ -213,9 +225,21 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
     try {
       if (editing) {
         await visitsActions.update(editing.id, fields);
+        const study =
+          editEffect === 'advance' ? recordStudy(student.id, chosenLesson, closeSkipped) : null;
         await refresh();
-        showToast({ message: 'Visita actualizada.' });
-        router.back();
+        if (editEffect === 'warn') {
+          showToast({
+            message: 'Visita actualizada. O progresso no estudo não mudou.',
+            action: {
+              label: 'Ver estudo',
+              onPress: () => router.push(`/student/${student.id}/study`),
+            },
+          });
+        } else {
+          confirmSaved(study, 'Visita actualizada.');
+        }
+        leave(student.id, study);
         return;
       }
 
@@ -240,14 +264,8 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
         setNotHomeVisit(visit);
         return;
       }
-      if (!study || (study.closedLessons.length === 0 && !study.undo.stageChange)) {
-        showToast({ message: 'Visita guardada.' });
-      }
-      if (study?.completedPart) {
-        router.replace(`/student/${student.id}/study?review=${study.completedPart}`);
-      } else {
-        router.back();
-      }
+      confirmSaved(study, 'Visita guardada.');
+      leave(student.id, study);
     } catch {
       setSaving(false);
       showToast({ message: 'Não foi possível guardar a visita. Tenta outra vez.' });
@@ -393,7 +411,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
           <>
             <SelectField
               label="Em que lição ficaram?"
-              value={String(lesson ?? 1)}
+              value={String(chosenLesson)}
               options={LESSON_OPTIONS}
               onChange={(value) => setLesson(Number(value))}
             />
@@ -411,7 +429,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
                     variant="labelS"
                     className="flex-1 text-[13px] leading-[18px] text-primary-strong">
                     A lição {inProgress} fica fechada com a data desta visita e a {chosenLesson}{' '}
-                    passa a ser a actual. Podes desfazer depois de guardar.
+                    passa a ser a actual.
                   </Text>
                 </View>
                 <SettingsSection title={`Lição ${inProgress}, que terminaram`}>

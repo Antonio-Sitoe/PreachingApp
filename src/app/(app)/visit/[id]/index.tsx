@@ -66,7 +66,17 @@ function VisitContent({ detail }: { detail: VisitDetail }) {
       await visitsActions.remove(visit.id);
       setDeleting(false);
       await refreshVisitData(queryClient);
-      showToast({ message: 'Visita apagada.' });
+      showToast(
+        visit.lessonNumber
+          ? {
+              message: 'Visita apagada. O progresso no estudo não mudou.',
+              action: {
+                label: 'Ver estudo',
+                onPress: () => router.push(`/student/${student.id}/study`),
+              },
+            }
+          : { message: 'Visita apagada.' }
+      );
       router.back();
     } catch {
       setBusy(false);
