@@ -21,6 +21,7 @@ import dayjs from 'dayjs';
 import { router } from 'expo-router';
 import * as React from 'react';
 import { ScrollView, View } from 'react-native';
+import { toDayString } from '@/utils/dates';
 
 const UPCOMING_LIMIT = 5;
 
@@ -28,7 +29,7 @@ export default function HoursScreen() {
   const today = dayjs();
   const year = today.year();
   const month = today.month() + 1;
-  const todayKey = today.format('YYYY-MM-DD');
+  const todayKey = toDayString(today);
   const monthName = formatMonthName(year, month);
 
   const [manualOpen, setManualOpen] = React.useState(false);

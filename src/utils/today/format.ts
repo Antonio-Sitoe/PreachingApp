@@ -1,8 +1,8 @@
 import { capitalize } from '@/components/reports/format';
 import { TIME_OF_DAY_SUFFIX } from '@/constants/students';
-import { parseScriptures } from '@/database/actions/visits';
 import type { Appointment, Student, Visit } from '@/database/schemas';
 import { weekdayName } from '@/utils/students/return-date';
+import { parseScriptures } from '@/utils/visits/format';
 import dayjs from 'dayjs';
 import '@/lib/dayjs';
 

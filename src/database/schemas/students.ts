@@ -27,7 +27,6 @@ export const students = sqliteTable('students', {
     .notNull()
     .references(() => users.id, { onDelete: 'cascade' }),
   displayName: text('display_name').notNull(),
-  // Captura no terreno: "Senhora da loja azul" até se saber o nome.
   nameIsProvisional: integer('name_is_provisional', { mode: 'boolean' }).notNull().default(false),
   note: text('note'),
   phone: text('phone'),
@@ -39,9 +38,7 @@ export const students = sqliteTable('students', {
   latitude: real('latitude'),
   longitude: real('longitude'),
   address: text('address'),
-  // "Como chegar": indicações livres para encontrar a casa.
   directions: text('directions'),
-  // Quando o ponto (latitude, longitude) foi captado.
   locatedAt: text('located_at'),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),

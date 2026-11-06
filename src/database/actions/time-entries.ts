@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { db } from '../db';
 import { type NewTimeEntry, timeEntries } from '../schemas/time-entries';
 import type { MonthStats, TimeEntryInput } from '../@types';
+import { toDayString } from '@/utils/dates';
 
 function nowIso() {
   return new Date().toISOString();
@@ -71,7 +72,7 @@ async function getMonth(year: number, month: number) {
 
 async function getMonthStats(year: number, month: number): Promise<MonthStats> {
   const rows = await getMonth(year, month);
-  const days = new Set(rows.map((row) => dayjs(row.startedAt).format('YYYY-MM-DD')));
+  const days = new Set(rows.map((row) => toDayString(row.startedAt)));
   return {
     minutes: rows.reduce((total, row) => total + row.minutes, 0),
     daysOut: days.size,

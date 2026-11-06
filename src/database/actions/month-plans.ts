@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import { db } from '../db';
 import { monthPlans, planDays } from '../schemas/month-plans';
 import type { MonthPlanInput, MonthPlanWithDays } from '../@types';
+import { toDayString } from '@/utils/dates';
 
 function nowIso() {
   return new Date().toISOString();
@@ -32,7 +33,7 @@ async function getForMonth(year: number, month: number): Promise<MonthPlanWithDa
 // Os dias passados ficam como estavam; só se recriam os de hoje em diante.
 function save(input: MonthPlanInput, today = dayjs()) {
   const now = nowIso();
-  const todayKey = today.format('YYYY-MM-DD');
+  const todayKey = toDayString(today);
   const values = {
     publisherType: input.publisherType,
     hourGoal: input.hourGoal,

@@ -10,6 +10,7 @@ import {
 } from '../schemas';
 import { currentLesson } from '@/utils/study/parts';
 import type { AdvanceInput, AdvanceResult, AdvanceUndo, LessonDetail } from '../@types';
+import { toDayString } from '@/utils/dates';
 
 const PART_ENDS: Record<number, number> = { 12: 1, 33: 2, 47: 3, 60: 4 };
 const REVISIT_STAGES = ['first_contact', 'return_visit'];
@@ -241,7 +242,7 @@ async function saveReview(
     type: 'part_review',
     label: `Revisão da parte ${part}`,
     note: note.trim() || null,
-    occurredAt: date.toISOString().slice(0, 10),
+    occurredAt: toDayString(date),
     createdAt: timestamp,
     updatedAt: timestamp,
     syncStatus: 'pending',

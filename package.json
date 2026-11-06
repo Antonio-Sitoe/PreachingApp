@@ -11,7 +11,8 @@
     "generate": "drizzle-kit generate",
     "migrate": "drizzle-kit migrate",
     "studio": "drizzle-kit studio",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "code-map": "node tools/code-map/build.mjs && open tools/code-map/code-map.html"
   },
   "dependencies": {
     "@expo/ui": "~57.0.25",

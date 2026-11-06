@@ -48,6 +48,7 @@ import { router } from 'expo-router';
 import * as React from 'react';
 import { Pressable, RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { toDayString } from '@/utils/dates';
 
 export default function TodayScreen() {
   const queryClient = useQueryClient();
@@ -56,7 +57,7 @@ export default function TodayScreen() {
   const month = now.month() + 1;
 
   const todayQuery = useQuery({
-    queryKey: ['appointments', 'today', now.format('YYYY-MM-DD')],
+    queryKey: ['appointments', 'today', toDayString(now)],
     queryFn: () => todayActions.getToday(),
   });
   const { data: user } = useQuery({

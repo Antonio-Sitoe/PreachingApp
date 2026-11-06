@@ -1,3 +1,10 @@
+import dayjs, { type Dayjs } from 'dayjs';
+
+/** O dia na hora local, YYYY-MM-DD. */
+export function toDayString(date: Date | Dayjs | string): string {
+  return dayjs(date).format('YYYY-MM-DD');
+}
+
 export function minutesToHoursAndMinutes(hour: number, minutes: number) {
   const hours = Math.floor(minutes / 60) + hour
   let remainingMinutes: number | string = minutes % 60

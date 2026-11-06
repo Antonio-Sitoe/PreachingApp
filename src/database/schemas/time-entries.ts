@@ -10,7 +10,6 @@ export const timeEntries = sqliteTable(
     id: text('id')
       .primaryKey()
       .$defaultFn(() => uuid()),
-    // Início da sessão, ISO. Nas entradas manuais é o dia escolhido.
     startedAt: text('started_at').notNull(),
     minutes: integer('minutes').notNull(),
     source: text('source', { enum: TIME_ENTRY_SOURCES }).notNull().default('manual'),

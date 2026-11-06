@@ -6,6 +6,7 @@ import type { NotificationPreferences } from '@/utils/notifications/preferences'
 import { formatDaysAgo } from '@/utils/today/format';
 import dayjs from 'dayjs';
 import * as Notifications from 'expo-notifications';
+import { toDayString } from '@/utils/dates';
 
 const CHANNEL_ID = 'daily-summary';
 const PREFIX = 'daily-summary-';
@@ -107,7 +108,7 @@ export async function syncDailySummary(
 
     const data: DailySummaryData = { type: 'daily-summary' };
     await Notifications.scheduleNotificationAsync({
-      identifier: `${PREFIX}${at.format('YYYY-MM-DD')}`,
+      identifier: `${PREFIX}${toDayString(at)}`,
       content: { ...content, data },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DATE,

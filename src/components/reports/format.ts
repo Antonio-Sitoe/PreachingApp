@@ -1,4 +1,4 @@
-import { monthNameToPortuguese } from '@/utils/dates';
+import { monthNameToPortuguese, toDayString } from '@/utils/dates';
 import dayjs from 'dayjs';
 import '@/lib/dayjs';
 
@@ -31,5 +31,5 @@ export function monthShareText(input: {
 }
 
 export function shiftDate(date: string, days: number) {
-  return dayjs(date).add(days, 'day').format('YYYY-MM-DD');
+  return toDayString(dayjs(date).add(days, 'day'));
 }

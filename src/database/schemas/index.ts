@@ -9,7 +9,6 @@ export * from './pauses';
 export * from './student-availabilities';
 export * from './tags';
 export * from './notes';
-export * from './reports';
 export * from './time-entries';
 export * from './month-plans';
 export * from './monthly-reports';

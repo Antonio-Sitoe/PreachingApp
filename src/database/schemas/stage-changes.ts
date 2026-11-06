@@ -12,7 +12,6 @@ export const stageChanges = sqliteTable(
     studentId: text('student_id')
       .notNull()
       .references(() => students.id, { onDelete: 'cascade' }),
-    // Vazio na primeira etapa, quando o estudante é criado.
     fromStage: text('from_stage', { enum: STUDENT_STAGES }),
     toStage: text('to_stage', { enum: STUDENT_STAGES }).notNull(),
     changedAt: text('changed_at').notNull(),

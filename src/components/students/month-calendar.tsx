@@ -1,9 +1,10 @@
 import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
 import { cn } from '@/utils/cn';
-import { dayKey, formatMonthTitle, formatReturnSummary } from '@/utils/students/return-date';
+import { formatMonthTitle, formatReturnSummary } from '@/utils/students/return-date';
 import dayjs, { type Dayjs } from 'dayjs';
 import { Pressable, View } from 'react-native';
+import { toDayString } from '@/utils/dates';
 
 const WEEKDAY_INITIALS = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
 
@@ -78,7 +79,7 @@ function MonthCalendar({
                 isToday={day.isSame(today, 'day')}
                 isSelected={day.isSame(selected, 'day')}
                 isPast={day.isBefore(today, 'day')}
-                hasVisits={scheduledDays.has(dayKey(day))}
+                hasVisits={scheduledDays.has(toDayString(day))}
                 onPress={() => onSelect(day.toDate())}
               />
             ) : (

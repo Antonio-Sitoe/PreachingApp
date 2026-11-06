@@ -20,10 +20,6 @@ export function weekdayName(day: Dayjs): string {
   return day.format('dddd').replace('-feira', '');
 }
 
-export function dayKey(date: Date | Dayjs): string {
-  return dayjs(date).format('YYYY-MM-DD');
-}
-
 /** "Sábado, 10 de Outubro, à tarde" */
 export function formatReturnSummary(date: Date, timeOfDay: AppointmentTimeOfDay = 'any'): string {
   const day = dayjs(date);

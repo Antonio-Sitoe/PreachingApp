@@ -6,16 +6,6 @@ import type { VisitDetail, VisitEdit, VisitInput } from '../@types';
 
 const now = () => new Date().toISOString();
 
-export function parseScriptures(value: string | null): string[] {
-  if (!value) return [];
-  try {
-    const parsed: unknown = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string') : [];
-  } catch {
-    return [];
-  }
-}
-
 /**
  * Grava a visita, dá por cumpridas as marcações por cumprir até esse dia
  * e, com `next`, marca a próxima.

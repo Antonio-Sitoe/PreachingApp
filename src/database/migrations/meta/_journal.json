@@ -64,6 +64,13 @@
       "when": 1793427827510,
       "tag": "0008_monthly_reports",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1793967791791,
+      "tag": "0009_drop_reports",
+      "breakpoints": true
     }
   ]
 }

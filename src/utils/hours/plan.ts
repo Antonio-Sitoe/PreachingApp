@@ -1,5 +1,6 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { formatDuration, formatHours } from './format';
+import { toDayString } from '@/utils/dates';
 
 // 1 = segunda ... 7 = domingo, como em month_plans.weekdays.
 export const WEEKDAYS = [1, 2, 3, 4, 5, 6, 7] as const;
@@ -42,7 +43,7 @@ export function planDates(
   const dates: string[] = [];
 
   while (!cursor.isAfter(monthEnd, 'day')) {
-    if (weekdays.includes(isoWeekday(cursor))) dates.push(cursor.format('YYYY-MM-DD'));
+    if (weekdays.includes(isoWeekday(cursor))) dates.push(toDayString(cursor));
     cursor = cursor.add(1, 'day');
   }
   return dates;

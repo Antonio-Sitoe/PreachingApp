@@ -8,13 +8,14 @@ import { TIMES_OF_DAY } from '@/constants/students';
 import { appointmentsActions } from '@/database/actions';
 import type { ReturnOn } from '@/database/@types';
 import type { AppointmentTimeOfDay } from '@/database/schemas';
-import { dayKey, formatDaysFromToday, formatReturnSummary } from '@/utils/students/return-date';
+import { formatDaysFromToday, formatReturnSummary } from '@/utils/students/return-date';
 import { useQuery } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import * as React from 'react';
 import { ScrollView, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MonthCalendar } from './month-calendar';
+import { toDayString } from '@/utils/dates';
 
 type ReturnDateSheetProps = {
   open: boolean;
@@ -51,7 +52,7 @@ function ReturnDateSheet({ open, name, address, value, onConfirm, onClose }: Ret
   const scheduled = React.useMemo(() => new Set(scheduledDays), [scheduledDays]);
 
   const subtitle = [name.trim(), address].filter(Boolean).join(' · ');
-  const hasVisits = scheduled.has(dayKey(date));
+  const hasVisits = scheduled.has(toDayString(date));
 
   return (
     <BottomSheet

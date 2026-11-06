@@ -11,9 +11,9 @@ import DateTimePicker, {
   type DateTimePickerChangeEvent,
 } from '@react-native-community/datetimepicker';
 import { useQueryClient } from '@tanstack/react-query';
-import dayjs from 'dayjs';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
+import { toDayString } from '@/utils/dates';
 
 type MilestoneSheetProps = {
   open: boolean;
@@ -54,7 +54,7 @@ function MilestoneSheet({ open, studentId, onClose }: MilestoneSheetProps) {
       await milestonesActions.create({
         studentId,
         label,
-        occurredAt: dayjs(date).format('YYYY-MM-DD'),
+        occurredAt: toDayString(date),
       });
       await queryClient.invalidateQueries({ queryKey: ['milestones', studentId] });
       showToast({ message: 'Marco guardado.' });

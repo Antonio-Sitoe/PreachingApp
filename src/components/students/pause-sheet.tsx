@@ -19,6 +19,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import dayjs from 'dayjs';
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
+import { toDayString } from '@/utils/dates';
 
 type PauseSheetProps = {
   open: boolean;
@@ -55,7 +56,7 @@ function PauseSheet({ open, student, onClose }: PauseSheetProps) {
       await studentsActions.pause(student.id, {
         reason: reason ?? 'other',
         note,
-        retryAt: retryAt ? dayjs(retryAt).format('YYYY-MM-DD') : null,
+        retryAt: retryAt ? toDayString(retryAt) : null,
       });
       await refreshVisitData(queryClient);
       showToast({ message: `${shortName(student.displayName)} está em pausa.` });

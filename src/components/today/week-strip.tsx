@@ -4,6 +4,7 @@ import { cn } from '@/utils/cn';
 import { weekOf } from '@/utils/today/format';
 import dayjs from 'dayjs';
 import { View } from 'react-native';
+import { toDayString } from '@/utils/dates';
 
 type WeekStripProps = {
   /** YYYY-MM-DD dos dias com visitas marcadas. */
@@ -37,7 +38,7 @@ function WeekStrip({ markedDays }: WeekStripProps) {
             <View
               className={cn(
                 'size-1 rounded-full',
-                marked.has(day.format('YYYY-MM-DD')) && 'bg-primary'
+                marked.has(toDayString(day)) && 'bg-primary'
               )}
             />
           </View>

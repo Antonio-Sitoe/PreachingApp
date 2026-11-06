@@ -8,10 +8,14 @@ import { showToast } from '@/components/ui/toast';
 import { OutcomeBadge } from '@/components/visits/visit-row';
 import { visitsActions } from '@/database/actions';
 import type { VisitDetail } from '@/database/@types';
-import { parseScriptures } from '@/database/actions/visits';
 import { cn } from '@/utils/cn';
 import { formatDayMonth } from '@/utils/students/pause';
-import { formatAppointmentLabel, formatVisitLongDate, timeOf } from '@/utils/visits/format';
+import {
+  formatAppointmentLabel,
+  formatVisitLongDate,
+  parseScriptures,
+  timeOf,
+} from '@/utils/visits/format';
 import { refreshVisitData } from '@/utils/visits/refresh';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { router, useLocalSearchParams } from 'expo-router';

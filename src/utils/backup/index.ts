@@ -172,7 +172,7 @@ function parseBackup(raw: string): BackupFile {
     );
   }
 
-  if (Object.keys(parsed.data.tables).some((name) => !backupActions.hasTable(name))) {
+  if (Object.keys(parsed.data.tables).some((name) => !backupActions.isKnownTable(name))) {
     throw new BackupError(
       'Esta cópia vem de uma versão mais recente do app. Actualiza o app primeiro.'
     );

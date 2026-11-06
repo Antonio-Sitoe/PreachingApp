@@ -11,6 +11,7 @@ import {
 } from '../schemas';
 import { usersActions } from './users';
 import type { OutOfRhythmItem, TodayData, TodayItem } from '../@types';
+import { toDayString } from '@/utils/dates';
 
 const EMPTY: TodayData = {
   today: [],
@@ -165,7 +166,7 @@ async function getToday(now = dayjs()): Promise<TodayData> {
       ...new Set(
         pending
           .filter((appointment) => !dayjs(appointment.scheduledAt).isBefore(weekStart))
-          .map((appointment) => dayjs(appointment.scheduledAt).format('YYYY-MM-DD'))
+          .map((appointment) => toDayString(appointment.scheduledAt))
       ),
     ],
     studiesThisMonth,

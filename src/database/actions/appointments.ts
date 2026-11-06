@@ -3,6 +3,7 @@ import { and, asc, desc, eq, gte, inArray, isNotNull, isNull, lt } from 'drizzle
 import { db } from '../db';
 import { appointments, students, visits } from '../schemas';
 import type { ReminderTarget, ScheduleInput } from '../@types';
+import { toDayString } from '@/utils/dates';
 
 /** Os dias (YYYY-MM-DD) do mês com marcações por cumprir. */
 async function getScheduledDays(month: Date): Promise<string[]> {
@@ -18,7 +19,7 @@ async function getScheduledDays(month: Date): Promise<string[]> {
         lt(appointments.scheduledAt, start.add(1, 'month').toISOString())
       )
     );
-  return [...new Set(rows.map((row) => dayjs(row.scheduledAt).format('YYYY-MM-DD')))];
+  return [...new Set(rows.map((row) => toDayString(row.scheduledAt)))];
 }
 
 /**

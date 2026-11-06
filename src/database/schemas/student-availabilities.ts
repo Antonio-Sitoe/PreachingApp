@@ -3,7 +3,6 @@ import { v4 as uuid } from 'uuid';
 import { students } from './students';
 import { SYNC_STATUSES } from './users';
 
-/** Uma linha por dia da semana em que o estudante costuma estar. */
 export const studentAvailabilities = sqliteTable(
   'student_availabilities',
   {

@@ -1,10 +1,19 @@
 import { capitalize } from '@/components/reports/format';
-import { parseScriptures } from '@/database/actions/visits';
 import type { Visit, VisitOutcome } from '@/database/schemas';
 import { formatVisitDay } from '@/utils/students/list';
 import { weekdayName } from '@/utils/students/return-date';
 import dayjs from 'dayjs';
 import '@/lib/dayjs';
+
+export function parseScriptures(value: string | null): string[] {
+  if (!value) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed.filter((item) => typeof item === 'string') : [];
+  } catch {
+    return [];
+  }
+}
 
 /** "Segunda, 12 Out · 10:00", "Amanhã" */
 export function formatAppointmentLabel(date: Date, time: string | null): string {
