@@ -82,7 +82,7 @@ export default function StudyProgressScreen() {
                 </Text>
                 <Text className="text-center text-muted-foreground">
                   Quando registares uma visita com estudo, a lição aparece aqui e o percurso passa a
-                  "Estudo iniciado".
+                  &quot;Estudo iniciado&quot;.
                 </Text>
               </View>
               <Button
