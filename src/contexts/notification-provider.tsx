@@ -32,10 +32,6 @@ function NotificationProvider({ children }: { children: React.ReactNode }) {
   return children;
 }
 
-/**
- * Tocar num lembrete de visita abre a preparação; tocar no resumo do dia abre o Hoje.
- * Funciona também quando a app estava fechada.
- */
 function useOpenFromNotification(ready: boolean) {
   const lastResponse = Notifications.useLastNotificationResponse();
   const handled = useRef<string | null>(null);

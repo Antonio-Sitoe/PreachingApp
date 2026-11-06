@@ -8,7 +8,6 @@ type Lock = {
 
 const LockContext = createContext<Lock | null>(null);
 
-// Só se lê ao montar: o PIN pede-se ao abrir o app de raiz, não ao voltar do segundo plano.
 function LockProvider({ children }: { children: React.ReactNode }) {
   const [locked, setLocked] = useState(isLockEnabled);
 

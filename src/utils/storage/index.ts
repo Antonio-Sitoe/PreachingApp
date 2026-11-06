@@ -115,7 +115,6 @@ export function setStudentSort(value: StudentSort): void {
   getStorage().set(STUDENT_SORT, value);
 }
 
-// Fora do backup: o PIN é só deste telemóvel.
 export function isLockEnabled(): boolean {
   return getStorage().getBoolean(LOCK_ENABLED) === true;
 }
@@ -148,7 +147,6 @@ export function setLockBlockedUntil(value: number): void {
   getStorage().set(LOCK_BLOCKED_UNTIL, value);
 }
 
-// Chaves como "pending:2026-09" ou "month-end:2026-10".
 export function isReportNoticeDismissed(key: string): boolean {
   return (getStorage().getString(REPORT_NOTICES_DISMISSED) ?? '').split(',').includes(key);
 }
