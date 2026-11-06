@@ -1,4 +1,4 @@
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import { PAUSE_REASON_OPTIONS } from '@/constants/students';
 import type { Pause } from '@/database/schemas';
 import dayjs from 'dayjs';

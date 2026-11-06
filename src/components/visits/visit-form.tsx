@@ -19,7 +19,7 @@ import { fromTimeString, toTimeString } from '@/utils/students/form';
 import { formatPickedDay } from '@/utils/students/journey';
 import { countEvent } from '@/utils/usage';
 import { formatAppointmentLabel, parseScriptures, timeOf, withTime } from '@/utils/visits/format';
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import { formatLessons } from '@/utils/study/format';
 import { lessonEditEffect } from '@/utils/study/lesson-edit';
 import { currentLesson } from '@/utils/study/parts';

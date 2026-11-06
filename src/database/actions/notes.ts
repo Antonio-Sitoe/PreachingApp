@@ -1,4 +1,4 @@
-import { normalizeSearch, plainBody } from '@/components/notes/body';
+import { normalizeSearch, plainBody } from '@/utils/notes/body';
 import { and, asc, count, desc, eq, isNull, sql } from 'drizzle-orm';
 import { db } from '../db';
 import { type Note, notes } from '../schemas/notes';

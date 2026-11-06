@@ -1,7 +1,8 @@
 import { SettingsSwitch } from '@/components/settings/grouped-list';
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { Text } from '@/components/ui/text';
+import type { AppIconName } from '@/constants/icons';
 import { queryKeys } from '@/constants/query-keys';
 import { USAGE_NEVER_SENT, USAGE_SENT } from '@/constants/settings';
 import { isUsageCountingEnabled, setUsageCountingEnabled } from '@/utils/storage';

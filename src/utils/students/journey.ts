@@ -1,4 +1,4 @@
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import { STAGE_ORDER, STAGES, type Stage } from '@/constants/stages';
 import type { StageChange, StudentGender } from '@/database/schemas';
 import dayjs from 'dayjs';

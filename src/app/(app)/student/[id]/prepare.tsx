@@ -1,4 +1,4 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { StudyCard } from '@/components/study/study-card';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -6,6 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
+import type { AppIconName } from '@/constants/icons';
 import { queryKeys } from '@/constants/query-keys';
 import { studentsActions, visitsActions } from '@/database/actions';
 import { cn } from '@/utils/cn';

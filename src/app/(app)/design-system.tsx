@@ -1,5 +1,5 @@
 import { Logo } from '@/components/brand/logo';
-import { APP_ICON_NAMES, AppIcon } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { Avatar } from '@/components/ui/avatar';
 import { BottomSheet, BottomSheetPanel, SheetOption } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { StageBadge } from '@/components/ui/stage-badge';
 import { TabBar, type MainTabKey } from '@/components/ui/tab-bar';
 import { Text, type TextVariant } from '@/components/ui/text';
 import { showToast, Toast } from '@/components/ui/toast';
+import { APP_ICON_NAMES } from '@/constants/icons';
 import { STAGE_ORDER } from '@/constants/stages';
 import { BRAND, THEME, type ThemeColor } from '@/lib/theme';
 import { Stack } from 'expo-router';

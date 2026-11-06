@@ -1,10 +1,11 @@
 import { TagChip } from '@/components/notes/list';
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { SegmentedControl } from '@/components/ui/segmented-control';
 import { Text } from '@/components/ui/text';
 import { FieldLabel } from '@/components/ui/text-field';
+import type { AppIconName } from '@/constants/icons';
 import { getNotificationPreferences } from '@/utils/storage';
 import { daysAhead, nextSaturday } from '@/utils/students/return-date';
 import { formatPickedDay } from '@/utils/students/journey';

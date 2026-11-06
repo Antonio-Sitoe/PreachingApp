@@ -1,6 +1,4 @@
-import { APP_ICONS } from '@/components/ui/app-icon';
 import { showToast } from '@/components/ui/toast';
-import { toEditorDocument } from '@/components/notes/body';
 import { NOTE_COLORS } from '@/components/notes/colors';
 import {
   NotesEditorView,
@@ -11,10 +9,12 @@ import { flushNoteSave, saveNote } from '@/components/notes/editor/save';
 import { useEditorStore } from '@/components/notes/editor/store';
 import { formatNoteStamp } from '@/components/notes/format';
 import { useTags } from '@/components/notes/tags';
+import { APP_ICONS } from '@/constants/icons';
 import { queryKeys } from '@/constants/query-keys';
 import { STAGES } from '@/constants/stages';
 import { TAG_NAME_MAX, TagError, notesActions, tagsActions } from '@/database/actions';
 import { SHADOWS, THEME } from '@/lib/theme';
+import { toEditorDocument } from '@/utils/notes/body';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useColorScheme } from 'nativewind';

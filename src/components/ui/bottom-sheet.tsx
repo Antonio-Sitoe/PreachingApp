@@ -1,5 +1,6 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { Text } from '@/components/ui/text';
+import type { AppIconName } from '@/constants/icons';
 import { SHADOWS, THEME } from '@/lib/theme';
 import { cn } from '@/utils/cn';
 import {

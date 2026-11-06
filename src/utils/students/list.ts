@@ -1,4 +1,4 @@
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import {
   REVISIT_STAGES,
   STUDENT_SORTS,

@@ -85,7 +85,7 @@ Prioridade **A**: corrige um erro ou um risco real. **B**: facilita muito mexer 
   - Feito quando: nenhum ecrã chama `useQuery` com uma acção que já tenha hook
 - [ ] **B3. Actualizar depois de gravar, num só sítio.** Hoje cada ecrã decide o que invalidar e quando reagendar as notificações (`refreshVisitData` e mais 5 ficheiros que chamam `syncAllNotifications` directamente). Passar isto para mutações do React Query (`useMutation`) por área, que invalidam as chaves certas e reagendam
   - Feito quando: os ecrãs não chamam `invalidateQueries` nem `syncAllNotifications` directamente
-- [ ] **B4. Utils não devem importar de components.** `capitalize` e outras funções vivem em `src/components/reports/format.ts` e são importadas por `utils/today`, `utils/visits`, `utils/students`, `utils/reports`, `utils/profile` e por `database/actions/notes.ts` (que importa `components/notes/body`)
+- [x] **B4. Utils não devem importar de components.** `capitalize` e outras funções vivem em `src/components/reports/format.ts` e são importadas por `utils/today`, `utils/visits`, `utils/students`, `utils/reports`, `utils/profile` e por `database/actions/notes.ts` (que importa `components/notes/body`)
   - Mover as funções de texto e datas para `src/utils/format/` e o tratamento do corpo das notas para `src/utils/notes/`
   - Feito quando: `grep -rln "from '@/components" src/utils src/database src/hooks src/lib` não encontra nada
 - [ ] **B5. Partir os ficheiros grandes.**

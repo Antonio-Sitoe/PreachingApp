@@ -1,4 +1,4 @@
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import { TIME_OF_DAY_SUFFIX } from '@/constants/students';
 import type { Appointment, Student, Visit } from '@/database/schemas';
 import { weekdayName } from '@/utils/students/return-date';

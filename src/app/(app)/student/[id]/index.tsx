@@ -1,7 +1,7 @@
 import { SettingsRow, SettingsSection } from '@/components/settings/grouped-list';
 import { PauseSheet } from '@/components/students/pause-sheet';
 import { AlertDialog } from '@/components/ui/alert-dialog';
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/ui/empty-state';
@@ -9,6 +9,7 @@ import { ScreenHeader } from '@/components/ui/screen-header';
 import { StageBadge } from '@/components/ui/stage-badge';
 import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
+import type { AppIconName } from '@/constants/icons';
 import { queryKeys } from '@/constants/query-keys';
 import { STAGES } from '@/constants/stages';
 import { VisitRow } from '@/components/visits/visit-row';

@@ -2,6 +2,7 @@ import { backupActions } from '@/database/actions';
 import type { BackupTables } from '@/database/@types';
 import journal from '@/database/migrations/meta/_journal.json';
 import { monthNameToPortuguese } from '@/utils/dates';
+import { capitalize } from '@/utils/format';
 import { mergeNotificationPreferences } from '@/utils/notifications/preferences';
 import {
   getListView,
@@ -60,10 +61,6 @@ export type PickedBackup = BackupSummary & {
 };
 
 export class BackupError extends Error {}
-
-function capitalize(value: string): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
 
 function dayName(date: Date): string {
   const name = `${date.getDate()} de ${capitalize(monthNameToPortuguese(date.getMonth() + 1))}`;

@@ -1,3 +1,4 @@
+import { capitalize } from '@/utils/format';
 import dayjs from 'dayjs';
 
 const pad = (value: number) => String(value).padStart(2, '0');
@@ -32,8 +33,6 @@ export function formatClock(ms: number): string {
 export function formatTimeOfDay(value: string | number | Date): string {
   return dayjs(value).format('HH:mm');
 }
-
-const capitalize = (value: string) => value.charAt(0).toUpperCase() + value.slice(1);
 
 // "Sábado, 3 Out".
 export function formatEntryDay(value: string | Date): string {

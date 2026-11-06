@@ -1,7 +1,8 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import type { AppIconName } from '@/constants/icons';
 import { Pressable, View } from 'react-native';
 
 export type QuickAction = 'visit' | 'study' | 'contact' | 'hours';

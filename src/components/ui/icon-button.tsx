@@ -1,4 +1,5 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
+import type { AppIconName } from '@/constants/icons';
 import { SHADOWS } from '@/lib/theme';
 import { cn } from '@/utils/cn';
 import { cva, type VariantProps } from 'class-variance-authority';

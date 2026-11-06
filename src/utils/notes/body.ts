@@ -5,7 +5,7 @@ import {
   stripMarkdown,
   type NoteBlock,
   type NoteDocument,
-} from '@/components/notes/document';
+} from '@/utils/notes/document';
 
 type InlineStyle = 'bold' | 'italic';
 

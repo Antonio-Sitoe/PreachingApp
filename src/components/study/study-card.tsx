@@ -1,4 +1,4 @@
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import { Text } from '@/components/ui/text';
 import { queryKeys } from '@/constants/query-keys';
 import { lessonsActions, visitsActions } from '@/database/actions';

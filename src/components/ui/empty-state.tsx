@@ -1,6 +1,7 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import type { AppIconName } from '@/constants/icons';
 import { cn } from '@/utils/cn';
 import { View, type ViewProps } from 'react-native';
 

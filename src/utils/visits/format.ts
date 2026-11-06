@@ -1,4 +1,4 @@
-import { capitalize } from '@/components/reports/format';
+import { capitalize } from '@/utils/format';
 import type { Visit, VisitOutcome } from '@/database/schemas';
 import { formatVisitDay } from '@/utils/students/list';
 import { weekdayName } from '@/utils/students/return-date';

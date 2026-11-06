@@ -1,7 +1,8 @@
-import { AppIcon, type AppIconName } from '@/components/ui/app-icon';
+import { AppIcon } from '@/components/ui/app-icon';
 import { ScreenHeader } from '@/components/ui/screen-header';
 import { SettingsRow, SettingsSection } from '@/components/settings/grouped-list';
 import { Text } from '@/components/ui/text';
+import type { AppIconName } from '@/constants/icons';
 import { queryKeys } from '@/constants/query-keys';
 import { usersActions } from '@/database/actions';
 import { PUBLISHER_TYPE_INFO } from '@/utils/profile/setup';
