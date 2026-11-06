@@ -118,9 +118,15 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
   const openLesson = lessonRows.find((row) => !row.completedAt && row.lessonNumber === inProgress);
   const chosenLesson = lesson ?? inProgress ?? 1;
   const nextLesson = outcome === 'met' && studied ? chosenLesson : null;
+  const advanceQuery = useQuery({
+    queryKey: queryKeys.lessons.advance(editing?.id),
+    queryFn: () => lessonsActions.getUndoableAdvance(editing?.id as string),
+    enabled: Boolean(editing),
+  });
+  const undoable = advanceQuery.data && !advanceQuery.data.blocked ? advanceQuery.data : null;
   const editEffect =
     editing && lessonsQuery.data
-      ? lessonEditEffect(editing.lessonNumber, nextLesson, inProgress)
+      ? lessonEditEffect(editing.lessonNumber, nextLesson, inProgress, Boolean(undoable))
       : null;
   const advancing =
     (!editing || editEffect === 'advance') &&
@@ -175,9 +181,27 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
     else void save(false);
   }
 
-  function recordStudy(studentId: string, lessonNumber: number, closeSkipped: boolean) {
+  async function undoStudy(advanceId: string) {
+    try {
+      const undone = lessonsActions.undoAdvance(advanceId, { restoreVisitLesson: true });
+      await refresh();
+      if (!undone) showToast({ message: 'Já não dá para desfazer este avanço.' });
+    } catch {
+      showToast({ message: 'Não foi possível desfazer. Tenta outra vez.' });
+    }
+  }
+
+  function recordStudy(
+    studentId: string,
+    visitId: string,
+    previousVisitLesson: number | null,
+    lessonNumber: number,
+    closeSkipped: boolean
+  ) {
     const result = lessonsActions.advance({
       studentId,
+      visitId,
+      previousVisitLesson,
       lesson: lessonNumber,
       date: visitedAt,
       previousGoalDone: advancing ? previousGoalDone : undefined,
@@ -190,7 +214,16 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
         : result.startedLesson && result.studyStarted
           ? `Estudo iniciado na lição ${lessonNumber}.`
           : null;
-    if (message) showToast({ message });
+    const { advanceId } = result;
+    if (message) {
+      showToast({
+        message,
+        duration: 8000,
+        action: advanceId
+          ? { label: 'Desfazer', icon: 'undo', onPress: () => void undoStudy(advanceId) }
+          : undefined,
+      });
+    }
     return result;
   }
 
@@ -227,9 +260,17 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
       if (editing) {
         await visitsActions.update(editing.id, fields);
         const study =
-          editEffect === 'advance' ? recordStudy(student.id, chosenLesson, closeSkipped) : null;
+          editEffect === 'advance'
+            ? recordStudy(student.id, editing.id, editing.lessonNumber, chosenLesson, closeSkipped)
+            : null;
+        const undone =
+          editEffect === 'undo' && undoable
+            ? lessonsActions.undoAdvance(undoable.advance.id, { restoreVisitLesson: false })
+            : false;
         await refresh();
-        if (editEffect === 'warn') {
+        if (undone) {
+          showToast({ message: 'Visita actualizada. O progresso no estudo voltou atrás.' });
+        } else if (editEffect === 'warn' || editEffect === 'undo') {
           showToast({
             message: 'Visita actualizada. O progresso no estudo não mudou.',
             action: {
@@ -258,7 +299,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
       });
       void countEvent('visit_logged');
       const study = fields.lessonNumber
-        ? recordStudy(student.id, fields.lessonNumber, closeSkipped)
+        ? recordStudy(student.id, visit.id, inProgress, fields.lessonNumber, closeSkipped)
         : null;
       await refresh();
       if (outcome === 'not_home') {
@@ -430,7 +471,7 @@ function VisitForm({ initialStudentId, initialStudied, editing }: VisitFormProps
                     variant="labelS"
                     className="flex-1 text-[13px] leading-[18px] text-primary-strong">
                     A lição {inProgress} fica fechada com a data desta visita e a {chosenLesson}{' '}
-                    passa a ser a actual.
+                    passa a ser a actual. Podes desfazer depois de guardar.
                   </Text>
                 </View>
                 <SettingsSection title={`Lição ${inProgress}, que terminaram`}>

@@ -7,10 +7,12 @@ import { Text } from '@/components/ui/text';
 import { showToast } from '@/components/ui/toast';
 import { OutcomeBadge } from '@/components/visits/visit-row';
 import { queryKeys } from '@/constants/query-keys';
-import { visitsActions } from '@/database/actions';
-import type { VisitDetail } from '@/database/@types';
+import { lessonsActions, visitsActions } from '@/database/actions';
+import type { UndoableAdvance, VisitDetail } from '@/database/@types';
 import { cn } from '@/utils/cn';
 import { formatDayMonth } from '@/utils/students/pause';
+import { formatLessons } from '@/utils/study/format';
+import { formatUndoBlock } from '@/utils/study/lesson-edit';
 import {
   formatAppointmentLabel,
   formatVisitLongDate,
@@ -52,11 +54,28 @@ export default function VisitScreen() {
   );
 }
 
+function undoDescription(undoable: UndoableAdvance | null | undefined): string {
+  if (!undoable) return '';
+  const { lesson, previousVisitLesson } = undoable.advance;
+  const visitLesson = previousVisitLesson ? `na lição ${previousVisitLesson}` : 'sem lição';
+  const notes =
+    undoable.lessonsWithNotes.length > 0
+      ? ` A nota da ${formatLessons(undoable.lessonsWithNotes)} deixa de aparecer.`
+      : '';
+  return `A lição ${lesson} deixa de contar como avanço e a visita fica ${visitLesson}.${notes}`;
+}
+
 function VisitContent({ detail }: { detail: VisitDetail }) {
   const queryClient = useQueryClient();
   const { visit, student, next } = detail;
   const [deleting, setDeleting] = React.useState(false);
+  const [undoing, setUndoing] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
+  const advanceQuery = useQuery({
+    queryKey: queryKeys.lessons.advance(visit.id),
+    queryFn: () => lessonsActions.getUndoableAdvance(visit.id),
+  });
+  const undoable = advanceQuery.data;
   const scriptures = parseScriptures(visit.scriptures);
   const met = visit.outcome === 'met';
 
@@ -64,24 +83,43 @@ function VisitContent({ detail }: { detail: VisitDetail }) {
     if (busy) return;
     setBusy(true);
     try {
-      await visitsActions.remove(visit.id);
+      const undone = await visitsActions.remove(visit.id);
       setDeleting(false);
       await refreshVisitData(queryClient);
       showToast(
-        visit.lessonNumber
-          ? {
-              message: 'Visita apagada. O progresso no estudo não mudou.',
-              action: {
-                label: 'Ver estudo',
-                onPress: () => router.push(`/student/${student.id}/study`),
-              },
-            }
-          : { message: 'Visita apagada.' }
+        undone
+          ? { message: 'Visita apagada. O progresso no estudo voltou atrás.' }
+          : visit.lessonNumber
+            ? {
+                message: 'Visita apagada. O progresso no estudo não mudou.',
+                action: {
+                  label: 'Ver estudo',
+                  onPress: () => router.push(`/student/${student.id}/study`),
+                },
+              }
+            : { message: 'Visita apagada.' }
       );
       router.back();
     } catch {
       setBusy(false);
       showToast({ message: 'Não foi possível apagar a visita. Tenta outra vez.' });
+    }
+  }
+
+  async function undoLessonAdvance() {
+    if (!undoable || busy) return;
+    setBusy(true);
+    try {
+      const undone = lessonsActions.undoAdvance(undoable.advance.id, { restoreVisitLesson: true });
+      setUndoing(false);
+      await refreshVisitData(queryClient);
+      showToast({
+        message: undone ? 'Avanço desfeito.' : 'Já não dá para desfazer este avanço.',
+      });
+    } catch {
+      showToast({ message: 'Não foi possível desfazer. Tenta outra vez.' });
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -147,6 +185,25 @@ function VisitContent({ detail }: { detail: VisitDetail }) {
         ))}
       </SettingsSection>
 
+      {undoable ? (
+        <SettingsSection title="Estudo">
+          <SettingsRow
+            first
+            title={
+              undoable.blocked
+                ? `Avançou para a lição ${undoable.advance.lesson}`
+                : 'Desfazer avanço'
+            }
+            description={
+              undoable.blocked
+                ? formatUndoBlock(undoable.blocked)
+                : `Esta visita avançou para a lição ${undoable.advance.lesson}.`
+            }
+            onPress={undoable.blocked ? undefined : () => setUndoing(true)}
+          />
+        </SettingsSection>
+      ) : null}
+
       <SettingsSection>
         <SettingsRow
           first
@@ -166,6 +223,21 @@ function VisitContent({ detail }: { detail: VisitDetail }) {
           <Text>Apagar visita</Text>
         </Button>
         <Button variant="ghost" className="min-h-12" onPress={() => setDeleting(false)}>
+          <Text>Cancelar</Text>
+        </Button>
+      </AlertDialog>
+
+      <AlertDialog
+        open={undoing}
+        onClose={() => setUndoing(false)}
+        icon="book"
+        tone="brand"
+        title="Desfazer este avanço?"
+        description={undoDescription(undoable)}>
+        <Button disabled={busy} onPress={undoLessonAdvance}>
+          <Text>Desfazer avanço</Text>
+        </Button>
+        <Button variant="ghost" className="min-h-12" onPress={() => setUndoing(false)}>
           <Text>Cancelar</Text>
         </Button>
       </AlertDialog>

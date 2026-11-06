@@ -218,7 +218,7 @@ O maior risco é o âmbito para um só programador, e não o mercado.
 | Backend | Node.js com TypeScript é a recomendação, por partilhar tipos e validação com o app. Java continua em aberto. |
 | Testadores | Ainda não há. Convidar os 14 publicadores da pesquisa e pedir a cada uma que traga mais alguém. |
 | Nome | Em aberto. Candidatos: Revisita, Percurso, Semear, Caminho. |
-| Lições e visitas | Uma lição pode levar várias visitas. Cada visita guarda a lição onde pararam. Quando a lição avança, o app fecha a anterior e abre a nova. |
+| Lições e visitas | Uma lição pode levar várias visitas. Cada visita guarda a lição onde pararam. Quando a lição avança, o app fecha a anterior e abre a nova, com opção de desfazer. |
 | Calendário e notificações | Sem Google Calendar. Lembretes e alertas são notificações locais do próprio dispositivo. A funcionalidade S8 foi retirada. |
 | Horas de crédito | Fora do app. O pioneiro regista só as horas de pregação. Não há campo, coluna nem linha de relatório para crédito. |
 | Perfis e metas | Cinco perfis fixos: publicador, pioneiro auxiliar (15 ou 30 horas), pioneiro regular (50), pioneiro especial (90 ou 100) e missionário (90 ou 100). Sem metas livres. |

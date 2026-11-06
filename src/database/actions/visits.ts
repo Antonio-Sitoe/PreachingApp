@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { db } from '../db';
 import { type Appointment, appointments, students, type Visit, visits } from '../schemas';
 import type { VisitDetail, VisitEdit, VisitInput } from '../@types';
+import { undoVisitAdvance } from './lessons';
 
 const now = () => new Date().toISOString();
 
@@ -127,12 +128,12 @@ async function update(id: string, input: VisitEdit): Promise<Visit | undefined> 
 
 /**
  * Remoção lógica. As marcações que a visita tinha dado por feitas voltam a ficar por cumprir,
- * como se a visita não tivesse acontecido.
+ * como se a visita não tivesse acontecido. Devolve se o avanço de lição também foi desfeito.
  */
-async function remove(id: string): Promise<void> {
+async function remove(id: string): Promise<boolean> {
   try {
     const timestamp = now();
-    db.transaction((tx) => {
+    return db.transaction((tx) => {
       tx.update(visits)
         .set({ deletedAt: timestamp, updatedAt: timestamp, syncStatus: 'pending' })
         .where(eq(visits.id, id))
@@ -141,6 +142,7 @@ async function remove(id: string): Promise<void> {
         .set({ status: 'pending', visitId: null, updatedAt: timestamp, syncStatus: 'pending' })
         .where(eq(appointments.visitId, id))
         .run();
+      return undoVisitAdvance(tx, id);
     });
   } catch (error) {
     console.error('Error removing visit:', error);

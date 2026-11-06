@@ -9,6 +9,7 @@ export const queryKeys = {
   lessons: {
     all: ['lessons'] as const,
     byStudent: (studentId: MaybeId) => ['lessons', studentId] as const,
+    advance: (visitId: MaybeId) => ['lessons', 'advance', visitId] as const,
     detail: (studentId: string, lesson: number) =>
       ['lessons', studentId, 'detail', lesson] as const,
   },

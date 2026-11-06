@@ -3,6 +3,7 @@ export * from './students';
 export * from './appointments';
 export * from './visits';
 export * from './lesson-progress';
+export * from './lesson-advances';
 export * from './stage-changes';
 export * from './milestones';
 export * from './pauses';

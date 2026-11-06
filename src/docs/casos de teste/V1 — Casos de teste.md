@@ -242,7 +242,8 @@ Testar com o app acabado de instalar, ou depois de apagar os dados do app nas de
 - [ ] **CT-EST-01 [F]** Pessoa sem estudo › ficha › Estudo por começar › Registar visita com estudo › lição 1 › Guardar. → Toast "Estudo iniciado na lição 1." e a etapa passa a Estudo iniciado
 - [ ] **CT-EST-02 [F]** Nova visita com estudo. → A lição vem por omissão na lição actual
 - [ ] **CT-EST-03 [F]** Escolher a lição seguinte. → Aparece a nota "A lição N fica fechada com a data desta visita…" e o interruptor "Tente o seguinte" da lição que fecha
-- [ ] **CT-EST-04 [F]** Guardar. → Toast "Lição N fechada. A M é agora a actual.", sem botão Desfazer
+- [ ] **CT-EST-04 [F]** Guardar. → Toast "Lição N fechada. A M é agora a actual." com Desfazer
+- [ ] **CT-EST-05 [F]** Tocar em Desfazer nos 8 segundos. → A lição nova desaparece, a anterior volta a estar em curso, a visita fica com a lição anterior e a etapa volta, se tinha mudado
 - [ ] **CT-EST-06 [F]** Saltar uma lição (ex.: da 3 para a 5). → Pergunta "A lição 4 também ficou concluída?" com "Sim, ficou concluída" e "Não, saltaram-na"
 - [ ] **CT-EST-07 [F]** Saltar várias (ex.: da 3 para a 7) e responder Sim. → Toast "Lições 3 a 6 fechadas…"; as intermédias ficam concluídas com a data da visita
 - [ ] **CT-EST-08 [F]** Responder "Não, saltaram-nas". → Só a lição em curso fecha; as intermédias ficam por fazer
@@ -255,10 +256,14 @@ Testar com o app acabado de instalar, ou depois de apagar os dados do app nas de
 - [ ] **CT-EST-15 [F]** Guardar como marco com data e nota. → O marco "Revisão da parte 1" aparece em Etapa e marcos e a parte mostra "Concluída · revista"
 - [ ] **CT-EST-16 [F]** "Ainda não fizemos a revisão". → A folha fecha; tocar mais tarde na parte concluída volta a abri-la
 - [ ] **CT-EST-17 [F]** Cartão do estudo na ficha e na preparação. → Lição, parte, barra e ritmo iguais aos do Progresso no estudo
-- [ ] **CT-EST-18 [F]** Editar uma visita e subir a lição acima da actual, ou acrescentar uma lição acima da actual. → Avança como ao registar: fecha a anterior, pergunta pelas intermédias e mostra o toast
-- [ ] **CT-EST-18a [F]** Editar uma visita e descer a lição, tirar a lição, ou mudar o resultado para Não estava. → O progresso fica igual e o toast diz "Visita actualizada. O progresso no estudo não mudou." com Ver estudo
+- [ ] **CT-EST-18 [F]** Editar uma visita e subir a lição acima da actual, ou acrescentar uma lição acima da actual. → Avança como ao registar: fecha a anterior, pergunta pelas intermédias e o toast tem Desfazer
+- [ ] **CT-EST-18a [F]** Editar a visita que fez o avanço e descer a lição, tirar a lição, ou mudar o resultado para Não estava. → O progresso volta atrás, a visita fica com o que foi escrito e o toast diz "Visita actualizada. O progresso no estudo voltou atrás."
+- [ ] **CT-EST-18d [F]** Fazer o mesmo numa visita sem avanço registado ou com o avanço bloqueado. → O progresso fica igual e o toast diz "Visita actualizada. O progresso no estudo não mudou." com Ver estudo
 - [ ] **CT-EST-18b [F]** Editar uma visita e pôr a lição igual à actual, ou mudar só as notas ou a data. → O progresso fica igual, sem aviso
-- [ ] **CT-EST-18c [F]** Apagar uma visita com lição. → O progresso fica igual e o toast diz "Visita apagada. O progresso no estudo não mudou." com Ver estudo
+- [ ] **CT-EST-18c [F]** Apagar a visita que fez o avanço. → O progresso volta atrás e o toast diz "Visita apagada. O progresso no estudo voltou atrás." Sem avanço registado ou com o avanço bloqueado, o progresso fica igual e o toast diz "Visita apagada. O progresso no estudo não mudou." com Ver estudo
+- [ ] **CT-EST-18e [F]** No detalhe da visita, com a app reiniciada, tocar em Desfazer avanço e confirmar. → Lição, etapa e visita voltam atrás. O botão só aparece enquanto o avanço puder ser desfeito
+- [ ] **CT-EST-18f [U]** Haver um avanço mais recente ou outra visita na mesma lição. → O detalhe da visita mostra o motivo em vez de Desfazer avanço
+- [ ] **CT-EST-18g [U]** Mudar a etapa à mão depois do avanço e desfazê-lo. → A etapa escolhida à mão fica
 - [ ] **CT-EST-19 [R]** Progresso no estudo e detalhe no telemóvel pequeno com letra a 130%. → A grelha mantém 6 colunas e os números cabem nos quadrados
 
 ## 8. Notas
